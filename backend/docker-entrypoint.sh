@@ -1,3 +1,8 @@
 cd /app
 npm install
-exec npm run start:dev
+
+if [ $WATCH -eq 1 ]; then
+  npm run start:debug
+else
+  npm run start
+fi

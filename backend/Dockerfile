@@ -13,4 +13,7 @@ EXPOSE 3000
 
 COPY ./docker-entrypoint.sh /tmp/
 
+ARG WATCH=1
+ENV WATCH=$WATCH
+
 CMD ["bash", "/tmp/docker-entrypoint.sh"]
