@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -12,22 +13,33 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @Column({ unique: true })
   identity: string;
 
   @Column({ unique: true })
   username: string;
 
-  @Column({ type: 'bytea' })
+  @Column({
+    type: 'bytea',
+    nullable: true,
+    default: null,
+  })
   avatar: Uint8Array;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   wins: number;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   losses: number;
 
-  @Column()
+  @Column({
+    default: 0,
+  })
   rating: number;
 
   @ManyToMany(() => User, (friend) => friend.friends)
@@ -46,6 +58,7 @@ export class User {
   @RelationId((user: User) => user.friends)
   friendIds: number[];
 
+  @Exclude()
   @ManyToMany(() => User, (blocked) => blocked.blocked)
   @JoinTable({
     name: 'user_blocks_user',
@@ -59,6 +72,7 @@ export class User {
     },
   })
   blocked: User[];
+  @Exclude()
   @RelationId((user: User) => user.blocked)
   blockedIds: number[];
 }
