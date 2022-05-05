@@ -1,1 +1,5 @@
+# Dev Settings
+.vscode
+
+# Environment
 .env
