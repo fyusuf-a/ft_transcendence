@@ -58,7 +58,7 @@ export class User {
       referencedColumnName: 'id',
     },
   })
-  blocked: User;
+  blocked: User[];
   @RelationId((user: User) => user.blocked)
   blockedIds: number[];
 }

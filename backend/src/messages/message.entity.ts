@@ -8,7 +8,7 @@ export class Message {
   id: number;
 
   @Column()
-  contest: string;
+  content: string;
 
   @ManyToOne(() => User)
   sender: User;
