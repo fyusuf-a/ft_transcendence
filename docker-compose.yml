@@ -1,5 +1,5 @@
 # Use postgres/example user/password credentials
-version: '3.1'
+version: '3.4'
 
 services:
 
@@ -41,10 +41,14 @@ services:
       - db
 
   frontend:
-    build: ./frontend
+    build:
+        context: ./frontend
+        target: ${FRONTEND_TARGET:-production}
     image: vue
     ports:
       - 8000:80
+    volumes:
+        - ./frontend:/app
     depends_on:
       - db
 
