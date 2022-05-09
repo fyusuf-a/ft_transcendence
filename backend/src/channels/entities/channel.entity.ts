@@ -1,6 +1,6 @@
-import { Karma } from 'src/karma/karma.entity';
-import { Message } from 'src/messages/message.entity';
-import { User } from 'src/users/user.entity';
+import { Karma } from '../../karmas/entities/karma.entity';
+import { Message } from '../../messages/message.entity';
+import { User } from '../../users/user.entity';
 import {
   Column,
   Entity,
@@ -11,6 +11,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { IsOptional } from 'class-validator';
 
 export enum ChannelType {
   PRIVATE,
@@ -33,8 +34,9 @@ export class Channel {
   })
   type: ChannelType;
 
-  @Column()
-  password: string;
+  @IsOptional()
+  @Column({ nullable: true })
+  password?: string;
 
   @ManyToOne(() => User)
   owner: User;

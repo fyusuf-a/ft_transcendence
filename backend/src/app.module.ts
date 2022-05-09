@@ -5,6 +5,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
+import { MessagesModule } from './messages/messages.module';
+import { Message } from './messages/message.entity';
+import { ChannelsModule } from './channels/channels.module';
+import { Channel } from './channels/entities/channel.entity';
+import { Karma } from './karmas/entities/karma.entity';
+import { KarmasModule } from './karmas/karmas.module';
 
 @Module({
   imports: [
@@ -16,10 +22,13 @@ import { UsersModule } from './users/users.module';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User],
+      entities: [User, Message, Channel, Karma],
       synchronize: true,
     }),
     UsersModule,
+    MessagesModule,
+    ChannelsModule,
+    KarmasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

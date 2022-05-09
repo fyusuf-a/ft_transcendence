@@ -1,5 +1,5 @@
-import { Channel } from 'src/channel/channel.entity';
-import { User } from 'src/users/user.entity';
+import { Channel } from '../../channels/entities/channel.entity';
+import { User } from '../../users/user.entity';
 import {
   Column,
   Entity,
