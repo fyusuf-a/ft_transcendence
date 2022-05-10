@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { MessagesModule } from './../src/messages/messages.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { Message } from './../src/messages/message.entity';
+import { Message } from './../src/messages/entities/message.entity';
 import { Karma } from '../src/karmas/entities/karma.entity';
 import { User } from '../src/users/entities/user.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
@@ -43,9 +43,9 @@ describe('MessagesController (e2e)', () => {
     return request(app.getHttpServer()).get('/messages/').expect(200).expect('[]');
   });
 
-  it('/messages/create (POST)', () => {
+  it('/messages (POST)', () => {
     return request(app.getHttpServer())
-      .post('/messages/create')
+      .post('/messages')
       .send({
         content: 'Test message',
       })
@@ -74,76 +74,56 @@ describe('MessagesController (e2e)', () => {
     return request(app.getHttpServer()).get('/messages/2').expect(404);
   });
 
-  // it('/messages/create (POST)', () => {
-  //   return request(app.getHttpServer())
-  //     .post('/messages/create')
-  //     .send({
-  //       identity: 'identity2',
-  //       username: 'username2',
-  //     })
-  //     .expect(201);
-  // });
+  it('/messages (POST) second message', () => {
+    return request(app.getHttpServer())
+      .post('/messages')
+      .send({
+        content: 'Test message2',
+      })
+      .expect(201);
+  });
 
-  // it('/messages/2 (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/messages/2')
-  //     .expect(200)
-  //     .expect(
-  //       '{"id":2,"identity":"identity2","username":"username2","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]}',
-  //     );
-  // });
+  it('/messages/2 (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/messages/2')
+      .expect(200)
+      .expect(
+        '{"id":2,"content":"Test message2","senderId":null,"channelId":null}',
+      );
+  });
 
-  // it('/messages/ (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/messages/')
-  //     .expect(200)
-  //     .expect(
-  //       '[{"id":1,"identity":"identity1","username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]},{"id":2,"identity":"identity2","username":"username2","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]}]',
-  //     );
-  // });
+  it('/messages/ (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/messages/')
+      .expect(200)
+      .expect(
+        '[{"id":1,"content":"Test message","senderId":null,"channelId":null},{"id":2,"content":"Test message2","senderId":null,"channelId":null}]',
+      );
+  });
 
-  // it('/messages/create duplicate identity (POST)', () => {
-  //   return request(app.getHttpServer())
-  //     .post('/messages/create')
-  //     .send({
-  //       identity: 'identity2',
-  //       username: 'username2',
-  //     })
-  //     .expect(500);
-  // });
+  it('/messages (POST) duplicate message', () => {
+    return request(app.getHttpServer())
+      .post('/messages')
+      .send({
+        content: 'Test message2',
+      })
+      .expect(201);
+  });
 
-  // it('/messages/create (POST) duplicate identity', () => {
-  //   return request(app.getHttpServer())
-  //     .patch('/messages/2')
-  //     .send({
-  //       username: 'username-two',
-  //     })
-  //     .expect(200);
-  // });
+  it('/messages/2 (DELETE)', () => {
+    return request(app.getHttpServer()).delete('/messages/2').expect(200);
+  });
 
-  // it('/messages/2 (GET) after PATCH', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/messages/2')
-  //     .expect(200)
-  //     .expect(
-  //       '{"id":2,"identity":"identity2","username":"username-two","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]}',
-  //     );
-  // });
+  it('/messages/2 (DELETE)', () => {
+    return request(app.getHttpServer()).delete('/messages/2').expect(200);
+  });
 
-  // it('/messages/2 (DELETE)', () => {
-  //   return request(app.getHttpServer()).delete('/messages/2').expect(200);
-  // });
-
-  // it('/messages/2 (DELETE)', () => {
-  //   return request(app.getHttpServer()).delete('/messages/2').expect(200);
-  // });
-
-  // it('/messages/ (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/messages/')
-  //     .expect(200)
-  //     .expect(
-  //       '[{"id":1,"identity":"identity1","username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]}]',
-  //     );
-  // });
+  it('/messages/ (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/messages/')
+      .expect(200)
+      .expect(
+        '[{"id":1,"content":"Test message","senderId":null,"channelId":null},{"id":3,"content":"Test message2","senderId":null,"channelId":null}]',
+      );
+  });
 });

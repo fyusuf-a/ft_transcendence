@@ -25,6 +25,8 @@ export class Karma {
 
   @ManyToOne(() => User)
   user: User;
+  @RelationId((karma: Karma) => karma.user)
+  userId: number;
 
   @Column({ type: 'timestamptz' })
   start: Date;

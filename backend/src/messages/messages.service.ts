@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateMessageDto } from './dto/createMessage.dto';
-import { Message } from './message.entity';
+import { DeleteResult, Repository } from 'typeorm';
+import { CreateMessageDto } from './dto/create-message.dto';
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class MessagesService {
@@ -15,7 +15,7 @@ export class MessagesService {
     return this.messagesRepository.find();
   }
 
-  findById(id: string): Promise<Message> {
+  findOne(id: number): Promise<Message> {
     return this.messagesRepository.findOne(id);
   }
 
@@ -23,7 +23,7 @@ export class MessagesService {
     return await this.messagesRepository.save(messageDto);
   }
 
-  async remove(id: string): Promise<void> {
-    await this.messagesRepository.delete(id);
+  async remove(id: number): Promise<DeleteResult> {
+    return await this.messagesRepository.delete(id);
   }
 }

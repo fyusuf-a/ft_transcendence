@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { MessagesModule } from './messages/messages.module';
-import { Message } from './messages/message.entity';
+import { Message } from './messages/entities/message.entity';
 import { ChannelsModule } from './channels/channels.module';
 import { Channel } from './channels/entities/channel.entity';
 import { Karma } from './karmas/entities/karma.entity';

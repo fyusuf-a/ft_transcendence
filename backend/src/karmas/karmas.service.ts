@@ -1,26 +1,34 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateKarmaDto } from './dto/create-karma.dto';
 import { UpdateKarmaDto } from './dto/update-karma.dto';
+import { Karma } from './entities/karma.entity';
 
 @Injectable()
 export class KarmasService {
+  constructor(
+    @InjectRepository(Karma)
+    private karmaRepository: Repository<Karma>
+  ) {}
+
   create(createKarmaDto: CreateKarmaDto) {
-    return 'This action adds a new karma';
+    return this.karmaRepository.save(createKarmaDto);
   }
 
   findAll() {
-    return `This action returns all karmas`;
+    return this.karmaRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} karma`;
+    return this.karmaRepository.findOne(id);
   }
 
   update(id: number, updateKarmaDto: UpdateKarmaDto) {
-    return `This action updates a #${id} karma`;
+    return this.karmaRepository.update(id, updateKarmaDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} karma`;
+    return this.karmaRepository.delete(id);
   }
 }

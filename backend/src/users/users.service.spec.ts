@@ -33,7 +33,7 @@ describe('UsersService', () => {
 
   describe('when looking up an existing User by id', () => {
     it('should return User', async () => {
-      expect(await service.findById('0')).toEqual(new mockUserEntity());
+      expect(await service.findOne(0)).toEqual(new mockUserEntity());
     });
   });
 
@@ -53,7 +53,7 @@ describe('UsersService', () => {
       service = module.get<UsersService>(UsersService);
     });
     it('should return undefined', async () => {
-      expect(await service.findById('1')).toEqual(undefined);
+      expect(await service.findOne(1)).toEqual(undefined);
     });
   });
 
@@ -74,7 +74,7 @@ describe('UsersService', () => {
 
   describe('when removing a new User', () => {
     it('should return void', async () => {
-      expect(await service.remove('0')).toBeUndefined();
+      expect(await service.remove(0)).toBeUndefined();
     });
   });
 });

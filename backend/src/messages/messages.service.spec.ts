@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Message } from './message.entity';
+import { Message } from './entities/message.entity';
 import { MessagesService } from './messages.service';
 import { mockMessageEntity } from './mocks/message.entity.mock';
 

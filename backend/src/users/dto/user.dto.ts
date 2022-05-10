@@ -47,13 +47,9 @@ export class UserDto {
   rating: number;
 
   @IsArray()
-  friends: User[];
-  @IsArray()
   @IsInt()
   friendIds: number[];
 
-  @IsArray()
-  blocked: User[];
   @IsArray()
   @IsInt()
   blockedIds: number[];
