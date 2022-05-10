@@ -1,34 +1,48 @@
-import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChannelsService } from '../channels/channels.service';
 import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
-import { UsersService } from '../users/users.service';
 import { Repository } from 'typeorm';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { Membership } from './entities/membership.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
-    private usersService: UsersService,
-    private channelsService: ChannelsService,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+    @InjectRepository(Channel)
+    private channelsRepository: Repository<Channel>,
   ) {}
 
   async create(createMembershipDto: CreateMembershipDto) {
-    let membership: Membership = new Membership;
+    const membership: Membership = new Membership();
     membership.role = createMembershipDto.role;
-    membership.channel = await this.channelsService.findOne(createMembershipDto.channelId);
+    membership.channel = await this.channelsRepository.findOne(
+      createMembershipDto.channelId,
+    );
     membership.channelId = createMembershipDto.channelId;
-    if (membership.channel === undefined || membership.channel.id !== membership.channelId) {
-      throw new EntityDoesNotExistError(`Channel #${createMembershipDto.channelId}`)
+    if (
+      membership.channel === undefined ||
+      membership.channel.id !== membership.channelId
+    ) {
+      throw new EntityDoesNotExistError(
+        `Channel #${createMembershipDto.channelId}`,
+      );
     }
-    membership.user = await this.usersService.findOne(createMembershipDto.userId);
+    membership.user = await this.usersRepository.findOne(
+      createMembershipDto.userId,
+    );
     membership.userId = createMembershipDto.userId;
-    if (membership.user === undefined || membership.user.id !== membership.userId) {
-      throw new EntityDoesNotExistError(`User #${createMembershipDto.userId}`)
+    if (
+      membership.user === undefined ||
+      membership.user.id !== membership.userId
+    ) {
+      throw new EntityDoesNotExistError(`User #${createMembershipDto.userId}`);
     }
     return this.membershipRepository.save(membership);
   }

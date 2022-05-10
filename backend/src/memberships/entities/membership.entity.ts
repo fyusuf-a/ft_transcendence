@@ -10,9 +10,9 @@ import { Channel } from '../../channels/entities/channel.entity';
 import { Exclude } from 'class-transformer';
 
 export enum MembershipRoleType {
-  PARTICIPANT = "participant",
-  ADMIN = "admin",
-  OWNER = "owner",
+  PARTICIPANT = 'participant',
+  ADMIN = 'admin',
+  OWNER = 'owner',
 }
 
 @Entity()

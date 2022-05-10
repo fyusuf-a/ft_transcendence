@@ -21,14 +21,15 @@ export class MembershipsController {
   constructor(private readonly membershipsService: MembershipsService) {}
 
   @Post()
-  async create(@Body() createMembershipDto: CreateMembershipDto): Promise<ResponseMembershipDto> {
+  async create(
+    @Body() createMembershipDto: CreateMembershipDto,
+  ): Promise<ResponseMembershipDto> {
     try {
-      return await this.membershipsService.create(createMembershipDto); 
+      return await this.membershipsService.create(createMembershipDto);
     } catch (error) {
-      if (error instanceof EntityDoesNotExistError ) {
+      if (error instanceof EntityDoesNotExistError) {
         throw new BadRequestException(error.message);
-      }
-      else {
+      } else {
         throw error;
       }
     }

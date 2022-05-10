@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsEnum, IsInt, IsPositive } from 'class-validator';
+import { IsEnum, IsInt, IsPositive } from 'class-validator';
 import { MembershipRoleType } from '../entities/membership.entity';
 
 export class MembershipDto {
