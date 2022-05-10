@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
 import { Channel } from '../../channels/entities/channel.entity';
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 
 export class MessageDto {
   @ApiProperty({

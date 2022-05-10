@@ -1,5 +1,5 @@
 import { Channel } from '../channels/entities/channel.entity';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
 
 @Entity()

@@ -10,10 +10,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ResponseUserDto } from './dto/responseUser.dto';
-import { CreateUserDto } from './dto/createUser.dto';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { UpdateResult } from 'typeorm';
+import { ResponseUserDto } from './dto/response-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('users')
@@ -26,24 +26,24 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
-  @Post('create')
+  @Post()
   @ApiResponse({ status: 500, description: 'Record could not be created.' })
-  async create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
-    return await this.usersService.create(createUserDto);
+  create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
+    return this.usersService.create(createUserDto);
   }
 
   @Patch(':id')
-  async update(
+  update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
-    return await this.usersService.update(id, updateUserDto);
+    return this.usersService.update(+id, updateUserDto);
   }
 
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
-  async findById(@Param('id') id: string): Promise<ResponseUserDto> {
-    const user: ResponseUserDto = await this.usersService.findById(id);
+  async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
+    const user: ResponseUserDto = await this.usersService.findOne(+id);
     if (user === undefined) {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
@@ -51,7 +51,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async removeById(@Param('id') id: string): Promise<void> {
-    return this.usersService.remove(id);
+  removeById(@Param('id') id: string): Promise<DeleteResult> {
+    return this.usersService.remove(+id);
   }
 }

@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Message } from './../src/messages/message.entity';
 import { Karma } from '../src/karmas/entities/karma.entity';
-import { User } from '../src/users/user.entity';
+import { User } from '../src/users/entities/user.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 
 describe('MessagesController (e2e)', () => {

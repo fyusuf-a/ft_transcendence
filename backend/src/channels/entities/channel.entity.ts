@@ -1,6 +1,6 @@
 import { Karma } from '../../karmas/entities/karma.entity';
 import { Message } from '../../messages/message.entity';
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   Entity,

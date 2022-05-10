@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { UsersModule } from './../src/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { User } from './../src/users/user.entity';
+import { User } from '../src/users/entities/user.entity';
 // import { Repository } from 'typeorm';
 
 describe('UsersController (e2e)', () => {
@@ -43,9 +43,9 @@ describe('UsersController (e2e)', () => {
     return request(app.getHttpServer()).get('/users/').expect(200).expect('[]');
   });
 
-  it('/users/create (POST)', () => {
+  it('/users (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/create')
+      .post('/users')
       .send({
         identity: 'identity1',
         username: 'username1',
@@ -75,9 +75,9 @@ describe('UsersController (e2e)', () => {
     return request(app.getHttpServer()).get('/users/2').expect(404);
   });
 
-  it('/users/create (POST)', () => {
+  it('/users (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/create')
+      .post('/users')
       .send({
         identity: 'identity2',
         username: 'username2',
@@ -103,9 +103,9 @@ describe('UsersController (e2e)', () => {
       );
   });
 
-  it('/users/create duplicate identity (POST)', () => {
+  it('/users duplicate identity (POST)', () => {
     return request(app.getHttpServer())
-      .post('/users/create')
+      .post('/users')
       .send({
         identity: 'identity2',
         username: 'username2',
@@ -113,7 +113,7 @@ describe('UsersController (e2e)', () => {
       .expect(500);
   });
 
-  it('/users/create (POST) duplicate identity', () => {
+  it('/users (PATCH)', () => {
     return request(app.getHttpServer())
       .patch('/users/2')
       .send({

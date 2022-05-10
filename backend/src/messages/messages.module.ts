@@ -6,7 +6,7 @@ import { Message } from './message.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { ChannelsModule } from '../channels/channels.module';
 import { UsersModule } from '../users/users.module';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 
 @Module({
   imports: [
