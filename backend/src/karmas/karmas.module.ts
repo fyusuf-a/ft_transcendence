@@ -5,9 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Karma } from './entities/karma.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Karma]),
-  ],
+  imports: [TypeOrmModule.forFeature([Karma])],
   controllers: [KarmasController],
   providers: [KarmasService],
   exports: [KarmasService],

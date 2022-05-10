@@ -1,6 +1,12 @@
-import { User } from "../../users/entities/user.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, RelationId } from "typeorm";
-import { Channel } from "../../channels/entities/channel.entity";
+import { User } from '../../users/entities/user.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+} from 'typeorm';
+import { Channel } from '../../channels/entities/channel.entity';
 
 export enum MembershipRoleType {
   PARTICIPANT,

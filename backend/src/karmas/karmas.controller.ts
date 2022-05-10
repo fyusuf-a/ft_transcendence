@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { KarmasService } from './karmas.service';
 import { CreateKarmaDto } from './dto/create-karma.dto';
 import { UpdateKarmaDto } from './dto/update-karma.dto';

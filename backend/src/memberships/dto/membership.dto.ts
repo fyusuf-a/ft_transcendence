@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { MembershipRoleType } from "../entities/membership.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { MembershipRoleType } from '../entities/membership.entity';
 
 export class MembershipDto {
   @ApiProperty({

@@ -15,7 +15,10 @@ describe('ChannelsService', () => {
           provide: getRepositoryToken(Channel),
           useValue: {
             findOne: jest.fn(() => new mockChannelEntity()),
-            find: jest.fn(() => [new mockChannelEntity(), new mockChannelEntity()]),
+            find: jest.fn(() => [
+              new mockChannelEntity(),
+              new mockChannelEntity(),
+            ]),
             save: jest.fn(() => new mockChannelEntity()),
             delete: jest.fn(() => void {}),
           },

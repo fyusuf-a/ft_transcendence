@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
@@ -27,7 +35,10 @@ export class ChannelsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChannelDto: UpdateChannelDto): Promise<UpdateResult> {
+  update(
+    @Param('id') id: string,
+    @Body() updateChannelDto: UpdateChannelDto,
+  ): Promise<UpdateResult> {
     return this.channelsService.update(+id, updateChannelDto);
   }
 

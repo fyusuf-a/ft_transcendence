@@ -9,7 +9,7 @@ import { Karma } from './entities/karma.entity';
 export class KarmasService {
   constructor(
     @InjectRepository(Karma)
-    private karmaRepository: Repository<Karma>
+    private karmaRepository: Repository<Karma>,
   ) {}
 
   create(createKarmaDto: CreateKarmaDto) {

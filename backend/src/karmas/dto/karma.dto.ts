@@ -1,12 +1,12 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsPositive } from "class-validator";
-import { Channel } from "../../channels/entities/channel.entity";
-import { User } from "../../users/entities/user.entity";
-import { KarmaType } from "../entities/karma.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsPositive } from 'class-validator';
+import { Channel } from '../../channels/entities/channel.entity';
+import { User } from '../../users/entities/user.entity';
+import { KarmaType } from '../entities/karma.entity';
 
 export class KarmaDto {
   @ApiProperty({
-    description: 'The id of the karma'
+    description: 'The id of the karma',
   })
   @IsPositive()
   @IsInt()
@@ -17,7 +17,7 @@ export class KarmaDto {
   })
   channel: Channel;
   @ApiProperty({
-    description: 'The associated channel\'s id',
+    description: "The associated channel's id",
   })
   channelId: number;
 
@@ -26,7 +26,7 @@ export class KarmaDto {
   })
   user: User;
   @ApiProperty({
-    description: 'The associated user\'s id',
+    description: "The associated user's id",
   })
   userId: number;
 

@@ -1,6 +1,4 @@
-import { OmitType } from "@nestjs/swagger";
-import { MembershipDto } from "./membership.dto";
+import { OmitType } from '@nestjs/swagger';
+import { MembershipDto } from './membership.dto';
 
-export class CreateMembershipDto extends OmitType(MembershipDto, [
-  'id',
-]) {}
+export class CreateMembershipDto extends OmitType(MembershipDto, ['id']) {}

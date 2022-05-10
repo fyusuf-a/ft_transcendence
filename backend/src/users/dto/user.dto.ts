@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsIn,
-  IsInt,
-  IsNotEmpty,
-  IsPositive,
-  Min,
-} from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty, IsPositive, Min } from 'class-validator';
 
 export class UserDto {
   @ApiProperty({

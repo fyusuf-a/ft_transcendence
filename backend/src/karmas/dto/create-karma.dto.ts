@@ -1,5 +1,5 @@
-import { PickType } from "@nestjs/swagger";
-import { KarmaDto } from "./karma.dto";
+import { PickType } from '@nestjs/swagger';
+import { KarmaDto } from './karma.dto';
 
 export class CreateKarmaDto extends PickType(KarmaDto, [
   'channelId',
@@ -7,6 +7,4 @@ export class CreateKarmaDto extends PickType(KarmaDto, [
   'type',
   'start',
   'end',
-]) {
-
-}
+]) {}

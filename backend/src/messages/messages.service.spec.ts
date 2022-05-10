@@ -15,7 +15,10 @@ describe('MessagesService', () => {
           provide: getRepositoryToken(Message),
           useValue: {
             findOne: jest.fn(() => new mockMessageEntity()),
-            find: jest.fn(() => [new mockMessageEntity(), new mockMessageEntity()]),
+            find: jest.fn(() => [
+              new mockMessageEntity(),
+              new mockMessageEntity(),
+            ]),
             save: jest.fn(() => new mockMessageEntity()),
             delete: jest.fn(() => void {}),
           },

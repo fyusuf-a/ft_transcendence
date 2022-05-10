@@ -9,7 +9,7 @@ import { Membership } from './entities/membership.entity';
 export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
-    private membershipRepository: Repository<Membership>
+    private membershipRepository: Repository<Membership>,
   ) {}
 
   create(createMembershipDto: CreateMembershipDto) {
