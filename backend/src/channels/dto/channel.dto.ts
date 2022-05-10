@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsPositive } from "class-validator";
-import { Karma } from "../../karmas/entities/karma.entity";
-import { Message } from "../../messages/entities/message.entity";
-import { ChannelType } from "../entities/channel.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { Karma } from '../../karmas/entities/karma.entity';
+import { Message } from '../../messages/entities/message.entity';
+import { ChannelType } from '../entities/channel.entity';
 
 export class ChannelDto {
   @ApiProperty({
@@ -11,7 +11,7 @@ export class ChannelDto {
   @IsPositive()
   @IsInt()
   id: number;
-  
+
   @ApiProperty({
     description: 'The unique channel name',
   })
@@ -22,6 +22,11 @@ export class ChannelDto {
     description: 'The channel type',
   })
   type: ChannelType;
+
+  @ApiProperty({
+    description: 'The ids of all associated Memberships',
+  })
+  membershipIds: number[];
 
   @ApiProperty({
     description: 'A password for the channel',

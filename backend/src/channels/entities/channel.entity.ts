@@ -8,6 +8,7 @@ import {
   RelationId,
 } from 'typeorm';
 import { IsOptional } from 'class-validator';
+import { Membership } from '../../memberships/entities/membership.entity';
 
 export enum ChannelType {
   PUBLIC,
@@ -33,6 +34,11 @@ export class Channel {
   @IsOptional()
   @Column({ nullable: true })
   password?: string;
+
+  @OneToMany(() => Membership, (membership) => membership.channel)
+  memberships: Membership[];
+  @RelationId((channel: Channel) => channel.memberships)
+  membershipIds: number[];
 
   @OneToMany(() => Message, (message) => message.channel)
   messages: Message[];

@@ -8,6 +8,7 @@ import { Message } from './../src/messages/entities/message.entity';
 import { Karma } from '../src/karmas/entities/karma.entity';
 import { User } from '../src/users/entities/user.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
+import { Membership } from '../src/memberships/entities/membership.entity';
 
 describe('MessagesController (e2e)', () => {
   let app: INestApplication;
@@ -24,7 +25,7 @@ describe('MessagesController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [Message, Channel, Karma, User],
+          entities: [Message, Channel, Karma, User, Membership],
           synchronize: true,
           dropSchema: true,
         }),
@@ -40,7 +41,10 @@ describe('MessagesController (e2e)', () => {
   });
 
   it('/messages (GET)', () => {
-    return request(app.getHttpServer()).get('/messages/').expect(200).expect('[]');
+    return request(app.getHttpServer())
+      .get('/messages/')
+      .expect(200)
+      .expect('[]');
   });
 
   it('/messages (POST)', () => {

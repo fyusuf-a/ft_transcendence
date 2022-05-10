@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsInt, IsNotEmpty, IsPositive, Min } from 'class-validator';
-import { User } from '../entities/user.entity';
+import {
+  IsArray,
+  IsIn,
+  IsInt,
+  IsNotEmpty,
+  IsPositive,
+  Min,
+} from 'class-validator';
 
 export class UserDto {
   @ApiProperty({
@@ -23,6 +29,9 @@ export class UserDto {
   @IsNotEmpty()
   username: string;
 
+  @ApiProperty({
+    description: 'An avatar for the user',
+  })
   avatar: Uint8Array;
 
   @ApiProperty({
@@ -45,6 +54,10 @@ export class UserDto {
   @Min(0)
   @IsInt()
   rating: number;
+
+  @IsArray()
+  @IsInt()
+  membershipIds: number[];
 
   @IsArray()
   @IsInt()

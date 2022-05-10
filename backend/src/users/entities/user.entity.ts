@@ -1,9 +1,11 @@
 import { Exclude } from 'class-transformer';
+import { Membership } from '../../memberships/entities/membership.entity';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
@@ -41,6 +43,13 @@ export class User {
     default: 0,
   })
   rating: number;
+
+  @Exclude()
+  @OneToMany(() => Membership, (membership) => membership.user)
+  memberships: Membership[];
+  @Exclude()
+  @RelationId((user: User) => user.memberships)
+  membershipIds: number[];
 
   @ManyToMany(() => User, (friend) => friend.friends)
   @JoinTable({
