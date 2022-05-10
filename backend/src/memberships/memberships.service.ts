@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChannelsService } from '../channels/channels.service';
+import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
+import { UsersService } from '../users/users.service';
 import { Repository } from 'typeorm';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
@@ -10,10 +13,24 @@ export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
+    private usersService: UsersService,
+    private channelsService: ChannelsService,
   ) {}
 
-  create(createMembershipDto: CreateMembershipDto) {
-    return this.membershipRepository.save(createMembershipDto);
+  async create(createMembershipDto: CreateMembershipDto) {
+    let membership: Membership = new Membership;
+    membership.role = createMembershipDto.role;
+    membership.channel = await this.channelsService.findOne(createMembershipDto.channelId);
+    membership.channelId = createMembershipDto.channelId;
+    if (membership.channel === undefined || membership.channel.id !== membership.channelId) {
+      throw new EntityDoesNotExistError(`Channel #${createMembershipDto.channelId}`)
+    }
+    membership.user = await this.usersService.findOne(createMembershipDto.userId);
+    membership.userId = createMembershipDto.userId;
+    if (membership.user === undefined || membership.user.id !== membership.userId) {
+      throw new EntityDoesNotExistError(`User #${createMembershipDto.userId}`)
+    }
+    return this.membershipRepository.save(membership);
   }
 
   findAll() {

@@ -7,11 +7,12 @@ import {
   RelationId,
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
+import { Exclude } from 'class-transformer';
 
 export enum MembershipRoleType {
-  PARTICIPANT,
-  ADMIN,
-  OWNER,
+  PARTICIPANT = "participant",
+  ADMIN = "admin",
+  OWNER = "owner",
 }
 
 @Entity()
@@ -19,11 +20,13 @@ export class Membership {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @ManyToOne(() => Channel)
   channel: Channel;
   @RelationId((membership: Membership) => membership.channel)
   channelId: number;
 
+  @Exclude()
   @ManyToOne(() => User)
   user: User;
   @RelationId((membership: Membership) => membership.user)

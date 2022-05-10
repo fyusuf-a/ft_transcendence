@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  BadRequestException,
 } from '@nestjs/common';
 import { MembershipsService } from './memberships.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { ResponseMembershipDto } from './dto/response-membership.dto';
+import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 
 @ApiTags('memberships')
 @Controller('memberships')
@@ -18,17 +21,26 @@ export class MembershipsController {
   constructor(private readonly membershipsService: MembershipsService) {}
 
   @Post()
-  create(@Body() createMembershipDto: CreateMembershipDto) {
-    return this.membershipsService.create(createMembershipDto);
+  async create(@Body() createMembershipDto: CreateMembershipDto): Promise<ResponseMembershipDto> {
+    try {
+      return await this.membershipsService.create(createMembershipDto); 
+    } catch (error) {
+      if (error instanceof EntityDoesNotExistError ) {
+        throw new BadRequestException(error.message);
+      }
+      else {
+        throw error;
+      }
+    }
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<ResponseMembershipDto[]> {
     return this.membershipsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<ResponseMembershipDto> {
     return this.membershipsService.findOne(+id);
   }
 
