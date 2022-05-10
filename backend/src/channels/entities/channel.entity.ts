@@ -1,12 +1,8 @@
 import { Karma } from '../../karmas/entities/karma.entity';
 import { Message } from '../../messages/entities/message.entity';
-import { User } from '../../users/entities/user.entity';
 import {
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
@@ -14,8 +10,8 @@ import {
 import { IsOptional } from 'class-validator';
 
 export enum ChannelType {
-  PRIVATE,
   PUBLIC,
+  PRIVATE,
   PROTECTED,
 }
 
@@ -37,32 +33,6 @@ export class Channel {
   @IsOptional()
   @Column({ nullable: true })
   password?: string;
-
-  @ManyToOne(() => User)
-  owner: User;
-  @RelationId((channel: Channel) => channel.owner)
-  ownerId: number;
-
-  @ManyToMany(() => User)
-  @JoinTable({
-    name: 'channel_admins_user',
-    joinColumn: {
-      name: 'channelId',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'userId',
-      referencedColumnName: 'id',
-    },
-  })
-  admins: User[];
-  @RelationId((channel: Channel) => channel.admins)
-  adminIds: number[];
-
-  @ManyToMany(() => User)
-  participants: User[];
-  @RelationId((channel: Channel) => channel.participants)
-  paricipantIds: number[];
 
   @OneToMany(() => Message, (message) => message.channel)
   messages: Message[];

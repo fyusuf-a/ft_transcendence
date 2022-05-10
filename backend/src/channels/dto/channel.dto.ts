@@ -2,7 +2,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsInt, IsNotEmpty, IsPositive } from "class-validator";
 import { Karma } from "../../karmas/entities/karma.entity";
 import { Message } from "../../messages/entities/message.entity";
-import { User } from "../../users/entities/user.entity";
 import { ChannelType } from "../entities/channel.entity";
 
 export class ChannelDto {
@@ -28,15 +27,6 @@ export class ChannelDto {
     description: 'A password for the channel',
   })
   password?: string;
-
-  owner: User;
-  ownerId: number;
-
-  admins: User[];
-  adminIds: number[];
-
-  participants: User[];
-  paricipantIds: number[];
 
   messages: Message[];
   messageIds: number[];

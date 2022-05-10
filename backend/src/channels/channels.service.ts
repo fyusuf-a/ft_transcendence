@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateChannelDto } from './dto/create-channel.dto';
+import { ResponseChannelDto } from './dto/response-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
 
@@ -24,7 +25,7 @@ export class ChannelsService {
     return this.channelRepository.findOne(id);
   }
 
-  update(id: number, updateChannelDto: UpdateChannelDto) {
+  update(id: number, updateChannelDto: UpdateChannelDto): Promise<UpdateResult> {
     return this.channelRepository.update(id, updateChannelDto);
   }
 

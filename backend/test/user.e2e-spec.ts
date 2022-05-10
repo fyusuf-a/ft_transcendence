@@ -147,4 +147,13 @@ describe('UsersController (e2e)', () => {
         '[{"id":1,"identity":"identity1","username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]}]',
       );
   });
+
+  it('/users/1/messages (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/users/')
+      .expect(200)
+      .expect(
+        '[{"id":1,"identity":"identity1","username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[],"blockedIds":[]}]',
+      );
+  });
 });

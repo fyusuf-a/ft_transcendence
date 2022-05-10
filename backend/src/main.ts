@@ -11,8 +11,9 @@ async function bootstrap() {
     .setDescription('Transcendence API')
     .setVersion('0.0.1')
     .addTag('users')
-    .addTag('messages')
     .addTag('channels')
+    .addTag('memberships')
+    .addTag('messages')
     .addTag('karmas')
     .build();
   const document = SwaggerModule.createDocument(app, config);

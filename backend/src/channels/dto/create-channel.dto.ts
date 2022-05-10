@@ -4,6 +4,5 @@ import { ChannelDto } from "./channel.dto";
 export class CreateChannelDto extends PickType(ChannelDto, [
   'name',
   'type',
-  'owner',
   'password'
 ]) { }
