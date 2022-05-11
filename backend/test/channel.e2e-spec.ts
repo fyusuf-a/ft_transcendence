@@ -123,4 +123,12 @@ describe('ChannelController (e2e)', () => {
       .expect(200)
       .expect('{"id":3,"name":"channel3","type":"private","password":null}');
   });
+
+  it('/channels/3 (DELETE)', () => {
+    return request(app.getHttpServer()).delete('/channels/3').expect(200);
+  });
+
+  it('/channels/3 (GET)', () => {
+    return request(app.getHttpServer()).get('/channels/3').expect(404);
+  });
 });

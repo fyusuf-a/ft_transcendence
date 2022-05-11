@@ -6,13 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { ResponseChannelDto } from './dto/response-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { Channel } from './entities/channel.entity';
 
 @ApiTags('channels')
 @Controller('channels')
@@ -33,8 +35,13 @@ export class ChannelsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
-    return this.channelsService.findOne(+id);
+  @ApiNotFoundResponse({ description: 'Channel Not Found' })
+  async findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
+    const channel: Channel = await this.channelsService.findOne(+id);
+    if (channel === undefined) {
+      throw new NotFoundException(`Channel #${id} not found`);
+    }
+    return channel;
   }
 
   @Patch(':id')
