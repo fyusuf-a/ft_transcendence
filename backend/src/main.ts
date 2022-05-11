@@ -16,7 +16,9 @@ async function bootstrap() {
     .addTag('messages')
     .addTag('karmas')
     .build();
-  const document = SwaggerModule.createDocument(app, config, {deepScanRoutes: true});
+  const document = SwaggerModule.createDocument(app, config, {
+    deepScanRoutes: true,
+  });
   SwaggerModule.setup('api', app, document);
 
   app.useGlobalPipes(

@@ -13,7 +13,6 @@ import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { ResponseChannelDto } from './dto/response-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { ChannelType } from './entities/channel.entity';
 
 @ApiTags('channels')
 @Controller('channels')
@@ -22,7 +21,9 @@ export class ChannelsController {
 
   @ApiBody({ type: CreateChannelDto })
   @Post()
-  create(@Body() createChannelDto: CreateChannelDto): Promise<CreateChannelDto> {
+  create(
+    @Body() createChannelDto: CreateChannelDto,
+  ): Promise<CreateChannelDto> {
     return this.channelsService.create(createChannelDto);
   }
 

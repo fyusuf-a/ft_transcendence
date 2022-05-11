@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
-import { Karma } from '../../karmas/entities/karma.entity';
-import { Message } from '../../messages/entities/message.entity';
 import { ChannelType } from '../entities/channel.entity';
 
 export class ChannelDto {

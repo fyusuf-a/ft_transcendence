@@ -1,18 +1,22 @@
-import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { Reflector } from "@nestjs/core";
-import { Test, TestingModule } from "@nestjs/testing";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ChannelsModule } from "src/channels/channels.module";
-import { Channel, ChannelType } from "src/channels/entities/channel.entity";
-import { Karma } from "src/karmas/entities/karma.entity";
-import { Membership } from "src/memberships/entities/membership.entity";
-import { Message } from "src/messages/entities/message.entity";
-import { User } from "src/users/entities/user.entity";
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChannelsModule } from 'src/channels/channels.module';
+import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
+import { Karma } from 'src/karmas/entities/karma.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
+import { Message } from 'src/messages/entities/message.entity';
+import { User } from 'src/users/entities/user.entity';
 import * as request from 'supertest';
-import { Connection } from "typeorm";
+import { Connection } from 'typeorm';
 
-describe ('ChannelController (e2e)', () => {
+describe('ChannelController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -63,8 +67,8 @@ describe ('ChannelController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/channels')
       .send({
-        "name": "channel1",
-        "type": ChannelType.PUBLIC,
+        name: 'channel1',
+        type: ChannelType.PUBLIC,
       })
       .expect(201);
   });

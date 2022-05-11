@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { Channel, ChannelType } from './entities/channel.entity';
+import { Channel } from './entities/channel.entity';
 
 @Injectable()
 export class ChannelsService {

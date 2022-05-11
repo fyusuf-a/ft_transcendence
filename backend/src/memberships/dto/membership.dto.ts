@@ -30,7 +30,11 @@ export class MembershipDto {
     enum: MembershipRoleType,
     enumName: 'MembershipRoleType',
     isArray: false,
-    examples: [MembershipRoleType.PARTICIPANT, MembershipRoleType.ADMIN, MembershipRoleType.OWNER],
+    examples: [
+      MembershipRoleType.PARTICIPANT,
+      MembershipRoleType.ADMIN,
+      MembershipRoleType.OWNER,
+    ],
   })
   @IsEnum(MembershipRoleType, { each: true })
   role: MembershipRoleType;
