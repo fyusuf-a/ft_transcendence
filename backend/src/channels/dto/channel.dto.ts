@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsPositive,
+} from 'class-validator';
 import { ChannelType } from '../entities/channel.entity';
 
 export class ChannelDto {
@@ -30,5 +36,7 @@ export class ChannelDto {
   @ApiProperty({
     description: 'A password for a PROTECTED channel',
   })
+  @IsOptional()
+  @IsNotEmpty()
   password?: string;
 }

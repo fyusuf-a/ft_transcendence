@@ -86,4 +86,41 @@ describe('ChannelController (e2e)', () => {
       .expect(200)
       .expect('{"id":1,"name":"channel1","type":"public","password":null}');
   });
+
+  it('/channels (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/channels')
+      .send({
+        name: 'channel2',
+        type: ChannelType.PROTECTED,
+        password: 'example',
+      })
+      .expect(201);
+  });
+
+  it('/channels/2 (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/channels/2')
+      .expect(200)
+      .expect(
+        '{"id":2,"name":"channel2","type":"protected","password":"example"}',
+      );
+  });
+
+  it('/channels (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/channels')
+      .send({
+        name: 'channel3',
+        type: ChannelType.PRIVATE,
+      })
+      .expect(201);
+  });
+
+  it('/channels/3 (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/channels/3')
+      .expect(200)
+      .expect('{"id":3,"name":"channel3","type":"private","password":null}');
+  });
 });
