@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,7 +9,8 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { ResponseMessageDto } from './dto/response-message.dto';
@@ -25,9 +27,18 @@ export class MessagesController {
   }
 
   @Post()
+  @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Record could not be created.' })
   create(@Body() createUserDto: CreateMessageDto): Promise<ResponseMessageDto> {
-    return this.messagesService.create(createUserDto);
+    try {
+      return this.messagesService.create(createUserDto);
+    } catch (error) {
+      if (error instanceof EntityDoesNotExistError) {
+        throw new BadRequestException(error.message);
+      } else {
+        throw error;
+      }
+    }
   }
 
   @Get(':id')
