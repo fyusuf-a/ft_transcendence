@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsPositive } from 'class-validator';
+import { IsEnum, IsInt, IsPositive } from 'class-validator';
 import { Channel } from '../../channels/entities/channel.entity';
 import { User } from '../../users/entities/user.entity';
 import { KarmaType } from '../entities/karma.entity';
@@ -42,6 +42,12 @@ export class KarmaDto {
 
   @ApiProperty({
     description: 'The karma type',
+    type: KarmaType,
+    enum: KarmaType,
+    enumName: 'KarmaType',
+    isArray: false,
+    examples: [KarmaType.MUTE, KarmaType.BAN],
   })
+  @IsEnum(KarmaType, { each: true })
   type: KarmaType;
 }

@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 
 export enum KarmaType {
-  MUTE,
-  BAN,
+  MUTE = "mute",
+  BAN = "ban",
 }
 
 @Entity()
