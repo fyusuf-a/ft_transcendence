@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Message {
@@ -16,11 +17,13 @@ export class Message {
   @Column()
   content: string;
 
+  @Exclude()
   @ManyToOne(() => User)
   sender: User;
   @RelationId((message: Message) => message.sender)
   senderId: number;
 
+  @Exclude()
   @ManyToOne(() => Channel, (channel) => channel.messages)
   channel: Channel;
   @RelationId((message: Message) => message.channel)
