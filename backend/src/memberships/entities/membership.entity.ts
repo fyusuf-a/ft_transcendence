@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
+  Unique,
 } from 'typeorm';
 import { Channel } from '../../channels/entities/channel.entity';
 import { Exclude } from 'class-transformer';
@@ -15,6 +16,7 @@ export enum MembershipRoleType {
   OWNER = 'owner',
 }
 
+@Unique(['channel', 'user'])
 @Entity()
 export class Membership {
   @PrimaryGeneratedColumn()
