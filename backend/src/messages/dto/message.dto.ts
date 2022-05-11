@@ -22,6 +22,9 @@ export class MessageDto {
   })
   sender: User;
 
+  @ApiProperty({
+    description: 'Id of the sender of the message',
+  })
   @IsPositive()
   @IsInt()
   senderId: number;
@@ -31,6 +34,9 @@ export class MessageDto {
   })
   channel: Channel;
 
+  @ApiProperty({
+    description: 'Id of the channel to which the message is sent',
+  })
   @IsPositive()
   @IsInt()
   channelId: number;
