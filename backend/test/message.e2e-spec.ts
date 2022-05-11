@@ -9,6 +9,7 @@ import { Karma } from '../src/karmas/entities/karma.entity';
 import { User } from '../src/users/entities/user.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 import { Membership } from '../src/memberships/entities/membership.entity';
+import { Connection } from 'typeorm';
 
 describe('MessagesController (e2e)', () => {
   let app: INestApplication;
@@ -37,6 +38,8 @@ describe('MessagesController (e2e)', () => {
   });
 
   afterAll(async () => {
+    const connection = app.get(Connection);
+    await connection.close();
     await app.close();
   });
 

@@ -7,20 +7,22 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { ResponseChannelDto } from './dto/response-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { ChannelType } from './entities/channel.entity';
 
 @ApiTags('channels')
 @Controller('channels')
 export class ChannelsController {
   constructor(private readonly channelsService: ChannelsService) {}
 
+  @ApiBody({ type: CreateChannelDto })
   @Post()
-  create(@Body() createChannelDto: CreateChannelDto) {
+  create(@Body() createChannelDto: CreateChannelDto): Promise<CreateChannelDto> {
     return this.channelsService.create(createChannelDto);
   }
 

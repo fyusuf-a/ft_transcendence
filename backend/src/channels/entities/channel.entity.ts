@@ -9,11 +9,12 @@ import {
 } from 'typeorm';
 import { IsOptional } from 'class-validator';
 import { Membership } from '../../memberships/entities/membership.entity';
+import { Exclude } from 'class-transformer';
 
 export enum ChannelType {
-  PUBLIC,
-  PRIVATE,
-  PROTECTED,
+  PUBLIC = 'public',
+  PROTECTED = 'protected',
+  PRIVATE = 'private',
 }
 
 @Entity()
@@ -35,13 +36,17 @@ export class Channel {
   @Column({ nullable: true })
   password?: string;
 
+  @Exclude()
   @OneToMany(() => Membership, (membership) => membership.channel)
   memberships: Membership[];
+  @Exclude()
   @RelationId((channel: Channel) => channel.memberships)
   membershipIds: number[];
 
+  @Exclude()
   @OneToMany(() => Message, (message) => message.channel)
   messages: Message[];
+  @Exclude()
   @RelationId((channel: Channel) => channel.messages)
   messageIds: number[];
 

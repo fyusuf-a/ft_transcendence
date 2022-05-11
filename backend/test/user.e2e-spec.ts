@@ -14,6 +14,7 @@ import { Message } from '../src/messages/entities/message.entity';
 import { Karma } from '../src/karmas/entities/karma.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 import { Reflector } from '@nestjs/core';
+import { Connection } from 'typeorm';
 // import { Repository } from 'typeorm';
 
 describe('UsersController (e2e)', () => {
@@ -56,6 +57,8 @@ describe('UsersController (e2e)', () => {
   });
 
   afterAll(async () => {
+    const connection = app.get(Connection);
+    await connection.close();
     await app.close();
   });
 

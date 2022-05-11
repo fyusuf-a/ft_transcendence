@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
 import { Karma } from '../../karmas/entities/karma.entity';
 import { Message } from '../../messages/entities/message.entity';
 import { ChannelType } from '../entities/channel.entity';
@@ -20,21 +20,17 @@ export class ChannelDto {
 
   @ApiProperty({
     description: 'The channel type',
+    type: ChannelType,
+    enum: ChannelType,
+    enumName: 'ChannelType',
+    isArray: false,
+    examples: [ChannelType.PUBLIC, ChannelType.PROTECTED, ChannelType.PRIVATE],
   })
+  @IsEnum(ChannelType, { each: true })
   type: ChannelType;
 
   @ApiProperty({
-    description: 'The ids of all associated Memberships',
-  })
-  membershipIds: number[];
-
-  @ApiProperty({
-    description: 'A password for the channel',
+    description: 'A password for a PROTECTED channel',
   })
   password?: string;
-
-  messages: Message[];
-  messageIds: number[];
-
-  karmas: Karma[];
 }

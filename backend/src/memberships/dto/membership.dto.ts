@@ -26,7 +26,12 @@ export class MembershipDto {
 
   @ApiProperty({
     description: 'The role of the associated user in the associated channel',
+    type: MembershipRoleType,
+    enum: MembershipRoleType,
+    enumName: 'MembershipRoleType',
+    isArray: false,
+    examples: [MembershipRoleType.PARTICIPANT, MembershipRoleType.ADMIN, MembershipRoleType.OWNER],
   })
-  @IsEnum(MembershipRoleType)
+  @IsEnum(MembershipRoleType, { each: true })
   role: MembershipRoleType;
 }

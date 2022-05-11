@@ -8,11 +8,12 @@ import { Channel } from './../src/channels/entities/channel.entity';
 import { Message } from './../src/messages/entities/message.entity';
 import { Karma } from './../src/karmas/entities/karma.entity';
 import { Membership } from './../src/memberships/entities/membership.entity';
+import { Connection } from 'typeorm';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         AppModule,
@@ -32,6 +33,12 @@ describe('AppController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
+
+  afterAll(async () => {
+    const connection = app.get(Connection);
+    await connection.close();
+    await app.close();
   });
 
   it('/ (GET)', () => {

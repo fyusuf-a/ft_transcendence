@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
-import { Channel } from './entities/channel.entity';
+import { Channel, ChannelType } from './entities/channel.entity';
 
 @Injectable()
 export class ChannelsService {
@@ -13,7 +14,11 @@ export class ChannelsService {
   ) {}
 
   create(createChannelDto: CreateChannelDto) {
-    return this.channelRepository.save(createChannelDto);
+    const channel: Channel = new Channel();
+    channel.name = createChannelDto.name;
+    channel.type = createChannelDto.type;
+    channel.password = createChannelDto.password;
+    return this.channelRepository.save(channel);
   }
 
   findAll() {
