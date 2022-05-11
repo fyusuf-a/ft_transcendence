@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ChannelsModule } from 'src/channels/channels.module';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import { Karma } from 'src/karmas/entities/karma.entity';
 import {
@@ -16,6 +17,7 @@ import {
 import { MembershipsModule } from 'src/memberships/memberships.module';
 import { Message } from 'src/messages/entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
+import { UsersModule } from 'src/users/users.module';
 import * as request from 'supertest';
 import { Connection } from 'typeorm';
 
@@ -26,6 +28,8 @@ describe('MembershipController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         MembershipsModule,
+        ChannelsModule,
+        UsersModule,
         ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',
@@ -59,22 +63,41 @@ describe('MembershipController (e2e)', () => {
     await app.close();
   });
 
-  it('Subscribe users to channel', () => {
-    request(app.getHttpServer())
+  it('Create user1', () => {
+    return request(app.getHttpServer())
       .post('/users/')
-      .send({ identity: 'ident1', username: 'user1' });
-    request(app.getHttpServer())
+      .send({ identity: 'ident1', username: 'user1' })
+      .expect(201);
+  });
+  it('Create user2', () => {
+    return request(app.getHttpServer())
       .post('/users/')
-      .send({ identity: 'ident2', username: 'user2' });
-    request(app.getHttpServer())
+      .send({ identity: 'ident2', username: 'user2' })
+      .expect(201);
+  });
+  it('Create Channel', () => {
+    return request(app.getHttpServer())
       .post('/channels/')
-      .send({ name: 'channel1', type: ChannelType.PUBLIC });
-    request(app.getHttpServer())
+      .send({ name: 'channel1', type: ChannelType.PUBLIC })
+      .expect(201);
+  });
+  it('Subscribe user1 to channel', () => {
+    return request(app.getHttpServer())
       .post('/memberships/')
-      .send({ channelId: 1, userId: 1, role: MembershipRoleType.OWNER });
-    request(app.getHttpServer())
+      .send({ channelId: 1, userId: 1, role: MembershipRoleType.OWNER })
+      .expect(201);
+  });
+  it('Subscribe user2 to channel', () => {
+    return request(app.getHttpServer())
       .post('/memberships/')
       .send({ channelId: 1, userId: 2, role: MembershipRoleType.ADMIN })
       .expect(201);
+  });
+
+  it('Subscribe user2 to a channel a second time', () => {
+    return request(app.getHttpServer())
+      .post('/memberships/')
+      .send({ channelId: 1, userId: 2, role: MembershipRoleType.PARTICIPANT })
+      .expect(500);
   });
 });
