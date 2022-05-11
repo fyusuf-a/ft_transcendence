@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 export enum KarmaType {
   MUTE = 'mute',
@@ -18,11 +19,13 @@ export class Karma {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @ManyToOne(() => Channel, (channel) => channel.karmas)
   channel: Channel;
   @RelationId((karma: Karma) => karma.channel)
   channelId: number;
 
+  @Exclude()
   @ManyToOne(() => User)
   user: User;
   @RelationId((karma: Karma) => karma.user)
