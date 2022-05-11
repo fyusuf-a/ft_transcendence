@@ -100,4 +100,16 @@ describe('MembershipController (e2e)', () => {
       .send({ channelId: 1, userId: 2, role: MembershipRoleType.PARTICIPANT })
       .expect(500);
   });
+  it('Create Channel2', () => {
+    return request(app.getHttpServer())
+      .post('/channels/')
+      .send({ name: 'channel2', type: ChannelType.PUBLIC })
+      .expect(201);
+  });
+  it('Subscribe user2 to channel2', () => {
+    return request(app.getHttpServer())
+      .post('/memberships/')
+      .send({ channelId: 2, userId: 2, role: MembershipRoleType.PARTICIPANT })
+      .expect(201);
+  });
 });
