@@ -1,18 +1,26 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <div>
+    <the-app-bar v-if="connected"
+                       @toggle-navigation-drawer="navigationDrawerVisible=!navigationDrawerVisible"/>
+    <the-navigation-drawer v-if="connected" :visible="navigationDrawerVisible"/>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import TheNavigationDrawer from "../components/UI/TheNavigationDrawer.vue";
+import TheAppBar from "../components/UI/TheAppBar.vue";
 
 export default Vue.extend({
-  name: "HomeView",
+  name: "Home",
+
   components: {
-    HelloWorld,
+    "the-app-bar": TheAppBar,
+    TheNavigationDrawer,
   },
+  data: () => ({
+    navigationDrawerVisible: true,
+    connected: true,
+  }),
 });
 </script>
