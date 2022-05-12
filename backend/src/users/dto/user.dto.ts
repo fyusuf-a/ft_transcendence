@@ -51,12 +51,4 @@ export class UserDto {
   @IsArray()
   @IsInt()
   membershipIds: number[];
-
-  @IsArray()
-  @IsInt()
-  friendIds: number[];
-
-  @IsArray()
-  @IsInt()
-  blockedIds: number[];
 }

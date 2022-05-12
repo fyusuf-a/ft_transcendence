@@ -11,6 +11,7 @@ async function bootstrap() {
     .setDescription('Transcendence API')
     .setVersion('0.0.1')
     .addTag('users')
+    .addTag('relationships')
     .addTag('channels')
     .addTag('memberships')
     .addTag('messages')

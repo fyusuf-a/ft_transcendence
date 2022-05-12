@@ -6,8 +6,4 @@ export class mockUserEntity {
   wins = 0;
   losses = 0;
   rating = 0;
-  friends = [];
-  friendIds = [];
-  blocked = [];
-  blockedIds = [];
 }

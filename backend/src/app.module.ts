@@ -13,6 +13,8 @@ import { Karma } from './karmas/entities/karma.entity';
 import { KarmasModule } from './karmas/karmas.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { Membership } from './memberships/entities/membership.entity';
+import { RelationshipsModule } from './relationships/relationships.module';
+import { Relationship } from './relationships/entities/relationship.entity';
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { Membership } from './memberships/entities/membership.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Message, Channel, Karma, Membership],
+      entities: [User, Message, Channel, Karma, Membership, Relationship],
       synchronize: true,
     }),
     UsersModule,
@@ -32,6 +34,7 @@ import { Membership } from './memberships/entities/membership.entity';
     ChannelsModule,
     KarmasModule,
     MembershipsModule,
+    RelationshipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

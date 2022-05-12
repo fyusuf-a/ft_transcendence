@@ -81,7 +81,7 @@ describe('UsersController (e2e)', () => {
       .get('/users/')
       .expect(200)
       .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}]',
+        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
       );
   });
 
@@ -90,7 +90,7 @@ describe('UsersController (e2e)', () => {
       .get('/users/1')
       .expect(200)
       .expect(
-        '{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}',
+        '{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}',
       );
   });
 
@@ -113,7 +113,7 @@ describe('UsersController (e2e)', () => {
       .get('/users/2')
       .expect(200)
       .expect(
-        '{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}',
+        '{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0}',
       );
   });
 
@@ -122,7 +122,7 @@ describe('UsersController (e2e)', () => {
       .get('/users/')
       .expect(200)
       .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]},{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}]',
+        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0},{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0}]',
       );
   });
 
@@ -150,7 +150,7 @@ describe('UsersController (e2e)', () => {
       .get('/users/2')
       .expect(200)
       .expect(
-        '{"id":2,"username":"username-two","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}',
+        '{"id":2,"username":"username-two","avatar":null,"wins":0,"losses":0,"rating":0}',
       );
   });
 
@@ -167,7 +167,7 @@ describe('UsersController (e2e)', () => {
       .get('/users/')
       .expect(200)
       .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}]',
+        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
       );
   });
 
@@ -176,7 +176,7 @@ describe('UsersController (e2e)', () => {
   //     .get('/users/')
   //     .expect(200)
   //     .expect(
-  //       '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0,"friendIds":[]}]',
+  //       '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
   //     );
   // });
 });
