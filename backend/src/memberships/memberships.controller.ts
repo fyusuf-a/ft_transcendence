@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { MembershipsService } from './memberships.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';
@@ -14,6 +15,7 @@ import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ResponseMembershipDto } from './dto/response-membership.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
+import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @ApiTags('memberships')
 @Controller('memberships')
@@ -36,8 +38,10 @@ export class MembershipsController {
   }
 
   @Get()
-  findAll(): Promise<ResponseMembershipDto[]> {
-    return this.membershipsService.findAll();
+  findAll(
+    @Query() query?: QueryMembershipDto,
+  ): Promise<ResponseMembershipDto[]> {
+    return this.membershipsService.findAll(query);
   }
 
   @Get(':id')

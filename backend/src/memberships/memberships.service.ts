@@ -7,6 +7,7 @@ import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { Membership } from './entities/membership.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { User } from 'src/users/entities/user.entity';
+import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @Injectable()
 export class MembershipsService {
@@ -47,8 +48,8 @@ export class MembershipsService {
     return this.membershipRepository.save(membership);
   }
 
-  findAll() {
-    return this.membershipRepository.find();
+  findAll(query?: QueryMembershipDto) {
+    return this.membershipRepository.find({ where: query });
   }
 
   findOne(id: number) {

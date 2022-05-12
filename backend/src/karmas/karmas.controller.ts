@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { KarmasService } from './karmas.service';
 import { CreateKarmaDto } from './dto/create-karma.dto';
@@ -14,6 +15,7 @@ import { UpdateKarmaDto } from './dto/update-karma.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ResponseKarmaDto } from './dto/response-karma.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
+import { QueryKarmaDto } from './dto/query-karma.dto';
 
 @ApiTags('karmas')
 @Controller('karmas')
@@ -34,12 +36,12 @@ export class KarmasController {
   }
 
   @Get()
-  findAll() {
-    return this.karmasService.findAll();
+  findAll(@Query() query?: QueryKarmaDto): Promise<ResponseKarmaDto[]> {
+    return this.karmasService.findAll(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<ResponseKarmaDto> {
     return this.karmasService.findOne(+id);
   }
 

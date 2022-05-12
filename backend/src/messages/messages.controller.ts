@@ -8,11 +8,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { QueryMessageDto } from './dto/query-messages.dto';
 import { ResponseMessageDto } from './dto/response-message.dto';
 import { MessagesService } from './messages.service';
 
@@ -22,8 +24,8 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  findAll(): Promise<ResponseMessageDto[]> {
-    return this.messagesService.findAll();
+  findAll(@Query() query?: QueryMessageDto): Promise<ResponseMessageDto[]> {
+    return this.messagesService.findAll(query);
   }
 
   @Post()

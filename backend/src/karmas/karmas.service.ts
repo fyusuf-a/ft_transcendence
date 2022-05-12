@@ -5,6 +5,7 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateKarmaDto } from './dto/create-karma.dto';
+import { QueryKarmaDto } from './dto/query-karma.dto';
 import { UpdateKarmaDto } from './dto/update-karma.dto';
 import { Karma } from './entities/karma.entity';
 
@@ -37,8 +38,8 @@ export class KarmasService {
     return this.karmaRepository.save(karma);
   }
 
-  findAll() {
-    return this.karmaRepository.find();
+  findAll(query?: QueryKarmaDto) {
+    return this.karmaRepository.find({ where: query });
   }
 
   findOne(id: number) {

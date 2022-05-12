@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsPositive } from 'class-validator';
-import { Channel } from '../../channels/entities/channel.entity';
-import { User } from '../../users/entities/user.entity';
+import { IsDateString, IsEnum, IsInt, IsPositive } from 'class-validator';
 import { KarmaType } from '../entities/karma.entity';
 
 export class KarmaDto {
@@ -13,31 +11,29 @@ export class KarmaDto {
   id: number;
 
   @ApiProperty({
-    description: 'The associated channel',
-  })
-  channel: Channel;
-  @ApiProperty({
     description: "The associated channel's id",
   })
+  @IsInt()
+  @IsPositive()
   channelId: number;
 
   @ApiProperty({
-    description: 'The affected user',
-  })
-  user: User;
-  @ApiProperty({
     description: "The associated user's id",
   })
+  @IsInt()
+  @IsPositive()
   userId: number;
 
   @ApiProperty({
     description: 'Start time of the karma',
   })
+  @IsDateString()
   start: Date;
 
   @ApiProperty({
     description: 'End time of the karma',
   })
+  @IsDateString()
   end: Date;
 
   @ApiProperty({

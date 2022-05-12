@@ -5,6 +5,7 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { QueryMessageDto } from './dto/query-messages.dto';
 import { Message } from './entities/message.entity';
 
 @Injectable()
@@ -18,8 +19,8 @@ export class MessagesService {
     private channelsRepository: Repository<Channel>,
   ) {}
 
-  findAll(): Promise<Message[]> {
-    return this.messagesRepository.find();
+  findAll(query?: QueryMessageDto): Promise<Message[]> {
+    return this.messagesRepository.find({ where: query });
   }
 
   findOne(id: number): Promise<Message> {

@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
+import { QueryChannelDto } from './dto/query-channel.dto';
 import { ResponseChannelDto } from './dto/response-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
@@ -30,8 +32,8 @@ export class ChannelsController {
   }
 
   @Get()
-  findAll(): Promise<ResponseChannelDto[]> {
-    return this.channelsService.findAll();
+  findAll(@Query() query?: QueryChannelDto): Promise<ResponseChannelDto[]> {
+    return this.channelsService.findAll(query);
   }
 
   @Get(':id')

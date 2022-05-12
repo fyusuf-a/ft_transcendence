@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateChannelDto } from './dto/create-channel.dto';
+import { QueryChannelDto } from './dto/query-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
 
@@ -20,8 +21,8 @@ export class ChannelsService {
     return this.channelRepository.save(channel);
   }
 
-  findAll() {
-    return this.channelRepository.find();
+  findAll(query?: QueryChannelDto) {
+    return this.channelRepository.find({ where: query });
   }
 
   findOne(id: number) {

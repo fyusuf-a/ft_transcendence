@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ResponseUserDto } from './dto/response-user.dto';
@@ -15,6 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { QueryUserDto } from './dto/query-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -22,8 +24,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  async findAll(): Promise<ResponseUserDto[]> {
-    return await this.usersService.findAll();
+  async findAll(@Query() query?: QueryUserDto): Promise<ResponseUserDto[]> {
+    return await this.usersService.findAll(query);
   }
 
   @Post()
