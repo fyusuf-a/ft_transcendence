@@ -8,14 +8,18 @@ import { MockRepository } from 'src/common/mocks/repository.mock';
 import UserRepository from './repository/user.repository';
 import { PageDto } from '../common/dto/page.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersController } from './users.controller';
 
 const userNumber = 2;
+const mockConfig = () => ({ get: () => undefined });
 
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ isGlobal: true })],
       providers: [
         UsersService,
         {
@@ -25,7 +29,12 @@ describe('UsersService', () => {
             userNumber,
           ),
         },
+        {
+          provide: ConfigService,
+          useFactory: mockConfig,
+        },
       ],
+      controllers: [UsersController],
     }).compile();
 
     service = module.get<UsersService>(UsersService);

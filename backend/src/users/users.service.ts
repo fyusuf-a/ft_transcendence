@@ -1,19 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  StreamableFile,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { createReadStream } from 'fs';
+import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import UserRepository from './repository/user.repository';
+import * as fs from 'fs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository,
+    private configService: ConfigService,
   ) {}
 
   async findAll(
@@ -43,5 +52,27 @@ export class UsersService {
 
   remove(id: number): Promise<DeleteResult> {
     return this.usersRepository.delete(id);
+  }
+
+  updateAvatar(userId: number, filepath: string) {
+    return this.usersRepository.update(userId, { avatar: filepath });
+  }
+
+  async getAvatar(id: number) {
+    const user: User = await this.usersRepository.findOne(id);
+    if (user === undefined) {
+      throw new EntityDoesNotExistError(`User #${id}`);
+    }
+    let filepath = user.avatar;
+    if (filepath === null || !fs.existsSync(filepath)) {
+      filepath = this.configService.get<string>('DEFAULT_AVATAR');
+      if (!fs.existsSync(filepath)) {
+        throw new InternalServerErrorException(`Default Avatar Does Not Exist`);
+      }
+    }
+    const splitPath = filepath.split('.');
+    const ext = splitPath[splitPath.length - 1];
+    const stream = createReadStream(filepath);
+    return { fileStream: new StreamableFile(stream), ext: ext };
   }
 }
