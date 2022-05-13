@@ -12,12 +12,13 @@ import {
 import { RelationshipsService } from './relationships.service';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { UpdateRelationshipDto } from './dto/update-relationship.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ResponseRelationshipDto } from './dto/response-relationship.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { QueryRelationshipDto } from './dto/query-relationship.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 
+@ApiBearerAuth()
 @ApiTags('relationships')
 @Controller('relationships')
 export class RelationshipsController {

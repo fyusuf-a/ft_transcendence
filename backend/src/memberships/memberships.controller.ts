@@ -12,11 +12,12 @@ import {
 import { MembershipsService } from './memberships.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ResponseMembershipDto } from './dto/response-membership.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { QueryMembershipDto } from './dto/query-membership.dto';
 
+@ApiBearerAuth()
 @ApiTags('memberships')
 @Controller('memberships')
 export class MembershipsController {

@@ -9,7 +9,12 @@ import {
   NotFoundException,
   Query,
 } from '@nestjs/common';
-import { ApiBody, ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -18,6 +23,7 @@ import { ResponseChannelDto } from './dto/response-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { Channel } from './entities/channel.entity';
 
+@ApiBearerAuth()
 @ApiTags('channels')
 @Controller('channels')
 export class ChannelsController {
