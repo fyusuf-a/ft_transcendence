@@ -30,7 +30,7 @@ services:
       - 8080:3000
     working_dir: /app
     volumes:
-        - ./backend:/app
+      - ./backend:/app
     environment:
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
@@ -44,11 +44,13 @@ services:
     build:
         context: ./frontend
         target: ${FRONTEND_TARGET:-production}
+        args:
+            NODE_IMAGE: ${NODE_IMAGE}
     image: vue
     ports:
       - 8000:80
     volumes:
-        - ./frontend:/app
+      - ./frontend:/app
     depends_on:
       - db
 

@@ -1,11 +1,11 @@
-FROM node:lts-alpine as development
+ARG NODE_IMAGE=lts-alpine
+FROM node:$NODE_IMAGE as development
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
 EXPOSE 80
-CMD npm run serve -- --port 80
+CMD npm install && \
+	npm run serve -- --port 80
 
-FROM node:lts-alpine as pre-production
+FROM node:$NODE_IMAGE as pre-production
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
