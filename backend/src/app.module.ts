@@ -3,6 +3,18 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
+import { MessagesModule } from './messages/messages.module';
+import { Message } from './messages/entities/message.entity';
+import { ChannelsModule } from './channels/channels.module';
+import { Channel } from './channels/entities/channel.entity';
+import { Karma } from './karmas/entities/karma.entity';
+import { KarmasModule } from './karmas/karmas.module';
+import { MembershipsModule } from './memberships/memberships.module';
+import { Membership } from './memberships/entities/membership.entity';
+import { RelationshipsModule } from './relationships/relationships.module';
+import { Relationship } from './relationships/entities/relationship.entity';
 
 @Module({
   imports: [
@@ -14,9 +26,15 @@ import { AppService } from './app.service';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      entities: [User, Message, Channel, Karma, Membership, Relationship],
       synchronize: true,
     }),
+    UsersModule,
+    MessagesModule,
+    ChannelsModule,
+    KarmasModule,
+    MembershipsModule,
+    RelationshipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
