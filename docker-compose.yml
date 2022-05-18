@@ -1,4 +1,3 @@
-# Use postgres/example user/password credentials
 version: '3.4'
 
 services:
@@ -24,7 +23,7 @@ services:
     build:
         context: ./backend
         args:
-            WATCH: 1
+            NODE_IMAGE: ${NODE_IMAGE}
     image: nest
     ports:
       - 8080:3000
