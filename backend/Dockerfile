@@ -1,19 +1,12 @@
-FROM node:18-alpine
-
-# Set container working directory
+ARG NODE_IMAGE=lts-alpine
+FROM node:$NODE_IMAGE
 WORKDIR /app
+EXPOSE 3000
 
 RUN apk update
 RUN apk upgrade
 RUN apk add bash
 
-RUN npm install -g npm@8.8.0
-
-EXPOSE 3000
-
 COPY ./docker-entrypoint.sh /tmp/
-
-ARG WATCH=1
-ENV WATCH=$WATCH
 
 CMD ["bash", "/tmp/docker-entrypoint.sh"]
