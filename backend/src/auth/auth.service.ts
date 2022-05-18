@@ -1,5 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 
@@ -11,15 +12,16 @@ export class AuthService {
   ) {}
 
   async login(userDto: LoginUserDto) {
-    const users = await this.usersService.findAll({
+    const userList = await this.usersService.findAll({
       username: userDto.username,
     });
-    if (users.length === 1) {
-      const payload = { username: users[0].username };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
+    if (userList.length !== 1) {
+      throw new EntityDoesNotExistError(`User: ${userDto.username}`);
     }
-    throw new UnauthorizedException(`Could not log in as ${userDto.username}`);
+    const user = userList[0];
+    const payload = { id: user.id, username: user.username };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
