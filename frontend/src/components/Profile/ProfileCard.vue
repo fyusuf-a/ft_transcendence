@@ -1,5 +1,5 @@
 <template>
-  <v-card :color="color" class="ma-y8" elevation="0" :click="doNothing">
+  <v-card :color="color" class="ma-y8" elevation="0">
     <v-list-item>
       <v-list-item-avatar>
         <v-img :src="profile.picture" :alt="profile.pseudo" />
@@ -24,7 +24,6 @@ export default {
     },
   },
   methods: {
-    doNothing() {},
   },
 };
 </script>

@@ -21,7 +21,8 @@ import NotificationIcon from "@/components/Notifications/NotificationIcon.vue";
 import ProfileCard from "@/components/Profile/ProfileCard.vue";
 
 export default {
-  events: ["toggle-navigation-drawer"],
+  props: ["value"],
+  events: ["input"],
   components: {
     "profile-card": ProfileCard,
     "notification-icon": NotificationIcon,
@@ -37,7 +38,7 @@ export default {
   },
   methods: {
     toggleNavigationDrawer() {
-      this.$emit("toggle-navigation-drawer");
+      this.$emit("input", !this.value);
     },
   },
 };

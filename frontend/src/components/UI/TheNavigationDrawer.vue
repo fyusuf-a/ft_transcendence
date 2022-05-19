@@ -1,13 +1,19 @@
 <template>
-  <v-navigation-drawer mini-variant mini-variant-width="56" expand-on-hover 
-                                                        color="secondary"
-                                                        clipped app
-                                                        v-model="expanded">
+  <v-navigation-drawer
+    mini-variant
+    mini-variant-width="56"
+    expand-on-hover
+    color="secondary"
+    clipped
+    app
+    @input="emitModelValue"
+    :value="value"
+  >
     <v-divider></v-divider>
 
     <v-list dense nav>
       <v-list-item-group>
-        <v-list-item v-for="item in items" :key="item.title">
+        <v-list-item v-for="item in items" :key="item.title" :to="item.route">
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -24,19 +30,41 @@
 <script>
 export default {
   props: {
-    visible: {
+    value: {
       type: Boolean,
-      default: true,
+      default: false,
+    },
+  },
+  emits: ["input"],
+  methods: {
+    emitModelValue(value) {
+      this.$emit("input", value);
     },
   },
   data() {
     return {
       expanded: this.visible,
       items: [
-        { title: "Profile", icon: "mdi-account" },
-        { title: "Play", icon: "mdi-gamepad-variant" },
-        { title: "Chat", icon: "mdi-forum" },
-        { title: "About", icon: "mdi-information-outline" },
+        {
+          title: "Profile",
+          icon: "mdi-account",
+          route: "/profile",
+        },
+        {
+          title: "Play",
+          icon: "mdi-gamepad-variant",
+          route: "/game",
+        },
+        {
+          title: "Chat",
+          icon: "mdi-forum",
+          route: "/chat",
+        },
+        {
+          title: "About",
+          icon: "mdi-information-outline",
+          route: "/about",
+        },
       ],
       links: ["Home", "Contacts", "Settings"],
     };
