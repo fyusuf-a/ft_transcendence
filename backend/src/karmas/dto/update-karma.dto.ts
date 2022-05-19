@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/swagger';
+import { PartialType, PickType } from '@nestjs/swagger';
 import { CreateKarmaDto } from './create-karma.dto';
 
-export class UpdateKarmaDto extends PartialType(CreateKarmaDto) {}
+export class UpdateKarmaDto extends PickType(PartialType(CreateKarmaDto), [
+  'start',
+  'end',
+  'type',
+]) {}
