@@ -1,9 +1,7 @@
 <template>
   <div>
     <div v-if="authentificated">
-      <the-app-bar
-        v-model="navigationDrawerVisible"
-      />
+      <the-app-bar v-model="navigationDrawerVisible" />
       <the-navigation-drawer v-model="navigationDrawerVisible" />
       <router-view></router-view>
     </div>

@@ -23,8 +23,7 @@ export default {
       required: true,
     },
   },
-  methods: {
-  },
+  methods: {},
 };
 </script>
 

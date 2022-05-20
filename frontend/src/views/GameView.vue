@@ -1,5 +1,3 @@
 <template>
-  <div>
-    Game
-  </div>
+  <div>Game</div>
 </template>

@@ -1,4 +1,4 @@
-export default function auth({ next, router }: { next: any, router: any }) {
+export default function auth({ next, router }: { next: any; router: any }) {
   // check if user is authenticated
   const authenticated = false;
   if (!authenticated) {
