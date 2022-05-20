@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+# linting if a file has changed in directory ./frontend
+git diff --exit-code frontend > /dev/null
+if [ $? -eq 1 ]; then
+	cd frontend
+	npm run lint
+	git add -u
+fi

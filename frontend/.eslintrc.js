@@ -18,6 +18,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ["src/views/**/*.vue"],
+      rules: {
+        "vue/multi-word-component-names": 0,
+      },
+    },
+    {
       files: [
         "**/__tests__/*.{j,t}s?(x)",
         "**/tests/unit/**/*.spec.{j,t}s?(x)",
