@@ -3,5 +3,5 @@ import { CreateMembershipDto } from './create-membership.dto';
 
 export class UpdateMembershipDto extends PickType(
   PartialType(CreateMembershipDto),
-  ['role'],
+  ['role', 'mutedUntil', 'bannedUntil'],
 ) {}

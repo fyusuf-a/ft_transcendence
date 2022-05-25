@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
+import { IsDate, IsEnum, IsNumberString, IsOptional } from 'class-validator';
 import { MembershipRoleType } from '../entities/membership.entity';
 
 export class QueryMembershipDto {
@@ -23,4 +23,18 @@ export class QueryMembershipDto {
   @IsOptional()
   @IsNumberString()
   user?: string;
+
+  @ApiPropertyOptional({
+    description: 'Datetime that mute expires',
+  })
+  @IsOptional()
+  @IsDate()
+  mutedUntil: Date;
+
+  @ApiPropertyOptional({
+    description: 'Datetime that ban expires',
+  })
+  @IsOptional()
+  @IsDate()
+  bannedUntil: Date;
 }

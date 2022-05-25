@@ -5,7 +5,6 @@ import { MessagesModule } from './../src/messages/messages.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Message } from './../src/messages/entities/message.entity';
-import { Karma } from '../src/karmas/entities/karma.entity';
 import { User } from '../src/users/entities/user.entity';
 import { Channel, ChannelType } from '../src/channels/entities/channel.entity';
 import { Membership } from '../src/memberships/entities/membership.entity';
@@ -30,7 +29,7 @@ describe('MessagesController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [Message, Channel, Karma, User, Membership],
+          entities: [Message, Channel, User, Membership],
           synchronize: true,
           dropSchema: true,
         }),

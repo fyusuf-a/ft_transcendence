@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './../src/users/entities/user.entity';
 import { Channel } from './../src/channels/entities/channel.entity';
 import { Message } from './../src/messages/entities/message.entity';
-import { Karma } from './../src/karmas/entities/karma.entity';
 import { Membership } from './../src/memberships/entities/membership.entity';
 import { Connection } from 'typeorm';
 
@@ -24,7 +23,7 @@ describe('AppController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [User, Channel, Message, Karma, Membership],
+          entities: [User, Channel, Message, Membership],
           synchronize: true,
           dropSchema: true,
         }),

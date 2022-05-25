@@ -40,4 +40,10 @@ export class Membership {
     default: MembershipRoleType.PARTICIPANT,
   })
   role: MembershipRoleType;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  mutedUntil: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  bannedUntil: Date;
 }
