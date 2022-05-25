@@ -10,12 +10,14 @@ async function bootstrap() {
     .setTitle('Transcendence')
     .setDescription('Transcendence API')
     .setVersion('0.0.1')
+    .addTag('auth')
     .addTag('users')
     .addTag('relationships')
     .addTag('channels')
     .addTag('memberships')
     .addTag('messages')
     .addTag('karmas')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,

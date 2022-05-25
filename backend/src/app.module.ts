@@ -15,6 +15,9 @@ import { MembershipsModule } from './memberships/memberships.module';
 import { Membership } from './memberships/entities/membership.entity';
 import { RelationshipsModule } from './relationships/relationships.module';
 import { Relationship } from './relationships/entities/relationship.entity';
+import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -35,8 +38,15 @@ import { Relationship } from './relationships/entities/relationship.entity';
     KarmasModule,
     MembershipsModule,
     RelationshipsModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

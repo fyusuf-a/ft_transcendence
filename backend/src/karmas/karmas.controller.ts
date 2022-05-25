@@ -12,11 +12,12 @@ import {
 import { KarmasService } from './karmas.service';
 import { CreateKarmaDto } from './dto/create-karma.dto';
 import { UpdateKarmaDto } from './dto/update-karma.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ResponseKarmaDto } from './dto/response-karma.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { QueryKarmaDto } from './dto/query-karma.dto';
 
+@ApiBearerAuth()
 @ApiTags('karmas')
 @Controller('karmas')
 export class KarmasController {

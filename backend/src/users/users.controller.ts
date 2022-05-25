@@ -15,25 +15,29 @@ import { ResponseUserDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { QueryUserDto } from './dto/query-user.dto';
+import { Public } from 'src/auth/auth.public.decorator';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiBearerAuth()
   @Get()
   async findAll(@Query() query?: QueryUserDto): Promise<ResponseUserDto[]> {
     return await this.usersService.findAll(query);
   }
 
+  @Public()
   @Post()
   @ApiResponse({ status: 500, description: 'Record could not be created.' })
   create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     return this.usersService.create(createUserDto);
   }
 
+  @ApiBearerAuth()
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -42,6 +46,7 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @ApiBearerAuth()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
@@ -52,6 +57,7 @@ export class UsersController {
     return user;
   }
 
+  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.usersService.remove(+id);

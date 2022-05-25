@@ -10,7 +10,12 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -18,6 +23,7 @@ import { QueryMessageDto } from './dto/query-messages.dto';
 import { ResponseMessageDto } from './dto/response-message.dto';
 import { MessagesService } from './messages.service';
 
+@ApiBearerAuth()
 @ApiTags('messages')
 @Controller('messages')
 export class MessagesController {
