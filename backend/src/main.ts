@@ -14,7 +14,7 @@ async function bootstrap() {
     .addTag('users')
     .addTag('relationships')
     .addTag('channels')
-    .addTag('memberships')
+    .addTag('channel memberships')
     .addTag('messages')
     .addTag('karmas')
     .addBearerAuth()

@@ -19,7 +19,7 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @ApiBearerAuth()
-@ApiTags('memberships')
+@ApiTags('channel memberships')
 @Controller('memberships')
 export class MembershipsController {
   constructor(private readonly membershipsService: MembershipsService) {}
