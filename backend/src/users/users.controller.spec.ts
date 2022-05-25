@@ -41,4 +41,12 @@ describe('UsersController', () => {
       expect(result).toEqual(expected);
     });
   });
+
+  describe('findOne()', () => {
+    it('should return 404 if user not found', async () => {
+      const mockOut = undefined;
+      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
+      expect(controller.findOne('5')).rejects.toThrow();
+    });
+  });
 });
