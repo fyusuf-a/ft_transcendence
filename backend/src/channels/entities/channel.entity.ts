@@ -1,4 +1,3 @@
-import { Karma } from '../../karmas/entities/karma.entity';
 import { Message } from '../../messages/entities/message.entity';
 import {
   Column,
@@ -49,7 +48,4 @@ export class Channel {
   @Exclude()
   @RelationId((channel: Channel) => channel.messages)
   messageIds: number[];
-
-  @OneToMany(() => Karma, (karma) => karma.channel)
-  karmas: Karma[];
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsPositive } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsPositive } from 'class-validator';
 import { MembershipRoleType } from '../entities/membership.entity';
 
 export class MembershipDto {
@@ -38,4 +38,16 @@ export class MembershipDto {
   })
   @IsEnum(MembershipRoleType, { each: true })
   role: MembershipRoleType;
+
+  @ApiProperty({
+    description: 'Datetime that mute expires',
+  })
+  @IsDate()
+  mutedUntil: Date;
+
+  @ApiProperty({
+    description: 'Datetime that ban expires',
+  })
+  @IsDate()
+  bannedUntil: Date;
 }

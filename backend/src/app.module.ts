@@ -9,8 +9,6 @@ import { MessagesModule } from './messages/messages.module';
 import { Message } from './messages/entities/message.entity';
 import { ChannelsModule } from './channels/channels.module';
 import { Channel } from './channels/entities/channel.entity';
-import { Karma } from './karmas/entities/karma.entity';
-import { KarmasModule } from './karmas/karmas.module';
 import { MembershipsModule } from './memberships/memberships.module';
 import { Membership } from './memberships/entities/membership.entity';
 import { RelationshipsModule } from './relationships/relationships.module';
@@ -29,13 +27,12 @@ import { APP_GUARD } from '@nestjs/core';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Message, Channel, Karma, Membership, Relationship],
+      entities: [User, Message, Channel, Membership, Relationship],
       synchronize: true,
     }),
     UsersModule,
     MessagesModule,
     ChannelsModule,
-    KarmasModule,
     MembershipsModule,
     RelationshipsModule,
     AuthModule,

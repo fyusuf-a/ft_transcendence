@@ -8,6 +8,7 @@ import {
   Delete,
   BadRequestException,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { MembershipsService } from './memberships.service';
 import { CreateMembershipDto } from './dto/create-membership.dto';
@@ -18,7 +19,7 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @ApiBearerAuth()
-@ApiTags('memberships')
+@ApiTags('channel memberships')
 @Controller('memberships')
 export class MembershipsController {
   constructor(private readonly membershipsService: MembershipsService) {}
@@ -46,8 +47,13 @@ export class MembershipsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ResponseMembershipDto> {
-    return this.membershipsService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<ResponseMembershipDto> {
+    const membership: ResponseMembershipDto =
+      await this.membershipsService.findOne(+id);
+    if (membership === undefined) {
+      throw new NotFoundException(`Channel membership #${id} not found`);
+    }
+    return membership;
   }
 
   @Patch(':id')

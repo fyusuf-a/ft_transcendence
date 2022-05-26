@@ -8,6 +8,7 @@ import { MembershipsService } from './memberships.service';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
+  let service: MembershipsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,9 +31,18 @@ describe('MembershipsController', () => {
     }).compile();
 
     controller = module.get<MembershipsController>(MembershipsController);
+    service = module.get<MembershipsService>(MembershipsService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+  });
+
+  describe('findOne()', () => {
+    it('should return 404 if membership not found', async () => {
+      const mockOut = undefined;
+      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
+      expect(controller.findOne('5')).rejects.toThrow();
+    });
   });
 });

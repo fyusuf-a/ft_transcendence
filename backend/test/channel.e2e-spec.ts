@@ -9,7 +9,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChannelsModule } from 'src/channels/channels.module';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
-import { Karma } from 'src/karmas/entities/karma.entity';
 import { Membership } from 'src/memberships/entities/membership.entity';
 import { Message } from 'src/messages/entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -31,7 +30,7 @@ describe('ChannelController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [User, Channel, Message, Membership, Karma],
+          entities: [User, Channel, Message, Membership],
           synchronize: true,
           dropSchema: true,
         }),

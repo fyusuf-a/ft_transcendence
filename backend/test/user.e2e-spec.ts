@@ -11,15 +11,12 @@ import { ConfigModule } from '@nestjs/config';
 import { User } from '../src/users/entities/user.entity';
 import { Membership } from '../src/memberships/entities/membership.entity';
 import { Message } from '../src/messages/entities/message.entity';
-import { Karma } from '../src/karmas/entities/karma.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 import { Reflector } from '@nestjs/core';
 import { Connection } from 'typeorm';
-// import { Repository } from 'typeorm';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
-  // let userRepository: Repository<User>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,7 +30,7 @@ describe('UsersController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [User, Channel, Membership, Message, Karma],
+          entities: [User, Channel, Membership, Message],
           synchronize: true,
           dropSchema: true,
         }),
@@ -53,7 +50,6 @@ describe('UsersController (e2e)', () => {
     );
 
     await app.init();
-    // userRepository = moduleFixture.get('UserRepository');
   });
 
   afterAll(async () => {
