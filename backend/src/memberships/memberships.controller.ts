@@ -51,7 +51,7 @@ export class MembershipsController {
     const membership: ResponseMembershipDto =
       await this.membershipsService.findOne(+id);
     if (membership === undefined) {
-      throw new NotFoundException('Not Found');
+      throw new NotFoundException(`Channel membership #${id} not found`);
     }
     return membership;
   }
