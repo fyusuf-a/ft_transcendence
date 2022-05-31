@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ChannelsService } from './channels.service';
-import { Channel } from './entities/channel.entity';
-import { mockChannelEntity } from './mocks/channel.entity.mock';
+import { MockChannelEntity } from './mocks/channel.entity.mock';
+import { MockRepository } from 'src/common/mocks/repository.mock';
+import ChannelRepository from './repository/channel.repository';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
+const entityNumber = 2;
 
 describe('ChannelsService', () => {
   let service: ChannelsService;
@@ -12,20 +15,14 @@ describe('ChannelsService', () => {
       providers: [
         ChannelsService,
         {
-          provide: getRepositoryToken(Channel),
-          useValue: {
-            findOne: jest.fn(() => new mockChannelEntity()),
-            find: jest.fn(() => [
-              new mockChannelEntity(),
-              new mockChannelEntity(),
-            ]),
-            save: jest.fn(() => new mockChannelEntity()),
-            delete: jest.fn(() => void {}),
-          },
+          provide: getRepositoryToken(ChannelRepository),
+          useValue: new MockRepository<MockChannelEntity>(
+            new MockChannelEntity(),
+            entityNumber,
+          ),
         },
       ],
     }).compile();
-
     service = module.get<ChannelsService>(ChannelsService);
   });
 

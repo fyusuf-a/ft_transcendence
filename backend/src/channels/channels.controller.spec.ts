@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ChannelsController } from './channels.controller';
 import { ChannelsService } from './channels.service';
-import { Channel } from './entities/channel.entity';
+import ChannelRepository from './repository/channel.repository';
 
 describe('ChannelsController', () => {
   let controller: ChannelsController;
@@ -13,7 +12,7 @@ describe('ChannelsController', () => {
       providers: [
         ChannelsService,
         {
-          provide: getRepositoryToken(Channel),
+          provide: ChannelRepository,
           useValue: jest.fn(),
         },
       ],

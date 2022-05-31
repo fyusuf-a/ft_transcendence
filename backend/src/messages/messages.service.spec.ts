@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
-import { Message } from './entities/message.entity';
 import { MessagesService } from './messages.service';
-import { mockMessageEntity } from './mocks/message.entity.mock';
+import { MockMessageEntity } from './mocks/message.entity.mock';
+import { MockRepository } from 'src/common/mocks/repository.mock';
+import MessageRepository from './repository/message.repository';
+import ChannelRepository from 'src/channels/repository/channel.repository';
+import UserRepository from 'src/users/repository/user.repository';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('MessagesService', () => {
   let service: MessagesService;
@@ -15,26 +18,18 @@ describe('MessagesService', () => {
       providers: [
         MessagesService,
         {
-          provide: getRepositoryToken(Message),
-          useValue: {
-            findOne: jest.fn(() => new mockMessageEntity()),
-            find: jest.fn(() => [
-              new mockMessageEntity(),
-              new mockMessageEntity(),
-            ]),
-            save: jest.fn(() => new mockMessageEntity()),
-            delete: jest.fn(() => void {}),
-          },
+          provide: getRepositoryToken(MessageRepository),
+          useValue: new MockRepository<MockMessageEntity>(
+            new MockMessageEntity(),
+          ),
         },
         {
-          provide: getRepositoryToken(Channel),
-          useValue: {
-            findOne: jest.fn(() => undefined),
-          },
+          provide: getRepositoryToken(ChannelRepository),
+          useValue: new MockRepository(new Channel()),
         },
         {
-          provide: getRepositoryToken(User),
-          useValue: jest.fn(),
+          provide: getRepositoryToken(UserRepository),
+          useValue: new MockRepository(new User()),
         },
       ],
     }).compile();

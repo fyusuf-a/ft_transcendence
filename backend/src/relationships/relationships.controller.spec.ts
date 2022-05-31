@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
+import UserRepository from 'src/users/repository/user.repository';
 import { Relationship } from './entities/relationship.entity';
 import { RelationshipsController } from './relationships.controller';
 import { RelationshipsService } from './relationships.service';
@@ -18,7 +18,7 @@ describe('RelationshipsController', () => {
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(UserRepository),
           useValue: jest.fn(),
         },
       ],

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Channel } from 'src/channels/entities/channel.entity';
-import { User } from 'src/users/entities/user.entity';
+import UserRepository from 'src/users/repository/user.repository';
+import ChannelRepository from 'src/channels/repository/channel.repository';
 import { Membership } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
@@ -20,11 +20,11 @@ describe('MembershipsController', () => {
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(UserRepository),
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(Channel),
+          provide: getRepositoryToken(ChannelRepository),
           useValue: jest.fn(),
         },
       ],

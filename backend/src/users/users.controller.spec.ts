@@ -1,9 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { PageMetaDto } from '../common/dto/page-meta.dto';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
+import UserRepository from './repository/user.repository';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -11,14 +14,15 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      controllers: [UsersController],
       providers: [
         UsersService,
+        UserRepository,
         {
-          provide: getRepositoryToken(User),
+          provide: UserRepository,
           useValue: jest.fn(),
         },
       ],
-      controllers: [UsersController],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -31,14 +35,17 @@ describe('UsersController', () => {
 
   describe('findAll()', () => {
     it('should return an array of users', async () => {
-      const mockOut = [new User(), new User()];
+      const users = [new User(), new User()];
+      const pageOptions = new PageOptionsDto(1, 2);
+      const pageMeta = new PageMetaDto(pageOptions, 2);
+      const mockOut = new PageDto<User>(users, pageMeta);
       const expected = [
-        new ResponseUserDto(mockOut[0]),
-        new ResponseUserDto(mockOut[1]),
+        new ResponseUserDto(users[0]),
+        new ResponseUserDto(users[1]),
       ];
       jest.spyOn(service, 'findAll').mockImplementation(async () => mockOut);
       const result = await controller.findAll();
-      expect(result).toEqual(expected);
+      expect(result.data).toEqual(expected);
     });
   });
 

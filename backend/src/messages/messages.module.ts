@@ -2,12 +2,18 @@ import { Module } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { MessagesController } from './messages.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Message } from './entities/message.entity';
-import { Channel } from '../channels/entities/channel.entity';
-import { User } from '../users/entities/user.entity';
+import MessageRepository from 'src/messages/repository/message.repository';
+import ChannelRepository from 'src/channels/repository/channel.repository';
+import UserRepository from 'src/users/repository/user.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message, Channel, User])],
+  imports: [
+    TypeOrmModule.forFeature([
+      MessageRepository,
+      ChannelRepository,
+      UserRepository,
+    ]),
+  ],
   providers: [MessagesService],
   controllers: [MessagesController],
   exports: [MessagesService],

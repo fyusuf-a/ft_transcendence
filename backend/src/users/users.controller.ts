@@ -10,14 +10,17 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { UserDto } from './dto/user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DeleteResult, UpdateResult } from 'typeorm';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { QueryUserDto } from './dto/query-user.dto';
 import { Public } from 'src/auth/auth.public.decorator';
+import { UsersService } from './users.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -26,8 +29,11 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get()
-  async findAll(@Query() query?: QueryUserDto): Promise<ResponseUserDto[]> {
-    return await this.usersService.findAll(query);
+  async findAll(
+    @Query() query?: QueryUserDto,
+    @Query() pageOptions?: PageOptionsDto,
+  ): Promise<PageDto<UserDto>> {
+    return await this.usersService.findAll(query, pageOptions);
   }
 
   @Public()

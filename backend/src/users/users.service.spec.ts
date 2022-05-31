@@ -1,9 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
-import { mockUserEntity } from './mocks/user.entity.mock';
+import { MockUserEntity } from './mocks/user.entity.mock';
+import { MockRepository } from 'src/common/mocks/repository.mock';
+import UserRepository from './repository/user.repository';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageMetaDto } from 'src/common/dto/page-meta.dto';
+import { getRepositoryToken } from '@nestjs/typeorm';
+
+const userNumber = 2;
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -13,13 +19,11 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         {
-          provide: getRepositoryToken(User),
-          useValue: {
-            findOne: jest.fn(() => new mockUserEntity()),
-            find: jest.fn(() => [new mockUserEntity(), new mockUserEntity()]),
-            save: jest.fn(() => new mockUserEntity()),
-            delete: jest.fn(() => void {}),
-          },
+          provide: getRepositoryToken(UserRepository),
+          useValue: new MockRepository<MockUserEntity>(
+            new MockUserEntity(),
+            userNumber,
+          ),
         },
       ],
     }).compile();
@@ -33,33 +37,26 @@ describe('UsersService', () => {
 
   describe('when looking up an existing User by id', () => {
     it('should return User', async () => {
-      expect(await service.findOne(0)).toEqual(new mockUserEntity());
+      const user = await service.findOne(0);
+      expect(user).toEqual(new MockUserEntity());
     });
   });
 
   describe('when looking up an non-existing User by id', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          UsersService,
-          {
-            provide: getRepositoryToken(User),
-            useValue: {
-              findOne: jest.fn(() => undefined),
-            },
-          },
-        ],
-      }).compile();
-      service = module.get<UsersService>(UsersService);
-    });
     it('should return undefined', async () => {
-      expect(await service.findOne(1)).toEqual(undefined);
+      expect(await service.findOne(3)).toEqual(undefined);
     });
   });
 
   describe('when finding all Users', () => {
     it('should return array of User', async () => {
-      const result = [new mockUserEntity(), new mockUserEntity()];
+      const pageOptions = new PageOptionsDto();
+      const entities = Array(
+        userNumber > pageOptions.take ? pageOptions.take : userNumber,
+      ).fill(new MockUserEntity());
+      const pageMetaDto = new PageMetaDto(pageOptions, entities.length);
+      const result = new PageDto(entities, pageMetaDto);
+
       const ret = await service.findAll();
       expect(ret).toEqual(result);
     });
@@ -68,7 +65,7 @@ describe('UsersService', () => {
   describe('when creating a new User', () => {
     it('should return new user object', async () => {
       const userDto: CreateUserDto = new CreateUserDto();
-      expect(await service.create(userDto)).toEqual(new mockUserEntity());
+      expect(await service.create(userDto)).toEqual(new MockUserEntity());
     });
   });
 

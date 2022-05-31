@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { User } from 'src/users/entities/user.entity';
+import UserRepository from 'src/users/repository/user.repository';
 import { Repository } from 'typeorm';
 import { CreateRelationshipDto } from './dto/create-relationship.dto';
 import { QueryRelationshipDto } from './dto/query-relationship.dto';
@@ -13,8 +13,8 @@ export class RelationshipsService {
   constructor(
     @InjectRepository(Relationship)
     private relationshipRepository: Repository<Relationship>,
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(UserRepository)
+    private userRepository: UserRepository,
   ) {}
 
   async create(createRelationshipDto: CreateRelationshipDto) {

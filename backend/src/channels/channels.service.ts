@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { CreateChannelDto } from './dto/create-channel.dto';
 import { QueryChannelDto } from './dto/query-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
+import { ResponseChannelDto } from './dto/response-channel.dto';
 import { Channel } from './entities/channel.entity';
+import ChannelRepository from './repository/channel.repository';
 
 @Injectable()
 export class ChannelsService {
   constructor(
-    @InjectRepository(Channel)
-    private channelRepository: Repository<Channel>,
+    @InjectRepository(ChannelRepository)
+    private channelsRepository: ChannelRepository,
   ) {}
 
   create(createChannelDto: CreateChannelDto) {
@@ -18,25 +22,28 @@ export class ChannelsService {
     channel.name = createChannelDto.name;
     channel.type = createChannelDto.type;
     channel.password = createChannelDto.password;
-    return this.channelRepository.save(channel);
+    return this.channelsRepository.save(channel);
   }
 
-  findAll(query?: QueryChannelDto) {
-    return this.channelRepository.find({ where: query });
+  async findAll(
+    query?: QueryChannelDto,
+    pageOptions?: PageOptionsDto,
+  ): Promise<PageDto<ResponseChannelDto>> {
+    return this.channelsRepository.findAllPaginated(query, pageOptions);
   }
 
   findOne(id: number) {
-    return this.channelRepository.findOne(id);
+    return this.channelsRepository.findOne(id);
   }
 
   update(
     id: number,
     updateChannelDto: UpdateChannelDto,
   ): Promise<UpdateResult> {
-    return this.channelRepository.update(id, updateChannelDto);
+    return this.channelsRepository.update(id, updateChannelDto);
   }
 
   remove(id: number): Promise<DeleteResult> {
-    return this.channelRepository.delete(id);
+    return this.channelsRepository.delete(id);
   }
 }
