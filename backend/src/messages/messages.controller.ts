@@ -37,9 +37,11 @@ export class MessagesController {
   @Post()
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Record could not be created.' })
-  create(@Body() createUserDto: CreateMessageDto): Promise<ResponseMessageDto> {
+  create(
+    @Body() createMessageDto: CreateMessageDto,
+  ): Promise<ResponseMessageDto> {
     try {
-      return this.messagesService.create(createUserDto);
+      return this.messagesService.create(createMessageDto);
     } catch (error) {
       if (error instanceof EntityDoesNotExistError) {
         throw new BadRequestException(error.message);
