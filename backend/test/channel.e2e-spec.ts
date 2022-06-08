@@ -55,11 +55,10 @@ describe('ChannelController (e2e)', () => {
     await app.close();
   });
 
-  it('/channels (GET) empty', () => {
-    return request(app.getHttpServer())
-      .get('/channels/')
-      .expect(200)
-      .expect('[]');
+  it('/channels (GET) empty', async () => {
+    const response = await request(app.getHttpServer()).get('/channels/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":0');
   });
 
   it('/channels (POST)', () => {
@@ -72,11 +71,11 @@ describe('ChannelController (e2e)', () => {
       .expect(201);
   });
 
-  it('/channels (GET) with one', () => {
-    return request(app.getHttpServer())
-      .get('/channels/')
-      .expect(200)
-      .expect('[{"id":1,"name":"channel1","type":"public","password":null}]');
+  it('/channels (GET) with one', async () => {
+    const response = await request(app.getHttpServer()).get('/channels/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":1');
+    expect(response.text).toContain('"name":"channel1"');
   });
 
   it('/channels/1 (GET)', () => {

@@ -74,11 +74,10 @@ describe('MessagesController (e2e)', () => {
       .expect(201);
   });
 
-  it('/messages (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/messages/')
-      .expect(200)
-      .expect('[]');
+  it('/messages (GET) with no messages', async () => {
+    const response = await request(app.getHttpServer()).get('/messages/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":0');
   });
 
   it('/messages (POST)', () => {
@@ -92,11 +91,13 @@ describe('MessagesController (e2e)', () => {
       .expect(201);
   });
 
-  it('/messages/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/messages/')
-      .expect(200)
-      .expect('[{"id":1,"content":"Test message","senderId":1,"channelId":1}]');
+  it('/messages/ (GET) after first message', async () => {
+    const response = await request(app.getHttpServer()).get('/messages/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":1');
+    expect(response.text).toContain('"Test message"');
+    expect(response.text).toContain('"senderId":1');
+    expect(response.text).toContain('"channelId":1');
   });
 
   it('/messages/1 (GET)', () => {
@@ -128,13 +129,16 @@ describe('MessagesController (e2e)', () => {
       .expect('{"id":2,"content":"Test message2","senderId":2,"channelId":1}');
   });
 
-  it('/messages/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/messages/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"content":"Test message","senderId":1,"channelId":1},{"id":2,"content":"Test message2","senderId":2,"channelId":1}]',
-      );
+  it('/messages/ (GET) after second message', async () => {
+    const response = await request(app.getHttpServer()).get('/messages/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":2');
+    expect(response.text).toContain('"Test message"');
+    expect(response.text).toContain('"senderId":1');
+    expect(response.text).toContain('"channelId":1');
+    expect(response.text).toContain('"Test message2"');
+    expect(response.text).toContain('"senderId":2');
+    expect(response.text).toContain('"channelId":1');
   });
 
   it('/messages (POST) duplicate message', () => {
@@ -148,20 +152,28 @@ describe('MessagesController (e2e)', () => {
       .expect(201);
   });
 
-  it('/messages/2 (DELETE)', () => {
-    return request(app.getHttpServer()).delete('/messages/2').expect(200);
+  it('/messages/ (GET) after duplicate message', async () => {
+    const response = await request(app.getHttpServer()).get('/messages/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":3');
   });
 
   it('/messages/2 (DELETE)', () => {
     return request(app.getHttpServer()).delete('/messages/2').expect(200);
   });
 
-  it('/messages/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/messages/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"content":"Test message","senderId":1,"channelId":1},{"id":3,"content":"Test message2","senderId":2,"channelId":1}]',
-      );
+  it('/messages/2 (DELETE)', () => {
+    return request(app.getHttpServer()).delete('/messages/2').expect(200);
+  });
+
+  it('/messages/3 (DELETE)', () => {
+    return request(app.getHttpServer()).delete('/messages/3').expect(200);
+  });
+
+  it('/messages/ (GET) after delete', async () => {
+    const response = await request(app.getHttpServer()).get('/messages/');
+    expect(response.status).toBe(200);
+    expect(response.text).toContain('"itemCount":1');
+    expect(response.text).not.toContain('"Test message2');
   });
 });

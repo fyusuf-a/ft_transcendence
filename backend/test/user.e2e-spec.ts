@@ -58,8 +58,11 @@ describe('UsersController (e2e)', () => {
     await app.close();
   });
 
-  it('/users (GET)', () => {
-    return request(app.getHttpServer()).get('/users/').expect(200).expect('[]');
+  it('/users (GET) empty', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    expect(response.text).toContain('"itemCount":0');
+    return expect(response.text).toContain('"data":[]');
   });
 
   it('/users (POST)', () => {
@@ -72,13 +75,11 @@ describe('UsersController (e2e)', () => {
       .expect(201);
   });
 
-  it('/users/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
-      );
+  it('/users/ (GET) with one', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    expect(response.text).toContain('"itemCount":1');
+    return expect(response.text).toContain('"username":"username1"');
   });
 
   it('/users/1 (GET)', () => {
@@ -113,13 +114,12 @@ describe('UsersController (e2e)', () => {
       );
   });
 
-  it('/users/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0},{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0}]',
-      );
+  it('/users/ (GET) with 2', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    expect(response.text).toContain('"itemCount":2');
+    expect(response.text).toContain('"username":"username1"');
+    return expect(response.text).toContain('"username":"username2"');
   });
 
   it('/users duplicate identity (POST)', () => {
@@ -158,21 +158,10 @@ describe('UsersController (e2e)', () => {
     return request(app.getHttpServer()).delete('/users/2').expect(200);
   });
 
-  it('/users/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
-      );
+  it('/users/ (GET) after delete', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    expect(response.text).toContain('"itemCount":1');
+    return expect(response.text).toContain('"username":"username1"');
   });
-
-  // it('/users/1/messages (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/users/')
-  //     .expect(200)
-  //     .expect(
-  //       '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
-  //     );
-  // });
 });
