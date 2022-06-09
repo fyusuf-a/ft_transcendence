@@ -16,6 +16,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
@@ -30,8 +32,11 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Get()
-  findAll(@Query() query?: QueryMessageDto): Promise<ResponseMessageDto[]> {
-    return this.messagesService.findAll(query);
+  async findAll(
+    @Query() query?: QueryMessageDto,
+    @Query() pageOptions?: PageOptionsDto,
+  ): Promise<PageDto<ResponseMessageDto>> {
+    return this.messagesService.findAll(query, pageOptions);
   }
 
   @Post()

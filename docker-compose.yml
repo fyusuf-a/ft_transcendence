@@ -12,12 +12,13 @@ services:
       - pgdb-data:/var/lib/postgresql/data
 
   adminer:
-   image: adminer
-   restart: always
-   ports:
-     - 8888:8080
-   depends_on:
-     - db
+    image: adminer
+    restart: always
+    ports:
+      - 8888:8080
+    depends_on:
+      - db
+    profiles: ["debug"]
 
   backend:
     build:
@@ -52,8 +53,9 @@ services:
       - 8000:80
     volumes:
       - ./frontend:/app
+    profiles: ["frontend"]
     depends_on:
-      - db
+      - backend
 
 volumes:
   pgdb-data:

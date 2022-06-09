@@ -3,14 +3,16 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsService } from './memberships.service';
+import { MockRepository } from 'src/common/mocks/repository.mock';
+import UserRepository from 'src/users/repository/user.repository';
+import ChannelRepository from 'src/channels/repository/channel.repository';
 
 describe('MembershipsService', () => {
   let service: MembershipsService;
-  let channelsRepository: Repository<Channel>;
-  let usersRepository: Repository<User>;
+  let channelsRepository: ChannelRepository;
+  let usersRepository: UserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,24 +20,22 @@ describe('MembershipsService', () => {
         MembershipsService,
         {
           provide: getRepositoryToken(Membership),
-          useValue: jest.fn(),
+          useValue: new MockRepository<Membership>(new Membership()),
         },
         {
-          provide: getRepositoryToken(User),
-          useClass: Repository,
+          provide: getRepositoryToken(UserRepository),
+          useValue: new MockRepository<User>(new User()),
         },
         {
-          provide: getRepositoryToken(Channel),
-          useClass: Repository,
+          provide: getRepositoryToken(ChannelRepository),
+          useValue: new MockRepository<Channel>(new Channel()),
         },
       ],
     }).compile();
 
     service = module.get<MembershipsService>(MembershipsService);
-    channelsRepository = module.get<Repository<Channel>>(
-      getRepositoryToken(Channel),
-    );
-    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    channelsRepository = module.get<ChannelRepository>(ChannelRepository);
+    usersRepository = module.get<UserRepository>(UserRepository);
   });
 
   it('should be defined', () => {

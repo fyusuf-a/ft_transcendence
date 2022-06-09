@@ -1,4 +1,4 @@
-export class mockUserEntity {
+export class MockUserEntity {
   id = 0;
   username = 'testuser';
   identity = 'unique';

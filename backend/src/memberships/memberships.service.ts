@@ -5,8 +5,8 @@ import { Repository } from 'typeorm';
 import { CreateMembershipDto } from './dto/create-membership.dto';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { Membership } from './entities/membership.entity';
-import { Channel } from 'src/channels/entities/channel.entity';
-import { User } from 'src/users/entities/user.entity';
+import UserRepository from 'src/users/repository/user.repository';
+import ChannelRepository from 'src/channels/repository/channel.repository';
 import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @Injectable()
@@ -14,10 +14,10 @@ export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-    @InjectRepository(Channel)
-    private channelsRepository: Repository<Channel>,
+    @InjectRepository(UserRepository)
+    private usersRepository: UserRepository,
+    @InjectRepository(ChannelRepository)
+    private channelsRepository: ChannelRepository,
   ) {}
 
   async create(createMembershipDto: CreateMembershipDto) {

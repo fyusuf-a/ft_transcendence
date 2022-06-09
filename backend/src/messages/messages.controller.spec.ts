@@ -1,10 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Channel } from 'src/channels/entities/channel.entity';
-import { User } from 'src/users/entities/user.entity';
-import { Message } from './entities/message.entity';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
+import MessageRepository from './repository/message.repository';
+import UserRepository from '../users/repository/user.repository';
+import ChannelRepository from '../channels/repository/channel.repository';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -15,15 +14,15 @@ describe('MessagesController', () => {
       providers: [
         MessagesService,
         {
-          provide: getRepositoryToken(Message),
+          provide: MessageRepository,
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(User),
+          provide: UserRepository,
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(Channel),
+          provide: ChannelRepository,
           useValue: jest.fn(),
         },
       ],

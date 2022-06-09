@@ -1,6 +1,6 @@
 import { ChannelType } from '../entities/channel.entity';
 
-export class mockChannelEntity {
+export class MockChannelEntity {
   id = 1;
   name = 'channel-name';
   type: ChannelType = ChannelType.PRIVATE;

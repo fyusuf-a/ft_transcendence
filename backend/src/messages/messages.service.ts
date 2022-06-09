@@ -1,26 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Channel } from 'src/channels/entities/channel.entity';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from 'src/common/dto/page-options.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { User } from 'src/users/entities/user.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { QueryMessageDto } from './dto/query-messages.dto';
+import { ResponseMessageDto } from './dto/response-message.dto';
 import { Message } from './entities/message.entity';
+import UserRepository from 'src/users/repository/user.repository';
+import ChannelRepository from 'src/channels/repository/channel.repository';
+import MessageRepository from 'src/messages/repository/message.repository';
 
 @Injectable()
 export class MessagesService {
   constructor(
-    @InjectRepository(Message)
-    private messagesRepository: Repository<Message>,
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-    @InjectRepository(Channel)
-    private channelsRepository: Repository<Channel>,
+    @InjectRepository(MessageRepository)
+    private messagesRepository: MessageRepository,
+    @InjectRepository(UserRepository)
+    private usersRepository: UserRepository,
+    @InjectRepository(ChannelRepository)
+    private channelsRepository: ChannelRepository,
   ) {}
 
-  findAll(query?: QueryMessageDto): Promise<Message[]> {
-    return this.messagesRepository.find({ where: query });
+  async findAll(
+    query?: QueryMessageDto,
+    pageOptions?: PageOptionsDto,
+  ): Promise<PageDto<ResponseMessageDto>> {
+    return this.messagesRepository.findAllPaginated(query, pageOptions);
   }
 
   findOne(id: number): Promise<Message> {

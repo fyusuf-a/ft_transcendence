@@ -15,10 +15,10 @@ export class AuthService {
     const userList = await this.usersService.findAll({
       username: userDto.username,
     });
-    if (userList.length !== 1) {
+    if (userList.data.length !== 1) {
       throw new EntityDoesNotExistError(`User: ${userDto.username}`);
     }
-    const user = userList[0];
+    const user = userList.data[0];
     const payload = { id: user.id, username: user.username };
     return {
       access_token: this.jwtService.sign(payload),

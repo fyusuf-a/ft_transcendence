@@ -1,20 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { PageDto } from '../common/dto/page.dto';
+import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import UserRepository from './repository/user.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    @InjectRepository(UserRepository)
+    private usersRepository: UserRepository,
   ) {}
 
-  findAll(query?: QueryUserDto): Promise<User[]> {
-    return this.usersRepository.find({ where: query });
+  async findAll(
+    query?: QueryUserDto,
+    pageOptions: PageOptionsDto = new PageOptionsDto(),
+  ): Promise<PageDto<User>> {
+    return this.usersRepository.findAllPaginated(query, pageOptions);
   }
 
   findOne(id: number): Promise<User> {
