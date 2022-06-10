@@ -30,11 +30,11 @@ export class MessagesService {
     return this.messagesRepository.findAllPaginated(query, pageOptions);
   }
 
-  findOne(id: number): Promise<Message> {
+  findOne(id: number): Promise<ResponseMessageDto> {
     return this.messagesRepository.findOne(id);
   }
 
-  async create(messageDto: CreateMessageDto): Promise<Message> {
+  async create(messageDto: CreateMessageDto): Promise<ResponseMessageDto> {
     const message: Message = new Message();
     message.content = messageDto.content;
     message.channelId = messageDto.channelId;

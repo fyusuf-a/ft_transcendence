@@ -14,7 +14,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
-import { UserDto } from './dto/user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -32,7 +31,7 @@ export class UsersController {
   async findAll(
     @Query() query?: QueryUserDto,
     @Query() pageOptions?: PageOptionsDto,
-  ): Promise<PageDto<UserDto>> {
+  ): Promise<PageDto<ResponseUserDto>> {
     return await this.usersService.findAll(query, pageOptions);
   }
 

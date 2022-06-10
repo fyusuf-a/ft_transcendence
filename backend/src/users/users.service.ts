@@ -6,7 +6,7 @@ import { PageOptionsDto } from '../common/dto/page-options.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { ResponseUserDto } from './dto/response-user.dto';
 import UserRepository from './repository/user.repository';
 
 @Injectable()
@@ -19,15 +19,15 @@ export class UsersService {
   async findAll(
     query?: QueryUserDto,
     pageOptions: PageOptionsDto = new PageOptionsDto(),
-  ): Promise<PageDto<User>> {
+  ): Promise<PageDto<ResponseUserDto>> {
     return this.usersRepository.findAllPaginated(query, pageOptions);
   }
 
-  findOne(id: number): Promise<User> {
+  findOne(id: number): Promise<ResponseUserDto> {
     return this.usersRepository.findOne(id);
   }
 
-  create(userDto: CreateUserDto): Promise<User> {
+  create(userDto: CreateUserDto): Promise<ResponseUserDto> {
     return this.usersRepository.save(userDto);
   }
 
