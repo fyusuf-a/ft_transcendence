@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { DeleteResult, UpdateResult } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { MockUserEntity } from './mocks/user.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import UserRepository from './repository/user.repository';
@@ -71,7 +73,15 @@ describe('UsersService', () => {
 
   describe('when removing a new User', () => {
     it('should return void', async () => {
-      expect(await service.remove(0)).toBeUndefined();
+      expect(await service.remove(0)).toEqual(new DeleteResult());
+    });
+  });
+
+  describe('update()', () => {
+    it('should return an update result', async () => {
+      expect(await service.update(0, new UpdateUserDto())).toEqual(
+        new UpdateResult(),
+      );
     });
   });
 });

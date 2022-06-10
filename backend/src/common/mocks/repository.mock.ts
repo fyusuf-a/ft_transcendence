@@ -1,6 +1,7 @@
 import { PageOptionsDto } from '../dto/page-options.dto';
 import { PageDto } from '../dto/page.dto';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
+import { DeleteResult, UpdateResult } from 'typeorm';
 /*import { Repository } from 'typeorm';
 
 type MyMockRepository<T = any> = Partial<
@@ -17,7 +18,9 @@ export class MockRepository<T> {
   }
   find = jest.fn(() => Array(this.elementNumber).fill(this.entity));
   save = jest.fn(() => this.entity);
-  delete = jest.fn(() => void {});
+  delete = jest.fn(() => new DeleteResult());
+  update = jest.fn(() => new UpdateResult());
+
   async findAllPaginated(
     pageOptions?: PageOptionsDto,
     //alias = '',
