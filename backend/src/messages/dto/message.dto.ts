@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsPositive } from 'class-validator';
+import { IsDate, IsInt, IsNotEmpty, IsPositive } from 'class-validator';
 import { Channel } from '../../channels/entities/channel.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -40,4 +40,10 @@ export class MessageDto {
   @IsPositive()
   @IsInt()
   channelId: number;
+
+  @ApiProperty({
+    description: 'Time when the message was created',
+  })
+  @IsDate()
+  createdAt: Date;
 }

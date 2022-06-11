@@ -2,6 +2,7 @@ import { Channel } from '../../channels/entities/channel.entity';
 import { User } from '../../users/entities/user.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -28,4 +29,7 @@ export class Message {
   channel: Channel;
   @RelationId((message: Message) => message.channel)
   channelId: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
