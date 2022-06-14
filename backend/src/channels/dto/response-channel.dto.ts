@@ -1,4 +1,8 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PickType } from '@nestjs/swagger';
 import { ChannelDto } from './channel.dto';
 
-export class ResponseChannelDto extends OmitType(ChannelDto, []) {}
+export class ResponseChannelDto extends PickType(ChannelDto, [
+  'id',
+  'name',
+  'type',
+]) {}

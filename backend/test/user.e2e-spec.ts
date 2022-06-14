@@ -14,6 +14,8 @@ import { Message } from '../src/messages/entities/message.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 import { Reflector } from '@nestjs/core';
 import { Connection } from 'typeorm';
+import { ResponseUserDto } from 'src/users/dto/response-user.dto';
+import { PageDto } from 'src/common/dto/page.dto';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -61,8 +63,9 @@ describe('UsersController (e2e)', () => {
   it('/users (GET) empty', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    expect(response.text).toContain('"itemCount":0');
-    return expect(response.text).toContain('"data":[]');
+    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
+    expect(obj.meta.itemCount).toBe(0);
+    expect(obj.data).toEqual([]);
   });
 
   it('/users (POST)', () => {
@@ -78,17 +81,20 @@ describe('UsersController (e2e)', () => {
   it('/users/ (GET) with one', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    expect(response.text).toContain('"itemCount":1');
-    return expect(response.text).toContain('"username":"username1"');
+    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
+    expect(obj.meta.itemCount).toBe(1);
+    expect(obj.data[0].username).toBe('username1');
   });
 
-  it('/users/1 (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/1')
-      .expect(200)
-      .expect(
-        '{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}',
-      );
+  it('/users/1 (GET)', async () => {
+    const response = await request(app.getHttpServer()).get('/users/1');
+    expect(response.status).toEqual(200);
+    const obj: ResponseUserDto = JSON.parse(response.text);
+    expect(obj.id).toBe(1);
+    expect(obj.username).toBe('username1');
+    expect(obj.wins).toBe(0);
+    expect(obj.losses).toBe(0);
+    expect(obj.rating).toBeDefined();
   });
 
   it('/users/2 (GET) before created', () => {
@@ -105,21 +111,24 @@ describe('UsersController (e2e)', () => {
       .expect(201);
   });
 
-  it('/users/2 (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/2')
-      .expect(200)
-      .expect(
-        '{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0}',
-      );
+  it('/users/2 (GET)', async () => {
+    const response = await request(app.getHttpServer()).get('/users/2');
+    expect(response.status).toEqual(200);
+    const obj: ResponseUserDto = JSON.parse(response.text);
+    expect(obj.id).toBe(2);
+    expect(obj.username).toBe('username2');
+    expect(obj.wins).toBe(0);
+    expect(obj.losses).toBe(0);
+    expect(obj.rating).toBeDefined();
   });
 
   it('/users/ (GET) with 2', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    expect(response.text).toContain('"itemCount":2');
-    expect(response.text).toContain('"username":"username1"');
-    return expect(response.text).toContain('"username":"username2"');
+    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
+    expect(obj.meta.itemCount).toBe(2);
+    expect(obj.data[0].username).toBe('username1');
+    expect(obj.data[1].username).toBe('username2');
   });
 
   it('/users duplicate identity (POST)', () => {
@@ -141,13 +150,15 @@ describe('UsersController (e2e)', () => {
       .expect(200);
   });
 
-  it('/users/2 (GET) after PATCH', () => {
-    return request(app.getHttpServer())
-      .get('/users/2')
-      .expect(200)
-      .expect(
-        '{"id":2,"username":"username-two","avatar":null,"wins":0,"losses":0,"rating":0}',
-      );
+  it('/users/2 (GET) after PATCH', async () => {
+    const response = await request(app.getHttpServer()).get('/users/2');
+    expect(response.status).toEqual(200);
+    const obj: ResponseUserDto = JSON.parse(response.text);
+    expect(obj.id).toBe(2);
+    expect(obj.username).toBe('username-two');
+    expect(obj.wins).toBe(0);
+    expect(obj.losses).toBe(0);
+    expect(obj.rating).toBeDefined();
   });
 
   it('/users/2 (DELETE)', () => {
@@ -161,7 +172,8 @@ describe('UsersController (e2e)', () => {
   it('/users/ (GET) after delete', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    expect(response.text).toContain('"itemCount":1');
-    return expect(response.text).toContain('"username":"username1"');
+    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
+    expect(obj.meta.itemCount).toBe(1);
+    expect(obj.data[0].username).toBe('username1');
   });
 });
