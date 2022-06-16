@@ -10,6 +10,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
     volumes:
       - pgdb-data:/var/lib/postgresql/data
+      - ./sql/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
 
   adminer:
     image: adminer

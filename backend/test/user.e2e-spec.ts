@@ -14,6 +14,8 @@ import { Message } from '../src/messages/entities/message.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 import { Reflector } from '@nestjs/core';
 import { Connection } from 'typeorm';
+import { ResponseUserDto } from 'src/users/dto/response-user.dto';
+import { PageDto } from 'src/common/dto/page.dto';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -58,8 +60,12 @@ describe('UsersController (e2e)', () => {
     await app.close();
   });
 
-  it('/users (GET)', () => {
-    return request(app.getHttpServer()).get('/users/').expect(200).expect('[]');
+  it('/users (GET) empty', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(0);
+    expect(responseUserPages.data).toEqual([]);
   });
 
   it('/users (POST)', () => {
@@ -72,22 +78,23 @@ describe('UsersController (e2e)', () => {
       .expect(201);
   });
 
-  it('/users/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
-      );
+  it('/users/ (GET) with one', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(1);
+    expect(responseUserPages.data[0].username).toBe('username1');
   });
 
-  it('/users/1 (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/1')
-      .expect(200)
-      .expect(
-        '{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}',
-      );
+  it('/users/1 (GET)', async () => {
+    const response = await request(app.getHttpServer()).get('/users/1');
+    expect(response.status).toEqual(200);
+    const responseUser: ResponseUserDto = response.body;
+    expect(responseUser.id).toBe(1);
+    expect(responseUser.username).toBe('username1');
+    expect(responseUser.wins).toBe(0);
+    expect(responseUser.losses).toBe(0);
+    expect(responseUser.rating).toBeDefined();
   });
 
   it('/users/2 (GET) before created', () => {
@@ -104,22 +111,24 @@ describe('UsersController (e2e)', () => {
       .expect(201);
   });
 
-  it('/users/2 (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/2')
-      .expect(200)
-      .expect(
-        '{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0}',
-      );
+  it('/users/2 (GET)', async () => {
+    const response = await request(app.getHttpServer()).get('/users/2');
+    expect(response.status).toEqual(200);
+    const responseUser: ResponseUserDto = response.body;
+    expect(responseUser.id).toBe(2);
+    expect(responseUser.username).toBe('username2');
+    expect(responseUser.wins).toBe(0);
+    expect(responseUser.losses).toBe(0);
+    expect(responseUser.rating).toBeDefined();
   });
 
-  it('/users/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0},{"id":2,"username":"username2","avatar":null,"wins":0,"losses":0,"rating":0}]',
-      );
+  it('/users/ (GET) with 2', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(2);
+    expect(responseUserPages.data[0].username).toBe('username1');
+    expect(responseUserPages.data[1].username).toBe('username2');
   });
 
   it('/users duplicate identity (POST)', () => {
@@ -141,13 +150,15 @@ describe('UsersController (e2e)', () => {
       .expect(200);
   });
 
-  it('/users/2 (GET) after PATCH', () => {
-    return request(app.getHttpServer())
-      .get('/users/2')
-      .expect(200)
-      .expect(
-        '{"id":2,"username":"username-two","avatar":null,"wins":0,"losses":0,"rating":0}',
-      );
+  it('/users/2 (GET) after PATCH', async () => {
+    const response = await request(app.getHttpServer()).get('/users/2');
+    expect(response.status).toEqual(200);
+    const responseUser: ResponseUserDto = response.body;
+    expect(responseUser.id).toBe(2);
+    expect(responseUser.username).toBe('username-two');
+    expect(responseUser.wins).toBe(0);
+    expect(responseUser.losses).toBe(0);
+    expect(responseUser.rating).toBeDefined();
   });
 
   it('/users/2 (DELETE)', () => {
@@ -158,21 +169,11 @@ describe('UsersController (e2e)', () => {
     return request(app.getHttpServer()).delete('/users/2').expect(200);
   });
 
-  it('/users/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/users/')
-      .expect(200)
-      .expect(
-        '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
-      );
+  it('/users/ (GET) after delete', async () => {
+    const response = await request(app.getHttpServer()).get('/users/');
+    expect(response.status).toEqual(200);
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(1);
+    expect(responseUserPages.data[0].username).toBe('username1');
   });
-
-  // it('/users/1/messages (GET)', () => {
-  //   return request(app.getHttpServer())
-  //     .get('/users/')
-  //     .expect(200)
-  //     .expect(
-  //       '[{"id":1,"username":"username1","avatar":null,"wins":0,"losses":0,"rating":0}]',
-  //     );
-  // });
 });
