@@ -63,9 +63,9 @@ describe('UsersController (e2e)', () => {
   it('/users (GET) empty', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(0);
-    expect(obj.data).toEqual([]);
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(0);
+    expect(responseUserPages.data).toEqual([]);
   });
 
   it('/users (POST)', () => {
@@ -81,20 +81,20 @@ describe('UsersController (e2e)', () => {
   it('/users/ (GET) with one', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(1);
-    expect(obj.data[0].username).toBe('username1');
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(1);
+    expect(responseUserPages.data[0].username).toBe('username1');
   });
 
   it('/users/1 (GET)', async () => {
     const response = await request(app.getHttpServer()).get('/users/1');
     expect(response.status).toEqual(200);
-    const obj: ResponseUserDto = JSON.parse(response.text);
-    expect(obj.id).toBe(1);
-    expect(obj.username).toBe('username1');
-    expect(obj.wins).toBe(0);
-    expect(obj.losses).toBe(0);
-    expect(obj.rating).toBeDefined();
+    const responseUser: ResponseUserDto = response.body;
+    expect(responseUser.id).toBe(1);
+    expect(responseUser.username).toBe('username1');
+    expect(responseUser.wins).toBe(0);
+    expect(responseUser.losses).toBe(0);
+    expect(responseUser.rating).toBeDefined();
   });
 
   it('/users/2 (GET) before created', () => {
@@ -114,21 +114,21 @@ describe('UsersController (e2e)', () => {
   it('/users/2 (GET)', async () => {
     const response = await request(app.getHttpServer()).get('/users/2');
     expect(response.status).toEqual(200);
-    const obj: ResponseUserDto = JSON.parse(response.text);
-    expect(obj.id).toBe(2);
-    expect(obj.username).toBe('username2');
-    expect(obj.wins).toBe(0);
-    expect(obj.losses).toBe(0);
-    expect(obj.rating).toBeDefined();
+    const responseUser: ResponseUserDto = response.body;
+    expect(responseUser.id).toBe(2);
+    expect(responseUser.username).toBe('username2');
+    expect(responseUser.wins).toBe(0);
+    expect(responseUser.losses).toBe(0);
+    expect(responseUser.rating).toBeDefined();
   });
 
   it('/users/ (GET) with 2', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(2);
-    expect(obj.data[0].username).toBe('username1');
-    expect(obj.data[1].username).toBe('username2');
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(2);
+    expect(responseUserPages.data[0].username).toBe('username1');
+    expect(responseUserPages.data[1].username).toBe('username2');
   });
 
   it('/users duplicate identity (POST)', () => {
@@ -153,12 +153,12 @@ describe('UsersController (e2e)', () => {
   it('/users/2 (GET) after PATCH', async () => {
     const response = await request(app.getHttpServer()).get('/users/2');
     expect(response.status).toEqual(200);
-    const obj: ResponseUserDto = JSON.parse(response.text);
-    expect(obj.id).toBe(2);
-    expect(obj.username).toBe('username-two');
-    expect(obj.wins).toBe(0);
-    expect(obj.losses).toBe(0);
-    expect(obj.rating).toBeDefined();
+    const responseUser: ResponseUserDto = response.body;
+    expect(responseUser.id).toBe(2);
+    expect(responseUser.username).toBe('username-two');
+    expect(responseUser.wins).toBe(0);
+    expect(responseUser.losses).toBe(0);
+    expect(responseUser.rating).toBeDefined();
   });
 
   it('/users/2 (DELETE)', () => {
@@ -172,8 +172,8 @@ describe('UsersController (e2e)', () => {
   it('/users/ (GET) after delete', async () => {
     const response = await request(app.getHttpServer()).get('/users/');
     expect(response.status).toEqual(200);
-    const obj: PageDto<ResponseUserDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(1);
-    expect(obj.data[0].username).toBe('username1');
+    const responseUserPages: PageDto<ResponseUserDto> = response.body;
+    expect(responseUserPages.meta.itemCount).toBe(1);
+    expect(responseUserPages.data[0].username).toBe('username1');
   });
 });

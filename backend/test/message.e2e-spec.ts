@@ -79,8 +79,8 @@ describe('MessagesController (e2e)', () => {
   it('/messages (GET) with no messages', async () => {
     const response = await request(app.getHttpServer()).get('/messages/');
     expect(response.status).toBe(200);
-    const obj: PageDto<ResponseMessageDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(0);
+    const responseMessagePages: PageDto<ResponseMessageDto> = response.body;
+    expect(responseMessagePages.meta.itemCount).toBe(0);
   });
 
   it('/messages (POST)', () => {
@@ -97,20 +97,20 @@ describe('MessagesController (e2e)', () => {
   it('/messages/ (GET) after first message', async () => {
     const response = await request(app.getHttpServer()).get('/messages/');
     expect(response.status).toBe(200);
-    const obj: PageDto<ResponseMessageDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(1);
-    expect(obj.data[0].senderId).toBe(1);
-    expect(obj.data[0].channelId).toBe(1);
-    expect(obj.data[0].content).toBe('Test message');
+    const responseMessagePages: PageDto<ResponseMessageDto> = response.body;
+    expect(responseMessagePages.meta.itemCount).toBe(1);
+    expect(responseMessagePages.data[0].senderId).toBe(1);
+    expect(responseMessagePages.data[0].channelId).toBe(1);
+    expect(responseMessagePages.data[0].content).toBe('Test message');
   });
 
   it('/messages/1 (GET)', async () => {
     const response = await request(app.getHttpServer()).get('/messages/1');
     expect(response.status).toBe(200);
-    const obj: ResponseMessageDto = JSON.parse(response.text);
-    expect(obj.senderId).toBe(1);
-    expect(obj.channelId).toBe(1);
-    expect(obj.content).toBe('Test message');
+    const responseMessage: ResponseMessageDto = response.body;
+    expect(responseMessage.senderId).toBe(1);
+    expect(responseMessage.channelId).toBe(1);
+    expect(responseMessage.content).toBe('Test message');
   });
 
   it('/messages/2 (GET) before created', () => {
@@ -131,23 +131,23 @@ describe('MessagesController (e2e)', () => {
   it('/messages/2 (GET)', async () => {
     const response = await request(app.getHttpServer()).get('/messages/2');
     expect(response.status).toBe(200);
-    const obj: ResponseMessageDto = JSON.parse(response.text);
-    expect(obj.senderId).toBe(2);
-    expect(obj.channelId).toBe(1);
-    expect(obj.content).toBe('Test message2');
+    const responseMessage: ResponseMessageDto = response.body;
+    expect(responseMessage.senderId).toBe(2);
+    expect(responseMessage.channelId).toBe(1);
+    expect(responseMessage.content).toBe('Test message2');
   });
 
   it('/messages/ (GET) after second message', async () => {
     const response = await request(app.getHttpServer()).get('/messages/');
     expect(response.status).toBe(200);
-    const obj: PageDto<ResponseMessageDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(2);
-    expect(obj.data[0].senderId).toBe(1);
-    expect(obj.data[0].channelId).toBe(1);
-    expect(obj.data[0].content).toBe('Test message');
-    expect(obj.data[1].senderId).toBe(2);
-    expect(obj.data[1].channelId).toBe(1);
-    expect(obj.data[1].content).toBe('Test message2');
+    const responseMessagePages: PageDto<ResponseMessageDto> = response.body;
+    expect(responseMessagePages.meta.itemCount).toBe(2);
+    expect(responseMessagePages.data[0].senderId).toBe(1);
+    expect(responseMessagePages.data[0].channelId).toBe(1);
+    expect(responseMessagePages.data[0].content).toBe('Test message');
+    expect(responseMessagePages.data[1].senderId).toBe(2);
+    expect(responseMessagePages.data[1].channelId).toBe(1);
+    expect(responseMessagePages.data[1].content).toBe('Test message2');
   });
 
   it('/messages (POST) duplicate message', () => {
@@ -164,8 +164,8 @@ describe('MessagesController (e2e)', () => {
   it('/messages/ (GET) after duplicate message', async () => {
     const response = await request(app.getHttpServer()).get('/messages/');
     expect(response.status).toBe(200);
-    const obj: PageDto<ResponseMessageDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(3);
+    const responseMessagePages: PageDto<ResponseMessageDto> = response.body;
+    expect(responseMessagePages.meta.itemCount).toBe(3);
   });
 
   it('/messages/2 (DELETE)', () => {
@@ -183,10 +183,10 @@ describe('MessagesController (e2e)', () => {
   it('/messages/ (GET) after delete', async () => {
     const response = await request(app.getHttpServer()).get('/messages/');
     expect(response.status).toBe(200);
-    const obj: PageDto<ResponseMessageDto> = JSON.parse(response.text);
-    expect(obj.meta.itemCount).toBe(1);
-    expect(obj.data[0].senderId).toBe(1);
-    expect(obj.data[0].channelId).toBe(1);
-    expect(obj.data[0].content).toBe('Test message');
+    const responseMessagePages: PageDto<ResponseMessageDto> = response.body;
+    expect(responseMessagePages.meta.itemCount).toBe(1);
+    expect(responseMessagePages.data[0].senderId).toBe(1);
+    expect(responseMessagePages.data[0].channelId).toBe(1);
+    expect(responseMessagePages.data[0].content).toBe('Test message');
   });
 });
