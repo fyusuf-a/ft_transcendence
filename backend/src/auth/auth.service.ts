@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 
@@ -12,16 +11,17 @@ export class AuthService {
   ) {}
 
   async login(userDto: LoginUserDto) {
-    const userList = await this.usersService.findAll({
-      username: userDto.username,
-    });
-    if (userList.data.length !== 1) {
-      throw new EntityDoesNotExistError(`User: ${userDto.username}`);
+    try {
+      const user = await this.usersService.findByName(userDto.username);
+      const payload = { id: user.id, username: user.username };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    } catch (EntityNotFoundError) {
+      return {
+        status: 401,
+        message: 'Username is incorrect.',
+      };
     }
-    const user = userList.data[0];
-    const payload = { id: user.id, username: user.username };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
   }
 }
