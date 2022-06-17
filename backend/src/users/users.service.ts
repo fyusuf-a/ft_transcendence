@@ -27,6 +27,12 @@ export class UsersService {
     return this.usersRepository.findOne(id);
   }
 
+  findByName(username: string): Promise<User> {
+    return this.usersRepository.findOneOrFail({
+      where: { username: username },
+    });
+  }
+
   create(userDto: CreateUserDto): Promise<User> {
     return this.usersRepository.save(userDto);
   }
