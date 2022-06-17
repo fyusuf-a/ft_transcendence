@@ -31,6 +31,7 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();
