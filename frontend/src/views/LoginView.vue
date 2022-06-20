@@ -33,7 +33,22 @@ export default Vue.extend({
         token: token,
       });
 
+      this.authenticateSocket();
       this.$router.push("/profile");
+    },
+    async authenticateSocket() {
+      console.log("trying to auth socket");
+      this.$socket.client.emit(
+        "chat-auth",
+        { authorization: `${this.$store.state.user.token}` },
+        (response: string) => {
+          console.log(response);
+        }
+      );
+      this.$store.commit("login", {
+        username: this.$store.state.user.username,
+        token: this.$store.state.user.token,
+      });
     },
   },
 });

@@ -1,16 +1,15 @@
 <script lang="ts">
 import Vue from "vue";
-import { ChannelDto } from "../../common/dto/channel.dto";
 
 export default Vue.extend({
   props: {
     title: String,
-    channels: Object as () => Array<ChannelDto>,
+    channels: Array,
+    unreadChannels: Set,
   },
   data() {
     return {
       selectedChannel: undefined,
-      unreadChannels: new Set(),
       unreadMarker: "mdi-new-box",
     };
   },
@@ -24,25 +23,42 @@ export default Vue.extend({
 </script>
 
 <template>
-  <v-card class="mx-auto float-right" max-width="300">
-    <v-list dense>
-      <v-subheader>{{ title }}</v-subheader>
-      <v-list-item-group
-        v-model="selectedChannel"
-        color="primary"
-        @change="handleChannelSelection($event)"
-      >
-        <v-list-item v-for="(item, i) in channels" :key="i">
-          <v-list-item-icon>
-            <v-icon v-if="unreadChannels.has(item.id)" color="secondary">{{
-              unreadMarker
-            }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
+  <v-card>
+    <v-container>
+      <v-row no-gutters align="center">
+        <v-col cols="10">{{ title }}</v-col>
+        <v-col cols="1">
+          <v-btn icon color="primary">+</v-btn>
+        </v-col>
+        <v-spacer></v-spacer>
+      </v-row>
+      <v-row>
+        <v-divider></v-divider>
+      </v-row>
+      <v-row>
+        <v-col>
+          <v-list dense>
+            <v-list-item-group
+              v-model="selectedChannel"
+              color="primary"
+              @change="handleChannelSelection($event)"
+            >
+              <v-list-item v-for="(item, i) in channels" :key="i">
+                <v-list-item-icon>
+                  <v-icon
+                    v-if="unreadChannels.has(item.id)"
+                    color="secondary"
+                    >{{ unreadMarker }}</v-icon
+                  >
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.name"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-card>
 </template>
