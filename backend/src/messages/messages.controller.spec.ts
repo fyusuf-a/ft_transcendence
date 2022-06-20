@@ -11,7 +11,7 @@ import UserRepository from '../users/repository/user.repository';
 import ChannelRepository from '../channels/repository/channel.repository';
 import { Message } from './entities/message.entity';
 import { PageDto } from 'src/common/dto/page.dto';
-import { PageOptionsDto } from 'src/common/dto/page-options.dto';
+import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
 
 describe('MessagesController', () => {
@@ -50,7 +50,7 @@ describe('MessagesController', () => {
     it('should return an array of messages', async () => {
       const expected = new PageDto(
         [],
-        new PageMetaDto(new PageOptionsDto(), 10),
+        new PageMetaDto(new PageOptionsDto(), takeDefault),
       );
       jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
       const result = await controller.findAll();

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
-import { PageOptionsDto } from 'src/common/dto/page-options.dto';
+import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageDto } from 'src/common/dto/page.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsController } from './channels.controller';
@@ -39,7 +39,7 @@ describe('ChannelsController', () => {
     it('should return an array of channels', async () => {
       const expected = new PageDto(
         [],
-        new PageMetaDto(new PageOptionsDto(), 10),
+        new PageMetaDto(new PageOptionsDto(), takeDefault),
       );
       jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
       const result = await controller.findAll();
