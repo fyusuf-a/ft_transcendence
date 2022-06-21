@@ -15,8 +15,8 @@ export class AuthController {
   @Post('login')
   async login(@Body() userDto: LoginUserDto) {
     try {
-      const response = await this.authService.login(userDto);
-      return response;
+
+      return await this.authService.login(userDto);;
     } catch (EntityNotFoundError) {
       throw new UnauthorizedException('Username is incorrect');
     }
