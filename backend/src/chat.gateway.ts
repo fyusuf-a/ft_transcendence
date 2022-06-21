@@ -75,7 +75,7 @@ export class ChatGateway
   }
 
   @SubscribeMessage('chat-send')
-  handleSend(client: Socket, payload: ChatSendDto): string {
+  async handleSend(client: Socket, payload: ChatSendDto): Promise<string> {
     this.checkAuth(client);
     const target = payload.channel;
     const message = payload.message;
@@ -91,10 +91,8 @@ export class ChatGateway
     messageDto.senderId = this.authenticatedSockets.get(client.id).id;
 
     // Check if User has permission to send message here
-    this.server
-      .to(target)
-      .emit('message', messageDto.senderId, target, message);
-    this.messagesService.create(messageDto);
+    const messageResponse = await this.messagesService.create(messageDto);
+    this.server.to(target).emit('chat-message', messageResponse);
     return 'Message Confirmed';
   }
 
