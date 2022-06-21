@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -18,10 +18,7 @@ export class AuthService {
         access_token: this.jwtService.sign(payload),
       };
     } catch (EntityNotFoundError) {
-      return {
-        status: 401,
-        message: 'Username is incorrect.',
-      };
+      throw new UnauthorizedException('Username is incorrect');
     }
   }
 }
