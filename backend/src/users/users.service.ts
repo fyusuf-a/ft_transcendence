@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  StreamableFile,
-} from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto } from '../common/dto/page.dto';
@@ -63,12 +59,9 @@ export class UsersService {
     if (user === undefined) {
       throw new EntityDoesNotExistError(`User #${id}`);
     }
-    let filepath = user.avatar;
+    const filepath = user.avatar;
     if (filepath === null || !fs.existsSync(filepath)) {
-      filepath = this.configService.get<string>('DEFAULT_AVATAR');
-      if (!fs.existsSync(filepath)) {
-        throw new InternalServerErrorException(`Default Avatar Does Not Exist`);
-      }
+      throw new EntityDoesNotExistError('Avatar');
     }
     const splitPath = filepath.split('.');
     const ext = splitPath[splitPath.length - 1];

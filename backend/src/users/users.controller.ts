@@ -98,7 +98,6 @@ export class UsersController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log(file);
     return this.usersService.updateAvatar(
       +id,
       `${this.configService.get<string>('UPLOADS_PATH')}` + file.filename,
@@ -119,6 +118,9 @@ export class UsersController {
       return file.fileStream;
     } catch (error) {
       if (error instanceof EntityDoesNotExistError) {
+        if (error.message === 'Avatar does not exist') {
+          throw new HttpException(error.message, HttpStatus.NO_CONTENT);
+        }
         throw new BadRequestException(error.message);
       }
       throw error;

@@ -22,7 +22,12 @@ import { diskStorage } from 'multer';
             if (file_ext === undefined) {
               throw new BadRequestException('Invalid File Type');
             }
-            cb(null, req.params.id + '_avatar.' + file_ext);
+            cb(
+              null,
+              req.params.id +
+                configService.get<string>('AVATAR_SUFFIX') +
+                file_ext,
+            );
           },
         }),
         fileFilter: (req, file, cb) => {
@@ -33,7 +38,7 @@ import { diskStorage } from 'multer';
           }
           return cb(null, true);
         },
-        limits: { fileSize: 2 * 1000 * 1000 },
+        limits: { fileSize: configService.get<number>('MAX_FILE_SIZE') },
       }),
       inject: [ConfigService],
     }),
