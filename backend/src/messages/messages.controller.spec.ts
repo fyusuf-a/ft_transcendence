@@ -13,6 +13,7 @@ import { Message } from './entities/message.entity';
 import { PageDto } from 'src/common/dto/page.dto';
 import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
+import { MockRepository } from 'src/common/mocks/repository.mock';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -25,15 +26,15 @@ describe('MessagesController', () => {
         MessagesService,
         {
           provide: MessageRepository,
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
         {
           provide: UserRepository,
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
         {
           provide: ChannelRepository,
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
       ],
     }).compile();
@@ -101,7 +102,7 @@ describe('MessagesController', () => {
   describe('findOne()', () => {
     it('should return a message', async () => {
       const mockOut = new Message();
-      const expected = new ResponseMessageDto(mockOut[0]);
+      const expected = new ResponseMessageDto();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
       expect(result).toEqual(expected);

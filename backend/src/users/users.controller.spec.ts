@@ -10,6 +10,7 @@ import { PageMetaDto } from '../common/dto/page-meta.dto';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
 import UserRepository from './repository/user.repository';
+import { MockRepository } from 'src/common/mocks/repository.mock';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -23,7 +24,7 @@ describe('UsersController', () => {
         UserRepository,
         {
           provide: UserRepository,
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
       ],
     }).compile();
@@ -80,7 +81,7 @@ describe('UsersController', () => {
   describe('findOne()', () => {
     it('should return a user', async () => {
       const mockOut = new User();
-      const expected = new ResponseUserDto(mockOut[0]);
+      const expected = new ResponseUserDto();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
       expect(result).toEqual(expected);

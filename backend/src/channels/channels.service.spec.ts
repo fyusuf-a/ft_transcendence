@@ -7,7 +7,6 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { MockChannelEntity } from './mocks/channel.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import ChannelRepository from './repository/channel.repository';
-import { PageDto } from 'src/common/dto/page.dto';
 
 const entityNumber = 2;
 
@@ -41,29 +40,15 @@ describe('ChannelsService', () => {
   });
 
   describe('when looking up an non-existing Channel by id', () => {
-    beforeEach(async () => {
-      const module: TestingModule = await Test.createTestingModule({
-        providers: [
-          ChannelsService,
-          {
-            provide: getRepositoryToken(ChannelRepository),
-            useValue: {
-              findOne: jest.fn(() => undefined),
-            },
-          },
-        ],
-      }).compile();
-      service = module.get<ChannelsService>(ChannelsService);
-    });
     it('should return undefined', async () => {
-      expect(await service.findOne(1)).toEqual(undefined);
+      expect(await service.findOne(entityNumber + 1)).toEqual(undefined);
     });
   });
 
   describe('when finding all Channels', () => {
     it('should return array of Channel', async () => {
       const ret = await service.findAll();
-      expect(ret).toBeInstanceOf(PageDto);
+      expect(ret.data.length).toBe(2);
     });
   });
 

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
 import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageDto } from 'src/common/dto/page.dto';
+import { MockRepository } from 'src/common/mocks/repository.mock';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsController } from './channels.controller';
 import { ChannelsService } from './channels.service';
@@ -22,7 +23,7 @@ describe('ChannelsController', () => {
         ChannelsService,
         {
           provide: ChannelRepository,
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
       ],
     }).compile();
@@ -75,7 +76,7 @@ describe('ChannelsController', () => {
   describe('findOne()', () => {
     it('should return a channel', async () => {
       const mockOut = new Channel();
-      const expected = new ResponseChannelDto(mockOut[0]);
+      const expected = new ResponseChannelDto();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
       expect(result).toEqual(expected);

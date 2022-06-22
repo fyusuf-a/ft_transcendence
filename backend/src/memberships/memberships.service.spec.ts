@@ -23,15 +23,15 @@ describe('MembershipsService', () => {
         MembershipsService,
         {
           provide: getRepositoryToken(Membership),
-          useClass: Repository,
+          useClass: MockRepository,
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useValue: new MockRepository<User>(new User()),
+          useClass: MockRepository,
         },
         {
           provide: getRepositoryToken(ChannelRepository),
-          useValue: new MockRepository<Channel>(new Channel()),
+          useClass: MockRepository,
         },
       ],
     }).compile();

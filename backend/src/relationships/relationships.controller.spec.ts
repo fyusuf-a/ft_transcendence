@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { MockRepository } from 'src/common/mocks/repository.mock';
 import UserRepository from 'src/users/repository/user.repository';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ResponseRelationshipDto } from './dto/response-relationship.dto';
@@ -19,11 +20,11 @@ describe('RelationshipsController', () => {
         RelationshipsService,
         {
           provide: getRepositoryToken(Relationship),
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
       ],
     }).compile();

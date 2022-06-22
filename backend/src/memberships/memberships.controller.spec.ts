@@ -6,11 +6,12 @@ import { CreateMembershipDto } from './dto/create-membership.dto';
 import { ResponseMembershipDto } from './dto/response-membership.dto';
 import UserRepository from 'src/users/repository/user.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';
-import { Membership } from './entities/membership.entity';
+import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
+import { MockRepository } from 'src/common/mocks/repository.mock';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -23,15 +24,15 @@ describe('MembershipsController', () => {
         MembershipsService,
         {
           provide: getRepositoryToken(Membership),
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
         {
           provide: getRepositoryToken(ChannelRepository),
-          useValue: jest.fn(),
+          useClass: MockRepository,
         },
       ],
     }).compile();
@@ -47,7 +48,7 @@ describe('MembershipsController', () => {
   describe('findOne()', () => {
     it('should return a membership', async () => {
       const mockOut = new Membership();
-      const expected = new ResponseMembershipDto(mockOut[0]);
+      const expected = new ResponseMembershipDto();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
       expect(result).toEqual(expected);
@@ -63,7 +64,7 @@ describe('MembershipsController', () => {
   describe('findAll()', () => {
     it('should return an array of membership', async () => {
       const mockOut = [new Membership()];
-      const expected = [new ResponseMembershipDto(mockOut[0])];
+      const expected = [new ResponseMembershipDto()];
       jest.spyOn(service, 'findAll').mockImplementation(async () => mockOut);
       const result = await controller.findAll();
       expect(result).toEqual(expected);
@@ -75,6 +76,7 @@ describe('MembershipsController', () => {
       const mockMembership = new Membership();
       mockMembership.channelId = 1;
       mockMembership.userId = 0;
+      mockMembership.role = MembershipRoleType.PARTICIPANT;
       const createMembershipDto = new CreateMembershipDto();
       createMembershipDto.channelId = 1;
       createMembershipDto.userId = 0;
@@ -89,6 +91,7 @@ describe('MembershipsController', () => {
       const createMembershipDto = new CreateMembershipDto();
       createMembershipDto.channelId = 1;
       createMembershipDto.userId = 0;
+      createMembershipDto.role = MembershipRoleType.PARTICIPANT;
       jest.spyOn(service, 'create').mockImplementation(async () => {
         throw new EntityDoesNotExistError('error');
       });
