@@ -53,7 +53,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== "Login" && !store.state.isAuthenticated)
+  if (
+    process.env.VUE_APP_DISABLE_AUTHENTICATION === "false" &&
+    to.name !== "Login" &&
+    !store.state.isAuthenticated
+  )
     next({ name: "Login" });
   else next();
 });
