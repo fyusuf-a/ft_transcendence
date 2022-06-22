@@ -56,7 +56,7 @@ export class UsersController {
 
   @Public()
   @Post()
-  @ApiResponse({ status: 500, description: 'Record could not be created.' })
+  @ApiResponse({ status: 500, description: 'Record could not be created' })
   create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
     return this.usersService.create(createUserDto);
   }
@@ -72,7 +72,7 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get(':id')
-  @ApiResponse({ status: 404, description: 'Record not found.' })
+  @ApiResponse({ status: 404, description: 'Record not found' })
   async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
     const user: ResponseUserDto = await this.usersService.findOne(+id);
     if (user === undefined) {
@@ -89,6 +89,8 @@ export class UsersController {
 
   @Post(':id/avatar')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiBearerAuth()
+  @ApiResponse({ status: 201, description: 'Success' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Avatar Photo',
@@ -105,6 +107,10 @@ export class UsersController {
   }
 
   @Get(':id/avatar')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'Success' })
+  @ApiResponse({ status: 204, description: 'No avatar found' })
+  @ApiResponse({ status: 400, description: 'User does not exist' })
   async getAvatar(
     @Param('id') id: string,
     @Response({ passthrough: true }) res,
