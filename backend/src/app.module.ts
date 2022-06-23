@@ -14,6 +14,8 @@ import { Relationship } from './relationships/entities/relationship.entity';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { AchievementsModule } from './achievements/achievements.module';
+import { Achievement } from './achievements/entities/achievements.entity';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { APP_GUARD } from '@nestjs/core';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Message, Channel, Membership, Relationship],
+      entities: [User, Message, Channel, Membership, Relationship, Achievement],
       synchronize: true,
     }),
     UsersModule,
@@ -34,6 +36,7 @@ import { APP_GUARD } from '@nestjs/core';
     MembershipsModule,
     RelationshipsModule,
     AuthModule,
+    AchievementsModule,
   ],
   controllers: [],
   providers: [
