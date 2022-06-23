@@ -72,7 +72,7 @@ describe('UsersService', () => {
   });
 
   describe('when removing a new User', () => {
-    it('should return void', async () => {
+    it('should return a DeleteResult', async () => {
       expect(await service.remove(0)).toEqual(new DeleteResult());
     });
   });
