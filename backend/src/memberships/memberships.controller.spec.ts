@@ -112,7 +112,7 @@ describe('MembershipsController', () => {
   });
 
   describe('update()', () => {
-    it('should return a ResponseChannelDto', async () => {
+    it('should return an UpdateResult', async () => {
       const mock = new UpdateResult();
       const dto = new UpdateMembershipDto();
       dto.bannedUntil = new Date();
