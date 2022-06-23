@@ -45,10 +45,10 @@ export default Vue.extend({
           console.log(response);
         }
       );
-      this.$store.commit("login", {
-        username: this.$store.state.user.username,
-        token: this.$store.state.user.token,
-      });
+      // this.$store.commit("login", {
+      //   username: this.$store.state.user.username,
+      //   token: this.$store.state.user.token,
+      // });
     },
   },
 });

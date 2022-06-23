@@ -48,6 +48,20 @@ export default Vue.extend({
         this.getMessagesForChannel(newChannel.id);
       }
     },
+    async handleChannelJoin(channelStr: string) {
+      const channelId = parseInt(channelStr);
+      console.log("Vue: joinning channel " + channelId);
+      const channel = this.allChannels.get(channelId);
+      if (channel) {
+        if ((await this.createMembership(channelId)) === true) {
+          this.subscribedChannels.push(channel);
+          this.joinChannelById(channelId);
+          this.handleChannelSelection(channel);
+        }
+      } else {
+        // Try to fetch channel ?
+      }
+    },
     handleMessage(messageDto: MessageDto) {
       console.log("Vue: incoming...");
       console.log(messageDto);
@@ -102,7 +116,7 @@ export default Vue.extend({
       }
       this.messages = new Map(this.messages);
       if (
-        this.selectedChannel &&
+        !this.selectedChannel ||
         this.selectedChannel.id !== message.channelId
       ) {
         console.log("Message is from inactive channel");
@@ -160,10 +174,30 @@ export default Vue.extend({
         }
       );
     },
+    async updateUserWithId() {
+      console.log("Vue: Fetching user object");
+      let rawResponse = await fetch(
+        `http://localhost:8080/users?username=${this.$store.state.user.username}&order=ASC&page=1&take=1`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `bearer ${this.$store.state.user.token}`,
+          },
+        }
+      );
+      const response = await rawResponse.json();
+      this.memberships = response.data;
+      if (this.memberships) {
+        console.log(this.memberships[0]);
+        this.$store.commit("updateUserId", this.memberships[0].id);
+      }
+    },
     async fetchMemberships() {
       console.log("Vue: Fetching memberships");
       let rawResponse = await fetch(
-        "http://localhost:8080/memberships?user=1",
+        `http://localhost:8080/memberships?user=${this.$store.state.userId}`,
         {
           method: "GET",
           headers: {
@@ -180,6 +214,26 @@ export default Vue.extend({
           console.log(membership);
         }
       }
+    },
+    async createMembership(channelId: number): Promise<boolean> {
+      console.log("Vue: Fetching memberships to create");
+      let rawResponse = await fetch(
+        "http://localhost:8080/memberships?user=1",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `bearer ${this.$store.state.user.token}`,
+          },
+          body: JSON.stringify({
+            channelId: channelId,
+            userId: this.$store.state.userId,
+            role: "participant",
+          }),
+        }
+      );
+      return rawResponse.status === 201;
     },
     async getAllChannels() {
       console.log("Vue: Grabbing channels");
@@ -214,6 +268,7 @@ export default Vue.extend({
     },
   },
   async mounted() {
+    await this.updateUserWithId();
     await this.getAllChannels();
     await this.fetchMemberships();
     console.log("Trying to match membership to channel");
@@ -252,9 +307,11 @@ export default Vue.extend({
       <v-col cols="12" md="2">
         <channels-list
           @channel-select-event="handleChannelSelection"
+          @channel-join-event="(channelId) => handleChannelJoin(channelId)"
           title="Channels"
           :channels="subscribedChannels"
           :unreadChannels="unreadChannels"
+          :allChannels="allChannels"
           :key="newUnread"
         ></channels-list>
       </v-col>

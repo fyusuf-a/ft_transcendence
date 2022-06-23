@@ -1,10 +1,13 @@
 <script lang="ts">
 import Vue from "vue";
 
+import ChannelJoinDialog from "./ChannelJoinDialog.vue";
+
 export default Vue.extend({
   props: {
     title: String,
     channels: Array,
+    allChannels: Map,
     unreadChannels: Set,
   },
   data() {
@@ -13,10 +16,14 @@ export default Vue.extend({
       unreadMarker: "mdi-new-box",
     };
   },
+  components: { ChannelJoinDialog },
   methods: {
     async handleChannelSelection(event: number) {
       console.log("Handling a channel selection");
       this.$emit("channel-select-event", this.channels[event]);
+    },
+    handleChannelJoin(channelId: number) {
+      this.$emit("channel-join-event", channelId);
     },
   },
 });
@@ -28,7 +35,10 @@ export default Vue.extend({
       <v-row no-gutters align="center">
         <v-col cols="10">{{ title }}</v-col>
         <v-col cols="1">
-          <v-btn icon color="primary">+</v-btn>
+          <channel-join-dialog
+            @channel-join-event="(channelId) => handleChannelJoin(channelId)"
+            :joinableChannels="Array.from(allChannels.values())"
+          ></channel-join-dialog>
         </v-col>
         <v-spacer></v-spacer>
       </v-row>
