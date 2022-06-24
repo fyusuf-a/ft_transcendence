@@ -4,6 +4,7 @@ import { ChannelDto } from "../../common/dto/channel.dto";
 import { MessageDto } from "../../common/dto/message.dto";
 import { UserDto } from "../../common/dto/user.dto";
 import MessageItem from "./MessageItem.vue";
+import ChatWindowMenu from "./ChatWindowMenu.vue";
 
 export default Vue.extend({
   props: {
@@ -19,7 +20,7 @@ export default Vue.extend({
       itemHeight: 50,
     };
   },
-  components: { MessageItem },
+  components: { MessageItem, ChatWindowMenu },
   methods: {
     printResponse(response: string) {
       console.log(`Server: ${response}`);
@@ -74,25 +75,40 @@ export default Vue.extend({
 
 <template>
   <v-card v-if="channel !== undefined">
-    <v-subheader>{{ channel.name }}</v-subheader>
-    <v-divider></v-divider>
-    <v-virtual-scroll
-      :items="messages.get(channel.id)"
-      :item-height="itemHeight"
-      height="300"
-      id="message-scroll"
-    >
-      <template v-slot:default="{ item }">
-        <message-item
-          :sender="getUsername(item.senderId)"
-          :createdAt="item.createdAt"
-          :content="item.content"
-        >
-        </message-item>
-      </template>
-    </v-virtual-scroll>
-
     <v-container fill-height>
+      <v-row dense max-height="10px">
+        <v-col cols="11">
+          <v-subheader>{{ channel.name }}</v-subheader>
+        </v-col>
+        <v-col cols="1">
+          <chat-window-menu></chat-window-menu>
+        </v-col>
+      </v-row>
+      <v-row dense max-height="5px">
+        <v-col>
+          <v-divider></v-divider>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-virtual-scroll
+            :items="messages.get(channel.id)"
+            :item-height="itemHeight"
+            height="300"
+            id="message-scroll"
+          >
+            <template v-slot:default="{ item }">
+              <message-item
+                :sender="getUsername(item.senderId)"
+                :createdAt="item.createdAt"
+                :content="item.content"
+              >
+              </message-item>
+            </template>
+          </v-virtual-scroll>
+        </v-col>
+      </v-row>
+
       <v-row align="baseline">
         <v-col class="col-10">
           <v-text-field
