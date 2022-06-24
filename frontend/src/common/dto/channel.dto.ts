@@ -7,3 +7,15 @@ export class ChannelDto {
     this.name = name;
   }
 }
+
+export class CreateChannelDto {
+  name: string;
+  type: string;
+  password?: string;
+
+  constructor(name: string, type: string, password?: string) {
+    this.name = name;
+    this.type = type;
+    this.password = password;
+  }
+}

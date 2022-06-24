@@ -50,7 +50,7 @@ export default Vue.extend({
     },
     async handleChannelJoin(channelStr: string) {
       const channelId = parseInt(channelStr);
-      console.log("Vue: joinning channel " + channelId);
+      console.log("Vue: joining channel " + channelId);
       const channel = this.allChannels.get(channelId);
       if (channel) {
         if ((await this.createMembership(channelId)) === true) {
@@ -60,6 +60,8 @@ export default Vue.extend({
         }
       } else {
         // Try to fetch channel ?
+        await this.getAllChannels(); // should just get the one channel instead
+        if (this.allChannels.get(channelId)) this.handleChannelJoin(channelStr);
       }
     },
     handleLeaveChannelEvent() {
