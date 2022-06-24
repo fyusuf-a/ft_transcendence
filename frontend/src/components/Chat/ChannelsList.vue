@@ -54,16 +54,21 @@ export default Vue.extend({
               @change="handleChannelSelection($event)"
             >
               <v-list-item v-for="(item, i) in channels" :key="i">
-                <v-list-item-icon>
-                  <v-icon
-                    v-if="unreadChannels.has(item.id)"
-                    color="secondary"
-                    >{{ unreadMarker }}</v-icon
-                  >
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title v-text="item.name"></v-list-item-title>
-                </v-list-item-content>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-list-item-icon v-bind="attrs" v-on="on">
+                      <v-icon
+                        v-if="unreadChannels.has(item.id)"
+                        color="secondary"
+                        >{{ unreadMarker }}</v-icon
+                      >
+                    </v-list-item-icon>
+                    <v-list-item-content v-bind="attrs" v-on="on">
+                      <v-list-item-title v-text="item.name"></v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+                  <span>{{ item.name }}</span>
+                </v-tooltip>
               </v-list-item>
             </v-list-item-group>
           </v-list>
