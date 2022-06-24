@@ -61,7 +61,11 @@ export default Vue.extend({
       } else {
         // Try to fetch channel ?
         await this.getAllChannels(); // should just get the one channel instead
-        if (this.allChannels.get(channelId)) this.handleChannelJoin(channelStr);
+        if (this.allChannels.has(channelId)) {
+          this.handleChannelJoin(channelStr);
+        } else {
+          console.log("Still can't find the channel :(");
+        }
       }
     },
     handleLeaveChannelEvent() {
