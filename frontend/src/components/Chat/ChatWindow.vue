@@ -56,6 +56,9 @@ export default Vue.extend({
       }
       return "UNKNOWN USER";
     },
+    handleLeaveChannelEvent() {
+      this.$emit("chat-leave-channel");
+    },
   },
   computed: {
     lastMessage() {
@@ -81,7 +84,9 @@ export default Vue.extend({
           <v-subheader>{{ channel.name }}</v-subheader>
         </v-col>
         <v-col cols="1">
-          <chat-window-menu></chat-window-menu>
+          <chat-window-menu
+            @chat-leave-channel="handleLeaveChannelEvent"
+          ></chat-window-menu>
         </v-col>
       </v-row>
       <v-row dense max-height="5px">

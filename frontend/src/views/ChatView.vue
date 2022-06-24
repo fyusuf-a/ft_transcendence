@@ -62,6 +62,11 @@ export default Vue.extend({
         // Try to fetch channel ?
       }
     },
+    handleLeaveChannelEvent() {
+      if (this.selectedChannel) {
+        this.leaveChannelById(this.selectedChannel.id);
+      }
+    },
     handleMessage(messageDto: MessageDto) {
       console.log("Vue: incoming...");
       console.log(messageDto);
@@ -173,6 +178,26 @@ export default Vue.extend({
           this.printResponse(response);
         }
       );
+    },
+    leaveChannelById(id: number) {
+      console.log(`Vue: Asking to leave channel #${id}`);
+      this.$socket.client.emit(
+        "chat-leave",
+        { channel: id },
+        (response: string) => {
+          this.printResponse(response);
+        }
+      );
+      // Remove Channel from subscribed channels, close ChatWindow
+      if (this.selectedChannel) {
+        const channelIndex = this.subscribedChannels.indexOf(
+          this.selectedChannel
+        );
+        if (channelIndex !== -1) {
+          this.subscribedChannels.splice(channelIndex, 1);
+        }
+      }
+      this.selectedChannel = undefined;
     },
     async updateUserWithId() {
       console.log("Vue: Fetching user object");
@@ -303,6 +328,7 @@ export default Vue.extend({
           :messages="messages"
           :users="users"
           :key="newMessage"
+          @chat-leave-channel="handleLeaveChannelEvent"
         ></chat-window>
       </v-col>
       <v-col cols="12" md="2">

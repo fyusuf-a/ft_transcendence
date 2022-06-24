@@ -23,7 +23,7 @@ export default Vue.extend({
       });
     },
   },
-  mounted() {},
+  // mounted() {},
 });
 </script>
 
