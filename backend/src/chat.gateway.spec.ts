@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ChannelsService } from './channels/channels.service';
 import ChannelRepository from './channels/repository/channel.repository';
 import { ChatGateway } from './chat.gateway';
+import { Membership } from './memberships/entities/membership.entity';
+import { MembershipsService } from './memberships/memberships.service';
 import { MessagesService } from './messages/messages.service';
 import MessageRepository from './messages/repository/message.repository';
 import UserRepository from './users/repository/user.repository';
@@ -17,6 +20,7 @@ describe('ChatGateway', () => {
         ChatGateway,
         MessagesService,
         UsersService,
+        MembershipsService,
         ChannelsService,
         {
           provide: getRepositoryToken(MessageRepository),
@@ -29,6 +33,10 @@ describe('ChatGateway', () => {
         {
           provide: getRepositoryToken(ChannelRepository),
           useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
+          useClass: Repository,
         },
       ],
     }).compile();

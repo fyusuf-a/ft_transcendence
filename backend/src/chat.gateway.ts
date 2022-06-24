@@ -17,6 +17,7 @@ import { User } from './users/entities/user.entity';
 import { TokenUserDto } from './auth/dto/token-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { ResponseMessageDto } from './messages/dto/response-message.dto';
+import { MembershipsService } from './memberships/memberships.service';
 
 export class ChatJoinDto {
   channel: string;
@@ -34,6 +35,7 @@ export class ChatGateway
   constructor(
     private readonly messagesService: MessagesService,
     private readonly usersService: UsersService,
+    private readonly membershipsService: MembershipsService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -52,6 +54,30 @@ export class ChatGateway
     // Check if User has permission to join channel here
     client.join(payload.channel);
     return `Successfully joined channel ${payload.channel}`;
+  }
+
+  @SubscribeMessage('chat-leave')
+  async handleLeave(client: Socket, payload: ChatJoinDto) {
+    this.logger.log(`${client.id} wants to leave room [${payload.channel}]`);
+    this.checkAuth(client);
+    // Check if User leaving affects ownership
+    client.leave(payload.channel);
+    const membershipArray = await this.membershipsService.findAll({
+      channel: payload.channel,
+      user: this.authenticatedSockets.get(client.id).id.toString(),
+    });
+    if (membershipArray && membershipArray.length === 1) {
+      const membership = membershipArray[0];
+      if (
+        membership &&
+        membership.id &&
+        membership.userId === this.authenticatedSockets.get(client.id).id &&
+        membership.channelId === parseInt(payload.channel)
+      ) {
+        await this.membershipsService.remove(membership.id);
+      }
+    }
+    return `Successfully left channel ${payload.channel}`;
   }
 
   @SubscribeMessage('chat-auth')
