@@ -10,34 +10,34 @@ import {
   Unique,
 } from 'typeorm';
 
-export enum RelationshipTypeEnum {
-  FRIEND = 'friend',
-  BLOCK = 'block',
+export enum FriendshipTypeEnum {
+  PENDING = 1,
+  ACCEPTED = 2,
 }
 
 @Unique(['source', 'target'])
 @Entity()
 @Check(`"sourceId" != "targetId"`)
-export class Relationship {
+export class Friendship {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Exclude()
   @ManyToOne(() => User)
   source: User;
-  @RelationId((relationship: Relationship) => relationship.source)
+  @RelationId((friendship: Friendship) => friendship.source)
   sourceId: number;
 
   @Exclude()
   @ManyToOne(() => User)
   target: User;
-  @RelationId((relationship: Relationship) => relationship.target)
+  @RelationId((friendship: Friendship) => friendship.target)
   targetId: number;
 
   @Column({
     type: 'enum',
-    enum: RelationshipTypeEnum,
-    default: RelationshipTypeEnum.FRIEND,
+    enum: FriendshipTypeEnum,
+    default: FriendshipTypeEnum.PENDING,
   })
-  type: RelationshipTypeEnum;
+  status: FriendshipTypeEnum;
 }

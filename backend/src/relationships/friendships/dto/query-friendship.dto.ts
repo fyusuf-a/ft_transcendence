@@ -1,8 +1,8 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
-import { RelationshipTypeEnum } from '../entities/relationship.entity';
+import { FriendshipTypeEnum } from '../entities/friendship.entity';
 
-export class QueryRelationshipDto {
+export class QueryFriendshipDto {
   @ApiPropertyOptional({
     description: 'Source User Id',
   })
@@ -18,9 +18,9 @@ export class QueryRelationshipDto {
   target?: string;
 
   @ApiPropertyOptional({
-    description: 'Role Type',
+    description: 'Status',
   })
   @IsOptional()
-  @IsEnum(RelationshipTypeEnum)
-  type?: RelationshipTypeEnum;
+  @IsEnum(FriendshipTypeEnum)
+  status?: FriendshipTypeEnum;
 }

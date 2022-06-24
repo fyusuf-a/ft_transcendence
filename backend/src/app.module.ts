@@ -9,8 +9,10 @@ import { ChannelsModule } from './channels/channels.module';
 import { Channel } from './channels/entities/channel.entity';
 import { MembershipsModule } from './memberships/memberships.module';
 import { Membership } from './memberships/entities/membership.entity';
-import { RelationshipsModule } from './relationships/relationships.module';
-import { Relationship } from './relationships/entities/relationship.entity';
+import { FriendshipsModule } from './relationships/friendships/friendships.module';
+import { BlocksModule } from './relationships/blocks/blocks.module';
+import { Friendship } from './relationships/friendships/entities/friendship.entity';
+import { Block } from './relationships/blocks/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
@@ -27,14 +29,23 @@ import { Achievement } from './achievements/entities/achievements.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Message, Channel, Membership, Relationship, Achievement],
+      entities: [
+        User,
+        Message,
+        Channel,
+        Membership,
+        Friendship,
+        Block,
+        Achievement,
+      ],
       synchronize: true,
     }),
     UsersModule,
     MessagesModule,
     ChannelsModule,
     MembershipsModule,
-    RelationshipsModule,
+    FriendshipsModule,
+    BlocksModule,
     AuthModule,
     AchievementsModule,
   ],

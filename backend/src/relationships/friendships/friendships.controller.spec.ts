@@ -1,20 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import UserRepository from 'src/users/repository/user.repository';
-import { Relationship } from './entities/relationship.entity';
-import { RelationshipsController } from './relationships.controller';
-import { RelationshipsService } from './relationships.service';
+import { Friendship } from './entities/friendship.entity';
+import { FriendshipsController } from './friendships.controller';
+import { FriendshipsService } from './friendships.service';
 
-describe('RelationshipsController', () => {
-  let controller: RelationshipsController;
+describe('FriendshipsController', () => {
+  let controller: FriendshipsController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [RelationshipsController],
+      controllers: [FriendshipsController],
       providers: [
-        RelationshipsService,
+        FriendshipsService,
         {
-          provide: getRepositoryToken(Relationship),
+          provide: getRepositoryToken(Friendship),
           useValue: jest.fn(),
         },
         {
@@ -24,7 +24,7 @@ describe('RelationshipsController', () => {
       ],
     }).compile();
 
-    controller = module.get<RelationshipsController>(RelationshipsController);
+    controller = module.get<FriendshipsController>(FriendshipsController);
   });
 
   it('should be defined', () => {

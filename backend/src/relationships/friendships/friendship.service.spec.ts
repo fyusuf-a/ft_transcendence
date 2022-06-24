@@ -2,20 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import UserRepository from 'src/users/repository/user.repository';
 import { User } from 'src/users/entities/user.entity';
-import { Relationship } from './entities/relationship.entity';
-import { RelationshipsService } from './relationships.service';
+import { Friendship } from './entities/friendship.entity';
+import { FriendshipsService } from './friendships.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 
-describe('RelationshipsService', () => {
-  let service: RelationshipsService;
+describe('FriendshipsService', () => {
+  let service: FriendshipsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        RelationshipsService,
+        FriendshipsService,
         {
-          provide: getRepositoryToken(Relationship),
-          useValue: new MockRepository<Relationship>(new Relationship()),
+          provide: getRepositoryToken(Friendship),
+          useValue: new MockRepository<Friendship>(new Friendship()),
         },
         {
           provide: getRepositoryToken(UserRepository),
@@ -24,7 +24,7 @@ describe('RelationshipsService', () => {
       ],
     }).compile();
 
-    service = module.get<RelationshipsService>(RelationshipsService);
+    service = module.get<FriendshipsService>(FriendshipsService);
   });
 
   it('should be defined', () => {
