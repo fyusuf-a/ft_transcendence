@@ -14,8 +14,8 @@ declare interface DataType {
   unreadChannels: Set<number>;
   selectedChannel?: ChannelDto;
   messages: Map<number, Array<MessageDto>>;
-  newMessage: string;
-  newUnread: string;
+  newMessage: number;
+  newUnread: number;
   users: Map<number, UserDto>;
   memberships: Array<MembershipDto>;
 }
@@ -29,8 +29,8 @@ export default Vue.extend({
       unreadChannels: new Set(),
       selectedChannel: undefined,
       messages: new Map(),
-      newMessage: "message-new-",
-      newUnread: "unread-channel-",
+      newMessage: 0,
+      newUnread: 0,
       users: new Map(),
       memberships: [],
     };
@@ -121,9 +121,9 @@ export default Vue.extend({
       ) {
         console.log("Message is from inactive channel");
         this.unreadChannels.add(message.channelId);
-        this.newUnread += "1";
+        this.newUnread += 1;
       } else {
-        this.newMessage += "1";
+        this.newMessage += 1;
       }
     },
     async fetchUserById(userId: number) {
@@ -253,6 +253,7 @@ export default Vue.extend({
           // this.joinChannelById(channel.id);
         }
       }
+      this.newUnread += 1;
     },
   },
   computed: {
