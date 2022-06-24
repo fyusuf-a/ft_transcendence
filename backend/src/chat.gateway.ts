@@ -15,6 +15,8 @@ import * as jwt from 'jsonwebtoken';
 import { UsersService } from './users/users.service';
 import { User } from './users/entities/user.entity';
 import { TokenUserDto } from './auth/dto/token-user.dto';
+import { plainToInstance } from 'class-transformer';
+import { ResponseMessageDto } from './messages/dto/response-message.dto';
 
 export class ChatJoinDto {
   channel: string;
@@ -92,7 +94,12 @@ export class ChatGateway
 
     // Check if User has permission to send message here
     const messageResponse = await this.messagesService.create(messageDto);
-    this.server.to(target).emit('chat-message', messageResponse);
+    const messageResponseDto: ResponseMessageDto = plainToInstance(
+      ResponseMessageDto,
+      messageResponse,
+      { excludeExtraneousValues: true },
+    );
+    this.server.to(target).emit('chat-message', messageResponseDto);
     return 'Message Confirmed';
   }
 
