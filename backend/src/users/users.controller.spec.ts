@@ -68,7 +68,7 @@ describe('UsersController', () => {
   });
 
   describe('update()', () => {
-    it('should return a ResponseUserDto', async () => {
+    it('should return an UpdateResult', async () => {
       const mock = new UpdateResult();
       const userDto = new UpdateUserDto();
       userDto.username = 'user';

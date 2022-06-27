@@ -143,7 +143,10 @@ describe('MessagesService', () => {
 
   describe('findAll()', () => {
     it('should return an array of messages', async () => {
-      expect(await service.findAll()).toBeInstanceOf(PageDto);
+      const messages = await service.findAll();
+      expect(messages).toBeInstanceOf(PageDto);
+      if (messages.data.length !== 0)
+        expect(messages.data[0]).toBeInstanceOf(MockMessageEntity);
     });
   });
 
