@@ -1,15 +1,18 @@
 <script lang="ts">
 import Vue from "vue";
+import ChatMessageMenu from "./ChatMessageMenu.vue";
 
 export default Vue.extend({
   props: {
     sender: String,
+    senderId: Number,
     createdAt: String,
     content: String,
   },
   data() {
     return {};
   },
+  components: { ChatMessageMenu },
   methods: {},
   computed: {
     formattedDate(): string {
@@ -30,11 +33,13 @@ export default Vue.extend({
 <template>
   <v-list-item class="messagesItem">
     <v-list-item-avatar>
-      <v-img
-        max-height="45"
-        max-width="45"
-        :src="'https://static.generated.photos/vue-static/home/hero/3.png'"
-      ></v-img>
+      <chat-message-menu :targetId="senderId" @chat-message-menu-selection="$emit('chat-message-menu-selection', $event)">
+        <v-img
+          max-height="45"
+          max-width="45"
+          :src="'https://static.generated.photos/vue-static/home/hero/3.png'"
+        ></v-img>
+      </chat-message-menu>
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title

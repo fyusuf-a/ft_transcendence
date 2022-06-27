@@ -105,8 +105,10 @@ export default Vue.extend({
             <template v-slot:default="{ item }">
               <message-item
                 :sender="getUsername(item.senderId)"
+                :senderId="item.senderId"
                 :createdAt="item.createdAt"
                 :content="item.content"
+                @chat-message-menu-selection="$emit('chat-message-menu-selection', $event)"
               >
               </message-item>
             </template>

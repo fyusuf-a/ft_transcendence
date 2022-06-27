@@ -73,6 +73,9 @@ export default Vue.extend({
         this.leaveChannelById(this.selectedChannel.id);
       }
     },
+    handleChatMessageMenuSelection(event: any) {
+      console.log(`Request to ${event.option} ${event.target}`);
+    },
     handleMessage(messageDto: MessageDto) {
       console.log("Vue: incoming...");
       console.log(messageDto);
@@ -335,6 +338,7 @@ export default Vue.extend({
           :users="users"
           :key="newMessage"
           @chat-leave-channel="handleLeaveChannelEvent"
+          @chat-message-menu-selection="handleChatMessageMenuSelection"
         ></chat-window>
       </v-col>
       <v-col cols="12" md="2">
