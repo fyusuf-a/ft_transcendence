@@ -24,7 +24,7 @@ describe('UsersController', () => {
         UserRepository,
         {
           provide: UserRepository,
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
       ],
     }).compile();

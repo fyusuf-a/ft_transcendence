@@ -8,6 +8,8 @@ import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsService } from './memberships.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';
+import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
+import { MockChannelEntity } from 'src/channels/mocks/channel.entity.mock';
 import UserRepository from 'src/users/repository/user.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';
 
@@ -23,15 +25,15 @@ describe('MembershipsService', () => {
         MembershipsService,
         {
           provide: getRepositoryToken(Membership),
-          useClass: MockRepository,
+          useValue: new MockRepository(() => new Membership()),
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useClass: MockRepository,
+          useValue: new MockRepository(() => new MockUserEntity()),
         },
         {
           provide: getRepositoryToken(ChannelRepository),
-          useClass: MockRepository,
+          useValue: new MockRepository(() => new MockChannelEntity()),
         },
       ],
     }).compile();

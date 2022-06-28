@@ -13,7 +13,6 @@ import { Message } from './entities/message.entity';
 import { PageDto } from 'src/common/dto/page.dto';
 import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
-import { MockRepository } from 'src/common/mocks/repository.mock';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -26,15 +25,15 @@ describe('MessagesController', () => {
         MessagesService,
         {
           provide: MessageRepository,
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
         {
           provide: UserRepository,
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
         {
           provide: ChannelRepository,
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
       ],
     }).compile();

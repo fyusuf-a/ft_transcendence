@@ -8,34 +8,65 @@ type MyMockRepository<T = any> = Partial<
   Record<keyof Repository<T>, jest.Mock>
 >;*/
 
-export class MockRepository<T> {
-  constructor(private readonly entity: T, private readonly elementNumber = 2) {}
-  findOne(id: number) {
-    if (id > this.elementNumber) {
-      return undefined;
-    }
-    return this.entity;
+interface Identifiable {
+  id: number;
+}
+
+export class MockRepository<T extends Identifiable> {
+  #entities: T[];
+  #currentId: number;
+  #itemNumber: number;
+  #entityFactory: () => T;
+
+  private addEntity(entity: T) {
+    this.#currentId++;
+    this.#itemNumber++;
+    this.#entities[this.#currentId] = entity;
+    this.#entities[this.#currentId].id = this.#currentId;
   }
-  find = jest.fn(() => Array(this.elementNumber).fill(this.entity));
-  save = jest.fn(() => this.entity);
-  delete = jest.fn(() => new DeleteResult());
+
+  constructor(entityFactory: () => T, elementNumber = 2) {
+    this.#entityFactory = entityFactory;
+    this.#entities = [];
+    this.#currentId = 0;
+    for (let i = 0; i < elementNumber; i++) {
+      this.addEntity(entityFactory());
+    }
+  }
+  findOne = jest.fn((id: number): undefined | T => {
+    return this.#entities[id];
+  });
+  find = jest.fn((): T[] => this.#entities);
+  findAll = jest.fn((): T[] => this.#entities);
+  save = jest.fn((entity: T): T => {
+    const newEntity = this.#entityFactory();
+    Object.assign(newEntity, entity);
+    this.addEntity(newEntity);
+    return newEntity;
+  });
+  delete = jest.fn((id: number): DeleteResult => {
+    delete this.#entities[id];
+    return new DeleteResult();
+  });
+
   update = jest.fn(() => new UpdateResult());
 
-  async findAllPaginated(
-    pageOptions?: PageOptionsDto,
-    //alias = '',
-    //orderingColumn = 'id',
-    //customizer?: (a: SelectQueryBuilder<T>) => void,
-  ): Promise<PageDto<T>> {
+  findAllPaginated = jest.fn((pageOptions?: PageOptionsDto): PageDto<T> => {
     if (!pageOptions) {
       pageOptions = new PageOptionsDto();
     }
-    const entities = Array(
-      this.elementNumber > pageOptions.take
-        ? pageOptions.take
-        : this.elementNumber,
-    ).fill(this.entity);
-    const pageMetaDto = new PageMetaDto(pageOptions, this.elementNumber);
-    return new PageDto(entities, pageMetaDto);
-  }
+    let skippedEntities = 0;
+    const result = [];
+    for (let i = 0; i < this.#entities.length; i++) {
+      if (
+        this.#entities[i] != undefined &&
+        skippedEntities >= pageOptions.skip
+      ) {
+        result.push(this.#entities[i]);
+        if (result.length >= pageOptions.take) break;
+      } else skippedEntities++;
+    }
+    const pageMetaDto = new PageMetaDto(pageOptions, this.#itemNumber);
+    return new PageDto(result, pageMetaDto);
+  });
 }

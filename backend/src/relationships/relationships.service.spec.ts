@@ -22,11 +22,11 @@ describe('RelationshipsService', () => {
         RelationshipsService,
         {
           provide: getRepositoryToken(Relationship),
-          useValue: new MockRepository<Relationship>(new Relationship()),
+          useValue: new MockRepository<Relationship>(() => new Relationship()),
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useValue: new MockRepository<User>(new User()),
+          useValue: new MockRepository<User>(() => new User()),
         },
       ],
     }).compile();

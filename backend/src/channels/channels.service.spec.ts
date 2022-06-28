@@ -7,8 +7,9 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { MockChannelEntity } from './mocks/channel.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import ChannelRepository from './repository/channel.repository';
+import { ChannelType } from './entities/channel.entity';
 
-const entityNumber = 2;
+const channelNumber = 2;
 
 describe('ChannelsService', () => {
   let service: ChannelsService;
@@ -20,8 +21,8 @@ describe('ChannelsService', () => {
         {
           provide: getRepositoryToken(ChannelRepository),
           useValue: new MockRepository<MockChannelEntity>(
-            new MockChannelEntity(),
-            entityNumber,
+            () => new MockChannelEntity(),
+            channelNumber,
           ),
         },
       ],
@@ -35,13 +36,13 @@ describe('ChannelsService', () => {
 
   describe('when looking up an existing Channel by id', () => {
     it('should return Channel', async () => {
-      expect(await service.findOne(0)).toEqual(new MockChannelEntity());
+      expect(await service.findOne(1)).toEqual(new MockChannelEntity());
     });
   });
 
   describe('when looking up an non-existing Channel by id', () => {
     it('should return undefined', async () => {
-      expect(await service.findOne(entityNumber + 1)).toEqual(undefined);
+      expect(await service.findOne(channelNumber + 1)).toEqual(undefined);
     });
   });
 
@@ -55,7 +56,12 @@ describe('ChannelsService', () => {
   describe('when creating a new Channel', () => {
     it('should return new channel object', async () => {
       const channelDto: CreateChannelDto = new CreateChannelDto();
-      expect(await service.create(channelDto)).toEqual(new MockChannelEntity());
+      channelDto.type = ChannelType.PRIVATE;
+      channelDto.password = null;
+      channelDto.name = 'channel-name';
+      const expected = new MockChannelEntity();
+      expected.id = channelNumber + 1;
+      expect(await service.create(channelDto)).toEqual(expected);
     });
   });
 

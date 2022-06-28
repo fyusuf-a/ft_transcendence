@@ -23,7 +23,7 @@ describe('ChannelsController', () => {
         ChannelsService,
         {
           provide: ChannelRepository,
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
       ],
     }).compile();

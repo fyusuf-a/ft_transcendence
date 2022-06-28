@@ -11,7 +11,6 @@ import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
-import { MockRepository } from 'src/common/mocks/repository.mock';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -24,15 +23,15 @@ describe('MembershipsController', () => {
         MembershipsService,
         {
           provide: getRepositoryToken(Membership),
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
         {
           provide: getRepositoryToken(ChannelRepository),
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
       ],
     }).compile();

@@ -20,11 +20,11 @@ describe('RelationshipsController', () => {
         RelationshipsService,
         {
           provide: getRepositoryToken(Relationship),
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
         {
           provide: getRepositoryToken(UserRepository),
-          useClass: MockRepository,
+          useValue: jest.fn(),
         },
       ],
     }).compile();
