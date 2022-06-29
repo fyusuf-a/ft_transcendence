@@ -10,7 +10,6 @@ import { PageMetaDto } from '../common/dto/page-meta.dto';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
 import UserRepository from './repository/user.repository';
-import { MockRepository } from 'src/common/mocks/repository.mock';
 
 describe('UsersController', () => {
   let controller: UsersController;

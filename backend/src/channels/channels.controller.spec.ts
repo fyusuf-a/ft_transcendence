@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
 import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageDto } from 'src/common/dto/page.dto';
-import { MockRepository } from 'src/common/mocks/repository.mock';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsController } from './channels.controller';
 import { ChannelsService } from './channels.service';

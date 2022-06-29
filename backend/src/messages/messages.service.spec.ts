@@ -10,8 +10,6 @@ import MessageRepository from './repository/message.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';
 import UserRepository from 'src/users/repository/user.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { MockChannelEntity } from 'src/channels/mocks/channel.entity.mock';
-import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { PageDto } from 'src/common/dto/page.dto';
 
 const messageNumber = 2;
