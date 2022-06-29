@@ -1,5 +1,5 @@
 export class MockUserEntity {
-  id = 0;
+  id = 1;
   username = 'testuser';
   identity = 'unique';
   avatar = null;

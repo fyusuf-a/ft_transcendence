@@ -3,3 +3,6 @@
 
 # Environment
 .env
+
+# Test Files
+coverage/
