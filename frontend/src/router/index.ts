@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
+import store from "../store";
 
 import auth from "./auth";
 
@@ -51,10 +52,13 @@ const router = new VueRouter({
   routes,
 });
 
-const isAuthenticated = true;
-
 router.beforeEach((to, from, next) => {
-  if (to.name !== "Login" && !isAuthenticated) next({ name: "Login" });
+  if (
+    process.env.VUE_APP_DISABLE_AUTHENTICATION === "false" &&
+    to.name !== "Login" &&
+    !store.state.isAuthenticated
+  )
+    next({ name: "Login" });
   else next();
 });
 

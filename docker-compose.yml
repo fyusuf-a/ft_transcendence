@@ -54,6 +54,8 @@ services:
       - 8000:80
     volumes:
       - ./frontend:/app
+    environment:
+      VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
     profiles: ["frontend"]
     depends_on:
       - backend
