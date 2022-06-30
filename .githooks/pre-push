@@ -1,3 +1,19 @@
 #!/bin/sh
 command -v git-lfs >/dev/null 2>&1 || { echo >&2 "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting .git/hooks/pre-push.\n"; exit 2; }
 git lfs pre-push "$@"
+
+# Linting the frontend
+git diff HEAD^ --exit-code frontend > /dev/null
+if [ $? -eq 1 ]; then
+	cd frontend
+	npx eslint "{src,apps,libs,test}/**/*.ts" --no-fix --max-warnings=0 || exit 1
+	cd ..
+fi
+
+# Linting the backend
+git diff HEAD^ --exit-code backend > /dev/null
+if [ $? -eq 1 ]; then
+	cd backend
+	npx eslint "{src,apps,libs,test}/**/*.ts" --no-fix --max-warnings=0 || exit 1
+	cd ..
+fi
