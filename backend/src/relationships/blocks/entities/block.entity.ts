@@ -11,9 +11,9 @@ import {
 } from 'typeorm';
 
 export enum BlockTypeEnum {
-  T_BLOCKS_S = 1,
-  S_BLOCKS_T = 2,
-  MUTUAL = 3,
+  T_BLOCKS_S = 'target_blocks_source',
+  S_BLOCKS_T = 'source_blocks_target',
+  MUTUAL = 'mutual',
 }
 
 @Unique(['source', 'target'])

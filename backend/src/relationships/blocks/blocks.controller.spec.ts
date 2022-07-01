@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import UserRepository from 'src/users/repository/user.repository';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { ResponseBlockDto } from './dto/response-block.dto';
+import { UpdateBlockDto } from './dto/update-block.dto';
 import { Block } from './entities/block.entity';
 import { BlocksController } from './blocks.controller';
 import { BlocksService } from './blocks.service';
-import { UpdateBlockDto } from './dto/update-block.dto';
-import { ResponseBlockDto } from './dto/response-block.dto';
 
 describe('BlocksController', () => {
   let controller: BlocksController;
@@ -29,6 +29,7 @@ describe('BlocksController', () => {
     }).compile();
 
     controller = module.get<BlocksController>(BlocksController);
+    service = module.get<BlocksService>(BlocksService);
   });
 
   it('should be defined', () => {
@@ -36,7 +37,7 @@ describe('BlocksController', () => {
   });
 
   describe('findOne()', () => {
-    it('should return a Relationship', async () => {
+    it('should return a Block', async () => {
       const mockOut = new Block();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
@@ -45,7 +46,7 @@ describe('BlocksController', () => {
   });
 
   describe('update()', () => {
-    it('should return a ResponseRelationshipDto', async () => {
+    it('should return a ResponseBlockDto', async () => {
       const mock = new UpdateResult();
       const dto = new UpdateBlockDto();
       jest.spyOn(service, 'update').mockImplementation(async () => mock);

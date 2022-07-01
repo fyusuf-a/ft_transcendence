@@ -49,9 +49,4 @@ export class User {
   @Exclude()
   @RelationId((user: User) => user.memberships)
   membershipIds: number[];
-
-  @Column('int', { array: true, default: [] })
-  friendshipsIds: number[];
-  @Column('int', { array: true, default: [] })
-  blocksIds: number[];
 }
