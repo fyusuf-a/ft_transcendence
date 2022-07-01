@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsPositive } from 'class-validator';
-import { BlockTypeEnum } from '../entities/block.entity';
+import { BlockTypeEnum } from '../../entities/block.entity';
 
 export class BlockDto {
   @ApiProperty({

@@ -11,8 +11,8 @@ import {
 } from 'typeorm';
 
 export enum FriendshipTypeEnum {
-  PENDING = 1,
-  ACCEPTED = 2,
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
 }
 
 @Unique(['source', 'target'])
@@ -26,12 +26,14 @@ export class Friendship {
   @ManyToOne(() => User)
   source: User;
   @RelationId((friendship: Friendship) => friendship.source)
+  @Column()
   sourceId: number;
 
   @Exclude()
   @ManyToOne(() => User)
   target: User;
   @RelationId((friendship: Friendship) => friendship.target)
+  @Column()
   targetId: number;
 
   @Column({

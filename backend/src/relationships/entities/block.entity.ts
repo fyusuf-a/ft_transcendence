@@ -11,9 +11,9 @@ import {
 } from 'typeorm';
 
 export enum BlockTypeEnum {
-  T_BLOCKS_S = 1,
-  S_BLOCKS_T = 2,
-  MUTUAL = 3,
+  T_BLOCKS_S = 'target_blocks_source',
+  S_BLOCKS_T = 'source_blocks_target',
+  MUTUAL = 'mutual',
 }
 
 @Unique(['source', 'target'])
@@ -26,19 +26,21 @@ export class Block {
   @Exclude()
   @ManyToOne(() => User)
   source: User;
+  @Column()
   @RelationId((block: Block) => block.source)
   sourceId: number;
 
   @Exclude()
   @ManyToOne(() => User)
   target: User;
+  @Column()
   @RelationId((block: Block) => block.target)
   targetId: number;
 
   @Column({
     type: 'enum',
     enum: BlockTypeEnum,
-    default: BlockTypeEnum.T_BLOCKS_S,
+    default: BlockTypeEnum.S_BLOCKS_T,
   })
   status: BlockTypeEnum;
 }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsPositive } from 'class-validator';
-import { FriendshipTypeEnum } from '../entities/friendship.entity';
+import { FriendshipTypeEnum } from '../../entities/friendship.entity';
 
 export class FriendshipDto {
   @ApiProperty({
