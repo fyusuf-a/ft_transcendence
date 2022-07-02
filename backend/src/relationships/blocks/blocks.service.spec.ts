@@ -4,7 +4,7 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import UserRepository from 'src/users/repository/user.repository';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { Block } from './entities/block.entity';
+import { Block } from '../entities/block.entity';
 import { BlocksService } from './blocks.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 

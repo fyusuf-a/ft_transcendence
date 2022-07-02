@@ -26,19 +26,21 @@ export class Block {
   @Exclude()
   @ManyToOne(() => User)
   source: User;
+  @Column()
   @RelationId((block: Block) => block.source)
   sourceId: number;
 
   @Exclude()
   @ManyToOne(() => User)
   target: User;
+  @Column()
   @RelationId((block: Block) => block.target)
   targetId: number;
 
   @Column({
     type: 'enum',
     enum: BlockTypeEnum,
-    default: BlockTypeEnum.T_BLOCKS_S,
+    default: BlockTypeEnum.S_BLOCKS_T,
   })
   status: BlockTypeEnum;
 }

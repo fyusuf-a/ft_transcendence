@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import UserRepository from 'src/users/repository/user.repository';
-import { Repository } from 'typeorm';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { QueryFriendshipDto } from './dto/query-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
-import { Friendship } from './entities/friendship.entity';
+import { Friendship } from '../entities/friendship.entity';
+import { FriendshipRepository } from './repositories/friendship.repository';
 
 @Injectable()
 export class FriendshipsService {
   constructor(
-    @InjectRepository(Friendship)
-    private friendshipRepository: Repository<Friendship>,
+    @InjectRepository(FriendshipRepository)
+    private friendshipRepository: FriendshipRepository,
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
   ) {}

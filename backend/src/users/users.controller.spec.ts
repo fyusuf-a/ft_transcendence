@@ -10,6 +10,8 @@ import { PageMetaDto } from '../common/dto/page-meta.dto';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
 import UserRepository from './repository/user.repository';
+import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
+import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -25,6 +27,8 @@ describe('UsersController', () => {
           provide: UserRepository,
           useValue: jest.fn(),
         },
+        FriendshipRepository,
+        BlockRepository,
       ],
     }).compile();
 

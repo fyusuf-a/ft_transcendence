@@ -26,12 +26,14 @@ export class Friendship {
   @ManyToOne(() => User)
   source: User;
   @RelationId((friendship: Friendship) => friendship.source)
+  @Column()
   sourceId: number;
 
   @Exclude()
   @ManyToOne(() => User)
   target: User;
   @RelationId((friendship: Friendship) => friendship.target)
+  @Column()
   targetId: number;
 
   @Column({

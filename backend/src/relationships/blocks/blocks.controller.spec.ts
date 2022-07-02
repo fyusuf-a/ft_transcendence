@@ -4,7 +4,7 @@ import UserRepository from 'src/users/repository/user.repository';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ResponseBlockDto } from './dto/response-block.dto';
 import { UpdateBlockDto } from './dto/update-block.dto';
-import { Block } from './entities/block.entity';
+import { Block } from '../entities/block.entity';
 import { BlocksController } from './blocks.controller';
 import { BlocksService } from './blocks.service';
 
