@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Exclude } from 'class-transformer';
@@ -21,7 +22,7 @@ export class Match {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'timestamptz' })
+  @CreateDateColumn()
   start: Date;
 
   // end is null if the match is not finished

@@ -39,7 +39,6 @@ export class MatchesService {
 
   async create(matchDto: CreateMatchDto): Promise<ResponseMatchDto> {
     const match: Match = new Match();
-    match.start = new Date();
     match.home = await this.userRepository.findOne(matchDto.homeId);
     if (match.home === undefined) {
       throw new EntityDoesNotExistError(`User #${matchDto.homeId} not found`);
@@ -54,7 +53,6 @@ export class MatchesService {
     if (match.homeId === match.awayId) {
       throw new RangeError('Home and away cannot be the same');
     }
-    match.start = new Date();
     return this.matchRepository.save(match);
   }
 
