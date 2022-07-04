@@ -10,7 +10,6 @@ export default Vue.extend({
     return {
       dialogm1: "",
       dialog: false,
-      toggleCreate: false,
       action: "Join",
       createdChannel: { name: undefined, type: undefined, password: undefined },
       channelTypes: ["public", "protected", "private"],

@@ -108,7 +108,9 @@ export default Vue.extend({
                 :senderId="item.senderId"
                 :createdAt="item.createdAt"
                 :content="item.content"
-                @chat-message-menu-selection="$emit('chat-message-menu-selection', $event)"
+                @chat-message-menu-selection="
+                  $emit('chat-message-menu-selection', $event)
+                "
               >
               </message-item>
             </template>

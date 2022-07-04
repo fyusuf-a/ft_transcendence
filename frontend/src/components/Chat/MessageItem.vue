@@ -33,7 +33,12 @@ export default Vue.extend({
 <template>
   <v-list-item class="messagesItem">
     <v-list-item-avatar>
-      <chat-message-menu :targetId="senderId" @chat-message-menu-selection="$emit('chat-message-menu-selection', $event)">
+      <chat-message-menu
+        :targetId="senderId"
+        @chat-message-menu-selection="
+          $emit('chat-message-menu-selection', $event)
+        "
+      >
         <v-img
           max-height="45"
           max-width="45"
