@@ -11,7 +11,6 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { Public } from 'src/auth/auth.public.decorator';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { MatchesService } from './matches.service';
@@ -48,7 +47,7 @@ export class MatchesController {
     return user;
   }
 
-  @Public()
+  @ApiBearerAuth()
   @Post()
   @ApiResponse({ status: 500, description: 'Record could not be created.' })
   async create(
