@@ -8,7 +8,7 @@ import { Order } from '../constants';
 const itemMaximum = 50;
 const orderDefault = Order.ASC;
 const pageDefault = 1;
-const takeDefault = 10;
+export const takeDefault = 10;
 
 export class PageOptionsDto {
   @ApiPropertyOptional({ enum: Order, default: Order.ASC })

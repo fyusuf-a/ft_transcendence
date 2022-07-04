@@ -18,6 +18,8 @@ import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
 import { AchievementsLogModule } from './achievements-log/achievements-log.module';
 import { AchievementsLog } from './achievements-log/entities/achievements-log.entity';
+import { MatchesModule } from './matches/matches.module';
+import { Match } from './matches/entities/match.entity';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { AchievementsLog } from './achievements-log/entities/achievements-log.en
         Relationship,
         Achievement,
         AchievementsLog,
+        Match,
       ],
       synchronize: true,
     }),
@@ -48,6 +51,7 @@ import { AchievementsLog } from './achievements-log/entities/achievements-log.en
     AuthModule,
     AchievementsModule,
     AchievementsLogModule,
+    MatchesModule,
   ],
   controllers: [],
   providers: [
