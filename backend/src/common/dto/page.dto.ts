@@ -16,4 +16,8 @@ export class PageDto<T> {
     this.data = data;
     this.meta = meta;
   }
+
+  convertData<U>(converter: (a: T) => U): PageDto<U> {
+    return new PageDto(this.data.map(converter), this.meta);
+  }
 }
