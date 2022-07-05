@@ -18,6 +18,8 @@ import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
+import { MatchesModule } from './matches/matches.module';
+import { Match } from './matches/entities/match.entity';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { Achievement } from './achievements/entities/achievements.entity';
         Friendship,
         Block,
         Achievement,
+        Match,
       ],
       synchronize: true,
     }),
@@ -48,6 +51,7 @@ import { Achievement } from './achievements/entities/achievements.entity';
     BlocksModule,
     AuthModule,
     AchievementsModule,
+    MatchesModule,
   ],
   controllers: [],
   providers: [
