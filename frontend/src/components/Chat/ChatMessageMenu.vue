@@ -1,11 +1,21 @@
 <script lang="ts">
 import Vue from "vue";
 
+declare interface OptionType {
+  label: string;
+  event: string;
+}
+
+declare interface DataReturnType {
+  selectedOption: number;
+  options: OptionType[];
+}
+
 export default Vue.extend({
   props: {
     targetId: Number,
   },
-  data() {
+  data(): DataReturnType {
     return {
       selectedOption: -1,
       options: [

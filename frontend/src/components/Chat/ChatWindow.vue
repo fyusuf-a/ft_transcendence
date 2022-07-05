@@ -6,15 +6,22 @@ import { UserDto } from "../../common/dto/user.dto";
 import MessageItem from "./MessageItem.vue";
 import ChatWindowMenu from "./ChatWindowMenu.vue";
 
+declare interface DataReturnType {
+  unreadChannels: Set<number>;
+  unreadMarker: string;
+  messageContent: string;
+  itemHeight: number;
+}
+
 export default Vue.extend({
   props: {
     channel: Object as () => ChannelDto,
     messages: Map,
     users: Map,
   },
-  data() {
+  data(): DataReturnType {
     return {
-      unreadChannels: new Set(),
+      unreadChannels: new Set<number>(),
       unreadMarker: "mdi-new-box",
       messageContent: "",
       itemHeight: 50,
@@ -49,7 +56,7 @@ export default Vue.extend({
         }
       }
     },
-    getUsername(userId: number) {
+    getUsername(userId: number): string {
       const user = this.users.get(userId) as UserDto;
       if (user) {
         return user.username;
