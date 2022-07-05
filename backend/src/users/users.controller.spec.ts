@@ -27,8 +27,14 @@ describe('UsersController', () => {
           provide: UserRepository,
           useValue: jest.fn(),
         },
-        FriendshipRepository,
-        BlockRepository,
+        {
+          provide: FriendshipRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: BlockRepository,
+          useValue: jest.fn(),
+        },
       ],
     }).compile();
 

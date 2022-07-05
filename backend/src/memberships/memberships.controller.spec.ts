@@ -11,6 +11,8 @@ import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
+import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
+import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -31,6 +33,14 @@ describe('MembershipsController', () => {
         },
         {
           provide: getRepositoryToken(ChannelRepository),
+          useValue: jest.fn(),
+        },
+        {
+          provide: FriendshipRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: BlockRepository,
           useValue: jest.fn(),
         },
       ],
