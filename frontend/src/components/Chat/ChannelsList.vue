@@ -3,6 +3,11 @@ import Vue from "vue";
 
 import ChannelJoinDialog from "./ChannelJoinDialog.vue";
 
+declare interface DataReturnType {
+  selectedChannel?: number;
+  unreadMarker: string;
+}
+
 export default Vue.extend({
   props: {
     title: String,
@@ -10,7 +15,7 @@ export default Vue.extend({
     allChannels: Map,
     unreadChannels: Set,
   },
-  data() {
+  data(): DataReturnType {
     return {
       selectedChannel: undefined,
       unreadMarker: "mdi-new-box",
@@ -18,12 +23,20 @@ export default Vue.extend({
   },
   components: { ChannelJoinDialog },
   methods: {
-    async handleChannelSelection(event: number) {
+    async handleChannelSelection(channelId: number) {
       console.log("Handling a channel selection");
-      this.$emit("channel-select-event", this.channels[event]);
+      this.$emit("channel-select-event", this.channels[channelId]);
     },
     handleChannelJoin(channelId: number) {
+      this.selectedChannel = this.channels.length;
       this.$emit("channel-join-event", channelId);
+    },
+  },
+  computed: {
+    getJoinableChannels(): any[] {
+      return Array.from(this.allChannels.values()).filter(
+        (chan) => !this.channels.includes(chan)
+      );
     },
   },
 });
@@ -36,8 +49,8 @@ export default Vue.extend({
         <v-col cols="10">{{ title }}</v-col>
         <v-col cols="1">
           <channel-join-dialog
-            @channel-join-event="(channelId) => handleChannelJoin(channelId)"
-            :joinableChannels="Array.from(allChannels.values())"
+            @channel-join-event="handleChannelJoin"
+            :joinableChannels="getJoinableChannels"
           ></channel-join-dialog>
         </v-col>
         <v-spacer></v-spacer>
