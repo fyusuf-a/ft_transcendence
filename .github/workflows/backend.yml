@@ -66,11 +66,11 @@ jobs:
         # a bug recently fixed in docker buildx does not let one use multiple docker-compose files, see https://github.com/docker/buildx/issues/1172
         #run: docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.yml --file docker-compose.override.yml --load
         run: |
-          COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml docker-compose config > docker-compose.bake.yml
+          COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml:./.github/docker-compose.ci.yml docker-compose config > docker-compose.bake.yml
           docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.bake.yml --load
       - name: E2E Test
         run: |
-          docker-compose up -d
+          docker-compose -f docker-compose.yml -f docker-compose.override.yml -f ./.github/docker-compose.ci.yml up -d
           docker exec ft_transcendence_backend_1 npm run test:e2e
       - name: Move cache
         run: |
