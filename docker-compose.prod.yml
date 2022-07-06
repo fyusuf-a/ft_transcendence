@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  backend:
+    image: fyusufa/ft_transcendence_backend
+    environment:
+      WATCH: 0
+      # TODO: put 'false' when authentification works
+      DISABLE_AUTHENTICATION: 'true'
+
+  frontend:
+    ports:
+      - 80:80
+    image: fyusufa/ft_transcendence_frontend
+    environment:
+      # TODO: put false when authentification works
+      VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
