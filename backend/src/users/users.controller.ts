@@ -72,13 +72,13 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
-  @Get('/friendships/:id')
+  @Get('/:id/friendships')
   findFriendships(@Param('id') id: string): Promise<ResponseFriendshipDto[]> {
     return this.usersService.findFriendships(+id);
   }
 
   @ApiBearerAuth()
-  @Get('/blocks/:id')
+  @Get('/:id/blocks')
   findBlocks(@Param('id') id: string): Promise<ResponseBlockDto[]> {
     return this.usersService.findBlocks(+id);
   }

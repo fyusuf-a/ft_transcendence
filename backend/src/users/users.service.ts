@@ -63,7 +63,8 @@ export class UsersService {
   findBlocks(id: number): Promise<ResponseBlockDto[]> {
     return this.blockRepository.find({
       where: [
-        { status: BlockTypeEnum.MUTUAL },
+        { sourceId: id, status: BlockTypeEnum.MUTUAL },
+        { targetId: id, status: BlockTypeEnum.MUTUAL },
         { sourceId: id, status: BlockTypeEnum.S_BLOCKS_T },
         { targetId: id, status: BlockTypeEnum.T_BLOCKS_S },
       ],
