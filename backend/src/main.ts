@@ -33,6 +33,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(process.env.BACKEND_PORT ? process.env.BACKEND_PORT : 3000);
 }
 bootstrap();
