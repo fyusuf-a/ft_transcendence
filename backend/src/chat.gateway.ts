@@ -57,7 +57,7 @@ export class ChatGateway
   }
 
   @SubscribeMessage('chat-join')
-  handleJoin(client: Socket, payload: ChatJoinDto) {
+  async handleJoin(client: Socket, payload: ChatJoinDto) {
     this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
     this.checkAuth(client);
     // TODO: Check if User has permission to join channel here
@@ -67,13 +67,17 @@ export class ChatGateway
       role: MembershipRoleType.PARTICIPANT,
     };
     try {
-      this.membershipsService.create(membershipDto);
+      await this.membershipsService.create(membershipDto);
     } catch (error) {
-      // TODO: check that error corresponds to entity already exists
-      //  if true: continue
-      //  if false: re-throw
+      if (error.code == 23505) {
+        // Duplicate Key Error
+        this.logger.log(
+          `User ${membershipDto.userId} is already a member of channel ${payload.channel}`,
+        );
+      } else {
+        throw error;
+      }
     }
-
     client.join(payload.channel);
     return `SUCCESS: joined room for channel ${payload.channel}`;
   }
