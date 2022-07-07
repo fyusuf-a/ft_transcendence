@@ -18,6 +18,7 @@ import { TokenUserDto } from './auth/dto/token-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { ResponseMessageDto } from './messages/dto/response-message.dto';
 import { MembershipsService } from './memberships/memberships.service';
+import { ConfigService } from '@nestjs/config';
 
 export class ChatJoinDto {
   channel: string;
@@ -36,6 +37,7 @@ export class ChatGateway
     private readonly messagesService: MessagesService,
     private readonly usersService: UsersService,
     private readonly membershipsService: MembershipsService,
+    private configService: ConfigService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -43,8 +45,12 @@ export class ChatGateway
   private authenticatedSockets: Map<string, User> = new Map();
 
   private checkAuth(client: Socket): boolean {
-    // TODO: respect DISABLE_AUTHENTICATION
-    if (this.authenticatedSockets.has(client.id)) return true;
+    if (
+      this.configService.get<string>('DISABLE_AUTHENTICATION') == 'true' ||
+      this.authenticatedSockets.has(client.id)
+    ) {
+      return true;
+    }
     throw new WsException('Not Authorized');
   }
 
