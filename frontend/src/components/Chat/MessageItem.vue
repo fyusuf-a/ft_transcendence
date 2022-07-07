@@ -12,7 +12,9 @@ export default Vue.extend({
   data() {
     return {};
   },
-  components: { ChatMessageMenu },
+  components: {
+    "chat-message-menu": Vue.extend(ChatMessageMenu),
+  },
   methods: {},
   computed: {
     formattedDate(): string {

@@ -7,6 +7,11 @@ import { MessageDto } from "../common/dto/message.dto";
 import { MembershipDto } from "../common/dto/membership.dto";
 import { UserDto } from "../common/dto/user.dto";
 
+declare interface MenuSelectionEvent {
+  option: string;
+  target: string;
+}
+
 declare interface DataType {
   channels: Array<ChannelDto>;
   allChannels: Map<number, ChannelDto>;
@@ -71,7 +76,7 @@ export default Vue.extend({
         this.leaveChannelById(this.selectedChannel.id);
       }
     },
-    handleChatMessageMenuSelection(event: any) {
+    handleChatMessageMenuSelection(event: MenuSelectionEvent) {
       console.log(`Request to ${event.option} ${event.target}`);
     },
     handleMessage(messageDto: MessageDto) {
@@ -342,7 +347,7 @@ export default Vue.extend({
       <v-col cols="12" md="2">
         <channels-list
           @channel-select-event="handleChannelSelection"
-          @channel-join-event="(channelId) => handleChannelJoin(channelId)"
+          @channel-join-event="handleChannelJoin"
           title="Channels"
           :channels="subscribedChannels"
           :unreadChannels="unreadChannels"

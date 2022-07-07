@@ -1,4 +1,5 @@
 <script lang="ts">
+import { ChannelDto } from "@/common/dto/channel.dto";
 import Vue from "vue";
 
 import ChannelJoinDialog from "./ChannelJoinDialog.vue";
@@ -11,17 +12,17 @@ declare interface DataReturnType {
 export default Vue.extend({
   props: {
     title: String,
-    channels: Array,
-    allChannels: Map,
-    unreadChannels: Set,
+    channels: Array, //<ChannelDto>,
+    allChannels: Map, //<number, ChannelDto>,
+    unreadChannels: Set, //<number>,
   },
   data(): DataReturnType {
     return {
-      selectedChannel: undefined,
+      selectedChannel: -1,
       unreadMarker: "mdi-new-box",
     };
   },
-  components: { ChannelJoinDialog },
+  components: { "channel-join-dialog": Vue.extend(ChannelJoinDialog) },
   methods: {
     async handleChannelSelection(channelId: number) {
       console.log("Handling a channel selection");
@@ -33,10 +34,10 @@ export default Vue.extend({
     },
   },
   computed: {
-    getJoinableChannels(): any[] {
+    getJoinableChannels(): ChannelDto[] {
       return Array.from(this.allChannels.values()).filter(
         (chan) => !this.channels.includes(chan)
-      );
+      ) as ChannelDto[];
     },
   },
 });

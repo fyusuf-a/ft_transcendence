@@ -4,7 +4,7 @@ import ChannelJoinDialog from "@/components/Chat/ChannelJoinDialog.vue";
 
 describe("ChannelJoinDialog.vue", () => {
   it("renders props", async () => {
-    const joinableChannels: any[] = [];
+    const joinableChannels: number[] = [];
     const wrapper = shallowMount(ChannelJoinDialog, {
       propsData: { joinableChannels },
     });

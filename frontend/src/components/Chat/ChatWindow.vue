@@ -27,7 +27,10 @@ export default Vue.extend({
       itemHeight: 50,
     };
   },
-  components: { MessageItem, ChatWindowMenu },
+  components: {
+    "message-item": Vue.extend(MessageItem),
+    "chat-window-menu": Vue.extend(ChatWindowMenu),
+  },
   methods: {
     printResponse(response: string) {
       console.log(`Server: ${response}`);

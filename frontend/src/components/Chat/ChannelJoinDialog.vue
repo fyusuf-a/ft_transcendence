@@ -2,16 +2,24 @@
 import Vue from "vue";
 import { CreateChannelDto } from "../../common/dto/channel.dto";
 
+declare interface DataReturnType {
+  dialogm1: string;
+  dialog: boolean;
+  action: string;
+  createdChannel: CreateChannelDto;
+  channelTypes: Array<string>;
+}
+
 export default Vue.extend({
   props: {
     joinableChannels: Array,
   },
-  data() {
+  data(): DataReturnType {
     return {
       dialogm1: "",
       dialog: false,
       action: "Join",
-      createdChannel: { name: undefined, type: undefined, password: undefined },
+      createdChannel: { name: "", type: "", password: "" },
       channelTypes: ["public", "protected", "private"],
     };
   },
@@ -67,9 +75,9 @@ export default Vue.extend({
       this.dialog = false;
       this.action = "Join";
       this.createdChannel = {
-        name: undefined,
-        type: undefined,
-        password: undefined,
+        name: "",
+        type: "",
+        password: "",
       };
     },
   },
