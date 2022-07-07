@@ -53,11 +53,9 @@ export default Vue.extend({
       console.log("Vue: joining channel " + channelId);
       const channel = this.allChannels.get(channelId);
       if (channel) {
-        if ((await this.createMembership(channelId)) === true) {
-          this.subscribedChannels.push(channel);
-          this.joinChannelById(channelId);
-          this.handleChannelSelection(channel);
-        }
+        this.joinChannelById(channelId); // check if it succeeds
+        this.subscribedChannels.push(channel);
+        this.handleChannelSelection(channel);
       } else {
         // Try to fetch channel ?
         await this.getAllChannels(); // should just get the one channel instead
@@ -249,26 +247,26 @@ export default Vue.extend({
         }
       }
     },
-    async createMembership(channelId: number): Promise<boolean> {
-      console.log("Vue: Fetching memberships to create");
-      let rawResponse = await fetch(
-        "http://localhost:8080/memberships?user=1",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `bearer ${this.$store.state.user.token}`,
-          },
-          body: JSON.stringify({
-            channelId: channelId,
-            userId: this.$store.state.userId,
-            role: "participant",
-          }),
-        }
-      );
-      return rawResponse.status === 201;
-    },
+    // async createMembership(channelId: number): Promise<boolean> {
+    //   console.log("Vue: Fetching memberships to create");
+    //   let rawResponse = await fetch(
+    //     "http://localhost:8080/memberships?user=1",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         Accept: "application/json",
+    //         "Content-Type": "application/json",
+    //         Authorization: `bearer ${this.$store.state.user.token}`,
+    //       },
+    //       body: JSON.stringify({
+    //         channelId: channelId,
+    //         userId: this.$store.state.userId,
+    //         role: "participant",
+    //       }),
+    //     }
+    //   );
+    //   return rawResponse.status === 201;
+    // },
     async getAllChannels() {
       console.log("Vue: Grabbing channels");
       let rawResponse = await fetch("http://localhost:8080/channels", {
