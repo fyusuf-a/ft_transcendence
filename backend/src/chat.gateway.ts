@@ -19,6 +19,8 @@ import { plainToInstance } from 'class-transformer';
 import { ResponseMessageDto } from './messages/dto/response-message.dto';
 import { MembershipsService } from './memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
+import { MembershipRoleType } from './memberships/entities/membership.entity';
+import { CreateMembershipDto } from './memberships/dto/create-membership.dto';
 
 export class ChatJoinDto {
   channel: string;
@@ -59,6 +61,19 @@ export class ChatGateway
     this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
     this.checkAuth(client);
     // TODO: Check if User has permission to join channel here
+    const membershipDto: CreateMembershipDto = {
+      channelId: +payload.channel,
+      userId: this.authenticatedSockets.get(client.id)?.id,
+      role: MembershipRoleType.PARTICIPANT,
+    };
+    try {
+      this.membershipsService.create(membershipDto);
+    } catch (error) {
+      // TODO: check that error corresponds to entity already exists
+      //  if true: continue
+      //  if false: re-throw
+    }
+
     client.join(payload.channel);
     return `SUCCESS: joined room for channel ${payload.channel}`;
   }
