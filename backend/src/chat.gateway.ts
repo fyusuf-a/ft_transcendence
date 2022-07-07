@@ -43,6 +43,7 @@ export class ChatGateway
   private authenticatedSockets: Map<string, User> = new Map();
 
   private checkAuth(client: Socket): boolean {
+    // TODO: respect DISABLE_AUTHENTICATION
     if (this.authenticatedSockets.has(client.id)) return true;
     throw new WsException('Not Authorized');
   }
@@ -51,16 +52,16 @@ export class ChatGateway
   handleJoin(client: Socket, payload: ChatJoinDto) {
     this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
     this.checkAuth(client);
-    // Check if User has permission to join channel here
+    // TODO: Check if User has permission to join channel here
     client.join(payload.channel);
-    return `Successfully joined channel ${payload.channel}`;
+    return `SUCCESS: joined room for channel ${payload.channel}`;
   }
 
   @SubscribeMessage('chat-leave')
   async handleLeave(client: Socket, payload: ChatJoinDto) {
-    this.logger.log(`${client.id} wants to leave room [${payload.channel}]`);
+    this.logger.log(`${client.id} wants to leave channel [${payload.channel}]`);
     this.checkAuth(client);
-    // Check if User leaving affects ownership
+    // TODO: Check if User leaving affects ownership
     client.leave(payload.channel);
     const membershipArray = await this.membershipsService.findAll({
       channel: payload.channel,
@@ -75,9 +76,9 @@ export class ChatGateway
         membership.channelId === parseInt(payload.channel)
       ) {
         await this.membershipsService.remove(membership.id);
+        return `SUCCESS: left channel and room ${payload.channel}`;
       }
     }
-    return `Successfully left channel ${payload.channel}`;
   }
 
   @SubscribeMessage('chat-auth')
@@ -118,7 +119,7 @@ export class ChatGateway
     messageDto.content = message;
     messageDto.senderId = this.authenticatedSockets.get(client.id).id;
 
-    // Check if User has permission to send message here
+    // TODO: Check if User has permission to send message here
     const messageResponse = await this.messagesService.create(messageDto);
     const messageResponseDto: ResponseMessageDto = plainToInstance(
       ResponseMessageDto,
