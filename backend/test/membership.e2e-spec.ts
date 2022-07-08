@@ -19,6 +19,8 @@ import { User } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import * as request from 'supertest';
 import { Connection } from 'typeorm';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
 
 describe('MembershipController (e2e)', () => {
   let app: INestApplication;
@@ -37,7 +39,7 @@ describe('MembershipController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [User, Channel, Message, Membership],
+          entities: [Block, Friendship, User, Channel, Message, Membership],
           synchronize: true,
           dropSchema: true,
         }),

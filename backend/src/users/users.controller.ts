@@ -21,6 +21,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
+import { ResponseFriendshipDto } from 'src/relationships/friendships/dto/response-friendship.dto';
+import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -67,5 +69,17 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.usersService.remove(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/friendships')
+  findFriendships(@Param('id') id: string): Promise<ResponseFriendshipDto[]> {
+    return this.usersService.findFriendships(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/blocks')
+  findBlocks(@Param('id') id: string): Promise<ResponseBlockDto[]> {
+    return this.usersService.findBlocks(+id);
   }
 }

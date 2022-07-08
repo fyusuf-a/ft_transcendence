@@ -8,6 +8,8 @@ import { MockRepository } from 'src/common/mocks/repository.mock';
 import UserRepository from './repository/user.repository';
 import { PageDto } from '../common/dto/page.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
+import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 
 const userNumber = 2;
 
@@ -25,6 +27,8 @@ describe('UsersService', () => {
             userNumber,
           ),
         },
+        FriendshipRepository,
+        BlockRepository,
       ],
     }).compile();
 
