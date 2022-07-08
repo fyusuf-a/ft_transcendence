@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
 import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageDto } from 'src/common/dto/page.dto';
+import UserRepository from 'src/users/repository/user.repository';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsController } from './channels.controller';
 import { ChannelsService } from './channels.service';
@@ -24,6 +25,7 @@ describe('ChannelsController', () => {
           provide: ChannelRepository,
           useValue: jest.fn(),
         },
+        UserRepository,
       ],
     }).compile();
 

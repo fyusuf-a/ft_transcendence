@@ -8,6 +8,7 @@ import { MockChannelEntity } from './mocks/channel.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import ChannelRepository from './repository/channel.repository';
 import { ChannelType } from './entities/channel.entity';
+import UserRepository from 'src/users/repository/user.repository';
 
 const channelNumber = 2;
 
@@ -25,6 +26,7 @@ describe('ChannelsService', () => {
             channelNumber,
           ),
         },
+        UserRepository,
       ],
     }).compile();
     service = module.get<ChannelsService>(ChannelsService);
