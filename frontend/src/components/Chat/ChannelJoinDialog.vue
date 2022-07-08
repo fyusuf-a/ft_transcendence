@@ -3,8 +3,8 @@ import Vue from "vue";
 import { CreateChannelDto } from "../../common/dto/channel.dto";
 
 declare interface DataReturnType {
-  dialogm1: string;
-  dialog: boolean;
+  selectedChannel: string;
+  dialogOpen: boolean;
   action: string;
   createdChannel: CreateChannelDto;
   channelTypes: Array<string>;
@@ -16,8 +16,8 @@ export default Vue.extend({
   },
   data(): DataReturnType {
     return {
-      dialogm1: "",
-      dialog: false,
+      selectedChannel: "",
+      dialogOpen: false,
       action: "Join",
       createdChannel: { name: "", type: "", password: "" },
       channelTypes: ["public", "protected", "private"],
@@ -48,7 +48,7 @@ export default Vue.extend({
     },
     async handleJoinChannel() {
       if (this.action == "Join") {
-        this.$emit("channel-join-event", this.dialogm1);
+        this.$emit("channel-join-event", this.selectedChannel);
       } else {
         console.log("Created:");
         if (!this.createdChannel.name || !this.createdChannel.type) {
@@ -68,11 +68,11 @@ export default Vue.extend({
           }
         }
       }
-      this.dialog = false;
+      this.dialogOpen = false;
       this.action = "Join";
     },
     resetDialog() {
-      this.dialog = false;
+      this.dialogOpen = false;
       this.action = "Join";
       this.createdChannel = {
         name: "",
@@ -86,7 +86,7 @@ export default Vue.extend({
 
 <template>
   <v-row justify="center">
-    <v-dialog v-model="dialog" scrollable max-width="300px">
+    <v-dialog v-model="dialogOpen" scrollable max-width="300px">
       <template v-slot:activator="{ on, attrs }">
         <v-btn icon color="primary" dark v-bind="attrs" v-on="on"> + </v-btn>
       </template>
@@ -122,7 +122,7 @@ export default Vue.extend({
           ></v-text-field>
         </v-card-text>
         <v-card-text v-else style="height: 300px">
-          <v-radio-group v-model="dialogm1" column>
+          <v-radio-group v-model="selectedChannel" column>
             <v-radio
               v-for="channel in joinableChannels"
               :label="channel.name"
