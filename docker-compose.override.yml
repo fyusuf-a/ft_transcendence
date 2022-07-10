@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   backend:
-    image: ft_transcendence_backend
+    image: fyusufa/ft_transcendence_backend
     build:
       context: ./backend
       args:
@@ -14,7 +14,7 @@ services:
   frontend:
     ports:
       - 8000:80
-    image: ft_transcendence_frontend
+    image: fyusufa/ft_transcendence_frontend
     build:
       context: ./frontend
       target: ${FRONTEND_TARGET}
