@@ -11,14 +11,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import UserRepository from './repository/user.repository';
 import * as fs from 'fs';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UserRepository)
     private usersRepository: UserRepository,
-    private configService: ConfigService,
   ) {}
 
   async findAll(
