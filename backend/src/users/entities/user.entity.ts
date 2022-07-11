@@ -21,11 +21,10 @@ export class User {
   username: string;
 
   @Column({
-    type: 'bytea',
     nullable: true,
     default: null,
   })
-  avatar: Uint8Array;
+  avatar: string;
 
   @Column({
     default: 0,
