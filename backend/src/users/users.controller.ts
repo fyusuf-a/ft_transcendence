@@ -91,6 +91,7 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiBearerAuth()
   @ApiResponse({ status: 201, description: 'Success' })
+  @ApiResponse({ status: 400, description: 'Missing or Invalid File' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Avatar Photo',
@@ -100,6 +101,9 @@ export class UsersController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (!file || !file.filename) {
+      throw new BadRequestException('Missing or Invalid File');
+    }
     return this.usersService.updateAvatar(
       +id,
       this.configService.get<string>('UPLOADS_PATH') + file.filename,
