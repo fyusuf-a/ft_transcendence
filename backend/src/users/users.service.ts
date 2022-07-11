@@ -75,7 +75,7 @@ export class UsersService {
     const stream = createReadStream(filepath);
     return { fileStream: new StreamableFile(stream), ext: ext };
   }
-  
+
   findFriendships(id: number): Promise<ResponseFriendshipDto[]> {
     return this.friendshipRepository.find({
       where: [{ targetId: id }, { sourceId: id }],

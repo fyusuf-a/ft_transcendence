@@ -125,7 +125,7 @@ export class UsersController {
       const file = await this.usersService.getAvatar(+id);
       res.set({
         'Content-Type': `image/${file.ext}`,
-        'Content-Disposition': `inline; filename="avatar.${file.ext}"`,
+        'Content-Disposition': `inline`,
       });
       return file.fileStream;
     } catch (error) {
