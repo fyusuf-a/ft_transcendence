@@ -7,7 +7,11 @@
 
     <v-spacer />
 
-    <profile-card :profile="profile" color="primary" height="100%" />
+    <profile-card
+      v-if="$store.state.isAuthenticated"
+      color="primary"
+      height="100%"
+    />
 
     <notification-icon
       @click="notification = !notification"
@@ -29,10 +33,6 @@ export default {
   },
   data() {
     return {
-      profile: {
-        picture: "https://static.generated.photos/vue-static/home/hero/3.png",
-        pseudo: "my_pseudo",
-      },
       notification: true,
     };
   },

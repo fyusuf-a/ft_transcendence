@@ -1,3 +1,22 @@
+<template>
+  <v-form @submit.prevent.stop>
+    <v-container>
+      <v-row>
+        <v-col cols="12" md="4">
+          <v-text-field
+            v-model="username"
+            label="Username"
+            required
+          ></v-text-field>
+        </v-col>
+        <v-col>
+          <v-btn color="primary" @click="authenticate">Sign-in</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-form>
+</template>
+
 <script lang="ts">
 import Vue from "vue";
 
@@ -17,7 +36,6 @@ export default Vue.extend({
         },
         body: JSON.stringify({ username: this.username }),
       });
-      console.log(rawResponse);
       if (rawResponse.status !== 201) {
         console.log(`Server[${rawResponse.status}]: ${rawResponse.statusText}`);
         return;
@@ -29,31 +47,12 @@ export default Vue.extend({
         return;
       }
       this.$store.commit("login", {
+        id: content.id,
         username: this.username,
         token: token,
       });
-
       this.$router.push("/profile");
     },
   },
 });
 </script>
-
-<template>
-  <v-form @submit.prevent.stop>
-    <v-container>
-      <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field
-            v-model="username"
-            label="Username"
-            required
-          ></v-text-field>
-        </v-col>
-        <v-col>
-          <v-btn color="primary" @click="authenticate">Sign-in</v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-form>
-</template>
