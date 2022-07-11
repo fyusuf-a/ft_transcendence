@@ -17,6 +17,7 @@ import { ResponseFriendshipDto } from './dto/response-friendship.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { QueryFriendshipDto } from './dto/query-friendship.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
+import { PageDto } from 'src/common/dto/page.dto';
 
 @ApiBearerAuth()
 @ApiTags('friendships')
@@ -42,7 +43,7 @@ export class FriendshipsController {
   @Get()
   findAll(
     @Query() query?: QueryFriendshipDto,
-  ): Promise<ResponseFriendshipDto[]> {
+  ): Promise<PageDto<ResponseFriendshipDto>> {
     return this.friendshipsService.findAll(query);
   }
 
