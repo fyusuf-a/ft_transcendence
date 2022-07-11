@@ -21,10 +21,13 @@ import { Achievement } from './achievements/entities/achievements.entity';
 import { MatchesModule } from './matches/matches.module';
 import { Match } from './matches/entities/match.entity';
 import { CaslModule } from './casl/casl.module';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
