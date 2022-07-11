@@ -16,14 +16,18 @@ export default class ChannelRepository extends PaginatedRepository<Channel> {
       'channel',
       'id',
       (selectQueryBuilder) => {
-        if (query?.name)
-          selectQueryBuilder.where('channel.name = :name', {
+        let whereMethod = 'where';
+        if (query?.name) {
+          selectQueryBuilder[whereMethod]('channel.name = :name', {
             name: query.name,
           });
-        if (query.type)
-          selectQueryBuilder.andWhere('channel.type = :type', {
+          whereMethod = 'andWhere';
+        }
+        if (query?.type) {
+          selectQueryBuilder[whereMethod]('channel.type = :type', {
             type: query.type,
           });
+        }
       },
     );
   }
