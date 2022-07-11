@@ -19,13 +19,12 @@ jobs:
         id: diff-backend
         continue-on-error: true
         run: |
-          git diff ${{ github.event.before }} --exit-code backend/src > /dev/null
-          git diff ${{ github.event.before }} --exit-code .github/workflows/cd.yml > /dev/null
+          git diff ${{ github.event.before }} --exit-code backend > /dev/null
       - name: Check for diff in frontend
         id: diff-frontend
         continue-on-error: true
         run: |
-          git diff origin/master --exit-code frontend/src > /dev/null
+          git diff ${{ github.event.before }} --exit-code frontend > /dev/null
       - name: see outputs
         run: |
           echo ${{ steps.diff-frontend.outcome }}
