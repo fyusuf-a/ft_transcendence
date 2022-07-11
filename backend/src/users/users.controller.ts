@@ -127,13 +127,13 @@ export class UsersController {
       });
       return file.fileStream;
     } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
-        if (error.message === 'Avatar does not exist') {
-          throw new HttpException(error.message, HttpStatus.NO_CONTENT);
-        }
-        throw new BadRequestException(error.message);
+      if (
+        error instanceof EntityDoesNotExistError &&
+        error.message === 'Avatar does not exist'
+      ) {
+        throw new HttpException(error.message, HttpStatus.NO_CONTENT);
       }
-      throw error;
+      throw new BadRequestException(error.message);
     }
   }
 }
