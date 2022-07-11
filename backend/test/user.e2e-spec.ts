@@ -23,6 +23,7 @@ describe('UsersController (e2e)', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
+    process.env['DISABLE_AUTHENTICATION'] = 'true';
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         UsersModule,

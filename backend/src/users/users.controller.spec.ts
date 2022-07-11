@@ -12,13 +12,17 @@ import { PageOptionsDto } from '../common/dto/page-options.dto';
 import UserRepository from './repository/user.repository';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CaslModule } from 'src/casl/casl.module';
 
 describe('UsersController', () => {
   let controller: UsersController;
   let service: UsersService;
+  let configService: ConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule, CaslModule],
       controllers: [UsersController],
       providers: [
         UsersService,
@@ -40,6 +44,7 @@ describe('UsersController', () => {
 
     controller = module.get<UsersController>(UsersController);
     service = module.get<UsersService>(UsersService);
+    configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -82,7 +87,9 @@ describe('UsersController', () => {
       const userDto = new UpdateUserDto();
       userDto.username = 'user';
       jest.spyOn(service, 'update').mockImplementation(async () => mock);
-      const result = await controller.update('1', userDto);
+      const request = { user: new User() };
+      request.user.id = 1;
+      const result = await controller.update('1', userDto, request);
       expect(result).toEqual(mock);
     });
   });
@@ -108,6 +115,7 @@ describe('UsersController', () => {
       jest
         .spyOn(service, 'remove')
         .mockImplementation(async () => new DeleteResult());
+      jest.spyOn(configService, 'get').mockReturnValue(true);
       const result = await controller.remove('1');
       expect(result).toEqual(new DeleteResult());
     });

@@ -5,6 +5,7 @@ import { UsersController } from './users.controller';
 import UserRepository from './repository/user.repository';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.re
       FriendshipRepository,
       BlockRepository,
     ]),
+    CaslModule,
   ],
   providers: [UsersService],
   controllers: [UsersController],

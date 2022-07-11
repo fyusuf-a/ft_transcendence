@@ -9,6 +9,8 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
@@ -23,11 +25,17 @@ import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
 import { ResponseFriendshipDto } from 'src/relationships/friendships/dto/response-friendship.dto';
 import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
+import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
+import { User } from './entities/user.entity';
+import { Action } from 'src/casl/actions';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private caslAbilityFactory: CaslAbilityFactory,
+  ) {}
 
   @ApiBearerAuth()
   @Get()
@@ -50,8 +58,16 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() request,
   ): Promise<UpdateResult> {
-    return this.usersService.update(+id, updateUserDto);
+    const ability = this.caslAbilityFactory.createForUser(request.user);
+    const dummyTarget = new User();
+    dummyTarget.id = +id;
+    if (ability.can(Action.Update, dummyTarget)) {
+      return this.usersService.update(+id, updateUserDto);
+    } else {
+      throw new UnauthorizedException();
+    }
   }
 
   @ApiBearerAuth()
