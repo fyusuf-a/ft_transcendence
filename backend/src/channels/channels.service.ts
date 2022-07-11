@@ -9,6 +9,11 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { ResponseChannelDto } from './dto/response-channel.dto';
 import { Channel } from './entities/channel.entity';
 import ChannelRepository from './repository/channel.repository';
+import * as bcrypt from 'bcrypt';
+
+async function hashPassword(rawPassword: string): Promise<string> {
+  return await bcrypt.hash(rawPassword, 10);
+}
 
 @Injectable()
 export class ChannelsService {
@@ -17,11 +22,15 @@ export class ChannelsService {
     private channelsRepository: ChannelRepository,
   ) {}
 
-  create(createChannelDto: CreateChannelDto) {
+  async create(createChannelDto: CreateChannelDto) {
     const channel: Channel = new Channel();
     channel.name = createChannelDto.name;
     channel.type = createChannelDto.type;
-    channel.password = createChannelDto.password;
+    if (createChannelDto.password) {
+      channel.password = await hashPassword(createChannelDto.password);
+    } else {
+      channel.password = undefined;
+    }
     return this.channelsRepository.save(channel);
   }
 
@@ -36,10 +45,13 @@ export class ChannelsService {
     return this.channelsRepository.findOne(id);
   }
 
-  update(
+  async update(
     id: number,
     updateChannelDto: UpdateChannelDto,
   ): Promise<UpdateResult> {
+    if (updateChannelDto.password) {
+      updateChannelDto.password = await hashPassword(updateChannelDto.password);
+    }
     return this.channelsRepository.update(id, updateChannelDto);
   }
 

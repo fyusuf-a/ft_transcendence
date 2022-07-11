@@ -4,7 +4,7 @@ export class MockChannelEntity {
   id = 1;
   name = 'channel-name';
   type: ChannelType = ChannelType.PRIVATE;
-  password?: string = null;
+  password?: string = undefined;
   ownerId = 1;
   adminIds: number[] = [];
   paricipantIds: number[] = [];
