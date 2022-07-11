@@ -23,7 +23,7 @@ jobs:
         id: diff
         continue-on-error: true
         run: |
-          git diff origin/master --exit-code backend/src > /dev/null
+          git diff origin/master --exit-code backend > /dev/null
 
   build:
     runs-on: ubuntu-latest
