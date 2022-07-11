@@ -102,7 +102,7 @@ export class UsersController {
   ) {
     return this.usersService.updateAvatar(
       +id,
-      `${this.configService.get<string>('UPLOADS_PATH')}` + file.filename,
+      this.configService.get<string>('UPLOADS_PATH') + file.filename,
     );
   }
 
