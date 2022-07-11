@@ -44,6 +44,7 @@ export class User {
   @Exclude()
   @OneToMany(() => Membership, (membership) => membership.user)
   memberships: Membership[];
+
   @Exclude()
   @RelationId((user: User) => user.memberships)
   membershipIds: number[];

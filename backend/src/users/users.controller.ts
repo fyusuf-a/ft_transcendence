@@ -36,6 +36,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from './dto/upload-avatar.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
+import { ResponseFriendshipDto } from 'src/relationships/friendships/dto/response-friendship.dto';
+import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -135,5 +137,17 @@ export class UsersController {
       }
       throw new BadRequestException(error.message);
     }
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/friendships')
+  findFriendships(@Param('id') id: string): Promise<ResponseFriendshipDto[]> {
+    return this.usersService.findFriendships(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/blocks')
+  findBlocks(@Param('id') id: string): Promise<ResponseBlockDto[]> {
+    return this.usersService.findBlocks(+id);
   }
 }

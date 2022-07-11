@@ -3,13 +3,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import UserRepository from './repository/user.repository';
+import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
+import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserRepository]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      FriendshipRepository,
+      BlockRepository,
+    ]),
     ConfigModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],

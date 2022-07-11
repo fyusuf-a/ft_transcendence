@@ -9,6 +9,8 @@ import UserRepository from './repository/user.repository';
 import { PageDto } from '../common/dto/page.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
+import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 
 const userNumber = 2;
 const mockConfig = () => ({ get: () => undefined });
@@ -32,6 +34,8 @@ describe('UsersService', () => {
           provide: ConfigService,
           useFactory: mockConfig,
         },
+        FriendshipRepository,
+        BlockRepository,
       ],
     }).compile();
 
