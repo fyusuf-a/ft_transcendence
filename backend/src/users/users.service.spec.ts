@@ -9,7 +9,6 @@ import UserRepository from './repository/user.repository';
 import { PageDto } from '../common/dto/page.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersController } from './users.controller';
 
 const userNumber = 2;
 const mockConfig = () => ({ get: () => undefined });
@@ -34,7 +33,6 @@ describe('UsersService', () => {
           useFactory: mockConfig,
         },
       ],
-      controllers: [UsersController],
     }).compile();
 
     service = module.get<UsersService>(UsersService);
