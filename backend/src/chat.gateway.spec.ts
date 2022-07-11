@@ -9,6 +9,8 @@ import { Membership } from './memberships/entities/membership.entity';
 import { MembershipsService } from './memberships/memberships.service';
 import { MessagesService } from './messages/messages.service';
 import MessageRepository from './messages/repository/message.repository';
+import { BlockRepository } from './relationships/blocks/repositories/blocks.repository';
+import { FriendshipRepository } from './relationships/friendships/repositories/friendship.repository';
 import UserRepository from './users/repository/user.repository';
 import { UsersService } from './users/users.service';
 
@@ -34,6 +36,14 @@ describe('ChatGateway', () => {
         },
         {
           provide: getRepositoryToken(ChannelRepository),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(FriendshipRepository),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(BlockRepository),
           useValue: jest.fn(),
         },
         {
