@@ -42,6 +42,9 @@ export default new Vuex.Store({
     backend(state) {
       return state.backend;
     },
+    id(state) {
+      return state.id;
+    },
   },
   mutations: {
     login(state, payload) {
@@ -55,14 +58,13 @@ export default new Vuex.Store({
     async getAvatar(context) {
       const id = context.state.id;
       if (id === undefined) return undefined;
-      await axios
+      axios
         .get(context.getters.backend + "/users/" + id + "/avatar", {
           responseType: "blob",
           headers: context.getters.tokenHeader,
         })
         .then((response) => {
           if (response.status === 204) return;
-          console.log(response);
           const blob = new Blob([response.data]);
           context.state.avatar = URL.createObjectURL(blob);
         })
