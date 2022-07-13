@@ -5,4 +5,6 @@ export class CreateChannelDto extends PickType(ChannelDto, [
   'name',
   'type',
   'password',
+  'userOneId',
+  'userTwoId',
 ]) {}

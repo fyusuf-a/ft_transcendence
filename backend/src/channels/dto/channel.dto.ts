@@ -39,4 +39,18 @@ export class ChannelDto {
   @IsOptional()
   @IsNotEmpty()
   password?: string;
+
+  @ApiProperty({
+    description: 'First user Id (if this is a direct messages channel).',
+  })
+  @IsOptional()
+  @IsNotEmpty()
+  userOneId?: number;
+
+  @ApiProperty({
+    description: 'Second user Id (if this is a direct messages channel).',
+  })
+  @IsOptional()
+  @IsNotEmpty()
+  userTwoId?: number;
 }
