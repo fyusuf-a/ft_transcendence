@@ -16,6 +16,7 @@ import { FriendshipRepository } from 'src/relationships/friendships/repositories
 import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 import { BlockTypeEnum } from 'src/relationships/entities/block.entity';
+import { FriendshipTypeEnum } from 'src/relationships/entities/friendship.entity';
 
 @Injectable()
 export class UsersService {
@@ -78,7 +79,16 @@ export class UsersService {
 
   findFriendships(id: number): Promise<ResponseFriendshipDto[]> {
     return this.friendshipRepository.find({
-      where: [{ targetId: id }, { sourceId: id }],
+      where: [
+        { targetId: id, status: FriendshipTypeEnum.ACCEPTED },
+        { sourceId: id, status: FriendshipTypeEnum.ACCEPTED },
+      ],
+    });
+  }
+
+  findFriendRequests(id: number): Promise<ResponseFriendshipDto[]> {
+    return this.friendshipRepository.find({
+      where: { targetId: id, status: FriendshipTypeEnum.PENDING },
     });
   }
 
