@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-5" max-width="400">
+  <v-card :loading="loading" class="ma-5" max-width="400">
     <v-card-title class="white--text orange darken-4">
       Friends
 
@@ -26,36 +26,24 @@
 import axios from "axios";
 
 export default {
-  data: () => ({
-    users: [],
-  }),
-  created() {
-    axios
-      .get(this.$store.getters.backend + "/friendships/", {
-        headers: this.$store.getters.tokenHeader,
-        params: {
-          sourceId: this.$store.getters.id,
-          status: "accepted",
-        },
-      })
-      .then(async (response) => {
-        response.data.data.forEach(async (friendship) => {
-          axios
-            .get(
-              this.$store.getters.backend + "/users/" + friendship.targetId,
-              {
-                headers: this.$store.getters.tokenHeader,
-              }
-            )
-            .then((response) => {
-              this.users.push({
-                username: response.data.username,
-              });
-            })
-            .catch((e) => console.log(e.message));
-        });
-      })
-      .catch((e) => console.log(e.message));
+  data() {
+    return {
+      loading: true,
+      users: [],
+    };
+  },
+  async created() {
+    let response = await axios.get("/friendships/", {
+      params: {
+        sourceId: this.$store.getters.id,
+        status: "accepted",
+      },
+    });
+    response.data.data.forEach(async (friendship) => {
+      let userResponse = await axios.get("/users/" + friendship.targetId);
+      this.users.push({ username: userResponse.data.username });
+    });
+    this.loading = false;
   },
 };
 </script>

@@ -22,7 +22,10 @@ export default {
   },
   computed: {
     picture() {
-      if (this.$store.state.avatar === undefined) {
+      if (
+        this.$store.state.avatar === undefined ||
+        this.$store.state.avatar === null
+      ) {
         return require("@/assets/images/king-pong.png");
       }
       return this.$store.state.avatar;
@@ -35,7 +38,7 @@ export default {
     },
   },
   created() {
-    if (this.$store.state.avatar !== undefined) return;
+    if (this.$store.state.avatar !== null) return;
     this.$store.dispatch("getAvatar");
   },
 };

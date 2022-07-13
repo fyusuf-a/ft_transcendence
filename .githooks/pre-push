@@ -4,11 +4,11 @@ git lfs pre-push "$@"
 
 # Linting the frontend
 git diff HEAD^ --exit-code frontend > /dev/null
-if [ $? -eq 1 ]; then
-	cd frontend
-	npx eslint "{src,apps,libs,test}/**/*.ts" --no-fix --max-warnings=0 || exit 1
-	cd ..
-fi
+#if [ $? -eq 1 ]; then
+#	cd frontend
+#	npx eslint "{src,apps,libs,test}/**/*.ts" --no-fix --max-warnings=0 || exit 1
+#	cd ..
+#fi
 
 # Linting the backend
 git diff HEAD^ --exit-code backend > /dev/null

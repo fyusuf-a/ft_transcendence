@@ -2,6 +2,8 @@ version: '3.4'
 
 services:
   backend:
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     image: fyusufa/ft_transcendence_backend
     environment:
       WATCH: 0

@@ -1,76 +1,58 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from "axios";
+import { AxiosInstance } from "axios";
 
 Vue.use(Vuex);
 
 interface State {
   isAuthenticated: boolean;
   username: string | undefined;
-  avatar: string | undefined;
+  avatar: string | undefined | null;
   id: string | undefined;
   token: string | undefined;
-  backend: string;
 }
 
 const state: State = {
   isAuthenticated: false,
   username: undefined,
-  avatar: undefined,
+  avatar: null,
   id: undefined,
   token: undefined,
-  backend: "http://localhost:8080",
 };
 
 export default new Vuex.Store({
   state: state,
   getters: {
-    username(state) {
-      return state.username;
-    },
-    isAuthenticated(state) {
-      return state.isAuthenticated;
-    },
-    avatar(state) {
-      return state.avatar;
-    },
-    tokenHeader(state) {
-      return {
-        Authorization: "Bearer " + state.token,
-      };
-    },
-    backend(state) {
-      return state.backend;
-    },
-    id(state) {
-      return state.id;
-    },
+    username: (state) => state.username,
+    isAuthenticated: (state) => state.isAuthenticated,
+    avatar: (state) => state.avatar,
+    id: (state) => state.id,
+    token: (state) => state.token,
   },
   mutations: {
     login(state, payload) {
       state.username = payload.username;
-      state.token = payload.token;
       state.id = payload.id;
       state.isAuthenticated = true;
+      state.token = payload.token;
     },
   },
   actions: {
     async getAvatar(context) {
-      const id = context.state.id;
-      if (id === undefined) return undefined;
-      axios
-        .get(context.getters.backend + "/users/" + id + "/avatar", {
+      try {
+        const id = context.state.id;
+        if (id === undefined) return undefined;
+        const response = await axios.get("/users/" + id + "/avatar", {
           responseType: "blob",
-          headers: context.getters.tokenHeader,
-        })
-        .then((response) => {
-          if (response.status === 204) return;
-          const blob = new Blob([response.data]);
-          context.state.avatar = URL.createObjectURL(blob);
-        })
-        .catch(() => {
-          context.state.avatar = undefined;
         });
+        if (response.status === 204) return;
+        const blob = new Blob([response.data]);
+        context.state.avatar = URL.createObjectURL(blob);
+      } catch (e) {
+        console.error(e);
+        context.state.avatar = undefined;
+      }
     },
   },
   modules: {},
