@@ -28,7 +28,7 @@ export default Vue.extend({
     },
   },
   created() {
-    if (this.$store.state.avatar !== undefined) return;
+    if (this.$store.state.avatar !== null) return;
     this.$store.dispatch("getAvatar");
   },
 });
