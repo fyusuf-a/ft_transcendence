@@ -13,6 +13,8 @@ import { UsersModule } from 'src/users/users.module';
 import { ChannelsModule } from 'src/channels/channels.module';
 import { ResponseMessageDto } from 'src/messages/dto/response-message.dto';
 import { PageDto } from 'src/common/dto/page.dto';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
 
 describe('MessagesController (e2e)', () => {
   let app: INestApplication;
@@ -31,7 +33,7 @@ describe('MessagesController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [Message, Channel, User, Membership],
+          entities: [Block, Friendship, Message, Channel, User, Membership],
           synchronize: true,
           dropSchema: true,
         }),

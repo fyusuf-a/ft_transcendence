@@ -9,8 +9,10 @@ import { ChannelsModule } from './channels/channels.module';
 import { Channel } from './channels/entities/channel.entity';
 import { MembershipsModule } from './memberships/memberships.module';
 import { Membership } from './memberships/entities/membership.entity';
-import { RelationshipsModule } from './relationships/relationships.module';
-import { Relationship } from './relationships/entities/relationship.entity';
+import { FriendshipsModule } from './relationships/friendships/friendships.module';
+import { BlocksModule } from './relationships/blocks/blocks.module';
+import { Friendship } from './relationships/entities/friendship.entity';
+import { Block } from './relationships/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
@@ -18,10 +20,13 @@ import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
 import { MatchesModule } from './matches/matches.module';
 import { Match } from './matches/entities/match.entity';
+import configuration from './config/configuration';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -34,7 +39,8 @@ import { Match } from './matches/entities/match.entity';
         Message,
         Channel,
         Membership,
-        Relationship,
+        Friendship,
+        Block,
         Achievement,
         Match,
       ],
@@ -44,7 +50,8 @@ import { Match } from './matches/entities/match.entity';
     MessagesModule,
     ChannelsModule,
     MembershipsModule,
-    RelationshipsModule,
+    FriendshipsModule,
+    BlocksModule,
     AuthModule,
     AchievementsModule,
     MatchesModule,

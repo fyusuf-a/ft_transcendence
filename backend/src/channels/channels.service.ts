@@ -10,6 +10,11 @@ import { ResponseChannelDto } from './dto/response-channel.dto';
 import { Channel, ChannelType } from './entities/channel.entity';
 import ChannelRepository from './repository/channel.repository';
 import UserRepository from 'src/users/repository/user.repository';
+import * as bcrypt from 'bcrypt';
+
+async function hashPassword(rawPassword: string): Promise<string> {
+  return await bcrypt.hash(rawPassword, 10);
+}
 
 @Injectable()
 export class ChannelsService {
@@ -28,8 +33,12 @@ export class ChannelsService {
     else {
       if (createChannelDto.name[0] == '-')
         throw "Channel name cannot start with a '-'.";
+      if (createChannelDto.password) {
+        channel.password = await hashPassword(createChannelDto.password);
+      } else {
+        channel.password = undefined;
+      }
       channel.name = createChannelDto.name;
-      channel.password = createChannelDto.password;
     }
     return await this.channelsRepository.save(channel);
   }
@@ -72,10 +81,13 @@ export class ChannelsService {
     return this.channelsRepository.findOne(id);
   }
 
-  update(
+  async update(
     id: number,
     updateChannelDto: UpdateChannelDto,
   ): Promise<UpdateResult> {
+    if (updateChannelDto.password) {
+      updateChannelDto.password = await hashPassword(updateChannelDto.password);
+    }
     return this.channelsRepository.update(id, updateChannelDto);
   }
 

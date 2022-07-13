@@ -59,11 +59,22 @@ describe('ChannelsService', () => {
     it('should return new channel object', async () => {
       const channelDto: CreateChannelDto = new CreateChannelDto();
       channelDto.type = ChannelType.PRIVATE;
-      channelDto.password = null;
+      channelDto.password = undefined;
       channelDto.name = 'channel-name';
       const expected = new MockChannelEntity();
       expected.id = channelNumber + 1;
       expect(await service.create(channelDto)).toEqual(expected);
+    });
+  });
+
+  describe('when creating a protected Channel', () => {
+    it('password should be hashed', async () => {
+      const channelDto: CreateChannelDto = new CreateChannelDto();
+      channelDto.type = ChannelType.PROTECTED;
+      channelDto.password = 'badpassword';
+      channelDto.name = 'protectedChannelName';
+      const result = await service.create(channelDto);
+      expect(result.password).toContain('$2b$10$');
     });
   });
 

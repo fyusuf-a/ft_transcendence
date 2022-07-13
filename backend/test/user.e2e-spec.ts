@@ -16,6 +16,8 @@ import { Reflector } from '@nestjs/core';
 import { Connection } from 'typeorm';
 import { ResponseUserDto } from 'src/users/dto/response-user.dto';
 import { PageDto } from 'src/common/dto/page.dto';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -32,7 +34,7 @@ describe('UsersController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [User, Channel, Membership, Message],
+          entities: [Block, Friendship, User, Channel, Membership, Message],
           synchronize: true,
           dropSchema: true,
         }),

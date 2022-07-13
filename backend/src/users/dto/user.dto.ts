@@ -25,7 +25,7 @@ export class UserDto {
   @ApiProperty({
     description: 'An avatar for the user',
   })
-  avatar: Uint8Array;
+  avatar: string;
 
   @ApiProperty({
     description: 'Number of matches won',

@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -10,6 +11,8 @@ import { PageMetaDto } from '../common/dto/page-meta.dto';
 import { PageDto } from '../common/dto/page.dto';
 import { PageOptionsDto } from '../common/dto/page-options.dto';
 import UserRepository from './repository/user.repository';
+import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
+import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -17,12 +20,21 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ isGlobal: true })],
       controllers: [UsersController],
       providers: [
         UsersService,
         UserRepository,
         {
           provide: UserRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: FriendshipRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: BlockRepository,
           useValue: jest.fn(),
         },
       ],

@@ -4,37 +4,24 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import UserRepository from 'src/users/repository/user.repository';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import {
-  Relationship,
-  RelationshipTypeEnum,
-} from './entities/relationship.entity';
-import { RelationshipsService } from './relationships.service';
-import { MockRepository } from 'src/common/mocks/repository.mock';
+import { Friendship } from '../entities/friendship.entity';
+import { FriendshipsService } from './friendships.service';
+import { FriendshipRepository } from './repositories/friendship.repository';
 
-describe('RelationshipsService', () => {
-  let service: RelationshipsService;
+describe('friendshipsService', () => {
+  let service: FriendshipsService;
   let usersRepository: Repository<User>;
-  let relationshipsRepository: Repository<Relationship>;
+  let friendshipsRepository: Repository<Friendship>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RelationshipsService,
-        {
-          provide: getRepositoryToken(Relationship),
-          useValue: new MockRepository<Relationship>(() => new Relationship()),
-        },
-        {
-          provide: getRepositoryToken(UserRepository),
-          useValue: new MockRepository<User>(() => new User()),
-        },
-      ],
+      providers: [FriendshipsService, FriendshipRepository, UserRepository],
     }).compile();
 
-    service = module.get<RelationshipsService>(RelationshipsService);
+    service = module.get<FriendshipsService>(FriendshipsService);
     usersRepository = module.get<UserRepository>(UserRepository);
-    relationshipsRepository = module.get<Repository<Relationship>>(
-      getRepositoryToken(Relationship),
+    friendshipsRepository = module.get<FriendshipRepository>(
+      getRepositoryToken(FriendshipRepository),
     );
   });
 
@@ -52,7 +39,6 @@ describe('RelationshipsService', () => {
         return await service.create({
           sourceId: 1,
           targetId: 2,
-          type: RelationshipTypeEnum.FRIEND,
         });
       }
       const user2 = new User();
@@ -70,7 +56,6 @@ describe('RelationshipsService', () => {
         return await service.create({
           sourceId: 2,
           targetId: 1,
-          type: RelationshipTypeEnum.FRIEND,
         });
       }
       const user2 = new User();
@@ -83,31 +68,30 @@ describe('RelationshipsService', () => {
       expect(tryCreate()).rejects.toThrow(EntityDoesNotExistError);
     });
 
-    it('should return relationship with valid users', async () => {
+    it('should return friendship with valid users', async () => {
       async function tryCreate() {
         return await service.create({
           sourceId: 2,
           targetId: 1,
-          type: RelationshipTypeEnum.FRIEND,
         });
       }
       const user2 = new User();
       user2.id = 2;
       const user1 = new User();
       user1.id = 1;
-      const relationship1 = new Relationship();
-      relationship1.sourceId = user2.id;
-      relationship1.targetId = user1.id;
+      const friendship1 = new Friendship();
+      friendship1.sourceId = user2.id;
+      friendship1.targetId = user1.id;
       jest
         .spyOn(usersRepository, 'findOne')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user1));
 
       jest
-        .spyOn(relationshipsRepository, 'save')
-        .mockImplementation((): Promise<any> => Promise.resolve(relationship1));
+        .spyOn(friendshipsRepository, 'save')
+        .mockImplementation((): Promise<any> => Promise.resolve(friendship1));
 
-      expect(tryCreate()).resolves.toBeInstanceOf(Relationship);
+      expect(tryCreate()).resolves.toBeInstanceOf(Friendship);
     });
   });
 });
