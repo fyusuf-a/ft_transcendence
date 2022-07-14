@@ -1,13 +1,8 @@
 <template>
   <v-card class="pa-2 ma-5">
-    <v-card
-      class="ma-4"
-      height="250"
-      width="250"
-      :img="this.$store.getters.avatar"
-    />
+    <v-card class="ma-4" height="250" width="250" :img="avatar()" />
 
-    <v-card-title>{{ this.$store.getters.username }}</v-card-title>
+    <v-card-title>{{ username() }}</v-card-title>
 
     <v-card-actions>
       <v-btn color="deep-purple lighten-2" text @click="reserve">
@@ -20,12 +15,20 @@
   </v-card>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from "vue";
+import { mapGetters } from "vuex";
+
+export default Vue.extend({
   methods: {
+    ...mapGetters(["username", "avatar"]),
     reserve() {
       // TODO: remove and replace with 2 methods: one to change the username, one to change the picture
     },
   },
-};
+  created() {
+    if (this.avatar() !== undefined) return;
+    this.$store.dispatch("getAvatar");
+  },
+});
 </script>

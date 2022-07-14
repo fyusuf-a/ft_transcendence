@@ -2,7 +2,7 @@
   <v-card :color="color" class="ma-y8" elevation="0">
     <v-list-item>
       <v-list-item-avatar>
-        <v-img :src="picture" alt="profile picture" />
+        <v-img :src="avatar()" alt="profile picture" />
       </v-list-item-avatar>
       <v-list-item-content>
         {{ username() }}
@@ -18,7 +18,7 @@ import { mapGetters } from "vuex";
 export default Vue.extend({
   data: function () {
     return {
-      ...mapGetters(["username", "avatar", "id"]),
+      ...mapGetters(["username", "avatar"]),
     };
   },
   props: {
@@ -28,7 +28,7 @@ export default Vue.extend({
     },
   },
   created() {
-    if (this.$store.state.avatar !== null) return;
+    if (this.avatar() !== undefined) return;
     this.$store.dispatch("getAvatar");
   },
 });

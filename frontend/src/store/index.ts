@@ -7,7 +7,7 @@ Vue.use(Vuex);
 interface State {
   isAuthenticated: boolean;
   username: string | undefined;
-  avatar: string | undefined | null;
+  avatar: string | undefined;
   id: string | undefined;
   token: string | undefined;
 }
@@ -15,7 +15,7 @@ interface State {
 const state: State = {
   isAuthenticated: false,
   username: undefined,
-  avatar: null,
+  avatar: undefined,
   id: undefined,
   token: undefined,
 };
@@ -48,9 +48,10 @@ export default new Vuex.Store({
         if (response.status === 204) return;
         const blob = new Blob([response.data]);
         context.state.avatar = URL.createObjectURL(blob);
-      } catch (e) {
-        console.error(e);
-        context.state.avatar = undefined;
+      } finally {
+        if (!context.state.avatar) {
+          context.state.avatar = require("@/assets/images/king-pong.png");
+        }
       }
     },
   },

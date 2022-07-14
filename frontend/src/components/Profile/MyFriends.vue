@@ -26,25 +26,41 @@
 import axios from "axios";
 import Vue from "vue";
 
+interface ResponseFriendshipDto {
+  targetId: number;
+}
+
+interface PageDto<T> {
+  data: T[];
+}
+
+interface MyFriendsData {
+  loading: boolean;
+  users: { username: string }[];
+}
+
 export default Vue.extend({
-  data() {
+  data(): MyFriendsData {
     return {
       loading: true,
       users: [],
     };
   },
   async created() {
-    let response = await axios.get("/friendships/", {
-      params: {
-        sourceId: this.$store.getters.id,
-        status: "accepted",
-      },
-    });
+    let response = await axios.get<PageDto<ResponseFriendshipDto>>(
+      "/friendships/",
+      {
+        params: {
+          sourceId: this.$store.getters.id,
+          status: "accepted",
+        },
+      }
+    );
     response.data.data.forEach(async (friendship) => {
       let userResponse = await axios.get("/users/" + friendship.targetId);
       this.users.push({ username: userResponse.data.username });
     });
     this.loading = false;
-  }),
+  },
 });
 </script>
