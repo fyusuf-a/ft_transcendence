@@ -134,7 +134,7 @@ export class ChatGateway
     const target = payload.channel;
     const message = payload.message;
     if (!target || !message) {
-      return `ERROR: Invalid payload: ${payload}`;
+      return `ERROR: Invalid payload: ${JSON.stringify(payload)}`;
     }
     this.logger.log(
       `${client.id} wants to send ["${message}"] to target ${target}!`,
