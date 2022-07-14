@@ -2,11 +2,9 @@ version: '3.4'
 
 services:
   backend:
-    ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
-    image: fyusufa/ft_transcendence_backend
     build:
       context: .
+      dockerfile: backend/${BACKEND_DOCKERFILE}
       args:
           NODE_IMAGE: ${NODE_IMAGE}
           BACKEND_PORT: ${BACKEND_PORT}
@@ -20,12 +18,14 @@ services:
     image: fyusufa/ft_transcendence_frontend
     build:
       context: .
-      dockerfile: frontend/Dockerfile
-      target: ${FRONTEND_TARGET}
+      dockerfile: frontend/${FRONTEND_DOCKERFILE}
       args:
           NODE_IMAGE: ${NODE_IMAGE}
+          NGINX_IMAGE: ${NGINX_IMAGE}
     environment:
       VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+      VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
+      VUE_APP_BACKEND_PORT: ${BACKEND_PORT}
     profiles: ["frontend"]
 
   adminer:

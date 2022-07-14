@@ -1,2 +1,2 @@
-**
-!docker-entrypoint.sh
+node_modules
+dist

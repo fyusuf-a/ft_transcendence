@@ -1,0 +1,16 @@
+ARG NODE_IMAGE=lts-alpine
+FROM node:$NODE_IMAGE
+WORKDIR /app
+EXPOSE 3000
+RUN apk update
+RUN apk upgrade
+RUN apk add bash
+
+COPY ./backend/package*.json ./
+RUN npm install
+COPY ./backend .
+RUN rm -f ./dtos
+COPY ./dtos/ ./src/dtos
+RUN npm run build
+
+CMD npm run start:prod
