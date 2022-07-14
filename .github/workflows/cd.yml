@@ -8,13 +8,19 @@ jobs:
   which-image-to-build:
     runs-on: ubuntu-latest
     outputs:
-      frontend: ${{ steps.diff-frontend.outcome == 'failure' }}
-      backend: ${{ steps.diff-backend.outcome == 'failure' }}
+      frontend: ${{ steps.diff-frontend.outcome == 'failure' || steps.diff-compose.outcome == 'failure' }}
+      backend: ${{ steps.diff-backend.outcome == 'failure' || steps.diff-compose.outcome == 'failure' }}
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Check for diff in docker-compose files
+        id: diff-compose
+        continue-on-error: true
+        # docker-compose.prod.yml is not checked for a diff because it is not used in the CI, only in a deployment
+        run: |
+          git diff ${{ github.event.before }} --exit-code docker-compose.yml docker-compose.override.yml > /dev/null
       - name: Check for diff in backend
         id: diff-backend
         continue-on-error: true
@@ -25,10 +31,6 @@ jobs:
         continue-on-error: true
         run: |
           git diff ${{ github.event.before }} --exit-code frontend > /dev/null
-      - name: see outputs
-        run: |
-          echo ${{ steps.diff-frontend.outcome }}
-          echo ${{ steps.diff-backend.outcome }}
   build-and-push-frontend:
     runs-on: ubuntu-latest
     needs: which-image-to-build
