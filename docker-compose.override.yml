@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  backend:
+    image: fyusufa/ft_transcendence_backend
+    build:
+      context: ./backend
+      args:
+          NODE_IMAGE: ${NODE_IMAGE}
+    environment:
+      WATCH: ${BACKEND_DEBUG}
+      DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+
+  frontend:
+    ports:
+      - 8000:80
+    image: fyusufa/ft_transcendence_frontend
+    build:
+      context: ./frontend
+      target: ${FRONTEND_TARGET}
+      args:
+          NODE_IMAGE: ${NODE_IMAGE}
+    environment:
+      VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+    profiles: ["frontend"]
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8888:8080
+    depends_on:
+      - db
+    profiles: ["debug"]

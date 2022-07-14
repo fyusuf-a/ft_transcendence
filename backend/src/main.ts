@@ -12,7 +12,8 @@ async function bootstrap() {
     .setVersion('0.0.1')
     .addTag('auth')
     .addTag('users')
-    .addTag('relationships')
+    .addTag('friendships')
+    .addTag('blocks')
     .addTag('channels')
     .addTag('channel memberships')
     .addTag('messages')
@@ -34,6 +35,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.enableCors();
-  await app.listen(3000);
+  await app.listen(process.env.BACKEND_PORT ? process.env.BACKEND_PORT : 3000);
 }
 bootstrap();

@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Body,
   Patch,
@@ -33,10 +35,18 @@ export class ChannelsController {
 
   @ApiBody({ type: CreateChannelDto })
   @Post()
-  create(
+  async create(
     @Body() createChannelDto: CreateChannelDto,
   ): Promise<CreateChannelDto> {
-    return this.channelsService.create(createChannelDto);
+    let ret: Channel;
+
+    try {
+      ret = await this.channelsService.create(createChannelDto);
+    } catch (err: any) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
+
+    return ret;
   }
 
   @Get()
