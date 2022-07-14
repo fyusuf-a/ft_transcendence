@@ -84,6 +84,7 @@ export class ChatGateway
 
   @SubscribeMessage('chat-leave')
   async handleLeave(client: Socket, payload: ChatJoinDto) {
+    if (!payload?.channel) return 'FAILURE';
     this.logger.log(`${client.id} wants to leave channel [${payload.channel}]`);
     this.checkAuth(client);
     // TODO: Check if User leaving affects ownership
