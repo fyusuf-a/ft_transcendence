@@ -1,3 +1,4 @@
+.
 # ft_transcendence
 
 ## Requirements
