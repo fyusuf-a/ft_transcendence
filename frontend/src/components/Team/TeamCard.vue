@@ -30,8 +30,10 @@
   </v-row>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from "vue";
+
+export default Vue.extend({
   data: function () {
     return {
       teamMates: [
@@ -80,7 +82,7 @@ export default {
       githubAlt: "github logo",
     };
   },
-};
+});
 </script>
 
 <style scoped>

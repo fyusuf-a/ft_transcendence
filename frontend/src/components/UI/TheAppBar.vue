@@ -16,13 +16,13 @@
   </v-app-bar>
 </template>
 
-<script>
+<script lang="ts">
 import NotificationIcon from "@/components/Notifications/NotificationIcon.vue";
 import ProfileCard from "@/components/Profile/ProfileCard.vue";
+import Vue from "vue";
 
-export default {
+export default Vue.extend({
   props: ["value"],
-  events: ["input"],
   components: {
     "profile-card": ProfileCard,
     "notification-icon": NotificationIcon,
@@ -41,5 +41,5 @@ export default {
       this.$emit("input", !this.value);
     },
   },
-};
+});
 </script>
