@@ -21,6 +21,7 @@ import { Achievement } from './achievements/entities/achievements.entity';
 import { MatchesModule } from './matches/matches.module';
 import { Match } from './matches/entities/match.entity';
 import configuration from './config/configuration';
+import { ChatGateway } from './chat.gateway';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import configuration from './config/configuration';
   ],
   controllers: [],
   providers: [
+    ChatGateway,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
