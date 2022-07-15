@@ -40,14 +40,15 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import TeamCard from "@/components/Team/TeamCard.vue";
+import Vue from "vue";
 
-export default {
+export default Vue.extend({
   components: {
     "team-card": TeamCard,
   },
-};
+});
 </script>
 
 <style scoped>
