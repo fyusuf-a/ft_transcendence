@@ -18,9 +18,16 @@ export class FriendshipRepository extends PaginatedRepository<Friendship> {
       'friendship',
       'id',
       (selectQueryBuilder) => {
+        let whereMethod = 'where';
         if (query?.status) {
-          selectQueryBuilder.where('friendship.status = :status', {
-            id: query.status,
+          selectQueryBuilder[whereMethod]('friendship.status = :status', {
+            status: query.status,
+          });
+          whereMethod = 'andWhere';
+        }
+        if (query?.sourceId) {
+          selectQueryBuilder[whereMethod]('friendship.sourceId = :id', {
+            id: query.sourceId,
           });
         }
       },

@@ -5,8 +5,11 @@ import UserRepository from 'src/users/repository/user.repository';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { QueryFriendshipDto } from './dto/query-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
+import { ResponseFriendshipDto } from './dto/response-friendship.dto';
 import { Friendship } from '../entities/friendship.entity';
 import { FriendshipRepository } from './repositories/friendship.repository';
+import { PageDto } from 'src/common/dto/page.dto';
+import { PageOptionsDto } from 'src/common/dto/page-options.dto';
 
 @Injectable()
 export class FriendshipsService {
@@ -48,8 +51,15 @@ export class FriendshipsService {
     return await this.friendshipRepository.save(friendship);
   }
 
-  findAll(query?: QueryFriendshipDto) {
-    return this.friendshipRepository.find({ where: query });
+  async findAll(
+    query?: QueryFriendshipDto,
+    pageOptions: PageOptionsDto = new PageOptionsDto(),
+  ): Promise<PageDto<ResponseFriendshipDto>> {
+    const response = await this.friendshipRepository.findAllPaginated(
+      query,
+      pageOptions,
+    );
+    return response.convertData((x) => x);
   }
 
   findOne(id: number) {

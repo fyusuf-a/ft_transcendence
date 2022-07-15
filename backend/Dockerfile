@@ -1,7 +1,7 @@
 ARG NODE_IMAGE=lts-alpine
 FROM node:$NODE_IMAGE
 WORKDIR /app
-EXPOSE 3000
+EXPOSE $BACKEND_PORT
 
 RUN apk update
 RUN apk upgrade

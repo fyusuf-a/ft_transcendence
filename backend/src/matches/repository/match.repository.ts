@@ -18,27 +18,21 @@ export default class MatchRepository extends PaginatedRepository<Match> {
       'match',
       'id',
       (selectQueryBuilder) => {
-        let queryAlreadyBuilt = false;
+        let whereMethod = 'where';
         if (query?.homeId) {
-          selectQueryBuilder.where('match.homeId = :id', {
+          selectQueryBuilder[whereMethod]('match.homeId = :id', {
             id: query.homeId,
           });
-          queryAlreadyBuilt = true;
+          whereMethod = 'andWhere';
         }
         if (query?.awayId) {
-          const whereMethod = queryAlreadyBuilt
-            ? selectQueryBuilder.andWhere
-            : selectQueryBuilder.where;
-          whereMethod('match.awayId = :id', {
+          selectQueryBuilder[whereMethod]('match.awayId = :id', {
             id: query.awayId,
           });
-          queryAlreadyBuilt = true;
+          whereMethod = 'andWhere';
         }
         if (query?.role) {
-          const whereMethod = queryAlreadyBuilt
-            ? selectQueryBuilder.andWhere
-            : selectQueryBuilder.where;
-          whereMethod('match.role = :role', {
+          selectQueryBuilder[whereMethod]('match.role = :role', {
             role: query.role,
           });
         }
