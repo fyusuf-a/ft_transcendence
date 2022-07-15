@@ -15,6 +15,8 @@ import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
 import { PageMetaDto } from 'src/common/dto/page-meta.dto';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
+import { AchievementRepository } from 'src/achievements/repository/achievements.repository';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -43,6 +45,14 @@ describe('MessagesController', () => {
         },
         {
           provide: BlockRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: AchievementsLogRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: AchievementRepository,
           useValue: jest.fn(),
         },
       ],

@@ -18,6 +18,8 @@ import { ResponseUserDto } from 'src/users/dto/response-user.dto';
 import { PageDto } from 'src/common/dto/page.dto';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -34,7 +36,16 @@ describe('UsersController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [Block, Friendship, User, Channel, Membership, Message],
+          entities: [
+            Achievement,
+            AchievementsLog,
+            Block,
+            Friendship,
+            User,
+            Channel,
+            Membership,
+            Message,
+          ],
           synchronize: true,
           dropSchema: true,
         }),

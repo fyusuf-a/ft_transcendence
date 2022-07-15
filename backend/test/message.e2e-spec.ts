@@ -15,6 +15,8 @@ import { ResponseMessageDto } from 'src/messages/dto/response-message.dto';
 import { PageDto } from 'src/common/dto/page.dto';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 describe('MessagesController (e2e)', () => {
   let app: INestApplication;
@@ -33,7 +35,16 @@ describe('MessagesController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [Block, Friendship, Message, Channel, User, Membership],
+          entities: [
+            Achievement,
+            AchievementsLog,
+            Block,
+            Friendship,
+            Message,
+            Channel,
+            User,
+            Membership,
+          ],
           synchronize: true,
           dropSchema: true,
         }),

@@ -13,6 +13,8 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
+import { AchievementRepository } from 'src/achievements/repository/achievements.repository';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -41,6 +43,14 @@ describe('MembershipsController', () => {
         },
         {
           provide: BlockRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: AchievementsLogRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: AchievementRepository,
           useValue: jest.fn(),
         },
       ],
