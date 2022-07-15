@@ -24,6 +24,10 @@ export class AchievementsService {
   }
 
   create(achievementdto: AchievementDto): Promise<Achievement> {
+    achievementdto.icon =
+      achievementdto.icon == ''
+        ? '/assets/images/achievements/default.png'
+        : achievementdto.icon;
     return this.achievementsRepository.save(achievementdto);
   }
 

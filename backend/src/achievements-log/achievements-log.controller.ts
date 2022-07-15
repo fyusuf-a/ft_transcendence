@@ -10,10 +10,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { Public } from 'src/auth/auth.public.decorator';
-import { AchievementsLogDto } from './dto/achievements-log.dto';
 import { ResponseAchievementsLogDto } from './dto/response-achievements-log.dto';
 import { DeleteResult } from 'typeorm';
-
+import { CreateAchievementLogDto } from './dto/create-achievements-log.dto';
+import { HttpException, HttpStatus } from '@nestjs/common';
 @ApiBearerAuth()
 @ApiTags('achievements log')
 @Controller('achievements-log')
@@ -31,7 +31,7 @@ export class AchievementsLogController {
   @Public()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
-  async findById(@Param('id') id: string): Promise<AchievementsLogDto> {
+  async findById(@Param('id') id: string): Promise<ResponseAchievementsLogDto> {
     const num: number = +id;
 
     try {
@@ -46,8 +46,14 @@ export class AchievementsLogController {
     status: 500,
     description: 'Achievement log could not be created.',
   })
-  create(@Body() dto: AchievementsLogDto): Promise<ResponseAchievementsLogDto> {
-    return this.achievementsLogService.create(dto);
+  async create(
+    @Body() dto: CreateAchievementLogDto,
+  ): Promise<ResponseAchievementsLogDto> {
+    try {
+      return await this.achievementsLogService.create(dto);
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Delete(':id')

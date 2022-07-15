@@ -38,6 +38,7 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
 import { ResponseFriendshipDto } from 'src/relationships/friendships/dto/response-friendship.dto';
 import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
+import { ResponseAchievementsLogDto } from 'src/achievements-log/dto/response-achievements-log.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -157,5 +158,13 @@ export class UsersController {
   @Get('/:id/blocks')
   findBlocks(@Param('id') id: string): Promise<ResponseBlockDto[]> {
     return this.usersService.findBlocks(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/achievements')
+  findUnlockedAchievements(
+    @Param('id') id: string,
+  ): Promise<ResponseAchievementsLogDto[]> {
+    return this.usersService.findUnlockedAchievements(+id);
   }
 }

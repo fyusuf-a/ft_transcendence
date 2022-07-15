@@ -13,6 +13,7 @@ import { PageOptionsDto } from '../common/dto/page-options.dto';
 import UserRepository from './repository/user.repository';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -35,6 +36,10 @@ describe('UsersController', () => {
         },
         {
           provide: BlockRepository,
+          useValue: jest.fn(),
+        },
+        {
+          provide: AchievementsLogRepository,
           useValue: jest.fn(),
         },
       ],

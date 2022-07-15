@@ -1,6 +1,7 @@
 import { Achievement } from 'src/achievements/entities/achievements.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -21,11 +22,12 @@ export class AchievementsLog {
   @ManyToOne(() => User)
   user: User;
   @RelationId((achievementsLog: AchievementsLog) => achievementsLog.user)
+  @Column()
   userId: number;
 
-  @Exclude()
   @ManyToOne(() => Achievement)
   achievement: Achievement;
+  @Column()
   @RelationId((achievementsLog: AchievementsLog) => achievementsLog.achievement)
   achievementId: number;
 }

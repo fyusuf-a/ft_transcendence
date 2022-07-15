@@ -11,6 +11,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
 
 const userNumber = 2;
 const mockConfig = () => ({ get: () => undefined });
@@ -36,6 +37,7 @@ describe('UsersService', () => {
         },
         FriendshipRepository,
         BlockRepository,
+        AchievementsLogRepository,
       ],
     }).compile();
 

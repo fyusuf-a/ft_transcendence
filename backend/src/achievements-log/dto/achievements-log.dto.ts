@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { ResponseAchievementDto } from 'src/achievements/dto/response-achievement.dto';
 
 export class AchievementsLogDto {
   @IsNotEmpty()
@@ -16,9 +17,15 @@ export class AchievementsLogDto {
   @IsNotEmpty()
   userId: number;
 
+  @IsNotEmpty()
   @ApiProperty({
     description: 'The id of the associated achievement',
   })
-  @IsNotEmpty()
   achievementId: number;
+
+  @ApiProperty({
+    description: 'The achievement itself.',
+  })
+  @IsNotEmpty()
+  achievement: ResponseAchievementDto;
 }

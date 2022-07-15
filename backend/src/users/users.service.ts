@@ -17,6 +17,8 @@ import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dt
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 import { BlockTypeEnum } from 'src/relationships/entities/block.entity';
 import { FriendshipTypeEnum } from 'src/relationships/entities/friendship.entity';
+import { AchievementsLogDto } from 'src/achievements-log/dto/achievements-log.dto';
+import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +29,8 @@ export class UsersService {
     private friendshipRepository: FriendshipRepository,
     @InjectRepository(BlockRepository)
     private blockRepository: BlockRepository,
+    @InjectRepository(AchievementsLogRepository)
+    private achievementsLogRepository: AchievementsLogRepository,
   ) {}
 
   async findAll(
@@ -100,6 +104,14 @@ export class UsersService {
         { sourceId: id, status: BlockTypeEnum.S_BLOCKS_T },
         { targetId: id, status: BlockTypeEnum.T_BLOCKS_S },
       ],
+    });
+  }
+
+  findUnlockedAchievements(id: number): Promise<AchievementsLogDto[]> {
+    return this.achievementsLogRepository.find({
+      where: {
+        userId: id,
+      },
     });
   }
 }

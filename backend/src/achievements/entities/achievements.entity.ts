@@ -11,10 +11,6 @@ export class Achievement {
   @Column({ unique: true, nullable: false })
   description: string;
 
-  @Column({
-    type: 'bytea',
-    nullable: true,
-    default: null,
-  })
-  icon: Uint8Array;
+  @Column()
+  icon: string;
 }
