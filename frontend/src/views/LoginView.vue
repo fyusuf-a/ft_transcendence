@@ -1,44 +1,3 @@
-<script lang="ts">
-import Vue from "vue";
-
-export default Vue.extend({
-  data() {
-    return {
-      username: "string",
-    };
-  },
-  methods: {
-    async authenticate() {
-      let rawResponse = await fetch("http://localhost:8080/auth/login", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: this.username }),
-      });
-      console.log(rawResponse);
-      if (rawResponse.status !== 201) {
-        console.log(`Server[${rawResponse.status}]: ${rawResponse.statusText}`);
-        return;
-      }
-      let content = await rawResponse.json();
-      const token = content.access_token;
-      if (token === undefined) {
-        console.log(`Could not login as user ${this.username}`);
-        return;
-      }
-      this.$store.commit("login", {
-        username: this.username,
-        token: token,
-      });
-
-      this.$router.push("/profile");
-    },
-  },
-});
-</script>
-
 <template>
   <v-form @submit.prevent.stop>
     <v-container>
@@ -57,3 +16,37 @@ export default Vue.extend({
     </v-container>
   </v-form>
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+import axios from "axios";
+
+export default Vue.extend({
+  data() {
+    return {
+      username: "string",
+      loading: false,
+    };
+  },
+  methods: {
+    async authenticate() {
+      if (this.loading) return;
+      this.loading = true;
+      let response = await axios.post("/auth/login", {
+        username: this.username,
+      });
+      if (response.data.access_token === undefined) {
+        console.log(`Could not login as user ${this.username}`);
+        return;
+      }
+      this.$store.commit("login", {
+        id: response.data.id,
+        username: this.username,
+        token: response.data.access_token,
+      });
+      this.$router.push("/profile");
+      this.loading = false;
+    },
+  },
+});
+</script>

@@ -8,14 +8,14 @@ export class QueryFriendshipDto {
   })
   @IsOptional()
   @IsNumberString()
-  source?: string;
+  sourceId?: string;
 
   @ApiPropertyOptional({
     description: 'Target User Id',
   })
   @IsOptional()
   @IsNumberString()
-  target?: string;
+  targetId?: string;
 
   @ApiPropertyOptional({
     description: 'Status',

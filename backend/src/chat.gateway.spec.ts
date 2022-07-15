@@ -2,9 +2,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AchievementsLogService } from './achievements-log/achievements-log.service';
 import { AchievementsLogRepository } from './achievements-log/repository/achievements-log.repository';
-import { AchievementRepository } from './achievements/repository/achievements.repository';
 import { ChannelsService } from './channels/channels.service';
 import ChannelRepository from './channels/repository/channel.repository';
 import { ChatGateway } from './chat.gateway';
@@ -24,7 +22,6 @@ describe('ChatGateway', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
-        AchievementsLogService,
         ChatGateway,
         MessagesService,
         UsersService,
@@ -56,10 +53,6 @@ describe('ChatGateway', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLogRepository),
-          useValue: jest.fn(),
-        },
-        {
-          provide: getRepositoryToken(AchievementRepository),
           useValue: jest.fn(),
         },
       ],

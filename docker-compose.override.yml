@@ -2,11 +2,14 @@ version: '3.4'
 
 services:
   backend:
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     image: fyusufa/ft_transcendence_backend
     build:
       context: ./backend
       args:
           NODE_IMAGE: ${NODE_IMAGE}
+          BACKEND_PORT: ${BACKEND_PORT}
     environment:
       WATCH: ${BACKEND_DEBUG}
       DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}

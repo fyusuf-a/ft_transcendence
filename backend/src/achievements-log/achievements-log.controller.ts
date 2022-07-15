@@ -32,10 +32,8 @@ export class AchievementsLogController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findById(@Param('id') id: string): Promise<ResponseAchievementsLogDto> {
-    const num: number = +id;
-
     try {
-      return await this.achievementsLogService.findById(num);
+      return await this.achievementsLogService.findById(+id);
     } catch (EntityNotFoundError) {
       throw new NotFoundException('Found no achievement log with matching id.');
     }

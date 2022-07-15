@@ -12,12 +12,11 @@ services:
       - ./sql/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
 
   backend:
-    ports:
-      - 8080:3000
     working_dir: /app
     volumes:
       - ./backend:/app
     environment:
+      BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -27,6 +26,9 @@ services:
       - db
 
   frontend:
+    environment:
+      VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
+      VUE_APP_BACKEND_PORT: ${BACKEND_PORT}
     volumes:
       - ./frontend:/app
     depends_on:
