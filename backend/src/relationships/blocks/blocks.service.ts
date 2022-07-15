@@ -31,7 +31,6 @@ export class BlocksService {
       return previous;
     }
 
-    console.log('creating block entity');
     const block: Block = new Block();
     block.source = await this.userRepository.findOne(createBlockDto.sourceId);
     block.sourceId = createBlockDto.sourceId;
