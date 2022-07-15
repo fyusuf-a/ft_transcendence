@@ -29,12 +29,12 @@ export class QueryMembershipDto {
   })
   @IsOptional()
   @IsDate()
-  mutedUntil: Date;
+  mutedUntil?: Date;
 
   @ApiPropertyOptional({
     description: 'Datetime that ban expires',
   })
   @IsOptional()
   @IsDate()
-  bannedUntil: Date;
+  bannedUntil?: Date;
 }

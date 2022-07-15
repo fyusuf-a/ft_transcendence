@@ -6,4 +6,5 @@ export class ResponseMessageDto extends PickType(MessageDto, [
   'channelId',
   'senderId',
   'content',
+  'createdAt',
 ]) {}
