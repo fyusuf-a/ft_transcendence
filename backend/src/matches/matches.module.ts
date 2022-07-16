@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MatchesService } from './matches.service';
 import { MatchesController } from './matches.controller';
-import MatchRepository from './repository/match.repository';
-import UserRepository from 'src/users/repository/user.repository';
+import { User } from 'src/users/entities/user.entity';
+import { Match } from './entities/match.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MatchRepository, UserRepository])],
+  imports: [TypeOrmModule.forFeature([Match, User])],
   providers: [MatchesService],
   controllers: [MatchesController],
   exports: [MatchesService],

@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Achievement } from './entities/achievements.entity';
-import { AchievementRepository } from './repository/achievements.repository';
 import { AchievementDto, ResponseAchievementDto } from '@dtos/achievements';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class AchievementsService {
   constructor(
-    @InjectRepository(AchievementRepository)
-    private achievementsRepository: AchievementRepository,
+    @InjectRepository(Achievement)
+    private achievementsRepository: Repository<Achievement>,
   ) {}
 
   async findAll(): Promise<ResponseAchievementDto[]> {
-    return await this.achievementsRepository.findAll();
+    return await this.achievementsRepository.find();
   }
 
   async findById(id: number): Promise<Achievement> {

@@ -1,45 +1,43 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MatchesService } from './matches.service';
-import UserRepository from 'src/users/repository/user.repository';
-import MatchRepository from './repository/match.repository';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { Match } from './entities/match.entity';
 import { CreateMatchDto, UpdateMatchDto, MatchStatusType } from '@dtos/matches';
 import { User } from 'src/users/entities/user.entity';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 const userNumber = 2;
 const matchNumber = 2;
 
 describe('MatchesService', () => {
   let service: MatchesService;
-  let usersRepository: UserRepository;
-  let matchRepository: MatchRepository;
+  let usersRepository: Repository<User>;
+  let matchRepository: Repository<Match>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MatchesService,
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: new MockRepository<MockUserEntity>(
             () => new MockUserEntity(),
             userNumber,
           ),
         },
         {
-          provide: getRepositoryToken(MatchRepository),
+          provide: getRepositoryToken(Match),
           useValue: new MockRepository(() => new Match(), matchNumber),
         },
       ],
     }).compile();
 
     service = module.get<MatchesService>(MatchesService);
-    usersRepository = module.get<UserRepository>(UserRepository);
-    matchRepository = module.get<MatchRepository>(MatchRepository);
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    matchRepository = module.get<Repository<Match>>(getRepositoryToken(Match));
   });
 
   it('should be defined', () => {
@@ -60,6 +58,9 @@ describe('MatchesService', () => {
 
   describe('findAll', () => {
     it('should return array of matches', async () => {
+      jest
+        .spyOn(matchRepository, 'findAndCount')
+        .mockReturnValue(Promise.resolve([[new Match(), new Match()], 2]));
       const ret = await service.findAll();
       expect(ret.data.length).toBe(matchNumber);
     });
@@ -81,7 +82,7 @@ describe('MatchesService', () => {
     });
     it('should return a ResponseMatchDto with a status of IN_PROGRESS', async () => {
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(away);
       jest.spyOn(matchRepository, 'save').mockResolvedValueOnce(match);
@@ -90,7 +91,7 @@ describe('MatchesService', () => {
     });
 
     it('should throw EntityDoesNotExistError if the home user does not exist', async () => {
-      jest.spyOn(usersRepository, 'findOne').mockReturnValue(undefined);
+      jest.spyOn(usersRepository, 'findOneBy').mockReturnValue(undefined);
       expect(service.create(createMatchDto)).rejects.toThrow(
         EntityDoesNotExistError,
       );
@@ -98,7 +99,7 @@ describe('MatchesService', () => {
 
     it('should throw EntityDoesNotExistError if the away user does not exist', async () => {
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(undefined);
       expect(service.create(createMatchDto)).rejects.toThrow(
@@ -107,7 +108,7 @@ describe('MatchesService', () => {
     });
     it('should throw RangeError if the home user is the away user', async () => {
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(home);
       expect(service.create(createMatchDto)).rejects.toThrow(RangeError);
