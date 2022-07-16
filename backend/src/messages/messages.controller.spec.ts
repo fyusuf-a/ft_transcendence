@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
-import { ResponseMessageDto } from './dto/response-message.dto';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateMessageDto, ResponseMessageDto } from '@dtos/messages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { BadRequestException } from '@nestjs/common';
 import { DeleteResult } from 'typeorm';
@@ -10,9 +9,7 @@ import MessageRepository from './repository/message.repository';
 import UserRepository from '../users/repository/user.repository';
 import ChannelRepository from '../channels/repository/channel.repository';
 import { Message } from './entities/message.entity';
-import { PageDto } from 'src/common/dto/page.dto';
-import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
-import { PageMetaDto } from 'src/common/dto/page-meta.dto';
+import { PageMetaDto, PageDto, PageOptionsDto, takeDefault } from '@dtos/pages';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 

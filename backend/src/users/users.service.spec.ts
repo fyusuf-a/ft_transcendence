@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto } from '@dtos/users';
 import { UsersService } from './users.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { MockUserEntity } from './mocks/user.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import UserRepository from './repository/user.repository';
-import { PageDto } from '../common/dto/page.dto';
+import { PageDto } from '@dtos/pages';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';

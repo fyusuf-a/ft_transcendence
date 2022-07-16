@@ -1,7 +1,6 @@
-import { Message } from '../../messages/entities/message.entity';
-import { PageOptionsDto } from '../../common/dto/page-options.dto';
-import { QueryMessageDto } from 'src/messages/dto/query-messages.dto';
-import { PageDto } from '../../common/dto/page.dto';
+import { Message } from '../entities/message.entity';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import { QueryMessageDto } from '@dtos/messages';
 import { PaginatedRepository } from '../../common/repository';
 import { EntityRepository } from 'typeorm';
 

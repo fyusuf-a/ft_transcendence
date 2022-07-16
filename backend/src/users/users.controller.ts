@@ -23,21 +23,22 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
-import { UserDto } from './dto/user.dto';
-import { ResponseUserDto } from './dto/response-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { QueryUserDto } from './dto/query-user.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import {
+  UserDto,
+  ResponseUserDto,
+  CreateUserDto,
+  UpdateUserDto,
+  QueryUserDto,
+} from '@dtos/users';
 import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AvatarUploadDto } from './dto/upload-avatar.dto';
+import { AvatarUploadDto } from '@dtos/avatars';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
-import { ResponseFriendshipDto } from 'src/relationships/friendships/dto/response-friendship.dto';
-import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
+import { ResponseFriendshipDto } from '@dtos/friendships';
+import { ResponseBlockDto } from '@dtos/blocks';
 
 @ApiTags('users')
 @Controller('users')

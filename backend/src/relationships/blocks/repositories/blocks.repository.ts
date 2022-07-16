@@ -1,6 +1,5 @@
-import { PageOptionsDto } from '../../../common/dto/page-options.dto';
-import { QueryBlockDto } from '../dto/query-block.dto';
-import { PageDto } from '../../../common/dto/page.dto';
+import { QueryBlockDto } from '@dtos/blocks';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { PaginatedRepository } from '../../../common/repository';
 import { EntityRepository } from 'typeorm';
 import { Injectable } from '@nestjs/common';

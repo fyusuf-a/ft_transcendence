@@ -11,12 +11,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { MembershipsService } from './memberships.service';
-import { CreateMembershipDto } from './dto/create-membership.dto';
-import { UpdateMembershipDto } from './dto/update-membership.dto';
+import {
+  UpdateMembershipDto,
+  CreateMembershipDto,
+  ResponseMembershipDto,
+  QueryMembershipDto,
+} from '@dtos/memberships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ResponseMembershipDto } from './dto/response-membership.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')

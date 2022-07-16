@@ -1,7 +1,7 @@
 import { Achievement } from '../entities/achievements.entity';
 import { Injectable } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
-import { ResponseAchievementDto } from '../dto/response-achievement.dto';
+import { ResponseAchievementDto } from '@dtos/achievements';
 
 @Injectable()
 @EntityRepository(Achievement)

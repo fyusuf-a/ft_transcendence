@@ -8,14 +8,7 @@ import {
 } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Exclude } from 'class-transformer';
-
-export enum MatchStatusType {
-  HOME = 'HOME',
-  AWAY = 'AWAY',
-  DRAW = 'DRAW',
-  ABORTED = 'ABORTED',
-  IN_PROGRESS = 'IN_PROGRESS',
-}
+import { MatchStatusType } from '@dtos/matches';
 
 @Entity()
 export class Match {

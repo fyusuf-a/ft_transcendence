@@ -6,15 +6,14 @@ import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
 import UserRepository from 'src/users/repository/user.repository';
 import MatchRepository from './repository/match.repository';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
-import { takeDefault } from 'src/common/dto/page-options.dto';
-import { PageMetaDto } from 'src/common/dto/page-meta.dto';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
-import { ResponseMatchDto } from './dto/response-match.dto';
-import { Match } from './dto/match.dto';
-import { MatchStatusType } from './entities/match.entity';
+import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
+import {
+  CreateMatchDto,
+  UpdateMatchDto,
+  ResponseMatchDto,
+  Match,
+  MatchStatusType,
+} from '@dtos/matches';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 
 describe('MatchesController', () => {

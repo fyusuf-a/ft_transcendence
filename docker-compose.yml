@@ -15,6 +15,7 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
+      - ./dtos:/app/src/dtos
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
@@ -31,6 +32,7 @@ services:
       VUE_APP_BACKEND_PORT: ${BACKEND_PORT}
     volumes:
       - ./frontend:/app
+      - ./dtos:/app/src/dtos
     depends_on:
       - backend
 

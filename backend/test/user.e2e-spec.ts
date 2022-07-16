@@ -14,8 +14,8 @@ import { Message } from '../src/messages/entities/message.entity';
 import { Channel } from '../src/channels/entities/channel.entity';
 import { Reflector } from '@nestjs/core';
 import { Connection } from 'typeorm';
-import { ResponseUserDto } from 'src/users/dto/response-user.dto';
-import { PageDto } from 'src/common/dto/page.dto';
+import { ResponseUserDto } from '@dtos/users';
+import { PageDto } from '@dtos/pages';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 

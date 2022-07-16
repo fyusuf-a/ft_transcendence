@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Vue from "vue";
+import Vue from 'vue';
 
 export default Vue.extend({
   props: {
@@ -37,10 +37,10 @@ export default Vue.extend({
       default: false,
     },
   },
-  emits: ["input"],
+  emits: ['input'],
   methods: {
     emitModelValue(value) {
-      this.$emit("input", value);
+      this.$emit('input', value);
     },
   },
   data() {
@@ -48,27 +48,27 @@ export default Vue.extend({
       expanded: this.visible,
       items: [
         {
-          title: "Profile",
-          icon: "mdi-account",
-          route: "/profile",
+          title: 'Profile',
+          icon: 'mdi-account',
+          route: '/profile',
         },
         {
-          title: "Play",
-          icon: "mdi-gamepad-variant",
-          route: "/game",
+          title: 'Play',
+          icon: 'mdi-gamepad-variant',
+          route: '/game',
         },
         {
-          title: "Chat",
-          icon: "mdi-forum",
-          route: "/chat",
+          title: 'Chat',
+          icon: 'mdi-forum',
+          route: '/chat',
         },
         {
-          title: "About",
-          icon: "mdi-information-outline",
-          route: "/about",
+          title: 'About',
+          icon: 'mdi-information-outline',
+          route: '/about',
         },
       ],
-      links: ["Home", "Contacts", "Settings"],
+      links: ['Home', 'Contacts', 'Settings'],
     };
   },
 });

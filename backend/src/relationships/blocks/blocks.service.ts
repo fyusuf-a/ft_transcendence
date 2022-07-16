@@ -3,10 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import UserRepository from 'src/users/repository/user.repository';
 import { UpdateResult } from 'typeorm';
-import { CreateBlockDto } from './dto/create-block.dto';
-import { QueryBlockDto } from './dto/query-block.dto';
-import { UpdateBlockDto } from './dto/update-block.dto';
-import { Block, BlockTypeEnum } from '../entities/block.entity';
+import {
+  CreateBlockDto,
+  QueryBlockDto,
+  UpdateBlockDto,
+  BlockTypeEnum,
+} from '@dtos/blocks';
+import { Block } from '../entities/block.entity';
 import { BlockRepository } from './repositories/blocks.repository';
 
 @Injectable()

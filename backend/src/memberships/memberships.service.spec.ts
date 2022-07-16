@@ -4,7 +4,7 @@ import { Channel } from 'src/channels/entities/channel.entity';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { UpdateMembershipDto } from './dto/update-membership.dto';
+import { UpdateMembershipDto } from '@dtos/memberships';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsService } from './memberships.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';

@@ -21,15 +21,15 @@
 </template>
 
 <script lang="ts">
-import NotificationIcon from "@/components/Notifications/NotificationIcon.vue";
-import ProfileCard from "@/components/Profile/ProfileCard.vue";
-import Vue from "vue";
+import NotificationIcon from '@/components/Notifications/NotificationIcon.vue';
+import ProfileCard from '@/components/Profile/ProfileCard.vue';
+import Vue from 'vue';
 
 export default Vue.extend({
-  props: ["value"],
+  props: ['value'],
   components: {
-    "profile-card": ProfileCard,
-    "notification-icon": NotificationIcon,
+    'profile-card': ProfileCard,
+    'notification-icon': NotificationIcon,
   },
   data() {
     return {
@@ -38,7 +38,7 @@ export default Vue.extend({
   },
   methods: {
     toggleNavigationDrawer() {
-      this.$emit("input", !this.value);
+      this.$emit('input', !this.value);
     },
   },
 });

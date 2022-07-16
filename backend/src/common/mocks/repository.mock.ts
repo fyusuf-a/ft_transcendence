@@ -1,6 +1,4 @@
-import { PageOptionsDto } from '../dto/page-options.dto';
-import { PageDto } from '../dto/page.dto';
-import { PageMetaDto } from 'src/common/dto/page-meta.dto';
+import { PageDto, PageOptionsDto, PageMetaDto } from '@dtos/pages';
 import { DeleteResult, UpdateResult } from 'typeorm';
 /*import { Repository } from 'typeorm';
 

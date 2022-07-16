@@ -16,13 +16,14 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult } from 'typeorm';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { QueryMessageDto } from './dto/query-messages.dto';
-import { ResponseMessageDto } from './dto/response-message.dto';
+import {
+  CreateMessageDto,
+  QueryMessageDto,
+  ResponseMessageDto,
+} from '@dtos/messages';
 import { MessagesService } from './messages.service';
 
 @ApiBearerAuth()

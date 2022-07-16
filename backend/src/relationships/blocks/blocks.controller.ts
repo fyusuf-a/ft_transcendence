@@ -10,12 +10,14 @@ import {
   Query,
 } from '@nestjs/common';
 import { BlocksService } from './blocks.service';
-import { CreateBlockDto } from './dto/create-block.dto';
-import { UpdateBlockDto } from './dto/update-block.dto';
+import {
+  CreateBlockDto,
+  UpdateBlockDto,
+  ResponseBlockDto,
+  QueryBlockDto,
+} from '@dtos/blocks';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ResponseBlockDto } from './dto/response-block.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { QueryBlockDto } from './dto/query-block.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
 
 @ApiBearerAuth()

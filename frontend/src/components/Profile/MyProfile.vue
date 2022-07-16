@@ -16,19 +16,19 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
+import Vue from 'vue';
+import { mapGetters } from 'vuex';
 
 export default Vue.extend({
   methods: {
-    ...mapGetters(["username", "avatar"]),
+    ...mapGetters(['username', 'avatar']),
     reserve() {
       // TODO: remove and replace with 2 methods: one to change the username, one to change the picture
     },
   },
   created() {
     if (this.avatar() !== undefined) return;
-    this.$store.dispatch("getAvatar");
+    this.$store.dispatch('getAvatar');
   },
 });
 </script>

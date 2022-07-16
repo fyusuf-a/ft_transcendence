@@ -31,55 +31,55 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from 'vue';
 
 export default Vue.extend({
   data: function () {
     return {
       teamMates: [
         {
-          picture: "https://cdn.intra.42.fr/users/abouchau.jpg",
-          lazyPicture: require("@/assets/images/abouchau-lazy.jpg"),
-          login: "abouchau",
-          name: "Nina Bouchau",
-          githubLink: "https://github.com/N-4-Nina",
+          picture: 'https://cdn.intra.42.fr/users/abouchau.jpg',
+          lazyPicture: require('@/assets/images/abouchau-lazy.jpg'),
+          login: 'abouchau',
+          name: 'Nina Bouchau',
+          githubLink: 'https://github.com/N-4-Nina',
           id: 1,
         },
         {
-          picture: "https://cdn.intra.42.fr/users/fyusuf-a.jpg",
-          lazyPicture: require("@/assets/images/fyusuf-a-lazy.jpg"),
-          login: "fyusuf-a",
-          name: "Florian Yusuf Ali",
-          githubLink: "https://github.com/fyusuf-a",
+          picture: 'https://cdn.intra.42.fr/users/fyusuf-a.jpg',
+          lazyPicture: require('@/assets/images/fyusuf-a-lazy.jpg'),
+          login: 'fyusuf-a',
+          name: 'Florian Yusuf Ali',
+          githubLink: 'https://github.com/fyusuf-a',
           id: 2,
         },
         {
-          picture: "https://cdn.intra.42.fr/users/mdesfont.jpg",
-          lazyPicture: require("@/assets/images/mdesfont-lazy.jpg"),
-          login: "mdesfont",
-          name: "Louie Desfontaines",
-          githubLink: "https://github.com/Mel-louie",
+          picture: 'https://cdn.intra.42.fr/users/mdesfont.jpg',
+          lazyPicture: require('@/assets/images/mdesfont-lazy.jpg'),
+          login: 'mdesfont',
+          name: 'Louie Desfontaines',
+          githubLink: 'https://github.com/Mel-louie',
           id: 3,
         },
         {
-          picture: "https://cdn.intra.42.fr/users/tmorris.jpg",
-          lazyPicture: require("@/assets/images/tmorris-lazy.jpg"),
-          login: "tmorris",
-          name: "Taylor Morris",
-          githubLink: "https://github.com/tmorris42",
+          picture: 'https://cdn.intra.42.fr/users/tmorris.jpg',
+          lazyPicture: require('@/assets/images/tmorris-lazy.jpg'),
+          login: 'tmorris',
+          name: 'Taylor Morris',
+          githubLink: 'https://github.com/tmorris42',
           id: 4,
         },
         {
-          picture: "https://cdn.intra.42.fr/users/tvideira.jpg",
-          lazyPicture: require("@/assets/images/tvideira-lazy.jpg"),
-          login: "tvideira",
-          name: "Théo Videira",
-          githubLink: "https://github.com/tvideira",
+          picture: 'https://cdn.intra.42.fr/users/tvideira.jpg',
+          lazyPicture: require('@/assets/images/tvideira-lazy.jpg'),
+          login: 'tvideira',
+          name: 'Théo Videira',
+          githubLink: 'https://github.com/tvideira',
           id: 5,
         },
       ],
-      githubLogo: require("@/assets/images/GitHub-Mark-120px-plus.png"),
-      githubAlt: "github logo",
+      githubLogo: require('@/assets/images/GitHub-Mark-120px-plus.png'),
+      githubAlt: 'github logo',
     };
   },
 });
