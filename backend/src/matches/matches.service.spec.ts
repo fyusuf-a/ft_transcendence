@@ -7,9 +7,7 @@ import { MockRepository } from 'src/common/mocks/repository.mock';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { Match } from './entities/match.entity';
-import { MatchStatusType } from 'src/matches/entities/match.entity';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
+import { CreateMatchDto, UpdateMatchDto, MatchStatusType } from '@dtos/matches';
 import { User } from 'src/users/entities/user.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 

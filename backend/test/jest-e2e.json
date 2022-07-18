@@ -1,4 +1,7 @@
 {
+  "moduleNameMapper": {
+      "@dtos(.*)$": "<rootDir>/../src/dtos/$1"
+  },
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
@@ -6,5 +9,8 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "moduleDirectories": ["<rootDir>/../", "node_modules"]
+  "modulePaths": [
+    "<rootDir>/../node_modules",
+    "<rootDir>/../"
+  ]
 }

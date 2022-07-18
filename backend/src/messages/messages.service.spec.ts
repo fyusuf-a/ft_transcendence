@@ -10,7 +10,7 @@ import MessageRepository from './repository/message.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';
 import UserRepository from 'src/users/repository/user.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { PageDto } from 'src/common/dto/page.dto';
+import { PageDto } from '@dtos/pages';
 
 const messageNumber = 2;
 const userNumber = 2;

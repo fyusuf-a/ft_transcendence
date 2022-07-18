@@ -10,14 +10,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { FriendshipsService } from './friendships.service';
-import { CreateFriendshipDto } from './dto/create-friendship.dto';
-import { UpdateFriendshipDto } from './dto/update-friendship.dto';
+import {
+  QueryFriendshipDto,
+  CreateFriendshipDto,
+  UpdateFriendshipDto,
+  ResponseFriendshipDto,
+} from '@dtos/friendships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ResponseFriendshipDto } from './dto/response-friendship.dto';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { QueryFriendshipDto } from './dto/query-friendship.dto';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { PageDto } from 'src/common/dto/page.dto';
+import { PageDto } from '@dtos/pages';
 
 @ApiBearerAuth()
 @ApiTags('friendships')

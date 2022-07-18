@@ -5,6 +5,8 @@
     "strict": true,
     "jsx": "preserve",
     "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -18,9 +20,8 @@
       "chai"
     ],
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"],
+      "@dtos/*": ["src/dtos/*"]
     },
     "lib": [
       "esnext",

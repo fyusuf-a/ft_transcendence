@@ -1,6 +1,5 @@
-import { PageOptionsDto } from '../../../common/dto/page-options.dto';
-import { QueryFriendshipDto } from '../dto/query-friendship.dto';
-import { PageDto } from '../../../common/dto/page.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import { QueryFriendshipDto } from '@dtos/friendships';
 import { PaginatedRepository } from '../../../common/repository';
 import { EntityRepository } from 'typeorm';
 import { Injectable } from '@nestjs/common';

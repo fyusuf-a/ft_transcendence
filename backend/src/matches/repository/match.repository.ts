@@ -1,7 +1,6 @@
 import { Match } from '../entities/match.entity';
-import { PageOptionsDto } from '../../common/dto/page-options.dto';
-import { QueryMatchDto } from '../dto/query-match.dto';
-import { PageDto } from '../../common/dto/page.dto';
+import { QueryMatchDto } from '@dtos/matches/query-match.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { PaginatedRepository } from '../../common/repository';
 import { EntityRepository } from 'typeorm';
 import { Injectable } from '@nestjs/common';

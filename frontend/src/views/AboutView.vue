@@ -41,12 +41,12 @@
 </template>
 
 <script lang="ts">
-import TeamCard from "@/components/Team/TeamCard.vue";
-import Vue from "vue";
+import TeamCard from '@/components/Team/TeamCard.vue';
+import Vue from 'vue';
 
 export default Vue.extend({
   components: {
-    "team-card": TeamCard,
+    'team-card': TeamCard,
   },
 });
 </script>

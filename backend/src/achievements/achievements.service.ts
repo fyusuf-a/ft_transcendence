@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Achievement } from './entities/achievements.entity';
 import { AchievementRepository } from './repository/achievements.repository';
-import { AchievementDto } from './dto/achievement.dto';
-import { ResponseAchievementDto } from './dto/response-achievement.dto';
+import { AchievementDto, ResponseAchievementDto } from '@dtos/achievements';
 import { DeleteResult } from 'typeorm';
 
 @Injectable()

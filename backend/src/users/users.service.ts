@@ -1,22 +1,17 @@
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { createReadStream } from 'fs';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { CreateUserDto } from './dto/create-user.dto';
-import { QueryUserDto } from './dto/query-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import UserRepository from './repository/user.repository';
 import * as fs from 'fs';
-import { ResponseFriendshipDto } from 'src/relationships/friendships/dto/response-friendship.dto';
+import { ResponseFriendshipDto, FriendshipTypeEnum } from '@dtos/friendships';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
-import { ResponseBlockDto } from 'src/relationships/blocks/dto/response-block.dto';
+import { ResponseBlockDto, BlockTypeEnum } from '@dtos/blocks';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
-import { BlockTypeEnum } from 'src/relationships/entities/block.entity';
-import { FriendshipTypeEnum } from 'src/relationships/entities/friendship.entity';
 
 @Injectable()
 export class UsersService {

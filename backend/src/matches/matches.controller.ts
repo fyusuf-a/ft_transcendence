@@ -15,12 +15,13 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { MatchesService } from './matches.service';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { QueryMatchDto } from './dto/query-match.dto';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
-import { ResponseMatchDto } from './dto/response-match.dto';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import {
+  ResponseMatchDto,
+  CreateMatchDto,
+  UpdateMatchDto,
+  QueryMatchDto,
+} from '@dtos/matches';
 
 @ApiTags('matches')
 @Controller('matches')

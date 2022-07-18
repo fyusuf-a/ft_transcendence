@@ -10,20 +10,20 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import TheNavigationDrawer from "../components/UI/TheNavigationDrawer.vue";
-import TheAppBar from "../components/UI/TheAppBar.vue";
+import Vue from 'vue';
+import TheNavigationDrawer from '../components/UI/TheNavigationDrawer.vue';
+import TheAppBar from '../components/UI/TheAppBar.vue';
 
 export default Vue.extend({
-  name: "Home",
+  name: 'Home',
   components: {
-    "the-app-bar": TheAppBar,
+    'the-app-bar': TheAppBar,
     TheNavigationDrawer,
   },
   data: () => ({
     navigationDrawerVisible: true,
     authentificated: true,
-    viewedComponent: "profile",
+    viewedComponent: 'profile',
   }),
 });
 </script>

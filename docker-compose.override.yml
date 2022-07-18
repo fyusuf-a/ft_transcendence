@@ -19,7 +19,8 @@ services:
       - 8000:80
     image: fyusufa/ft_transcendence_frontend
     build:
-      context: ./frontend
+      context: .
+      dockerfile: frontend/Dockerfile
       target: ${FRONTEND_TARGET}
       args:
           NODE_IMAGE: ${NODE_IMAGE}

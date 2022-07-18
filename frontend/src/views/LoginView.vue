@@ -18,13 +18,13 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import axios from "axios";
+import Vue from 'vue';
+import axios from 'axios';
 
 export default Vue.extend({
   data() {
     return {
-      username: "string",
+      username: 'string',
       loading: false,
     };
   },
@@ -32,19 +32,19 @@ export default Vue.extend({
     async authenticate() {
       if (this.loading) return;
       this.loading = true;
-      let response = await axios.post("/auth/login", {
+      let response = await axios.post('/auth/login', {
         username: this.username,
       });
       if (response.data.access_token === undefined) {
         console.log(`Could not login as user ${this.username}`);
         return;
       }
-      this.$store.commit("login", {
+      this.$store.commit('login', {
         id: response.data.id,
         username: this.username,
         token: response.data.access_token,
       });
-      this.$router.push("/profile");
+      this.$router.push('/profile');
       this.loading = false;
     },
   },

@@ -2,15 +2,17 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { CreateMembershipDto } from './dto/create-membership.dto';
-import { ResponseMembershipDto } from './dto/response-membership.dto';
+import {
+  CreateMembershipDto,
+  UpdateMembershipDto,
+  ResponseMembershipDto,
+} from '@dtos/memberships';
 import UserRepository from 'src/users/repository/user.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { UpdateMembershipDto } from './dto/update-membership.dto';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 
