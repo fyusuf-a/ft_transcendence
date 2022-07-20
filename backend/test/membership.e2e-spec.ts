@@ -96,13 +96,13 @@ describe('MembershipController (e2e)', () => {
   it('Subscribe user1 to channel', () => {
     return request(app.getHttpServer())
       .post('/memberships/')
-      .send({ channelId: 1, userId: 1, role: MembershipRoleType.OWNER })
+      .send({ channelId: 1, userId: 1, role: MembershipRoleType.PARTICIPANT })
       .expect(201);
   });
   it('Subscribe user2 to channel', () => {
     return request(app.getHttpServer())
       .post('/memberships/')
-      .send({ channelId: 1, userId: 2, role: MembershipRoleType.ADMIN })
+      .send({ channelId: 1, userId: 2, role: MembershipRoleType.PARTICIPANT })
       .expect(201);
   });
 
