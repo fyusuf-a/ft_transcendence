@@ -1,16 +1,17 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { Injectable } from '@nestjs/common';
-import { QueryMatchDto } from './dto/query-match.dto';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
+import {
+  CreateMatchDto,
+  QueryMatchDto,
+  UpdateMatchDto,
+  ResponseMatchDto,
+  MatchStatusType,
+} from '@dtos/matches';
 import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
-import { ResponseMatchDto } from './dto/response-match.dto';
 import UserRepository from 'src/users/repository/user.repository';
 import MatchRepository from './repository/match.repository';
-import { MatchStatusType } from 'src/matches/entities/match.entity';
 import { Match } from './entities/match.entity';
 
 @Injectable()

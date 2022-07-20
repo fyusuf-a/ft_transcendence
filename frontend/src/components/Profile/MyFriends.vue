@@ -23,16 +23,10 @@
 </template>
 
 <script lang="ts">
-import axios from "axios";
-import Vue from "vue";
-
-interface ResponseFriendshipDto {
-  targetId: number;
-}
-
-interface PageDto<T> {
-  data: T[];
-}
+import axios from 'axios';
+import Vue from 'vue';
+import { ResponseFriendshipDto } from '@dtos/friendships';
+import { PageDto } from '@dtos/pages';
 
 interface MyFriendsData {
   loading: boolean;
@@ -48,16 +42,16 @@ export default Vue.extend({
   },
   async created() {
     let response = await axios.get<PageDto<ResponseFriendshipDto>>(
-      "/friendships/",
+      '/friendships/',
       {
         params: {
           sourceId: this.$store.getters.id,
-          status: "accepted",
+          status: 'accepted',
         },
-      }
+      },
     );
     response.data.data.forEach(async (friendship) => {
-      let userResponse = await axios.get("/users/" + friendship.targetId);
+      let userResponse = await axios.get('/users/' + friendship.targetId);
       this.users.push({ username: userResponse.data.username });
     });
     this.loading = false;

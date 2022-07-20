@@ -1,7 +1,5 @@
 import { SelectQueryBuilder, Repository } from 'typeorm';
-import { PageOptionsDto } from './dto/page-options.dto';
-import { PageDto } from './dto/page.dto';
-import { PageMetaDto } from 'src/common/dto/page-meta.dto';
+import { PageDto, PageOptionsDto, PageMetaDto } from '@dtos/pages';
 
 export class PaginatedRepository<T> extends Repository<T> {
   async findAllPaginated2(

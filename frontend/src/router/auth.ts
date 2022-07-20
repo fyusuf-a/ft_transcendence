@@ -1,5 +1,5 @@
-import VueRouter from "vue-router";
-import { NavigationGuardNext } from "vue-router";
+import VueRouter from 'vue-router';
+import { NavigationGuardNext } from 'vue-router';
 
 export default function auth({
   next,
@@ -11,10 +11,10 @@ export default function auth({
   // check if user is authenticated
   const authenticated = false;
   if (!authenticated) {
-    console.log("not authenticated");
-    return router.push({ name: "/login" });
+    console.log('not authenticated');
+    return router.push({ name: '/login' });
   }
-  console.log("authenticated");
+  console.log('authenticated');
   // if not, redirect to login page
   return next();
 }

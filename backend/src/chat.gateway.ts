@@ -9,18 +9,18 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { CreateMessageDto } from './messages/dto/create-message.dto';
 import { MessagesService } from './messages/messages.service';
 import * as jwt from 'jsonwebtoken';
 import { UsersService } from './users/users.service';
 import { User } from './users/entities/user.entity';
-import { TokenUserDto } from './auth/dto/token-user.dto';
+import { TokenUserDto } from '@dtos/auth';
 import { instanceToInstance } from 'class-transformer';
-import { ResponseMessageDto } from './messages/dto/response-message.dto';
+import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
+
 import { MembershipsService } from './memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
-import { CreateMembershipDto } from './memberships/dto/create-membership.dto';
+import { CreateMembershipDto } from '@dtos/memberships';
 
 export class ChatJoinDto {
   channel: string;

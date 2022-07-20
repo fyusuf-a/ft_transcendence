@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import UserRepository from 'src/users/repository/user.repository';
-import { CreateFriendshipDto } from './dto/create-friendship.dto';
-import { QueryFriendshipDto } from './dto/query-friendship.dto';
-import { UpdateFriendshipDto } from './dto/update-friendship.dto';
-import { ResponseFriendshipDto } from './dto/response-friendship.dto';
+import {
+  CreateFriendshipDto,
+  QueryFriendshipDto,
+  UpdateFriendshipDto,
+  ResponseFriendshipDto,
+} from '@dtos/friendships';
 import { Friendship } from '../entities/friendship.entity';
 import { FriendshipRepository } from './repositories/friendship.repository';
-import { PageDto } from 'src/common/dto/page.dto';
-import { PageOptionsDto } from 'src/common/dto/page-options.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 
 @Injectable()
 export class FriendshipsService {

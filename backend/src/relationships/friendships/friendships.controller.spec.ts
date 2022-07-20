@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import UserRepository from 'src/users/repository/user.repository';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { ResponseFriendshipDto } from './dto/response-friendship.dto';
-import { UpdateFriendshipDto } from './dto/update-friendship.dto';
+import { ResponseFriendshipDto, UpdateFriendshipDto } from '@dtos/friendships';
 import { Friendship } from '../entities/friendship.entity';
 import { FriendshipsController } from './friendships.controller';
 import { FriendshipsService } from './friendships.service';

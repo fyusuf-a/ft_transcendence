@@ -1,7 +1,6 @@
-import { User } from '../../users/entities/user.entity';
-import { PageOptionsDto } from '../../common/dto/page-options.dto';
-import { QueryUserDto } from '../dto/query-user.dto';
-import { PageDto } from '../../common/dto/page.dto';
+import { User } from '../entities/user.entity';
+import { PageOptionsDto, PageDto } from '@dtos/pages';
+import { QueryUserDto } from '@dtos/users';
 import { PaginatedRepository } from '../../common/repository';
 import { EntityRepository } from 'typeorm';
 import { Injectable } from '@nestjs/common';

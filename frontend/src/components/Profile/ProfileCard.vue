@@ -12,24 +12,24 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { mapGetters } from "vuex";
+import Vue from 'vue';
+import { mapGetters } from 'vuex';
 
 export default Vue.extend({
   data: function () {
     return {
-      ...mapGetters(["username", "avatar"]),
+      ...mapGetters(['username', 'avatar']),
     };
   },
   props: {
     color: {
       type: String,
-      default: "primary",
+      default: 'primary',
     },
   },
   created() {
     if (this.avatar() !== undefined) return;
-    this.$store.dispatch("getAvatar");
+    this.$store.dispatch('getAvatar');
   },
 });
 </script>

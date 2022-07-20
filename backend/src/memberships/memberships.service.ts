@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { Repository } from 'typeorm';
-import { CreateMembershipDto } from './dto/create-membership.dto';
-import { UpdateMembershipDto } from './dto/update-membership.dto';
+import {
+  QueryMembershipDto,
+  CreateMembershipDto,
+  UpdateMembershipDto,
+} from '@dtos/memberships';
 import { Membership } from './entities/membership.entity';
 import UserRepository from 'src/users/repository/user.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';
-import { QueryMembershipDto } from './dto/query-membership.dto';
 
 @Injectable()
 export class MembershipsService {

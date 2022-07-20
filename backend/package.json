@@ -72,6 +72,9 @@
     "typescript": "^4.3.5"
   },
   "jest": {
+	"moduleNameMapper": {
+		"@dtos(.*)$": "<rootDir>/src/dtos/$1"
+	},
     "moduleFileExtensions": [
       "js",
       "json",

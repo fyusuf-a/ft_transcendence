@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PageMetaDto } from 'src/common/dto/page-meta.dto';
-import { PageOptionsDto, takeDefault } from 'src/common/dto/page-options.dto';
-import { PageDto } from 'src/common/dto/page.dto';
+import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
 import UserRepository from 'src/users/repository/user.repository';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsController } from './channels.controller';
 import { ChannelsService } from './channels.service';
-import { CreateChannelDto } from './dto/create-channel.dto';
-import { ResponseChannelDto } from './dto/response-channel.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
+import {
+  CreateChannelDto,
+  ResponseChannelDto,
+  UpdateChannelDto,
+} from '@dtos/channels';
 import { Channel, ChannelType } from './entities/channel.entity';
 import ChannelRepository from './repository/channel.repository';
 

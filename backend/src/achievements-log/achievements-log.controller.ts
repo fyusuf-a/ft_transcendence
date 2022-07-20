@@ -10,9 +10,11 @@ import {
   Post,
 } from '@nestjs/common';
 import { Public } from 'src/auth/auth.public.decorator';
-import { ResponseAchievementsLogDto } from './dto/response-achievements-log.dto';
+import {
+  CreateAchievementLogDto,
+  ResponseAchievementsLogDto,
+} from '@/dtos/achievements-log';
 import { DeleteResult } from 'typeorm';
-import { CreateAchievementLogDto } from './dto/create-achievements-log.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 @ApiBearerAuth()
 @ApiTags('achievements log')

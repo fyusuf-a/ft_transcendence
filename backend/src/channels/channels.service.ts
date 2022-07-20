@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
-import { CreateChannelDto } from './dto/create-channel.dto';
-import { QueryChannelDto } from './dto/query-channel.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
-import { ResponseChannelDto } from './dto/response-channel.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import {
+  CreateChannelDto,
+  QueryChannelDto,
+  UpdateChannelDto,
+  ResponseChannelDto,
+} from '@dtos/channels';
 import { Channel, ChannelType } from './entities/channel.entity';
 import ChannelRepository from './repository/channel.repository';
 import UserRepository from 'src/users/repository/user.repository';

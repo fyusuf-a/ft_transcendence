@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AchievementsLog } from './entities/achievements-log.entity';
 import { AchievementsLogRepository } from './repository/achievements-log.repository';
-import { ResponseAchievementsLogDto } from './dto/response-achievements-log.dto';
+import { ResponseAchievementsLogDto } from '../dtos/achievements-log/response-achievements-log.dto';
 import { DeleteResult } from 'typeorm';
-import { CreateAchievementLogDto } from './dto/create-achievements-log.dto';
+import { CreateAchievementLogDto } from '@dtos/achievements-log';
 import { AchievementRepository } from 'src/achievements/repository/achievements.repository';
 import UserRepository from 'src/users/repository/user.repository';
 

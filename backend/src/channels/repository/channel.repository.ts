@@ -1,7 +1,6 @@
 import { Channel } from '../../channels/entities/channel.entity';
-import { PageOptionsDto } from '../../common/dto/page-options.dto';
-import { QueryChannelDto } from '../dto/query-channel.dto';
-import { PageDto } from '../../common/dto/page.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import { QueryChannelDto } from '@dtos/channels';
 import { PaginatedRepository } from '../../common/repository';
 import { EntityRepository } from 'typeorm';
 

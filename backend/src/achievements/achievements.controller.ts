@@ -10,8 +10,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { Public } from 'src/auth/auth.public.decorator';
-import { AchievementDto } from './dto/achievement.dto';
-import { ResponseAchievementDto } from './dto/response-achievement.dto';
+import { ResponseAchievementDto, AchievementDto } from '@dtos/achievements';
 import { DeleteResult } from 'typeorm';
 
 @ApiBearerAuth()

@@ -18,12 +18,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
-import { CreateChannelDto } from './dto/create-channel.dto';
-import { QueryChannelDto } from './dto/query-channel.dto';
-import { ResponseChannelDto } from './dto/response-channel.dto';
-import { UpdateChannelDto } from './dto/update-channel.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
+import {
+  ResponseChannelDto,
+  CreateChannelDto,
+  UpdateChannelDto,
+  QueryChannelDto,
+} from '@dtos/channels';
 import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
 

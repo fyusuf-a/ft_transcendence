@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from 'src/common/dto/page-options.dto';
+import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult } from 'typeorm';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { QueryMessageDto } from './dto/query-messages.dto';
-import { ResponseMessageDto } from './dto/response-message.dto';
+import {
+  CreateMessageDto,
+  QueryMessageDto,
+  ResponseMessageDto,
+} from '@dtos/messages';
 import { Message } from './entities/message.entity';
 import UserRepository from 'src/users/repository/user.repository';
 import ChannelRepository from 'src/channels/repository/channel.repository';

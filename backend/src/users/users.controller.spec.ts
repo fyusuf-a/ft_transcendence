@@ -1,15 +1,11 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { ResponseUserDto } from './dto/response-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto, ResponseUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { PageMetaDto } from '../common/dto/page-meta.dto';
-import { PageDto } from '../common/dto/page.dto';
-import { PageOptionsDto } from '../common/dto/page-options.dto';
+import { PageDto, PageMetaDto, PageOptionsDto } from '@dtos/pages';
 import UserRepository from './repository/user.repository';
 import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
