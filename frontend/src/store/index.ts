@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import axios from 'axios';
+
+import { fetchAvatar } from '@/utils/avatar';
 
 Vue.use(Vuex);
 
@@ -39,20 +40,7 @@ export default new Vuex.Store({
   },
   actions: {
     async getAvatar(context) {
-      try {
-        const id = context.state.id;
-        if (id === undefined) return undefined;
-        const response = await axios.get('/users/' + id + '/avatar', {
-          responseType: 'blob',
-        });
-        if (response.status === 204) return;
-        const blob = new Blob([response.data]);
-        context.state.avatar = URL.createObjectURL(blob);
-      } finally {
-        if (!context.state.avatar) {
-          context.state.avatar = require('@/assets/images/king-pong.png');
-        }
-      }
+      context.state.avatar = await fetchAvatar(context?.state?.id);
     },
   },
   modules: {},
