@@ -2,6 +2,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { AchievementsLogRepository } from './achievements-log/repository/achievements-log.repository';
 import { ChannelsService } from './channels/channels.service';
 import ChannelRepository from './channels/repository/channel.repository';
 import { ChatGateway } from './chat.gateway';
@@ -49,6 +50,10 @@ describe('ChatGateway', () => {
         {
           provide: getRepositoryToken(Membership),
           useClass: Repository,
+        },
+        {
+          provide: getRepositoryToken(AchievementsLogRepository),
+          useValue: jest.fn(),
         },
       ],
     }).compile();

@@ -18,6 +18,8 @@ import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
+import { AchievementsLogModule } from './achievements-log/achievements-log.module';
+import { AchievementsLog } from './achievements-log/entities/achievements-log.entity';
 import { MatchesModule } from './matches/matches.module';
 import { Match } from './matches/entities/match.entity';
 import configuration from './config/configuration';
@@ -43,6 +45,7 @@ import { ChatGateway } from './chat.gateway';
         Friendship,
         Block,
         Achievement,
+        AchievementsLog,
         Match,
       ],
       synchronize: true,
@@ -55,6 +58,7 @@ import { ChatGateway } from './chat.gateway';
     BlocksModule,
     AuthModule,
     AchievementsModule,
+    AchievementsLogModule,
     MatchesModule,
   ],
   controllers: [],

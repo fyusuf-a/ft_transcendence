@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class AchievementDto {
   @IsNotEmpty()
@@ -10,8 +10,9 @@ export class AchievementDto {
   @ApiProperty()
   description!: string;
 
+  @IsOptional()
   @ApiProperty()
-  icon!: Uint8Array;
+  icon!: string;
 
   @ApiProperty()
   id!: number;

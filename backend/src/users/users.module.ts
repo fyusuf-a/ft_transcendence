@@ -8,6 +8,7 @@ import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.re
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { diskStorage } from 'multer';
       UserRepository,
       FriendshipRepository,
       BlockRepository,
+      AchievementsLogRepository,
     ]),
     ConfigModule,
     MulterModule.registerAsync({

@@ -18,6 +18,8 @@ import * as request from 'supertest';
 import { Connection } from 'typeorm';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
 
 describe('ChannelController (e2e)', () => {
   let app: INestApplication;
@@ -34,7 +36,16 @@ describe('ChannelController (e2e)', () => {
           username: process.env.POSTGRES_USER,
           password: process.env.POSTGRES_PASSWORD,
           database: 'e2e_test',
-          entities: [Block, Friendship, User, Channel, Message, Membership],
+          entities: [
+            Achievement,
+            AchievementsLog,
+            Block,
+            Friendship,
+            User,
+            Channel,
+            Message,
+            Membership,
+          ],
           synchronize: true,
           dropSchema: true,
         }),

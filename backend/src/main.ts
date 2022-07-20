@@ -18,6 +18,7 @@ async function bootstrap() {
     .addTag('channel memberships')
     .addTag('messages')
     .addTag('achievements')
+    .addTag('achievements log')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
