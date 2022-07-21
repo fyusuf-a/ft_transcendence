@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
-import UserRepository from 'src/users/repository/user.repository';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { MockRepository } from 'src/common/mocks/repository.mock';
+import { User } from 'src/users/entities/user.entity';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { ChannelsController } from './channels.controller';
 import { ChannelsService } from './channels.service';
 import {
@@ -10,7 +12,6 @@ import {
   UpdateChannelDto,
 } from '@dtos/channels';
 import { Channel, ChannelType } from './entities/channel.entity';
-import ChannelRepository from './repository/channel.repository';
 
 describe('ChannelsController', () => {
   let controller: ChannelsController;
@@ -22,10 +23,13 @@ describe('ChannelsController', () => {
       providers: [
         ChannelsService,
         {
-          provide: ChannelRepository,
+          provide: getRepositoryToken(Channel),
           useValue: jest.fn(),
         },
-        UserRepository,
+        {
+          provide: getRepositoryToken(User),
+          useValue: new MockRepository(() => new User()),
+        },
       ],
     }).compile();
 
@@ -39,9 +43,10 @@ describe('ChannelsController', () => {
 
   describe('findAll()', () => {
     it('should return an array of channels', async () => {
+      const pageOptions = new PageOptionsDto(1, 2);
       const expected = new PageDto(
         [],
-        new PageMetaDto(new PageOptionsDto(), takeDefault),
+        new PageMetaDto(pageOptions, takeDefault),
       );
       jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
       const result = await controller.findAll();
@@ -84,8 +89,9 @@ describe('ChannelsController', () => {
     });
 
     it('should return 404 if channel not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
+      jest.spyOn(service, 'findOne').mockImplementation(async () => {
+        throw new EntityNotFoundError(Channel, '5');
+      });
       expect(controller.findOne('5')).rejects.toThrow();
     });
   });

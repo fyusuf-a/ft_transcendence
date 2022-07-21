@@ -1,15 +1,15 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateUserDto, ResponseUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { PageDto, PageMetaDto, PageOptionsDto } from '@dtos/pages';
-import UserRepository from './repository/user.repository';
-import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
-import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
-import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -21,21 +21,20 @@ describe('UsersController', () => {
       controllers: [UsersController],
       providers: [
         UsersService,
-        UserRepository,
         {
-          provide: UserRepository,
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
         {
-          provide: FriendshipRepository,
+          provide: getRepositoryToken(Friendship),
           useValue: jest.fn(),
         },
         {
-          provide: BlockRepository,
+          provide: getRepositoryToken(Block),
           useValue: jest.fn(),
         },
         {
-          provide: AchievementsLogRepository,
+          provide: getRepositoryToken(AchievementsLog),
           useValue: jest.fn(),
         },
       ],
@@ -100,8 +99,9 @@ describe('UsersController', () => {
     });
 
     it('should return 404 if user not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
+      jest.spyOn(service, 'findOne').mockImplementation(async () => {
+        throw new EntityNotFoundError(User, '5');
+      });
       expect(controller.findOne('5')).rejects.toThrow();
     });
   });

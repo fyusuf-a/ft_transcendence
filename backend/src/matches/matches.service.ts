@@ -1,6 +1,10 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
+import {
+  DeleteResult,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import {
   CreateMatchDto,
@@ -9,40 +13,48 @@ import {
   ResponseMatchDto,
   MatchStatusType,
 } from '@dtos/matches';
-import UserRepository from 'src/users/repository/user.repository';
-import MatchRepository from './repository/match.repository';
 import { Match } from './entities/match.entity';
+import { User } from 'src/users/entities/user.entity';
+import { paginate } from 'src/common/paginate';
 
 @Injectable()
 export class MatchesService {
   constructor(
-    @InjectRepository(MatchRepository)
-    private readonly matchRepository: MatchRepository,
-    @InjectRepository(UserRepository)
-    private readonly userRepository: UserRepository,
+    @InjectRepository(Match)
+    private readonly matchRepository: Repository<Match>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async findAll(
     query?: QueryMatchDto,
     pageOptions: PageOptionsDto = new PageOptionsDto(),
   ): Promise<PageDto<ResponseMatchDto>> {
-    const response = await this.matchRepository.findAllPaginated(
-      query,
+    const orderOptions = { id: pageOptions.order };
+    const findOptionsWhere: FindOptionsWhere<Match> = {
+      home: query?.homeId ? { id: +query.homeId } : {},
+      away: query?.awayId ? { id: +query.awayId } : {},
+      status: query?.role,
+    };
+    const response = await paginate(
+      this.matchRepository,
+      findOptionsWhere,
+      orderOptions,
       pageOptions,
     );
     return response.convertData((x) => x);
   }
 
   findOne(id: number): Promise<ResponseMatchDto> {
-    return this.matchRepository.findOne(id);
+    return this.matchRepository.findOneBy({ id: id });
   }
 
   async create(matchDto: CreateMatchDto): Promise<ResponseMatchDto> {
     const match: Match = new Match();
-    match.home = await this.userRepository.findOneOrFail(matchDto.homeId);
+    match.home = await this.userRepository.findOneByOrFail({id: matchDto.homeId});
     match.homeId = match.home.id;
 
-    match.away = await this.userRepository.findOneOrFail(matchDto.awayId);
+    match.away = await this.userRepository.findOneByOrFail({id: matchDto.awayId});
     match.awayId = match.away.id;
 
     match.status = MatchStatusType.IN_PROGRESS;

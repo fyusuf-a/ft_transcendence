@@ -1,19 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
+import { User } from 'src/users/entities/user.entity';
 import { AchievementsLogController } from './achievements-log.controller';
 import { AchievementsLogService } from './achievements-log.service';
-import { AchievementsLogRepository } from './repository/achievements-log.repository';
-import { AchievementRepository } from 'src/achievements/repository/achievements.repository';
-import UserRepository from 'src/users/repository/user.repository';
+import { AchievementsLog } from './entities/achievements-log.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      AchievementsLogRepository,
-      AchievementRepository,
-      UserRepository,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([AchievementsLog, Achievement, User])],
   controllers: [AchievementsLogController],
   providers: [AchievementsLogService],
   exports: [AchievementsLogService],

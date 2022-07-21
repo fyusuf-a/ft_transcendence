@@ -2,16 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto, ResponseMessageDto } from '@dtos/messages';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { BadRequestException } from '@nestjs/common';
-import { DeleteResult } from 'typeorm';
-import MessageRepository from './repository/message.repository';
-import UserRepository from '../users/repository/user.repository';
-import ChannelRepository from '../channels/repository/channel.repository';
+import { DeleteResult, EntityNotFoundError } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { PageMetaDto, PageDto, PageOptionsDto, takeDefault } from '@dtos/pages';
-import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
-import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Block } from 'src/relationships/entities/block.entity';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -23,23 +22,23 @@ describe('MessagesController', () => {
       providers: [
         MessagesService,
         {
-          provide: MessageRepository,
+          provide: getRepositoryToken(Message),
           useValue: jest.fn(),
         },
         {
-          provide: UserRepository,
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
         {
-          provide: ChannelRepository,
+          provide: getRepositoryToken(Channel),
           useValue: jest.fn(),
         },
         {
-          provide: FriendshipRepository,
+          provide: Friendship,
           useValue: jest.fn(),
         },
         {
-          provide: BlockRepository,
+          provide: Block,
           useValue: jest.fn(),
         },
       ],
@@ -86,7 +85,7 @@ describe('MessagesController', () => {
       createMessageDto.senderId = 1;
       createMessageDto.content = 'message';
       jest.spyOn(service, 'create').mockImplementation(async () => {
-        throw new EntityDoesNotExistError('error');
+        throw new EntityNotFoundError(Message, 'not found');
       });
       expect(controller.create(createMessageDto)).rejects.toThrow(
         BadRequestException,
@@ -115,8 +114,9 @@ describe('MessagesController', () => {
     });
 
     it('should return 404 if message not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
+      jest.spyOn(service, 'findOne').mockImplementation(async () => {
+        throw new EntityNotFoundError(Message, '5');
+      });
       expect(controller.findOne('5')).rejects.toThrow();
     });
   });

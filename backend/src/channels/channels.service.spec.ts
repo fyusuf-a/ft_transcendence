@@ -5,9 +5,9 @@ import { ChannelsService } from './channels.service';
 import { CreateChannelDto, UpdateChannelDto } from '@dtos/channels';
 import { MockChannelEntity } from './mocks/channel.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
-import ChannelRepository from './repository/channel.repository';
-import { ChannelType } from './entities/channel.entity';
-import UserRepository from 'src/users/repository/user.repository';
+import { Channel, ChannelType } from './entities/channel.entity';
+import { User } from 'src/users/entities/user.entity';
+import { PageDto } from '@dtos/pages';
 
 const channelNumber = 2;
 
@@ -19,13 +19,16 @@ describe('ChannelsService', () => {
       providers: [
         ChannelsService,
         {
-          provide: getRepositoryToken(ChannelRepository),
+          provide: getRepositoryToken(Channel),
           useValue: new MockRepository<MockChannelEntity>(
             () => new MockChannelEntity(),
             channelNumber,
           ),
         },
-        UserRepository,
+        {
+          provide: getRepositoryToken(User),
+          useValue: new MockRepository(() => new User()),
+        },
       ],
     }).compile();
     service = module.get<ChannelsService>(ChannelsService);
@@ -50,7 +53,9 @@ describe('ChannelsService', () => {
   describe('when finding all Channels', () => {
     it('should return array of Channel', async () => {
       const ret = await service.findAll();
-      expect(ret.data.length).toBe(2);
+      expect(ret.data.length).toBe(channelNumber);
+      expect(ret).toBeInstanceOf(PageDto);
+      expect(ret.data[0]).toBeInstanceOf(MockChannelEntity);
     });
   });
 

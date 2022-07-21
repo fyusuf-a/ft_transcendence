@@ -17,7 +17,6 @@ import {
   ApiNotFoundResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
   ResponseChannelDto,
@@ -25,6 +24,7 @@ import {
   UpdateChannelDto,
   QueryChannelDto,
 } from '@dtos/channels';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
 
@@ -61,11 +61,13 @@ export class ChannelsController {
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Channel Not Found' })
   async findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
-    const channel: Channel = await this.channelsService.findOne(+id);
-    if (channel === undefined) {
-      throw new NotFoundException(`Channel #${id} not found`);
+    try {
+      return await this.channelsService.findOne(+id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException(`Channel #${id} not found`);
+      }
     }
-    return channel;
   }
 
   @Patch(':id')

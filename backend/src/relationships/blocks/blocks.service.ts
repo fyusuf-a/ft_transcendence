@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import UserRepository from 'src/users/repository/user.repository';
-import { UpdateResult } from 'typeorm';
 import {
   CreateBlockDto,
   QueryBlockDto,
   UpdateBlockDto,
   BlockTypeEnum,
 } from '@dtos/blocks';
+import { FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
 import { Block } from '../entities/block.entity';
-import { BlockRepository } from './repositories/blocks.repository';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class BlocksService {
   constructor(
     @InjectRepository(Block)
-    private blockRepository: BlockRepository,
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    private blockRepository: Repository<Block>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async create(createBlockDto: CreateBlockDto) {
@@ -35,13 +34,17 @@ export class BlocksService {
     }
 
     const block: Block = new Block();
-    block.source = await this.userRepository.findOne(createBlockDto.sourceId);
+    block.source = await this.userRepository.findOneBy({
+      id: createBlockDto.sourceId,
+    });
     block.sourceId = createBlockDto.sourceId;
     if (block.source === undefined || block.source.id !== block.sourceId) {
       throw new EntityDoesNotExistError(`User #${createBlockDto.sourceId}`);
     }
 
-    block.target = await this.userRepository.findOne(createBlockDto.targetId);
+    block.target = await this.userRepository.findOneBy({
+      id: createBlockDto.targetId,
+    });
     block.targetId = createBlockDto.targetId;
     if (block.target === undefined || block.target.id !== block.targetId) {
       throw new EntityDoesNotExistError(`User #${createBlockDto.targetId}`);
@@ -50,11 +53,16 @@ export class BlocksService {
   }
 
   findAll(query?: QueryBlockDto) {
-    return this.blockRepository.find({ where: query });
+    const findOptionsWhere: FindOptionsWhere<Block> = {
+      source: query?.sourceId ? { id: +query.sourceId } : {},
+      target: query?.targetId ? { id: +query.targetId } : {},
+      status: query?.status,
+    };
+    return this.blockRepository.find({ where: findOptionsWhere });
   }
 
   findOne(id: number): Promise<Block> {
-    return this.blockRepository.findOne(id);
+    return this.blockRepository.findOneBy({ id: id });
   }
 
   update(id: number, updateBlockDto: UpdateBlockDto): Promise<UpdateResult> {

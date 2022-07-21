@@ -6,11 +6,9 @@ import { DeleteResult } from 'typeorm';
 import { MessagesService } from './messages.service';
 import { MockMessageEntity } from './mocks/message.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
-import MessageRepository from './repository/message.repository';
-import ChannelRepository from 'src/channels/repository/channel.repository';
-import UserRepository from 'src/users/repository/user.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PageDto } from '@dtos/pages';
+import { Message } from './entities/message.entity';
 
 const messageNumber = 2;
 const userNumber = 2;
@@ -24,18 +22,18 @@ describe('MessagesService', () => {
       providers: [
         MessagesService,
         {
-          provide: getRepositoryToken(MessageRepository),
+          provide: getRepositoryToken(Message),
           useValue: new MockRepository<MockMessageEntity>(
             () => new MockMessageEntity(),
             messageNumber,
           ),
         },
         {
-          provide: getRepositoryToken(ChannelRepository),
+          provide: getRepositoryToken(Channel),
           useValue: new MockRepository(() => new Channel(), channelNumber),
         },
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: new MockRepository(() => new User(), userNumber),
         },
       ],

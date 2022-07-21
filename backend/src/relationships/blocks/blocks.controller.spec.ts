@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import UserRepository from 'src/users/repository/user.repository';
+
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ResponseBlockDto, UpdateBlockDto } from '@dtos/blocks';
 import { Block } from '../entities/block.entity';
 import { BlocksController } from './blocks.controller';
 import { BlocksService } from './blocks.service';
+import { User } from 'src/users/entities/user.entity';
 
 describe('BlocksController', () => {
   let controller: BlocksController;
@@ -21,7 +22,7 @@ describe('BlocksController', () => {
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
       ],

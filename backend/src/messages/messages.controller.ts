@@ -4,8 +4,7 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -17,13 +16,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { DeleteResult } from 'typeorm';
 import {
   CreateMessageDto,
   QueryMessageDto,
   ResponseMessageDto,
 } from '@dtos/messages';
+import { DeleteResult, EntityNotFoundError } from 'typeorm';
 import { MessagesService } from './messages.service';
 
 @ApiBearerAuth()
@@ -49,7 +47,7 @@ export class MessagesController {
     try {
       return await this.messagesService.create(createMessageDto);
     } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
+      if (error instanceof EntityNotFoundError) {
         throw new BadRequestException(error.message);
       } else {
         throw error;
@@ -60,11 +58,11 @@ export class MessagesController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findOne(@Param('id') id: string): Promise<ResponseMessageDto> {
-    const user: ResponseMessageDto = await this.messagesService.findOne(+id);
-    if (user === undefined) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    try {
+      return await this.messagesService.findOne(+id);
+    } catch (error) {
+      throw new NotFoundException('Not Found');
     }
-    return user;
   }
 
   @Delete(':id')

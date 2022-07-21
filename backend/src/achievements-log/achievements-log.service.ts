@@ -1,32 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AchievementsLog } from './entities/achievements-log.entity';
-import { AchievementsLogRepository } from './repository/achievements-log.repository';
 import { ResponseAchievementsLogDto } from '../dtos/achievements-log/response-achievements-log.dto';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateAchievementLogDto } from '@dtos/achievements-log';
-import { AchievementRepository } from 'src/achievements/repository/achievements.repository';
-import UserRepository from 'src/users/repository/user.repository';
+import { User } from 'src/users/entities/user.entity';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
 
 @Injectable()
 export class AchievementsLogService {
   constructor(
-    @InjectRepository(AchievementsLogRepository)
-    private achievementsLogRepository: AchievementsLogRepository,
-    @InjectRepository(AchievementRepository)
-    private achievementRepository: AchievementRepository,
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    @InjectRepository(AchievementsLog)
+    private achievementsLogRepository: Repository<AchievementsLog>,
+    @InjectRepository(Achievement)
+    private achievementRepository: Repository<Achievement>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async findAll(): Promise<ResponseAchievementsLogDto[]> {
-    return await this.achievementsLogRepository.findAll();
+    return await this.achievementsLogRepository.find();
   }
 
   async findById(id: number): Promise<AchievementsLog> {
-    return await this.achievementsLogRepository.findOneOrFail({
-      where: { id: id },
-    });
+    return await this.achievementsLogRepository.findOneByOrFail({ id: id });
   }
 
   async create(
@@ -42,12 +39,14 @@ export class AchievementsLogService {
     )
       throw 'Achievements already unlocked.';
     const newLog = new AchievementsLog();
-    await this.userRepository.findOneOrFail(achievementsLogdto.userId);
+    await this.userRepository.findOneByOrFail({
+      id: achievementsLogdto.userId,
+    });
     newLog.userId = achievementsLogdto.userId;
 
-    newLog.achievement = await this.achievementRepository.findOneOrFail(
-      achievementsLogdto.achievementId,
-    );
+    newLog.achievement = await this.achievementRepository.findOneByOrFail({
+      id: achievementsLogdto.achievementId,
+    });
     console.log(newLog);
     return this.achievementsLogRepository.save(newLog);
   }

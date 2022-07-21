@@ -3,13 +3,11 @@ import { MembershipsService } from './memberships.service';
 import { MembershipsController } from './memberships.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Membership } from './entities/membership.entity';
-import UserRepository from 'src/users/repository/user.repository';
-import ChannelRepository from 'src/channels/repository/channel.repository';
+import { User } from 'src/users/entities/user.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Membership, UserRepository, ChannelRepository]),
-  ],
+  imports: [TypeOrmModule.forFeature([Membership, User, Channel])],
   controllers: [MembershipsController],
   providers: [MembershipsService],
   exports: [MembershipsService],

@@ -4,8 +4,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
-import UserRepository from 'src/users/repository/user.repository';
-import MatchRepository from './repository/match.repository';
 import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
 import {
   CreateMatchDto,
@@ -15,6 +13,7 @@ import {
   MatchStatusType,
 } from '@dtos/matches';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
+import { User } from 'src/users/entities/user.entity';
 
 describe('MatchesController', () => {
   let controller: MatchesController;
@@ -26,11 +25,11 @@ describe('MatchesController', () => {
       providers: [
         MatchesService,
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(MatchRepository),
+          provide: getRepositoryToken(Match),
           useValue: jest.fn(),
         },
       ],
