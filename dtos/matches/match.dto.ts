@@ -47,7 +47,7 @@ export class Match {
   awayId!: number;
 
   @ApiProperty({
-    description: 'The role of the associated user in the associated channel',
+    description: 'The current status of the match',
     type: MatchStatusType,
     enum: MatchStatusType,
     enumName: 'MatchStatusType',
