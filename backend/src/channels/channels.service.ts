@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
   CreateChannelDto,
@@ -8,10 +7,12 @@ import {
   UpdateChannelDto,
   ResponseChannelDto,
 } from '@dtos/channels';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { Channel, ChannelType } from './entities/channel.entity';
-import ChannelRepository from './repository/channel.repository';
-import UserRepository from 'src/users/repository/user.repository';
+
 import * as bcrypt from 'bcrypt';
+import { User } from 'src/users/entities/user.entity';
+import { paginate } from 'src/common/paginate';
 
 async function hashPassword(rawPassword: string): Promise<string> {
   return await bcrypt.hash(rawPassword, 10);
@@ -20,10 +21,10 @@ async function hashPassword(rawPassword: string): Promise<string> {
 @Injectable()
 export class ChannelsService {
   constructor(
-    @InjectRepository(ChannelRepository)
-    private channelsRepository: ChannelRepository,
-    @InjectRepository(UserRepository)
-    private usersRepository: UserRepository,
+    @InjectRepository(Channel)
+    private channelsRepository: Repository<Channel>,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async create(createChannelDto: CreateChannelDto) {
@@ -62,24 +63,25 @@ export class ChannelsService {
       })
     )
       throw 'Direct channel already exists.';
-    channel.userOne = await this.usersRepository.findOneOrFail(
-      createChannelDto.userOneId,
-    );
-    channel.userTwo = await this.usersRepository.findOneOrFail(
-      createChannelDto.userTwoId,
-    );
+    channel.userOne = await this.usersRepository.findOneByOrFail({
+      id: createChannelDto.userOneId,
+    });
+    channel.userTwo = await this.usersRepository.findOneByOrFail({
+      id: createChannelDto.userTwoId,
+    });
     return;
   }
 
   async findAll(
     query?: QueryChannelDto,
-    pageOptions?: PageOptionsDto,
+    pageOptions: PageOptionsDto = new PageOptionsDto(),
   ): Promise<PageDto<ResponseChannelDto>> {
-    return this.channelsRepository.findAllPaginated(query, pageOptions);
+    const orderOptions = { id: pageOptions.order };
+    return paginate(this.channelsRepository, query, orderOptions, pageOptions);
   }
 
   findOne(id: number) {
-    return this.channelsRepository.findOne(id);
+    return this.channelsRepository.findOneByOrFail({ id: id });
   }
 
   async update(

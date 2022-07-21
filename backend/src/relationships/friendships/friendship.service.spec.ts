@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { MockRepository } from 'src/common/mocks/repository.mock';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import UserRepository from 'src/users/repository/user.repository';
+
 import { User } from 'src/users/entities/user.entity';
+import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { Repository } from 'typeorm';
 import { Friendship } from '../entities/friendship.entity';
 import { FriendshipsService } from './friendships.service';
-import { FriendshipRepository } from './repositories/friendship.repository';
 
 describe('friendshipsService', () => {
   let service: FriendshipsService;
@@ -15,13 +16,23 @@ describe('friendshipsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FriendshipsService, FriendshipRepository, UserRepository],
+      providers: [
+        FriendshipsService,
+        {
+          provide: getRepositoryToken(Friendship),
+          useValue: new MockRepository(() => new Friendship()),
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: new MockRepository(() => new MockUserEntity()),
+        },
+      ],
     }).compile();
 
     service = module.get<FriendshipsService>(FriendshipsService);
-    usersRepository = module.get<UserRepository>(UserRepository);
-    friendshipsRepository = module.get<FriendshipRepository>(
-      getRepositoryToken(FriendshipRepository),
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    friendshipsRepository = module.get<Repository<Friendship>>(
+      getRepositoryToken(Friendship),
     );
   });
 
@@ -44,7 +55,7 @@ describe('friendshipsService', () => {
       const user2 = new User();
       user2.id = 2;
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2));
 
@@ -61,7 +72,7 @@ describe('friendshipsService', () => {
       const user2 = new User();
       user2.id = 2;
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined));
 
@@ -83,7 +94,7 @@ describe('friendshipsService', () => {
       friendship1.sourceId = user2.id;
       friendship1.targetId = user1.id;
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user1));
 

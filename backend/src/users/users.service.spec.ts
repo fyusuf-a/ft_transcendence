@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserDto, UpdateUserDto } from '@dtos/users';
 import { UsersService } from './users.service';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { MockUserEntity } from './mocks/user.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
-import UserRepository from './repository/user.repository';
 import { PageDto } from '@dtos/pages';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
-import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
-import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
+import { User } from './entities/user.entity';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 const userNumber = 2;
 const mockConfig = () => ({ get: () => undefined });
@@ -24,7 +24,7 @@ describe('UsersService', () => {
       providers: [
         UsersService,
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: new MockRepository<MockUserEntity>(
             () => new MockUserEntity(),
             userNumber,
@@ -34,9 +34,23 @@ describe('UsersService', () => {
           provide: ConfigService,
           useFactory: mockConfig,
         },
-        FriendshipRepository,
-        BlockRepository,
-        AchievementsLogRepository,
+        {
+          provide: getRepositoryToken(Friendship),
+          useValue: new MockRepository<Friendship>(
+            () => new Friendship(),
+            userNumber,
+          ),
+        },
+        {
+          provide: getRepositoryToken(Block),
+          useValue: new MockRepository<Block>(() => new Block()),
+        },
+        {
+          provide: getRepositoryToken(AchievementsLog),
+          useValue: new MockRepository<AchievementsLog>(
+            () => new AchievementsLog(),
+          ),
+        },
       ],
     }).compile();
 
@@ -62,10 +76,10 @@ describe('UsersService', () => {
 
   describe('when finding all Users', () => {
     it('should return array of User', async () => {
-      const messages = await service.findAll();
-      expect(messages).toBeInstanceOf(PageDto);
-      if (messages.data.length !== 0)
-        expect(messages.data[0]).toBeInstanceOf(MockUserEntity);
+      const users = await service.findAll();
+      expect(users).toBeInstanceOf(PageDto);
+      if (users.data.length !== 0)
+        expect(users.data[0]).toBeInstanceOf(MockUserEntity);
     });
   });
 

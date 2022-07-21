@@ -1,33 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import {
   QueryMembershipDto,
   CreateMembershipDto,
   UpdateMembershipDto,
 } from '@dtos/memberships';
 import { Membership } from './entities/membership.entity';
-import UserRepository from 'src/users/repository/user.repository';
-import ChannelRepository from 'src/channels/repository/channel.repository';
+import { User } from 'src/users/entities/user.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
 
 @Injectable()
 export class MembershipsService {
   constructor(
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
-    @InjectRepository(UserRepository)
-    private usersRepository: UserRepository,
-    @InjectRepository(ChannelRepository)
-    private channelsRepository: ChannelRepository,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+    @InjectRepository(Channel)
+    private channelsRepository: Repository<Channel>,
   ) {}
 
   async create(createMembershipDto: CreateMembershipDto) {
     const membership: Membership = new Membership();
     membership.role = createMembershipDto.role;
-    membership.channel = await this.channelsRepository.findOne(
-      createMembershipDto.channelId,
-    );
+    membership.channel = await this.channelsRepository.findOneBy({
+      id: createMembershipDto.channelId,
+    });
     membership.channelId = createMembershipDto.channelId;
     if (
       membership.channel === undefined ||
@@ -37,9 +37,9 @@ export class MembershipsService {
         `Channel #${createMembershipDto.channelId}`,
       );
     }
-    membership.user = await this.usersRepository.findOne(
-      createMembershipDto.userId,
-    );
+    membership.user = await this.usersRepository.findOneBy({
+      id: createMembershipDto.userId,
+    });
     membership.userId = createMembershipDto.userId;
     if (
       membership.user === undefined ||
@@ -51,11 +51,18 @@ export class MembershipsService {
   }
 
   findAll(query?: QueryMembershipDto) {
-    return this.membershipRepository.find({ where: query });
+    const findOptionsWhere: FindOptionsWhere<Membership> = {
+      channel: query?.channel ? { id: +query.channel } : {},
+      user: query?.user ? { id: +query.user } : {},
+      role: query?.role,
+      mutedUntil: query?.mutedUntil,
+      bannedUntil: query?.bannedUntil,
+    };
+    return this.membershipRepository.find({ where: findOptionsWhere });
   }
 
   findOne(id: number) {
-    return this.membershipRepository.findOne(id);
+    return this.membershipRepository.findOneBy({ id: id });
   }
 
   update(id: number, updateMembershipDto: UpdateMembershipDto) {

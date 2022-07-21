@@ -10,14 +10,12 @@ import { MembershipsService } from './memberships.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { MockChannelEntity } from 'src/channels/mocks/channel.entity.mock';
-import UserRepository from 'src/users/repository/user.repository';
-import ChannelRepository from 'src/channels/repository/channel.repository';
 
 describe('MembershipsService', () => {
   let service: MembershipsService;
   let membershipsRepository: Repository<Membership>;
-  let channelsRepository: ChannelRepository;
-  let usersRepository: UserRepository;
+  let channelsRepository: Repository<Channel>;
+  let usersRepository: Repository<User>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -28,19 +26,21 @@ describe('MembershipsService', () => {
           useValue: new MockRepository(() => new Membership()),
         },
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: new MockRepository(() => new MockUserEntity()),
         },
         {
-          provide: getRepositoryToken(ChannelRepository),
+          provide: getRepositoryToken(Channel),
           useValue: new MockRepository(() => new MockChannelEntity()),
         },
       ],
     }).compile();
 
     service = module.get<MembershipsService>(MembershipsService);
-    channelsRepository = module.get<ChannelRepository>(ChannelRepository);
-    usersRepository = module.get<UserRepository>(UserRepository);
+    channelsRepository = module.get<Repository<Channel>>(
+      getRepositoryToken(Channel),
+    );
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
     membershipsRepository = module.get<Repository<Membership>>(
       getRepositoryToken(Membership),
     );
@@ -53,7 +53,7 @@ describe('MembershipsService', () => {
   describe('create()', () => {
     it('throws without channel', async () => {
       jest
-        .spyOn(channelsRepository, 'findOne')
+        .spyOn(channelsRepository, 'findOneBy')
         .mockResolvedValueOnce(undefined);
       return expect(
         service.create({
@@ -67,8 +67,10 @@ describe('MembershipsService', () => {
     it('throws without user', async () => {
       const channel: Channel = new Channel();
       channel.id = 5;
-      jest.spyOn(channelsRepository, 'findOne').mockResolvedValueOnce(channel);
-      jest.spyOn(usersRepository, 'findOne').mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(channelsRepository, 'findOneBy')
+        .mockResolvedValueOnce(channel);
+      jest.spyOn(usersRepository, 'findOneBy').mockResolvedValueOnce(undefined);
       return expect(
         service.create({
           channelId: 5,
@@ -84,8 +86,10 @@ describe('MembershipsService', () => {
       const user: User = new User();
       user.id = 10;
       const membership = new Membership();
-      jest.spyOn(channelsRepository, 'findOne').mockResolvedValueOnce(channel);
-      jest.spyOn(usersRepository, 'findOne').mockResolvedValueOnce(user);
+      jest
+        .spyOn(channelsRepository, 'findOneBy')
+        .mockResolvedValueOnce(channel);
+      jest.spyOn(usersRepository, 'findOneBy').mockResolvedValueOnce(user);
       jest
         .spyOn(membershipsRepository, 'save')
         .mockResolvedValueOnce(membership);
@@ -111,7 +115,7 @@ describe('MembershipsService', () => {
     it('returns a  Membership', async () => {
       const expected = new Membership();
       jest
-        .spyOn(membershipsRepository, 'findOne')
+        .spyOn(membershipsRepository, 'findOneBy')
         .mockResolvedValueOnce(expected);
       const results = await service.findOne(1);
       return expect(results).toEqual(expected);

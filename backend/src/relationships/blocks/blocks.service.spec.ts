@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import UserRepository from 'src/users/repository/user.repository';
+
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Block } from '../entities/block.entity';
@@ -22,14 +22,14 @@ describe('BlocksService', () => {
           useValue: new MockRepository<Block>(() => new Block()),
         },
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: new MockRepository<User>(() => new User()),
         },
       ],
     }).compile();
 
     service = module.get<BlocksService>(BlocksService);
-    usersRepository = module.get<UserRepository>(UserRepository);
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
     BlocksRepository = module.get<Repository<Block>>(getRepositoryToken(Block));
   });
 
@@ -52,7 +52,7 @@ describe('BlocksService', () => {
       const user2 = new User();
       user2.id = 2;
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2));
 
@@ -69,7 +69,7 @@ describe('BlocksService', () => {
       const user2 = new User();
       user2.id = 2;
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined));
 
@@ -91,7 +91,7 @@ describe('BlocksService', () => {
       Block1.sourceId = user2.id;
       Block1.targetId = user1.id;
       jest
-        .spyOn(usersRepository, 'findOne')
+        .spyOn(usersRepository, 'findOneBy')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user1));
 

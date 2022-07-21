@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import UserRepository from 'src/users/repository/user.repository';
+
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ResponseFriendshipDto, UpdateFriendshipDto } from '@dtos/friendships';
 import { Friendship } from '../entities/friendship.entity';
 import { FriendshipsController } from './friendships.controller';
 import { FriendshipsService } from './friendships.service';
-import { FriendshipRepository } from './repositories/friendship.repository';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 describe('FriendshipsController', () => {
   let controller: FriendshipsController;
@@ -14,7 +15,17 @@ describe('FriendshipsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [FriendshipsController],
-      providers: [FriendshipsService, FriendshipRepository, UserRepository],
+      providers: [
+        FriendshipsService,
+        {
+          provide: getRepositoryToken(Friendship),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(User),
+          useValue: jest.fn(),
+        },
+      ],
     }).compile();
 
     controller = module.get<FriendshipsController>(FriendshipsController);

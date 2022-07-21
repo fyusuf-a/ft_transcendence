@@ -1,4 +1,3 @@
-import { PageDto, PageOptionsDto, PageMetaDto } from '@dtos/pages';
 import { DeleteResult, UpdateResult } from 'typeorm';
 /*import { Repository } from 'typeorm';
 
@@ -34,8 +33,20 @@ export class MockRepository<T extends Identifiable> {
   findOne = jest.fn((id: number): undefined | T => {
     return this.#entities[id];
   });
-  find = jest.fn((): T[] => this.#entities);
-  findAll = jest.fn((): T[] => this.#entities);
+  findOneBy = jest.fn((query: { id: number }): undefined | T => {
+    return this.#entities[query.id];
+  });
+  findOneByOrFail = jest.fn((query: { id: number }): undefined | T => {
+    return this.#entities[query.id];
+  });
+  find = jest.fn((): T[] => this.#entities.filter((x) => x !== undefined));
+  findAndCount = jest.fn((): [T[], number] => {
+    const returnEntities = this.find();
+    return [returnEntities, returnEntities.length];
+  });
+  findBy = this.find;
+  findAll = this.find;
+  findAllBy = this.find;
   save = jest.fn((entity: T): T => {
     const newEntity = this.#entityFactory();
     Object.assign(newEntity, entity);
@@ -48,23 +59,4 @@ export class MockRepository<T extends Identifiable> {
   });
 
   update = jest.fn(() => new UpdateResult());
-
-  findAllPaginated = jest.fn((pageOptions?: PageOptionsDto): PageDto<T> => {
-    if (!pageOptions) {
-      pageOptions = new PageOptionsDto();
-    }
-    let skippedEntities = 0;
-    const result = [];
-    for (let i = 0; i < this.#entities.length; i++) {
-      if (
-        this.#entities[i] != undefined &&
-        skippedEntities >= pageOptions.skip
-      ) {
-        result.push(this.#entities[i]);
-        if (result.length >= pageOptions.take) break;
-      } else skippedEntities++;
-    }
-    const pageMetaDto = new PageMetaDto(pageOptions, this.#itemNumber);
-    return new PageDto(result, pageMetaDto);
-  });
 }

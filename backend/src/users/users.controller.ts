@@ -6,6 +6,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -22,7 +23,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
   UserDto,
@@ -31,6 +31,7 @@ import {
   UpdateUserDto,
   QueryUserDto,
 } from '@dtos/users';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -78,11 +79,13 @@ export class UsersController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found' })
   async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
-    const user: ResponseUserDto = await this.usersService.findOne(+id);
-    if (user === undefined) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    try {
+      return await this.usersService.findOne(+id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException('Not Found');
+      }
     }
-    return user;
   }
 
   @ApiBearerAuth()

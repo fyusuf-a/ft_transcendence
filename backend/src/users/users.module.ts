@@ -2,22 +2,17 @@ import { BadRequestException, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import UserRepository from './repository/user.repository';
-import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
-import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
+import { User } from './entities/user.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      UserRepository,
-      FriendshipRepository,
-      BlockRepository,
-      AchievementsLogRepository,
-    ]),
+    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog]),
     ConfigModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],

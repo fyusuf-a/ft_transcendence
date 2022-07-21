@@ -7,14 +7,14 @@ import {
   UpdateMembershipDto,
   ResponseMembershipDto,
 } from '@dtos/memberships';
-import UserRepository from 'src/users/repository/user.repository';
-import ChannelRepository from 'src/channels/repository/channel.repository';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
-import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
+import { User } from 'src/users/entities/user.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -30,19 +30,19 @@ describe('MembershipsController', () => {
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(UserRepository),
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(ChannelRepository),
+          provide: getRepositoryToken(Channel),
           useValue: jest.fn(),
         },
         {
-          provide: FriendshipRepository,
+          provide: Friendship,
           useValue: jest.fn(),
         },
         {
-          provide: BlockRepository,
+          provide: Block,
           useValue: jest.fn(),
         },
       ],

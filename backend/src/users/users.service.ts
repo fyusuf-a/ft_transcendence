@@ -1,42 +1,47 @@
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { createReadStream } from 'fs';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
-import UserRepository from './repository/user.repository';
 import * as fs from 'fs';
 import { ResponseFriendshipDto, FriendshipTypeEnum } from '@dtos/friendships';
-import { FriendshipRepository } from 'src/relationships/friendships/repositories/friendship.repository';
 import { ResponseBlockDto, BlockTypeEnum } from '@dtos/blocks';
-import { BlockRepository } from 'src/relationships/blocks/repositories/blocks.repository';
 import { AchievementsLogDto } from '@dtos/achievements-log';
-import { AchievementsLogRepository } from 'src/achievements-log/repository/achievements-log.repository';
+import { Block } from 'src/relationships/entities/block.entity';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { paginate } from 'src/common/paginate';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserRepository)
-    private usersRepository: UserRepository,
-    @InjectRepository(FriendshipRepository)
-    private friendshipRepository: FriendshipRepository,
-    @InjectRepository(BlockRepository)
-    private blockRepository: BlockRepository,
-    @InjectRepository(AchievementsLogRepository)
-    private achievementsLogRepository: AchievementsLogRepository,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
+    @InjectRepository(Friendship)
+    private friendshipRepository: Repository<Friendship>,
+    @InjectRepository(Block)
+    private blockRepository: Repository<Block>,
+    @InjectRepository(AchievementsLog)
+    private achievementsLogRepository: Repository<AchievementsLog>,
   ) {}
 
   async findAll(
     query?: QueryUserDto,
     pageOptions: PageOptionsDto = new PageOptionsDto(),
   ): Promise<PageDto<User>> {
-    return this.usersRepository.findAllPaginated(query, pageOptions);
+    const orderOptions = { id: pageOptions.order };
+    return await paginate(
+      this.usersRepository,
+      query,
+      orderOptions,
+      pageOptions,
+    );
   }
 
   findOne(id: number): Promise<User> {
-    return this.usersRepository.findOne(id);
+    return this.usersRepository.findOneByOrFail({ id: id });
   }
 
   findByName(username: string): Promise<User> {
@@ -62,7 +67,7 @@ export class UsersService {
   }
 
   async getAvatar(id: number) {
-    const user: User = await this.usersRepository.findOne(id);
+    const user: User = await this.usersRepository.findOneBy({ id: id });
     if (user === undefined) {
       throw new EntityDoesNotExistError(`User #${id}`);
     }
@@ -72,7 +77,7 @@ export class UsersService {
     }
     const splitPath = filepath.split('.');
     const ext = splitPath[splitPath.length - 1];
-    const stream = createReadStream(filepath);
+    const stream = fs.createReadStream(filepath);
     return { fileStream: new StreamableFile(stream), ext: ext };
   }
 
