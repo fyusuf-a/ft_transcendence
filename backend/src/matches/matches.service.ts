@@ -9,7 +9,6 @@ import {
   ResponseMatchDto,
   MatchStatusType,
 } from '@dtos/matches';
-import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import UserRepository from 'src/users/repository/user.repository';
 import MatchRepository from './repository/match.repository';
 import { Match } from './entities/match.entity';
@@ -40,16 +39,12 @@ export class MatchesService {
 
   async create(matchDto: CreateMatchDto): Promise<ResponseMatchDto> {
     const match: Match = new Match();
-    match.home = await this.userRepository.findOne(matchDto.homeId);
-    if (match.home === undefined) {
-      throw new EntityDoesNotExistError(`User #${matchDto.homeId} not found`);
-    }
+    match.home = await this.userRepository.findOneOrFail(matchDto.homeId);
     match.homeId = match.home.id;
-    match.away = await this.userRepository.findOne(matchDto.awayId);
-    if (match.away === undefined) {
-      throw new EntityDoesNotExistError(`User #${matchDto.awayId} not found`);
-    }
+
+    match.away = await this.userRepository.findOneOrFail(matchDto.awayId);
     match.awayId = match.away.id;
+
     match.status = MatchStatusType.IN_PROGRESS;
     if (match.homeId === match.awayId) {
       throw new RangeError('Home and away cannot be the same');
