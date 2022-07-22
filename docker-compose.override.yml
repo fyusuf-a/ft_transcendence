@@ -6,7 +6,7 @@ services:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     image: fyusufa/ft_transcendence_backend
     build:
-      context: ./backend
+      context: .
       args:
           NODE_IMAGE: ${NODE_IMAGE}
           BACKEND_PORT: ${BACKEND_PORT}
