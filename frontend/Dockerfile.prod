@@ -1,13 +1,20 @@
 ARG NODE_IMAGE=lts-alpine
 ARG NGINX_IMAGE=stable-alpine
+
 FROM node:$NODE_IMAGE as pre-production
 WORKDIR /app
 COPY ./frontend/package*.json ./
 RUN npm install
 COPY ./frontend/ ./
+
 RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos/
-RUN npm run build
+
+ARG BACKEND_PORT=8080
+ARG BACKEND_HOST=localhost
+RUN export VUE_APP_BACKEND_HOST=$BACKEND_HOST \
+		VUE_APP_BACKEND_PORT=$BACKEND_PORT && \
+	npm run build
 
 FROM nginx:$NGINX_IMAGE
 COPY --from=pre-production /app/dist /usr/share/nginx/html

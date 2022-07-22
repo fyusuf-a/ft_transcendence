@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/${BACKEND_DOCKERFILE}
+      dockerfile: backend/${FRONTEND_DOCKERFILE}
       args:
           NODE_IMAGE: ${NODE_IMAGE}
           BACKEND_PORT: ${BACKEND_PORT}
@@ -22,6 +22,8 @@ services:
       args:
           NODE_IMAGE: ${NODE_IMAGE}
           NGINX_IMAGE: ${NGINX_IMAGE}
+          BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
+          BACKEND_PORT: ${BACKEND_PORT}
     environment:
       VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
       VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}

@@ -45,8 +45,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, _, next) => {
+  const disableAuthentification = process.env.VUE_APP_DISABLE_AUTHENTICATION;
   if (
-    process.env.VUE_APP_DISABLE_AUTHENTICATION === 'false' &&
+    // In production, disableAuthentification is not defined
+    (disableAuthentification ? disableAuthentification === 'false' : true) &&
     to.name !== 'Login' &&
     !store.state.isAuthenticated
   )

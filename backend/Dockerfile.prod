@@ -2,15 +2,20 @@ ARG NODE_IMAGE=lts-alpine
 FROM node:$NODE_IMAGE
 WORKDIR /app
 EXPOSE 3000
-RUN apk update
-RUN apk upgrade
-RUN apk add bash
+RUN apk update && apk upgrade
 
 COPY ./backend/package*.json ./
 RUN npm install
-COPY ./backend .
+COPY ./backend/ .
+RUN npm install
+
 RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos
+
+COPY .env.example .env
+RUN export $(cat .env | grep -v '#' | xargs) && \
+	npm run build && \
+	rm .env
 RUN npm run build
 
 CMD npm run start:prod

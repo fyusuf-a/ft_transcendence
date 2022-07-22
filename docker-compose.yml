@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:alpine
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -17,8 +17,8 @@ services:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     image: fyusufa/ft_transcendence_backend
     volumes:
-      - ./backend:/app
-      - ./dtos:/app/src/dtos
+      - ./backend:/tmp/app
+      - ./dtos:/tmp/app/src/dtos
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
