@@ -20,7 +20,7 @@ jobs:
         continue-on-error: true
         # docker-compose.prod.yml is not checked for a diff because it is not used in the CI, only in a deployment
         run: |
-          git diff ${{ github.event.before }} --exit-code docker-compose.yml docker-compose.override.yml > /dev/null
+          git diff ${{ github.event.before }} --exit-code docker-compose.yml > /dev/null
       - name: Check for diff in backend
         id: diff-backend
         continue-on-error: true
@@ -61,8 +61,7 @@ jobs:
           restore-keys: frontend-image-
       - name: Build containers
         run: |
-          COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml docker-compose config > docker-compose.bake.yml
-          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.bake.yml frontend --load
+          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.yml frontend --load
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
@@ -97,8 +96,7 @@ jobs:
           restore-keys: backend-image-
       - name: Build containers
         run: |
-          COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml docker-compose config > docker-compose.bake.yml
-          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.bake.yml backend --load
+          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.yml backend --load
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache

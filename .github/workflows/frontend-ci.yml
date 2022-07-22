@@ -24,7 +24,7 @@ jobs:
         continue-on-error: true
         # docker-compose.prod.yml is not checked for a diff because it is not used in the CI, only in a deployment
         run: |
-          git diff origin/master --exit-code frontend docker-compose.yml docker-compose.override.yml > /dev/null
+          git diff origin/master --exit-code frontend docker-compose.yml > /dev/null
 
   build:
     runs-on: ubuntu-latest
@@ -61,11 +61,8 @@ jobs:
           key: docker-images-images-test${{ github.sha }}
           restore-keys: docker-images-test-
       - name: Build Containers
-        # a bug recently fixed in docker buildx does not let one use multiple docker-compose files, see https://github.com/docker/buildx/issues/1172
-        #run: docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.yml --file docker-compose.override.yml --load
         run: |
-          COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml docker-compose config > docker-compose.bake.yml
-          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.bake.yml --load
+          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.yml --load
       # TODO
       #- name: E2E Test
         #run: |

@@ -1,12 +1,30 @@
 version: '3.4'
 
 services:
-  backend:
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
     environment:
-      WATCH: 0
-      DISABLE_AUTHENTICATION: 'false'
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+    volumes:
+      - pgdb-data:/var/lib/postgresql/data
+
+  backend:
+    image: fyusufa/ft_transcendence_backend
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    restart: unless-stopped
+    depends_on:
+      - db
 
   frontend:
+    image: fyusufa/ft_transcendence_frontend
     ports:
       - 80:80
-    image: fyusufa/ft_transcendence_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+volumes:
+  pgdb-data:
