@@ -59,6 +59,13 @@ export class UsersService {
     });
   }
 
+  // Find by 42 pseudo
+  findByMarvinId(marvinId: string): Promise<User> {
+    return this.usersRepository.findOneOrFail({
+      where: { identity: marvinId },
+    });
+  }
+
   create(userDto: CreateUserDto): Promise<User> {
     return this.usersRepository.save(userDto);
   }

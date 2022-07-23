@@ -37,6 +37,11 @@ const routes = [
     path: '/login',
     component: () => import('../views/LoginView.vue'),
   },
+  {
+    name: 'Create account',
+    path: '/create-account',
+    component: () => import('../views/CreateAccountView.vue'),
+  },
 ];
 
 const router = createRouter({
@@ -44,16 +49,22 @@ const router = createRouter({
   routes,
 });
 
+const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
+
 router.beforeEach((to, _, next) => {
-  const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
   if (
-    // In production, disableAuthentification is not defined
-    (disableAuthentification ? disableAuthentification === 'false' : true) &&
-    to.name !== 'Login' &&
-    !store.state.isAuthenticated
-  )
+    to.name === 'Login' ||
+    to.name === 'Login callback' ||
+    to.name === 'Create account' ||
+    disableAuthentification
+  ) {
+    next();
+  } else if (store.getters.userIsAuthenticated) {
+    if (!store.getters.userIsCreated) next({ name: 'Create account' });
+    else next();
+  } else {
     next({ name: 'Login' });
-  else next();
+  }
 });
 
 export default router;
