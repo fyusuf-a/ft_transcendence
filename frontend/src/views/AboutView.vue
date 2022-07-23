@@ -34,7 +34,7 @@
       <h2>Our team</h2>
       <br />
       <v-container class="grey lighten-5">
-        <team-card :members="member" />
+        <team-card />
       </v-container>
     </div>
   </v-container>
