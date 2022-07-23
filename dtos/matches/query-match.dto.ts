@@ -29,5 +29,5 @@ export class QueryMatchDto {
   })
   @IsOptional()
   @IsEnum(MatchStatusType)
-  role?: MatchStatusType;
+  status?: MatchStatusType;
 }
