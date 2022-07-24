@@ -24,7 +24,7 @@ jobs:
         continue-on-error: true
         # docker-compose.prod.yml is not checked for a diff because it is not used in the CI, only in a deployment
         run: |
-          git diff origin/master --exit-code backend docker-compose.yml > /dev/null
+          git diff origin/master --exit-code backend dtos docker-compose.yml > /dev/null
 
   build:
     runs-on: ubuntu-latest

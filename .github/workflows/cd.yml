@@ -25,12 +25,12 @@ jobs:
         id: diff-backend
         continue-on-error: true
         run: |
-          git diff ${{ github.event.before }} --exit-code backend > /dev/null
+          git diff ${{ github.event.before }} --exit-code backend dtos > /dev/null
       - name: Check for diff in frontend
         id: diff-frontend
         continue-on-error: true
         run: |
-          git diff ${{ github.event.before }} --exit-code frontend > /dev/null
+          git diff ${{ github.event.before }} --exit-code frontend dtos > /dev/null
   build-and-push-frontend:
     runs-on: ubuntu-latest
     needs: which-image-to-build
