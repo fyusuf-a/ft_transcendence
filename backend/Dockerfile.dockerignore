@@ -1,0 +1,4 @@
+frontend
+backend/dist
+backend/node_modules
+backend/dtos

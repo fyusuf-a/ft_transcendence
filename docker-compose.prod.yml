@@ -1,19 +1,30 @@
 version: '3.4'
 
 services:
+  db:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+    volumes:
+      - pgdb-data:/var/lib/postgresql/data
+
   backend:
+    image: fyusufa/ft_transcendence_backend
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
-    image: fyusufa/ft_transcendence_backend
-    environment:
-      WATCH: 0
-      # TODO: put 'false' when authentification works
-      DISABLE_AUTHENTICATION: 'true'
+    restart: unless-stopped
+    depends_on:
+      - db
 
   frontend:
+    image: fyusufa/ft_transcendence_frontend
     ports:
       - 80:80
-    image: fyusufa/ft_transcendence_frontend
-    environment:
-      # TODO: put false when authentification works
-      VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+volumes:
+  pgdb-data:

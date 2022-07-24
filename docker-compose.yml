@@ -2,39 +2,73 @@ version: '3.4'
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:alpine
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
     volumes:
       - pgdb-data:/var/lib/postgresql/data
       - ./sql/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
 
   backend:
-    working_dir: /app
+    image: fyusufa/ft_transcendence_backend
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
     volumes:
-      - ./backend:/app
-      - ./dtos:/app/src/dtos
+      - ./backend:/tmp/app
+      - ./dtos:/tmp/app/src/dtos
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      JWT_SECRET_KEY: ${BACKEND_JWT_SECRET_KEY}
+      WATCH: ${BACKEND_DEBUG}
+      DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+    build:
+      context: .
+      dockerfile: backend/${FRONTEND_DOCKERFILE}
+      args:
+          NODE_IMAGE: ${NODE_IMAGE}
+          BACKEND_PORT: ${BACKEND_PORT}
+    restart: unless-stopped
     depends_on:
       - db
 
   frontend:
-    environment:
-      VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
-      VUE_APP_BACKEND_PORT: ${BACKEND_PORT}
+    image: fyusufa/ft_transcendence_frontend
+    profiles: ["frontend"]
+    ports:
+      - 8000:80
     volumes:
       - ./frontend:/app
       - ./dtos:/app/src/dtos
+    environment:
+      VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+      VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
+      VUE_APP_BACKEND_PORT: ${BACKEND_PORT}
+    build:
+      context: .
+      dockerfile: frontend/${FRONTEND_DOCKERFILE}
+      args:
+          NODE_IMAGE: ${NODE_IMAGE}
+          NGINX_IMAGE: ${NGINX_IMAGE}
+          BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
+          BACKEND_PORT: ${BACKEND_PORT}
+    restart: unless-stopped
     depends_on:
       - backend
+
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    ports:
+      - 8888:8080
+    depends_on:
+      - db
+    profiles: ["debug"]
 
 volumes:
   pgdb-data:

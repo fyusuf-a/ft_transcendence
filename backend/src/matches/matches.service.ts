@@ -36,7 +36,7 @@ export class MatchesService {
     const findOptionsWhere: FindOptionsWhere<Match> = {
       home: query?.homeId ? { id: +query.homeId } : {},
       away: query?.awayId ? { id: +query.awayId } : {},
-      status: query?.role,
+      status: query?.status,
     };
     const response = await paginate(
       this.matchRepository,
