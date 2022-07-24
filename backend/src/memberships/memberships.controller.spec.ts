@@ -1,7 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import {
   CreateMembershipDto,
   UpdateMembershipDto,
@@ -10,7 +9,7 @@ import {
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
@@ -104,7 +103,7 @@ describe('MembershipsController', () => {
       createMembershipDto.userId = 0;
       createMembershipDto.role = MembershipRoleType.PARTICIPANT;
       jest.spyOn(service, 'create').mockImplementation(async () => {
-        throw new EntityDoesNotExistError('error');
+        throw new Error('error');
       });
       expect(controller.create(createMembershipDto)).rejects.toThrow(
         BadRequestException,

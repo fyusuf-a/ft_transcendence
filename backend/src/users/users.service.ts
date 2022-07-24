@@ -1,7 +1,6 @@
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
@@ -67,13 +66,10 @@ export class UsersService {
   }
 
   async getAvatar(id: number) {
-    const user: User = await this.usersRepository.findOneBy({ id: id });
-    if (user === undefined) {
-      throw new EntityDoesNotExistError(`User #${id}`);
-    }
+    const user: User = await this.usersRepository.findOneByOrFail({ id: id });
     const filepath = user.avatar;
     if (filepath === null || !fs.existsSync(filepath)) {
-      throw new EntityDoesNotExistError('Avatar');
+      throw new Error('Given avatar cannot be found.');
     }
     const splitPath = filepath.split('.');
     const ext = splitPath[splitPath.length - 1];

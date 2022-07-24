@@ -17,8 +17,7 @@ import {
   QueryBlockDto,
 } from '@dtos/blocks';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 
 @ApiBearerAuth()
 @ApiTags('blocks')
@@ -33,7 +32,7 @@ export class BlocksController {
     try {
       return await this.blocksService.create(createblockDto);
     } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
+      if (error instanceof EntityNotFoundError) {
         throw new BadRequestException(error.message);
       } else {
         throw error;

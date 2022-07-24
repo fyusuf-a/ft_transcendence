@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import {
   CreateBlockDto,
   QueryBlockDto,
@@ -34,20 +33,20 @@ export class BlocksService {
     }
 
     const block: Block = new Block();
-    block.source = await this.userRepository.findOneBy({
+    block.source = await this.userRepository.findOneByOrFail({
       id: createBlockDto.sourceId,
     });
     block.sourceId = createBlockDto.sourceId;
-    if (block.source === undefined || block.source.id !== block.sourceId) {
-      throw new EntityDoesNotExistError(`User #${createBlockDto.sourceId}`);
+    if (block.source.id !== block.sourceId) {
+      throw new Error("User ids do not match.");
     }
 
-    block.target = await this.userRepository.findOneBy({
+    block.target = await this.userRepository.findOneByOrFail({
       id: createBlockDto.targetId,
     });
     block.targetId = createBlockDto.targetId;
-    if (block.target === undefined || block.target.id !== block.targetId) {
-      throw new EntityDoesNotExistError(`User #${createBlockDto.targetId}`);
+    if (block.target.id !== block.targetId) {
+      throw new Error("User ids do not match.");
     }
     return await this.blockRepository.save(block);
   }

@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { ResponseFriendshipDto, UpdateFriendshipDto } from '@dtos/friendships';
 import { Friendship } from '../entities/friendship.entity';

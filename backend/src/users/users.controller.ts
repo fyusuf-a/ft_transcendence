@@ -36,7 +36,6 @@ import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
 import { ResponseFriendshipDto } from '@dtos/friendships';
 import { ResponseBlockDto } from '@dtos/blocks';
@@ -135,7 +134,7 @@ export class UsersController {
       return file.fileStream;
     } catch (error) {
       if (
-        error instanceof EntityDoesNotExistError &&
+        error instanceof EntityNotFoundError &&
         error.message === 'Avatar does not exist'
       ) {
         throw new HttpException(error.message, HttpStatus.NO_CONTENT);

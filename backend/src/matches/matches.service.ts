@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
   DeleteResult,
+  FindOptionsWhere,
   Repository,
   UpdateResult,
 } from 'typeorm';
@@ -46,15 +47,15 @@ export class MatchesService {
   }
 
   findOne(id: number): Promise<ResponseMatchDto> {
-    return this.matchRepository.findOneBy({ id: id });
+    return this.matchRepository.findOneByOrFail({ id: id });
   }
 
   async create(matchDto: CreateMatchDto): Promise<ResponseMatchDto> {
     const match: Match = new Match();
-    match.home = await this.userRepository.findOneByOrFail({id: matchDto.homeId});
+    match.home = await this.usersRepository.findOneByOrFail({id: matchDto.homeId});
     match.homeId = match.home.id;
 
-    match.away = await this.userRepository.findOneByOrFail({id: matchDto.awayId});
+    match.away = await this.usersRepository.findOneByOrFail({id: matchDto.awayId});
     match.awayId = match.away.id;
 
     match.status = MatchStatusType.IN_PROGRESS;

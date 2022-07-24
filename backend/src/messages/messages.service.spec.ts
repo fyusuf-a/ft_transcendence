@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Channel } from 'src/channels/entities/channel.entity';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { DeleteResult } from 'typeorm';
 import { MessagesService } from './messages.service';
@@ -54,7 +53,7 @@ describe('MessagesService', () => {
           senderId: 1,
           content: 'Hi',
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow();
     });
   });
 
@@ -66,7 +65,7 @@ describe('MessagesService', () => {
           senderId: userNumber + 1,
           content: 'Hi',
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow();
     });
   });
 

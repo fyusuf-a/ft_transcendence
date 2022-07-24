@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import {
   CreateMessageDto,
   QueryMessageDto,
@@ -49,24 +48,18 @@ export class MessagesService {
     const message: Message = new Message();
     message.content = messageDto.content;
     message.channelId = messageDto.channelId;
-    message.channel = await this.channelsRepository.findOneBy({
+    message.channel = await this.channelsRepository.findOneByOrFail({
       id: message.channelId,
     });
-    if (
-      message.channel === undefined ||
-      message.channel.id !== message.channelId
-    ) {
-      throw new EntityDoesNotExistError(`Channel #${messageDto.channelId}`);
+    if (message.channel.id !== message.channelId) {
+      throw new Error("Channel ids do not match.");
     }
     message.senderId = messageDto.senderId;
-    message.sender = await this.usersRepository.findOneBy({
+    message.sender = await this.usersRepository.findOneByOrFail({
       id: message.senderId,
     });
-    if (
-      message.sender === undefined ||
-      message.sender.id !== message.senderId
-    ) {
-      throw new EntityDoesNotExistError(`User #${messageDto.senderId}`);
+    if (message.sender.id !== message.senderId) {
+      throw new Error("Channel ids do not match.");
     }
     return await this.messagesRepository.save(message);
   }

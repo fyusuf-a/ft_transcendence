@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -56,7 +55,7 @@ describe('BlocksService', () => {
         .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2));
 
-      expect(tryCreate()).rejects.toThrow(EntityDoesNotExistError);
+      expect(tryCreate()).rejects.toThrow();
     });
 
     it('should throw without valid targetId', async () => {
@@ -73,7 +72,7 @@ describe('BlocksService', () => {
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined));
 
-      expect(tryCreate()).rejects.toThrow(EntityDoesNotExistError);
+      expect(tryCreate()).rejects.toThrow();
     });
 
     it('should return Block with valid users', async () => {

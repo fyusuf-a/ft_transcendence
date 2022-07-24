@@ -18,7 +18,6 @@ import {
   QueryMembershipDto,
 } from '@dtos/memberships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')
@@ -33,7 +32,7 @@ export class MembershipsController {
     try {
       return await this.membershipsService.create(createMembershipDto);
     } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
+      if (error) {
         throw new BadRequestException(error.message);
       } else {
         throw error;

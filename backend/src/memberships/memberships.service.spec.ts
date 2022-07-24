@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Channel } from 'src/channels/entities/channel.entity';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { UpdateMembershipDto } from '@dtos/memberships';
@@ -61,7 +60,7 @@ describe('MembershipsService', () => {
           userId: 10,
           role: MembershipRoleType.PARTICIPANT,
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow();
     });
 
     it('throws without user', async () => {
@@ -77,7 +76,7 @@ describe('MembershipsService', () => {
           userId: 10,
           role: MembershipRoleType.PARTICIPANT,
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow();
     });
 
     it('returns a ResponseMembership', async () => {

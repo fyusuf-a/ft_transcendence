@@ -17,8 +17,7 @@ import {
   ResponseFriendshipDto,
 } from '@dtos/friendships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { PageDto } from '@dtos/pages';
 
 @ApiBearerAuth()
@@ -34,7 +33,7 @@ export class FriendshipsController {
     try {
       return await this.friendshipsService.create(createfriendshipDto);
     } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
+      if (error instanceof EntityNotFoundError) {
         throw new BadRequestException(error.message);
       } else {
         throw error;

@@ -1,6 +1,6 @@
-import { DeleteResult, UpdateResult } from 'typeorm';
-/*import { Repository } from 'typeorm';
-
+import { EntityTarget, DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
+/*
 type MyMockRepository<T = any> = Partial<
   Record<keyof Repository<T>, jest.Mock>
 >;*/
@@ -30,15 +30,22 @@ export class MockRepository<T extends Identifiable> {
       this.addEntity(entityFactory());
     }
   }
+  
   findOne = jest.fn((id: number): undefined | T => {
     return this.#entities[id];
   });
   findOneBy = jest.fn((query: { id: number }): undefined | T => {
     return this.#entities[query.id];
   });
+
   findOneByOrFail = jest.fn((query: { id: number }): undefined | T => {
-    return this.#entities[query.id];
+    let target : EntityTarget<T>;
+    if (this.#entities[query.id] != undefined)
+      return this.#entities[query.id];
+    else
+      throw ('EntityNotFound');
   });
+
   find = jest.fn((): T[] => this.#entities.filter((x) => x !== undefined));
   findAndCount = jest.fn((): [T[], number] => {
     const returnEntities = this.find();

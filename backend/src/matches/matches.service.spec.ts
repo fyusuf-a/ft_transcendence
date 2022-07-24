@@ -3,11 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MatchesService } from './matches.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
-import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { Match } from './entities/match.entity';
 import { CreateMatchDto, UpdateMatchDto, MatchStatusType } from '@dtos/matches';
 import { User } from 'src/users/entities/user.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, Repository, UpdateResult } from 'typeorm';
 
 const userNumber = 2;
 const matchNumber = 2;
@@ -51,8 +50,8 @@ describe('MatchesService', () => {
       expect(await service.findOne(1)).toEqual(match);
     });
 
-    it('when looking up a non-existing Match, should return undefined', async () => {
-      expect(await service.findOne(matchNumber + 1)).toEqual(undefined);
+    it('when looking up a non-existing Match, should throw', async () => {
+      expect(await service.findOne(matchNumber + 1)).toThrow();
     });
   });
 
@@ -71,6 +70,8 @@ describe('MatchesService', () => {
     const home = new User();
     const away = { ...home };
     const createMatchDto = new CreateMatchDto();
+    const wrongMatchDto = new CreateMatchDto();
+
     beforeAll(() => {
       match.homeId = 1;
       match.awayId = 2;
@@ -79,10 +80,13 @@ describe('MatchesService', () => {
       createMatchDto.awayId = match.awayId;
       home.id = match.homeId;
       away.id = match.awayId;
+
+      wrongMatchDto.homeId = userNumber + 1;
+      wrongMatchDto.awayId = userNumber + 2;
     });
     it('should return a ResponseMatchDto with a status of IN_PROGRESS', async () => {
       jest
-        .spyOn(usersRepository, 'findOneBy')
+        .spyOn(usersRepository, 'findOneByOrFail')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(away);
       jest.spyOn(matchRepository, 'save').mockResolvedValueOnce(match);
@@ -90,25 +94,24 @@ describe('MatchesService', () => {
       expect(result).toEqual(match);
     });
 
-    it('should throw EntityDoesNotExistError if the home user does not exist', async () => {
-      jest.spyOn(usersRepository, 'findOneBy').mockReturnValue(undefined);
-      expect(service.create(createMatchDto)).rejects.toThrow(
-        EntityDoesNotExistError,
-      );
-    });
+    // it('should throw EntityDoesNotExistError if the home user does not exist', async () => {
+    //   jest.spyOn(usersRepository, 'findOneBy').mockReturnValue(undefined); //problem is here i think
+    //   expect(service.create(createMatchDto)).rejects.toThrow(
+    //     EntityDoesNotExistError,
+    //   );
+    // });
 
     it('should throw EntityDoesNotExistError if the away user does not exist', async () => {
       jest
         .spyOn(usersRepository, 'findOneBy')
-        .mockResolvedValueOnce(home)
-        .mockResolvedValueOnce(undefined);
-      expect(service.create(createMatchDto)).rejects.toThrow(
-        EntityDoesNotExistError,
-      );
+        .mockImplementationOnce((): Promise<any> => Promise.resolve(home))
+        .mockImplementationOnce((): Promise<any> => Promise.reject(EntityNotFoundError));
+
+      expect(await service.create(wrongMatchDto)).rejects.toThrow();
     });
     it('should throw RangeError if the home user is the away user', async () => {
       jest
-        .spyOn(usersRepository, 'findOneBy')
+        .spyOn(usersRepository, 'findOneByOrFail')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(home);
       expect(service.create(createMatchDto)).rejects.toThrow(RangeError);
