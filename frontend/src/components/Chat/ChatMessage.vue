@@ -19,7 +19,9 @@
       <v-list-item-title
         v-text="`${sender} -- ${formattedDate}`"
       ></v-list-item-title>
-      <v-list-item-subtitle v-text="content"></v-list-item-subtitle>
+      <v-list-item-subtitle>
+        {{ content }}
+      </v-list-item-subtitle>
     </v-list-item-content>
   </v-list-item>
 </template>
