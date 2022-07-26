@@ -268,9 +268,14 @@ export default Vue.extend({
     },
   },
   async created() {
-    this.socket.emit('chat-auth', { authorization: this.$store.getters.token });
+    await this.socket.emit('chat-auth', { authorization: this.$store.getters.token }, (res : MembershipDto[]) => 
+    {
+      console.log(res);
+      this.memberships = res;
+    });
     await this.getAllChannels();
     await this.fetchMemberships();
+    console.log("memberships= " + this.memberships);
     console.log('Trying to match membership to channel');
     for (let membership of this.memberships) {
       console.log('Checking membership' + membership);
@@ -278,7 +283,7 @@ export default Vue.extend({
       if (channel) {
         console.log('Matched membership to channel');
         this.subscribedChannels.push(channel);
-        this.joinChannelById(channel.id);
+        //this.joinChannelById(channel.id);
       } else {
         console.log("Couldn't match membership to channel");
         // try to get channel and try again?

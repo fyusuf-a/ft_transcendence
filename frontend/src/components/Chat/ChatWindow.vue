@@ -105,6 +105,9 @@ export default Vue.extend({
       console.log(`Server: ${response}`);
     },
     sendMessage() {
+      console.log("socket id" + this.socket.id);
+      console.log("channel id :" + this.channel.id);
+      console.log("content" + this.messageContent);
       this.socket.emit('chat-send', {
         channel: this.channel.id,
         message: this.messageContent,

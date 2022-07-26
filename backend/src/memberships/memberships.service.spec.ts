@@ -1,9 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Channel } from 'src/channels/entities/channel.entity';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeleteResult,
+  EntityNotFoundError,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { UpdateMembershipDto } from '@dtos/memberships';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsService } from './memberships.service';
@@ -53,31 +57,33 @@ describe('MembershipsService', () => {
   describe('create()', () => {
     it('throws without channel', async () => {
       jest
-        .spyOn(channelsRepository, 'findOneBy')
-        .mockResolvedValueOnce(undefined);
+        .spyOn(channelsRepository, 'findOneByOrFail')
+        .mockRejectedValueOnce(new EntityNotFoundError('', ''));
       return expect(
         service.create({
           channelId: 5,
           userId: 10,
           role: MembershipRoleType.PARTICIPANT,
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow(EntityNotFoundError);
     });
 
     it('throws without user', async () => {
       const channel: Channel = new Channel();
       channel.id = 5;
       jest
-        .spyOn(channelsRepository, 'findOneBy')
+        .spyOn(channelsRepository, 'findOneByOrFail')
         .mockResolvedValueOnce(channel);
-      jest.spyOn(usersRepository, 'findOneBy').mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(usersRepository, 'findOneByOrFail')
+        .mockRejectedValueOnce(new EntityNotFoundError('', ''));
       return expect(
         service.create({
           channelId: 5,
           userId: 10,
           role: MembershipRoleType.PARTICIPANT,
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow(EntityNotFoundError);
     });
 
     it('returns a ResponseMembership', async () => {

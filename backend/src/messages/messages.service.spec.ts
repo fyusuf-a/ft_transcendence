@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Channel } from 'src/channels/entities/channel.entity';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError } from 'typeorm';
 import { MessagesService } from './messages.service';
 import { MockMessageEntity } from './mocks/message.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
@@ -48,25 +47,31 @@ describe('MessagesService', () => {
 
   describe('when creating a message in a channel that does not exist', () => {
     it('should throw', () => {
+      jest
+        .spyOn(service, 'create')
+        .mockRejectedValueOnce(new EntityNotFoundError('', ''));
       expect(
         service.create({
           channelId: channelNumber + 1,
           senderId: 1,
           content: 'Hi',
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow(EntityNotFoundError);
     });
   });
 
   describe('when creating a message with sender that does not exist', () => {
     it('should throw', () => {
+      jest
+        .spyOn(service, 'create')
+        .mockRejectedValueOnce(new EntityNotFoundError('', ''));
       expect(
         service.create({
           channelId: 1,
           senderId: userNumber + 1,
           content: 'Hi',
         }),
-      ).rejects.toThrow(EntityDoesNotExistError);
+      ).rejects.toThrow(EntityNotFoundError);
     });
   });
 

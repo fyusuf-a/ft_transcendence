@@ -8,6 +8,8 @@ import { MockRepository } from 'src/common/mocks/repository.mock';
 import { Channel, ChannelType } from './entities/channel.entity';
 import { User } from 'src/users/entities/user.entity';
 import { PageDto } from '@dtos/pages';
+import { Membership } from 'src/memberships/entities/membership.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
 
 const channelNumber = 2;
 
@@ -18,6 +20,7 @@ describe('ChannelsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ChannelsService,
+        MembershipsService,
         {
           provide: getRepositoryToken(Channel),
           useValue: new MockRepository<MockChannelEntity>(
@@ -28,6 +31,10 @@ describe('ChannelsService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: new MockRepository(() => new User()),
+        },
+        {
+          provide: getRepositoryToken(Membership),
+          useValue: new MockRepository(() => new Membership()),
         },
       ],
     }).compile();
