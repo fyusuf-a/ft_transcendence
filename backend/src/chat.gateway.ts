@@ -124,7 +124,7 @@ export class ChatGateway
       this.authenticatedSockets.set(client.id, user);
       user.memberships.forEach(
         async (membership) =>
-          await this.handleJoin(client, { channel: membership.channel.name }),
+          await this.handleJoin(client, { channel: membership.channel.id.toString() }),
       );
       return 'SUCCESS';
     } catch (err) {
