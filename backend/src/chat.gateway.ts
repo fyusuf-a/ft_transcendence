@@ -122,6 +122,10 @@ export class ChatGateway
         throw new WsException('Invalid Token');
       }
       this.authenticatedSockets.set(client.id, user);
+      user.memberships.forEach(
+        async (membership) =>
+          await this.handleJoin(client, { channel: membership.channel.name }),
+      );
       return 'SUCCESS';
     } catch (err) {
       this.authenticatedSockets.delete(client.id);
