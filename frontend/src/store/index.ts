@@ -9,16 +9,22 @@ const vuexPersister = new VuexPersister({
   overwrite: true,
 });
 
+interface Cache {
+  avatars: Map<number, string>;
+}
+
 interface State {
   user: UserDto;
   avatar: string | undefined;
   token: string | undefined;
+  cache: Cache | undefined;
 }
 
 const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
+  cache: undefined,
 };
 
 export default createStore({
@@ -59,9 +65,21 @@ export default createStore({
         ...response.data,
       };
     },
+    async getAvatarById(context, id: string) {
+      if (id) {
+        if (context.state.cache?.avatars.has(+id)) {
+          return context.state.cache?.avatars.get(+id);
+        }
+        return await fetchAvatar(id);
+      }
+    },
     async getAvatar(context) {
       if (context?.state?.user?.id) {
-        context.state.avatar = await fetchAvatar(context.state.user.id);
+        if (context.state.cache?.avatars.has(+context?.state?.user?.id)) {
+          context.state.avatar = context.state.cache?.avatars.get(
+            +context?.state?.user?.id,
+          );
+        }
       }
     },
   },
