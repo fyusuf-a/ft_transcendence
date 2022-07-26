@@ -40,7 +40,9 @@ export default new Vuex.Store({
   },
   actions: {
     async getAvatar(context) {
-      context.state.avatar = await fetchAvatar(context?.state?.id);
+      if (context?.state?.id) {
+        context.state.avatar = await fetchAvatar(context.state.id);
+      }
     },
   },
   modules: {},
