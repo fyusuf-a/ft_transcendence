@@ -13,6 +13,9 @@ import { Channel, ChannelType } from './entities/channel.entity';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
+import { MembershipsService } from 'src/memberships/memberships.service';
+import { MembershipRoleType } from 'src/dtos/memberships';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 async function hashPassword(rawPassword: string): Promise<string> {
   return await bcrypt.hash(rawPassword, 10);
@@ -25,10 +28,19 @@ export class ChannelsService {
     private channelsRepository: Repository<Channel>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Membership)
+    private membershipsRepository: Repository<Membership>,
+    private membershipsService: MembershipsService,
   ) {}
 
-  async create(createChannelDto: CreateChannelDto) {
+  async create(
+    createChannelDto: CreateChannelDto,
+  ): Promise<ResponseChannelDto> {
     const channel: Channel = new Channel();
+    let ret: ResponseChannelDto;
+    let role: MembershipRoleType = MembershipRoleType.PARTICIPANT;
+    const userId: number = +createChannelDto.userId;
+
     channel.type = createChannelDto.type;
     if (channel.type == ChannelType.DIRECT)
       await this.checkDirectUsers(createChannelDto, channel);
@@ -40,9 +52,19 @@ export class ChannelsService {
       } else {
         channel.password = undefined;
       }
+      await this.usersRepository.findOneByOrFail({
+        id: +createChannelDto.userId,
+      });
       channel.name = createChannelDto.name;
+      ret = await this.channelsRepository.save(channel);
+      role = MembershipRoleType.OWNER;
     }
-    return await this.channelsRepository.save(channel);
+    this.membershipsService.create({
+      userId: userId,
+      role: role,
+      channelId: channel.id,
+    });
+    return ret;
   }
 
   async checkDirectUsers(createChannelDto: CreateChannelDto, channel: Channel) {
@@ -55,11 +77,9 @@ export class ChannelsService {
     channel.name =
       '-' + createChannelDto.userOneId + '-' + createChannelDto.userTwoId;
     if (
-      await this.channelsRepository.findOne({
-        where: {
-          type: ChannelType.DIRECT,
-          name: channel.name,
-        },
+      await this.channelsRepository.findOneByOrFail({
+        type: ChannelType.DIRECT,
+        name: channel.name,
       })
     )
       throw 'Direct channel already exists.';
@@ -68,6 +88,12 @@ export class ChannelsService {
     });
     channel.userTwo = await this.usersRepository.findOneByOrFail({
       id: createChannelDto.userTwoId,
+    });
+    //const user : User = this.usersRepository.findOneByOrFail( {id: userId} );
+    this.membershipsService.create({
+      userId: +createChannelDto.userId,
+      role: MembershipRoleType.PARTICIPANT,
+      channelId: channel.id,
     });
     return;
   }
@@ -94,7 +120,14 @@ export class ChannelsService {
     return this.channelsRepository.update(id, updateChannelDto);
   }
 
-  remove(id: number): Promise<DeleteResult> {
+  async remove(id: number): Promise<DeleteResult> {
+    const memberships: Membership[] = await this.membershipsRepository.find({
+      where: { channelId: id },
+    });
+    memberships.forEach(
+      async (membership) =>
+        await this.membershipsRepository.delete(membership.id),
+    );
     return this.channelsRepository.delete(id);
   }
 }

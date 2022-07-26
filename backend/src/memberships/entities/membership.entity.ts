@@ -26,12 +26,14 @@ export class Membership {
   @ManyToOne(() => Channel)
   channel: Channel;
   @RelationId((membership: Membership) => membership.channel)
+  @Column()
   channelId: number;
 
   @Exclude()
   @ManyToOne(() => User)
   user: User;
   @RelationId((membership: Membership) => membership.user)
+  @Column()
   userId: number;
 
   @Column({

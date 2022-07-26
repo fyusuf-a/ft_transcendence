@@ -62,7 +62,6 @@
 import axios from 'axios';
 import Vue from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
-
 interface DataReturnType {
   selectedChannel: string;
   dialogOpen: boolean;
@@ -70,7 +69,6 @@ interface DataReturnType {
   createdChannel: CreateChannelDto;
   channelTypes: Array<string>;
 }
-
 export default Vue.extend({
   props: {
     joinableChannels: {

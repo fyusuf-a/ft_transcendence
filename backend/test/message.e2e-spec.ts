@@ -85,6 +85,7 @@ describe('MessagesController (e2e)', () => {
       .send({
         name: 'channel1',
         type: ChannelType.PUBLIC,
+        userId: 1,
       })
       .expect(201);
   });
