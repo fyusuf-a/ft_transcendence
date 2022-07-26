@@ -5,12 +5,17 @@ import { fetchAvatar } from '@/utils/avatar';
 
 Vue.use(Vuex);
 
+interface Cache {
+  avatars: Map<number, string>;
+}
+
 interface State {
   isAuthenticated: boolean;
   username: string | undefined;
   avatar: string | undefined;
   id: string | undefined;
   token: string | undefined;
+  cache: Cache | undefined;
 }
 
 const state: State = {
@@ -19,6 +24,7 @@ const state: State = {
   avatar: undefined,
   id: undefined,
   token: undefined,
+  cache: undefined,
 };
 
 export default new Vuex.Store({
@@ -39,8 +45,21 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    async getAvatarById(context, id: string) {
+      if (id) {
+        if (context.state.cache?.avatars.has(+id)) {
+          return context.state.cache?.avatars.get(+id);
+        }
+        return await fetchAvatar(id);
+      }
+    },
     async getAvatar(context) {
       if (context?.state?.id) {
+        if (context.state.cache?.avatars.has(+context?.state?.id)) {
+          context.state.avatar = context.state.cache?.avatars.get(
+            +context?.state?.id,
+          );
+        }
         context.state.avatar = await fetchAvatar(context.state.id);
       }
     },
