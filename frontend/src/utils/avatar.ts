@@ -1,12 +1,11 @@
 import axios from 'axios';
 
 export async function fetchAvatar(
-  id?: string,
+  id: string,
   convertBlob = URL.createObjectURL,
 ): Promise<string> {
   let avatar;
   try {
-    if (id === undefined) throw 'No id given';
     const response = await axios.get('/users/' + id + '/avatar', {
       responseType: 'blob',
     });
