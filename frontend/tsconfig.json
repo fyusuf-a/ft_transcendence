@@ -15,10 +15,10 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
       "mocha",
       "chai",
-      "node"
+      "node",
+      "vite/client"
     ],
     "paths": {
       "@/*": ["src/*"],
@@ -33,6 +33,7 @@
   },
   "include": [
     "src/**/*.ts",
+    "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",

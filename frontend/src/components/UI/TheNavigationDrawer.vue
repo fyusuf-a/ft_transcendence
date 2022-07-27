@@ -6,41 +6,41 @@
     color="secondary"
     clipped
     app
-    @input="emitModelValue"
-    :value="value"
+    @update:modelValue="emitModelValue"
+    :modelValue="modelValue"
   >
     <v-divider></v-divider>
 
-    <v-list dense nav>
-      <v-list-item-group>
-        <v-list-item v-for="item in items" :key="item.title" :to="item.route">
-          <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-action>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list-item-group>
+    <v-list density="compact" nav>
+      <v-list-item
+        v-for="item in items"
+        :key="item.title"
+        :to="item.route"
+        :prepend-icon="item.icon"
+        :title="item.title"
+      />
     </v-list>
   </v-navigation-drawer>
 </template>
 
-<script>
-import Vue from 'vue';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ['input'],
+  model: {
+    prop: 'modelValue',
+    event: 'update:modelValue',
+  },
+  emits: ['update:modelValue'],
   methods: {
-    emitModelValue(value) {
-      this.$emit('input', value);
+    emitModelValue(value: Event) {
+      this.$emit('update:modelValue', value);
     },
   },
   data() {
@@ -68,7 +68,6 @@ export default Vue.extend({
           route: '/about',
         },
       ],
-      links: ['Home', 'Contacts', 'Settings'],
     };
   },
 });

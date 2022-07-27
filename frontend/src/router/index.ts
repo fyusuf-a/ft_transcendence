@@ -1,10 +1,7 @@
-import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store';
 
-Vue.use(VueRouter);
-
-const routes: Array<RouteConfig> = [
+const routes = [
   {
     path: '/',
     component: () => import('../views/UILayout.vue'),
@@ -38,14 +35,13 @@ const routes: Array<RouteConfig> = [
   },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
   routes,
 });
 
 router.beforeEach((to, _, next) => {
-  const disableAuthentification = process.env.VUE_APP_DISABLE_AUTHENTICATION;
+  const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
   if (
     // In production, disableAuthentification is not defined
     (disableAuthentification ? disableAuthentification === 'false' : true) &&

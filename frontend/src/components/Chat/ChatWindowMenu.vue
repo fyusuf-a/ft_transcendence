@@ -1,7 +1,7 @@
 <template>
   <v-menu bottom left>
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn light icon v-bind="attrs" v-on="on">
+    <template v-slot:activator="{ props: tooltip }">
+      <v-btn light icon v-bind="tooltip">
         <v-icon>mdi-dots-vertical</v-icon>
       </v-btn>
     </template>
@@ -21,9 +21,8 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-export default Vue.extend({
-  props: {},
+import { defineComponent } from 'vue';
+export default defineComponent({
   data() {
     return {
       selectedOption: -1,

@@ -28,9 +28,9 @@
 
 <script lang="ts">
 import ChatMessageMenu from './ChatMessageMenu.vue';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     sender: {
       type: String,

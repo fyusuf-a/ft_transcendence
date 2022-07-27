@@ -1,7 +1,7 @@
 <template>
   <v-menu :offset-x="true">
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn light icon v-bind="attrs" v-on="on">
+    <template v-slot:activator="{ props: tooltip }">
+      <v-btn light icon v-bind="tooltip">
         <slot>Default</slot>
       </v-btn>
     </template>
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
 declare interface OptionType {
   label: string;
@@ -34,7 +34,7 @@ declare interface DataReturnType {
   adminOptions: OptionType[];
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     targetId: {
       type: Number,
