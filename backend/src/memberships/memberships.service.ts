@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import {
   QueryMembershipDto,
@@ -25,28 +24,13 @@ export class MembershipsService {
   async create(createMembershipDto: CreateMembershipDto) {
     const membership: Membership = new Membership();
     membership.role = createMembershipDto.role;
-    membership.channel = await this.channelsRepository.findOneBy({
+    membership.channel = await this.channelsRepository.findOneByOrFail({
       id: createMembershipDto.channelId,
     });
     membership.channelId = createMembershipDto.channelId;
-    if (
-      membership.channel === undefined ||
-      membership.channel.id !== membership.channelId
-    ) {
-      throw new EntityDoesNotExistError(
-        `Channel #${createMembershipDto.channelId}`,
-      );
-    }
-    membership.user = await this.usersRepository.findOneBy({
+    membership.user = await this.usersRepository.findOneByOrFail({
       id: createMembershipDto.userId,
     });
-    membership.userId = createMembershipDto.userId;
-    if (
-      membership.user === undefined ||
-      membership.user.id !== membership.userId
-    ) {
-      throw new EntityDoesNotExistError(`User #${createMembershipDto.userId}`);
-    }
     return this.membershipRepository.save(membership);
   }
 
