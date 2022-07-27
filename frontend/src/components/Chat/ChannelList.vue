@@ -24,15 +24,15 @@
             >
               <v-list-item v-for="(item, i) in channels" :key="i">
                 <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-list-item-icon v-bind="attrs" v-on="on">
+                  <template v-slot:activator="{ props: tooltip }">
+                    <v-list-item-icon v-bind="tooltip">
                       <v-icon
                         v-if="unreadChannels.has(item.id)"
                         color="secondary"
                         >{{ unreadMarker }}</v-icon
                       >
                     </v-list-item-icon>
-                    <v-list-item-content v-bind="attrs" v-on="on">
+                    <v-list-item-content v-bind="tooltip">
                       <v-list-item-title v-text="item.name"></v-list-item-title>
                     </v-list-item-content>
                   </template>
@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import { ChannelDto } from '@/common/dto/channel.dto';
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import ChannelJoinDialog from './ChannelJoinDialog.vue';
 
 interface DataReturnType {
@@ -58,16 +58,19 @@ interface DataReturnType {
   unreadMarker: string;
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     channels: {
       type: Array as () => Array<ChannelDto>,
+      required: true,
     },
     allChannels: {
       type: Map as PropType<Map<number, ChannelDto>>,
+      required: true,
     },
     unreadChannels: {
       type: Set, //Set<number>,
+      required: true,
     },
   },
   data(): DataReturnType {
@@ -77,7 +80,7 @@ export default Vue.extend({
       unreadMarker: 'mdi-new-box',
     };
   },
-  components: { 'channel-join-dialog': Vue.extend(ChannelJoinDialog) },
+  components: { 'channel-join-dialog': defineComponent(ChannelJoinDialog) },
   methods: {
     async handleChannelSelection(channelId: number) {
       console.log('Handling a channel selection');

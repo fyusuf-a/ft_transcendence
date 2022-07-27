@@ -42,9 +42,9 @@
 
 <script lang="ts">
 import TeamCard from '@/components/Team/TeamCard.vue';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
+export default defineComponent({
   components: {
     'team-card': TeamCard,
   },

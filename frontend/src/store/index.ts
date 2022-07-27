@@ -1,8 +1,6 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import axios from 'axios';
-
-Vue.use(Vuex);
+import kingPongImg from '@/assets/images/king-pong.png';
 
 interface State {
   isAuthenticated: boolean;
@@ -20,7 +18,7 @@ const state: State = {
   token: undefined,
 };
 
-export default new Vuex.Store({
+export default createStore({
   state: state,
   getters: {
     username: (state) => state.username,
@@ -50,7 +48,7 @@ export default new Vuex.Store({
         context.state.avatar = URL.createObjectURL(blob);
       } finally {
         if (!context.state.avatar) {
-          context.state.avatar = require('@/assets/images/king-pong.png');
+          context.state.avatar = kingPongImg;
         }
       }
     },
