@@ -5,4 +5,5 @@ export class ResponseChannelDto extends PickType(ChannelDto, [
   'id',
   'name',
   'type',
+  'password',
 ]) {}

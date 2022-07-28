@@ -75,34 +75,31 @@ describe('MembershipController (e2e)', () => {
     await app.close();
   });
 
-  it('Create user1', () => {
-    return request(app.getHttpServer())
+  it('Create user1', async () => {
+    return await request(app.getHttpServer())
       .post('/users/')
-      .send({ identity: 'ident1', username: 'user1' })
+      .send({ identity: 'ident3', username: 'user3' })
       .expect(201);
   });
-  it('Create user2', () => {
-    return request(app.getHttpServer())
+
+  it('Create user2', async () => {
+    return await request(app.getHttpServer())
       .post('/users/')
-      .send({ identity: 'ident2', username: 'user2' })
+      .send({ identity: 'ident4', username: 'user4' })
       .expect(201);
   });
+
   it('Create Channel', () => {
     return request(app.getHttpServer())
       .post('/channels/')
-      .send({ name: 'channel1', type: ChannelType.PUBLIC })
+      .send({ name: 'channel1', type: ChannelType.PUBLIC, userId: 1 })
       .expect(201);
   });
-  it('Subscribe user1 to channel', () => {
-    return request(app.getHttpServer())
-      .post('/memberships/')
-      .send({ channelId: 1, userId: 1, role: MembershipRoleType.PARTICIPANT })
-      .expect(201);
-  });
+
   it('Subscribe user2 to channel', () => {
     return request(app.getHttpServer())
       .post('/memberships/')
-      .send({ channelId: 1, userId: 2, role: MembershipRoleType.PARTICIPANT })
+      .send({ channelId: 1, userId: 2, role: MembershipRoleType.ADMIN })
       .expect(201);
   });
 
@@ -112,16 +109,17 @@ describe('MembershipController (e2e)', () => {
       .send({ channelId: 1, userId: 2, role: MembershipRoleType.PARTICIPANT })
       .expect(500);
   });
+
   it('Create Channel2', () => {
     return request(app.getHttpServer())
       .post('/channels/')
-      .send({ name: 'channel2', type: ChannelType.PUBLIC })
+      .send({ name: 'channel2', type: ChannelType.PUBLIC, userId: 2 })
       .expect(201);
   });
-  it('Subscribe user2 to channel2', () => {
+  it('Subscribe user1 to channel2', () => {
     return request(app.getHttpServer())
       .post('/memberships/')
-      .send({ channelId: 2, userId: 2, role: MembershipRoleType.PARTICIPANT })
+      .send({ channelId: 2, userId: 1, role: MembershipRoleType.PARTICIPANT })
       .expect(201);
   });
 });

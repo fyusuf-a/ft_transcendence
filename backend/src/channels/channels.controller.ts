@@ -26,7 +26,6 @@ import {
 } from '@dtos/channels';
 import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
-import { Channel } from './entities/channel.entity';
 
 @ApiBearerAuth()
 @ApiTags('channels')
@@ -38,8 +37,8 @@ export class ChannelsController {
   @Post()
   async create(
     @Body() createChannelDto: CreateChannelDto,
-  ): Promise<CreateChannelDto> {
-    let ret: Channel;
+  ): Promise<ResponseChannelDto> {
+    let ret: ResponseChannelDto;
 
     try {
       ret = await this.channelsService.create(createChannelDto);
