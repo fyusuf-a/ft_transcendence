@@ -67,7 +67,7 @@ services:
     image: adminer
     restart: unless-stopped
     ports:
-      - 8888:80
+      - 8888:8080
     depends_on:
       - db
     profiles: ["debug"]
