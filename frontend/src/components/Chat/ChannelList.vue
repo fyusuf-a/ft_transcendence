@@ -14,7 +14,7 @@
 			</v-row>
 			<v-row>
 				<v-col>
-					<v-list :items="channels" item-title="name" item-value="id" v-model="selectedChannel" @update:selected="handleChannelSelection">
+					<v-list :items="channels" item-title="name" item-value="id" @update:selected="handleChannelSelection">
 					</v-list>
 				</v-col>
 			</v-row>
@@ -29,7 +29,6 @@ import ChannelJoinDialog from './ChannelJoinDialog.vue';
 
 interface DataReturnType {
 	title: string;
-	selectedChannel?: number;
 	unreadMarker: string;
 }
 
@@ -51,7 +50,6 @@ export default defineComponent({
 	data(): DataReturnType {
 		return {
 			title: 'Channels',
-			selectedChannel: -1,
 			unreadMarker: 'mdi-new-box',
 		};
 	},
@@ -62,13 +60,12 @@ export default defineComponent({
 			console.log('Handling a channel selection');
 			if (channelId) {
 				console.log(channelId);
-				this.$emit('channel-select-event', this.channels[channelId]);
+				// this.$emit('channel-select-event', this.channels[channelId]);
 			} else {
 				console.log('No channel selected');
 			}
 		},
 		handleChannelJoin(channelId: number) {
-			this.selectedChannel = this.channels.length;
 			this.$emit('channel-join-event', channelId);
 		},
 	},
@@ -79,10 +76,5 @@ export default defineComponent({
 			) as ChannelDto[];
 		},
 	},
-	watch: {
-		selectedChannel(newChannelId, oldChannelId) {
-			console.log(`selectedchannel: ${newChannelId} <- ${oldChannelId}`)
-		}
-	}
 });
 </script>
