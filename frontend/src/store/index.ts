@@ -1,8 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
+import VuexPersister from 'vuex-persister';
 
 Vue.use(Vuex);
+
+const vuexPersister = new VuexPersister({
+  key: 'ft_transcendence',
+  overwrite: true,
+});
 
 interface State {
   isAuthenticated: boolean;
@@ -56,4 +62,5 @@ export default new Vuex.Store({
     },
   },
   modules: {},
+  plugins: [vuexPersister.persist],
 });

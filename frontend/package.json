@@ -19,7 +19,8 @@
     "vue": "^2.6.14",
     "vue-router": "^3.5.1",
     "vuetify": "^2.6.0",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "vuex-persister": "^1.0.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.15",
