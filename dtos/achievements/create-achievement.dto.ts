@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/mapped-types';
 import { AchievementDto } from './achievement.dto';
 
 export class CreateAchievementDto extends PickType(AchievementDto, [

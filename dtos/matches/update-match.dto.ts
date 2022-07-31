@@ -1,4 +1,4 @@
-import { PartialType, PickType } from '@nestjs/swagger';
+import { PartialType, PickType } from '@nestjs/mapped-types';
 import { Match } from './match.dto';
 
 export class UpdateMatchDto extends PickType(PartialType(Match), [
