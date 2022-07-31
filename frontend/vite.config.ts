@@ -17,9 +17,11 @@ export default defineConfig({
     }),
   ],
   resolve: {
+    preserveSymlinks: true,
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@dtos': path.resolve(__dirname, '@/dtos'),
+      '@dtos': path.resolve(__dirname, 'src/dtos'),
+      '@nestjs/swagger': path.resolve('../src/shims-nestjs.d'),
     },
   },
   optimizeDeps: {

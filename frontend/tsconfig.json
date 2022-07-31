@@ -22,7 +22,8 @@
     ],
     "paths": {
       "@/*": ["src/*"],
-      "@dtos/*": ["src/dtos/*"]
+      "@dtos/*": ["src/dtos/*"],
+      "@nestjs/swagger": ["node_modules/nestjs-swagger-shim.ts"]
     },
     "lib": [
       "esnext",
