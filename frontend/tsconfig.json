@@ -1,18 +1,13 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
     "strict": true,
-    "jsx": "preserve",
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "sourceMap": true,
     "baseUrl": ".",
     "types": [
       "mocha",
@@ -22,8 +17,8 @@
     ],
     "paths": {
       "@/*": ["src/*"],
-      "@dtos/*": ["src/dtos/*"],
-      "@nestjs/swagger": ["node_modules/nestjs-swagger-shim.ts"]
+      "@dtos/*": ["../dtos/*"],
+      "@nestjs/swagger": ["src/shims-nestjs.d"]
     },
     "lib": [
       "esnext",
@@ -35,10 +30,8 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
-    "src/**/*.tsx",
     "src/**/*.vue",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.ts"
   ],
   "exclude": [
     "node_modules"
