@@ -16,6 +16,7 @@
       "vite/client"
     ],
     "paths": {
+      "*": ["*", "node_modules/*"],
       "@/*": ["src/*"],
       "@dtos/*": ["../dtos/*"],
       "@nestjs/swagger": ["src/shims-nestjs.d"]
