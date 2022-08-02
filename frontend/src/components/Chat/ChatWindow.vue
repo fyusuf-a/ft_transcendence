@@ -3,7 +3,7 @@
     <v-container fill-height>
       <v-row dense max-height="10px">
         <v-col cols="11">
-          <v-subheader>{{ channel.name }}</v-subheader>
+          {{ channel.name }}
         </v-col>
         <v-col cols="1">
           <chat-window-menu
@@ -16,15 +16,8 @@
           <v-divider></v-divider>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-for="item in messages.get(channel.id)">
         <v-col cols="12">
-          <v-virtual-scroll
-            :items="messages.get(channel.id)"
-            :item-height="itemHeight"
-            height="300"
-            id="message-scroll"
-          >
-            <template v-slot:default="{ item }">
               <chat-message
                 :sender="getUsername(item.senderId)"
                 :senderId="item.senderId"
@@ -35,8 +28,6 @@
                 "
               >
               </chat-message>
-            </template>
-          </v-virtual-scroll>
         </v-col>
       </v-row>
 
