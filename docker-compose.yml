@@ -17,7 +17,8 @@ services:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     volumes:
       - ./backend:/tmp/app
-      - ./dtos:/tmp/app/src/dtos
+      - ./dtos:/tmp/dtos
+      - ./tsconfig.json:/tmp/tsconfig.json
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
@@ -46,7 +47,8 @@ services:
       - 4443:4443
     volumes:
       - ./frontend:/app
-      - ./dtos:/app/src/dtos
+      - ./dtos:/app/dtos
+      - ./tsconfig.json:/tsconfig.json
     environment:
       VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
       VITE_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}

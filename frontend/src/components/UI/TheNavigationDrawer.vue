@@ -39,7 +39,7 @@ export default defineComponent({
   },
   emits: ['update:modelValue'],
   methods: {
-    emitModelValue(value: Event) {
+    emitModelValue(value: boolean) {
       this.$emit('update:modelValue', value);
     },
   },

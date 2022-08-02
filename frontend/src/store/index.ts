@@ -1,6 +1,12 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
 import kingPongImg from '@/assets/images/king-pong.png';
+import VuexPersister from 'vuex-persister';
+
+const vuexPersister = new VuexPersister({
+  key: 'my_key',
+  overwrite: true,
+});
 
 interface State {
   isAuthenticated: boolean;
@@ -28,6 +34,9 @@ export default createStore({
     token: (state) => state.token,
   },
   mutations: {
+    setUsername(state, username: string) {
+      state.username = username;
+    },
     login(state, payload) {
       state.username = payload.username;
       state.id = payload.id;
@@ -54,4 +63,5 @@ export default createStore({
     },
   },
   modules: {},
+  plugins: [vuexPersister.persist],
 });
