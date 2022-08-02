@@ -18,7 +18,6 @@
       <v-row>
         <v-col>
           <v-list density="compact">
-            <v-list-item-group color="primary">
               <v-list-item
                 v-for="(item, i) in channels"
                 :key="i"
@@ -41,7 +40,6 @@
                   <span>{{ item.name }}</span>
                 </v-tooltip>
               </v-list-item>
-            </v-list-item-group>
           </v-list>
         </v-col>
       </v-row>
