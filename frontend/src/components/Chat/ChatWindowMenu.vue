@@ -7,21 +7,21 @@
     </template>
 
     <v-list>
-      <v-list-item-group
-        v-model="selectedOption"
-        color="primary"
-        @change="handleOptionSelection"
-      >
-        <v-list-item v-for="(item, i) in options" :key="i">
+        <v-list-item v-for="(item, i) in options" :key="i" active-color="primary" @click="() => handleOptionSelection(item)">
           <v-list-item-title>{{ item.label }}</v-list-item-title>
         </v-list-item>
-      </v-list-item-group>
     </v-list>
   </v-menu>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+
+declare interface OptionType {
+  label: string;
+  event: string;
+}
+
 export default defineComponent({
   data() {
     return {
@@ -30,8 +30,8 @@ export default defineComponent({
     };
   },
   methods: {
-    handleOptionSelection() {
-      this.$emit(this.options[this.selectedOption].event);
+    handleOptionSelection(item: OptionType) {
+      this.$emit(item.event);
     },
   },
 });
