@@ -15,14 +15,12 @@
         </v-img>
       </chat-message-menu>
     </v-list-item-avatar>
-    <v-list-item-content>
       <v-list-item-title
         v-text="`${sender} -- ${formattedDate}`"
-      ></v-list-item-title>
+      ></v-list-item-title><br>
       <v-list-item-subtitle>
         {{ content }}
       </v-list-item-subtitle>
-    </v-list-item-content>
   </v-list-item>
 </template>
 
