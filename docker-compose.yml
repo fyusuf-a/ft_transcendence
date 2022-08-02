@@ -43,7 +43,7 @@ services:
     ports:
       - 8000:80
       # the following port is necessary for vite hot module reload (HMR)
-      - 443:443
+      - 4443:4443
     volumes:
       - ./frontend:/app
       - ./dtos:/app/src/dtos
