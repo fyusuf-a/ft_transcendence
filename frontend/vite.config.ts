@@ -7,7 +7,7 @@ import checker from 'vite-plugin-checker';
 export default defineConfig({
   server: {
     hmr: {
-      port: 443,
+      port: 4443,
     },
   },
   plugins: [
