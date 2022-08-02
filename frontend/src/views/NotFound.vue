@@ -56,7 +56,8 @@ a {
   text-decoration: none;
 }
 
-a:visited {}
+a:visited {
+}
 
 a:hover {
   background: teal;
