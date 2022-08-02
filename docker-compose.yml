@@ -17,7 +17,8 @@ services:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     volumes:
       - ./backend:/tmp/app
-      - ./dtos:/tmp/app/src/dtos
+      - ./dtos:/tmp/dtos
+      - ./tsconfig.json:/tmp/tsconfig.json
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
@@ -44,7 +45,8 @@ services:
       - 8000:80
     volumes:
       - ./frontend:/app
-      - ./dtos:/app/src/dtos
+      - ./dtos:/app/dtos
+      - ./tsconfig.json:/tsconfig.json
     environment:
       VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
       VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
