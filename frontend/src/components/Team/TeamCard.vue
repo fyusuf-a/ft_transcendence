@@ -1,88 +1,59 @@
 <template>
-  <v-row>
-    <v-col v-for="teamMate in teamMates" :key="teamMate.id">
-      <v-card tile>
-        <v-col align="center" class="mt-5">
-          <v-avatar size="100">
-            <v-img :src="teamMate.picture" :lazy-src="teamMate.lazyPicture">
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular
-                    indeterminate
-                    color="teal"
-                  ></v-progress-circular>
-                </v-row>
-              </template>
-            </v-img>
-          </v-avatar>
-          <v-card-text class="text--primary">
-            <div>{{ teamMate.login }}</div>
-            <div>{{ teamMate.name }}</div>
-          </v-card-text>
-          <div>
-            <a :href="teamMate.githubLink" target="_blank">
-              <img id="github" :src="githubLogo" :alt="githubAlt" />
-            </a>
-          </div>
-        </v-col>
-      </v-card>
-    </v-col>
-  </v-row>
+  <v-card
+      class="mx-auto"
+      max-width="100%"
+      color="#E8EAF6"
+    >  
+      <v-container fluid>
+        <v-row dense>
+          <v-col
+            v-for="teamMate in teamMates"
+            :key="teamMate.login"
+            :cols="teamMate.flex"
+          >
+            <v-card>
+              <v-col align="center" class="mt-5">
+                <v-avatar size="125">
+                  <v-img
+                    :src="teamMate.src"
+                    :lazy-src="teamMate.lazy"
+                  >
+                  </v-img>
+                </v-avatar>
+              </v-col>
+              <v-card-text align="center">
+                <div>{{ teamMate.login }}</div>
+                <div>{{ teamMate.name }}</div>
+                <a :href="teamMate.githubLink" target="_blank">
+                  <v-btn size="x-large" color="surface-variant" variant="text" icon="mdi-github"></v-btn>
+                </a>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import abouchauImg from '@/assets/images/abouchau-lazy.jpg';
+import fyusufaImg from '@/assets/images/fyusuf-a-lazy.jpg';
+import mdesfontImg from '@/assets/images/mdesfont-lazy.jpg';
+import tmorrisImg from '@/assets/images/tmorris-lazy.jpg';
+import tvideiraImg from '@/assets/images/tvideira-lazy.jpg';
 
 export default defineComponent({
-  data: function () {
-    return {
-      teamMates: [
-        {
-          picture: 'https://cdn.intra.42.fr/users/abouchau.jpg',
-          lazyPicture: require('@/assets/images/abouchau-lazy.jpg'),
-          login: 'abouchau',
-          name: 'Nina Bouchau',
-          githubLink: 'https://github.com/N-4-Nina',
-          id: 1,
-        },
-        {
-          picture: 'https://cdn.intra.42.fr/users/fyusuf-a.jpg',
-          lazyPicture: require('@/assets/images/fyusuf-a-lazy.jpg'),
-          login: 'fyusuf-a',
-          name: 'Florian Yusuf Ali',
-          githubLink: 'https://github.com/fyusuf-a',
-          id: 2,
-        },
-        {
-          picture: 'https://cdn.intra.42.fr/users/mdesfont.jpg',
-          lazyPicture: require('@/assets/images/mdesfont-lazy.jpg'),
-          login: 'mdesfont',
-          name: 'Louie Desfontaines',
-          githubLink: 'https://github.com/Mel-louie',
-          id: 3,
-        },
-        {
-          picture: 'https://cdn.intra.42.fr/users/tmorris.jpg',
-          lazyPicture: require('@/assets/images/tmorris-lazy.jpg'),
-          login: 'tmorris',
-          name: 'Taylor Morris',
-          githubLink: 'https://github.com/tmorris42',
-          id: 4,
-        },
-        {
-          picture: 'https://cdn.intra.42.fr/users/tvideira.jpg',
-          lazyPicture: require('@/assets/images/tvideira-lazy.jpg'),
-          login: 'tvideira',
-          name: 'Théo Videira',
-          githubLink: 'https://github.com/tvideira',
-          id: 5,
-        },
-      ],
-      githubLogo: require('@/assets/images/GitHub-Mark-120px-plus.png'),
-      githubAlt: 'github logo',
-    };
-  },
-});
+data: () => ({
+    teamMates: [
+      { login: 'abouchau', name: 'Nina Bouchau', src: 'https://cdn.intra.42.fr/users/abouchau.jpg', lazy: abouchauImg, flex: 4, githubLink: 'https://github.com/N-4-Nina',},
+      { login: 'fyusuf-a', name: 'Florian Yusuf Ali', src: 'https://cdn.intra.42.fr/users/fyusuf-a.jpg', lazy: fyusufaImg, flex: 4, githubLink: 'https://github.com/fyusuf-a', },
+      { login: 'mdesfont', name: 'Louie Desfontaines', src: 'https://cdn.intra.42.fr/users/mdesfont.jpg', lazy: mdesfontImg, flex: 4, githubLink: 'https://github.com/Mel-louie', },
+      { login: 'tmorris', name: 'Taylor Morris', src: 'https://cdn.intra.42.fr/users/tmorris.jpg', lazy: tmorrisImg, flex: 6, githubLink: 'https://github.com/tmorris42', },
+      { login: 'tvideira', name: 'Théo Videira', src: 'https://cdn.intra.42.fr/users/tvideira.jpg', lazy: tvideiraImg, flex: 6, githubLink: 'https://github.com/tvideira', },
+    ],
+  }),
+})
 </script>
 
 <style scoped>
