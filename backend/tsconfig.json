@@ -19,7 +19,16 @@
       "*": ["*", "node_modules/*"],
       "@/*": ["src/*"],
       "@dtos/*": ["src/dtos/*"]
-    }
+    },
+    "types": [
+      "bcrypt",
+      "express",
+      "jest",
+      "multer",
+      "node",
+      "passport-jwt",
+      "supertest"
+    ]
   },
   "include": [
     "src/**/*.ts",
