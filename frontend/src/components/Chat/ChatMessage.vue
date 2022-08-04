@@ -39,7 +39,7 @@ export default defineComponent({
       required: true,
     },
     createdAt: {
-      type: String,
+      type: Date,
       required: true,
     },
     content: {
