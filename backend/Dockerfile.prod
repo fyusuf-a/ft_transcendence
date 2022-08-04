@@ -11,6 +11,7 @@ RUN npm install
 
 RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos
+COPY ./tsconfig.json ../tsconfig.json
 
 COPY .env.example .env
 RUN export $(cat .env | grep -v '#' | xargs) && \
