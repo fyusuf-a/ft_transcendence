@@ -41,7 +41,7 @@ export default Vue.extend({
       required: true,
     },
     createdAt: {
-      type: String,
+      type: Date,
       required: true,
     },
     content: {
