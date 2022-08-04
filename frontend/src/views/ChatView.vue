@@ -3,9 +3,9 @@
     <v-row>
       <v-col cols="12" md="10">
         <chat-window
-          v-if="selectedChannel"
+          v-if="selectedChannel && messages.has(selectedChannel.id)"
           :channel="selectedChannel"
-          :messages="messages"
+          :messages="getMessages(selectedChannel.id)"
           :users="users"
           :socket="socket"
           :key="newMessage"
@@ -79,6 +79,11 @@ export default Vue.extend({
     'chat-window': ChatWindow,
   },
   methods: {
+    getMessages(channelId: number): MessageDto[] {
+      const found = this.messages.get(channelId);
+      if (found) return found;
+      return [];
+    },
     printResponse(response: string) {
       console.log(`Server: ${response}`);
     },

@@ -16,7 +16,7 @@
           <v-divider></v-divider>
         </v-col>
       </v-row>
-      <v-row v-for="item in messages.get(channel.id)">
+      <v-row v-for="item in messages">
         <v-col cols="12">
               <chat-message
                 :sender="getUsername(item.senderId)"
@@ -69,7 +69,7 @@ export default Vue.extend({
       required: true,
     },
     messages: {
-      type: Map,
+      type: Object as PropType<MessageDto[]>,
       required: true,
     },
     users: {
@@ -103,18 +103,6 @@ export default Vue.extend({
       });
       this.messageContent = '';
     },
-    scrollDown() {
-      if (this.channel) {
-        let index = (this.messages.get(this.channel.id) as Array<MessageDto>)
-          ?.length;
-        if (index === undefined) index = 0;
-        else index -= 1;
-        const scroller = document.getElementById('message-scroll');
-        if (scroller) {
-          scroller.scrollTop = this.itemHeight * index;
-        }
-      }
-    },
     getUsername(userId: number): string {
       const user = this.users.get(userId) as UserDto;
       if (user) {
@@ -128,7 +116,6 @@ export default Vue.extend({
   },
   computed: {},
   mounted() {
-    this.scrollDown();
   },
 });
 </script>
