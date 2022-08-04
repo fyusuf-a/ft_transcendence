@@ -5,9 +5,9 @@
   "scripts": {
     "serve": "vite preview",
     "build": "vite build",
-    "test:unit": "vitest",
+    "test:unit": "echo TODO",
     "coverage": "vitest run --coverage",
-    "test:e2e": "vue-cli-service test:e2e",
+    "test:e2e": "echo TODO",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "dev": "vite",
     "preview": "vite preview"
