@@ -14,9 +14,9 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    //checker({
-    //vueTsc: true,
-    //}),
+    checker({
+      vueTsc: true,
+    }),
     {
       name: 'vitest-plugin-before-all',
       config: () => ({
@@ -41,45 +41,7 @@ export default defineConfig({
       '@dtos': path.resolve(__dirname, './src/dtos'),
       '@tests': path.resolve(__dirname, './tests'),
       '@nestjs/swagger': path.resolve(__dirname, './src/shims-nestjs.d'),
-      //'class-transformer': path.resolve(
-      //__dirname,
-      //'./node_modules/class-transformer',
-      //),
-      //'class-validator': path.resolve(
-      //__dirname,
-      //'./node_modules/class-validator',
-      //),
     },
-    //[
-    //  {
-    //    find: /^@dtos\/(.*)$/,
-    //    replacement: `${path.resolve('../dtos/')}/$1`,
-    //  },
-    //  {
-    //    find: /^@\/(.*)$/,
-    //    replacement: `${path.resolve('./src/')}/$1`,
-    //  },
-    //  {
-    //    find: /^@tests\/(.*)$/,
-    //    replacement: `${path.resolve('./tests/')}/$1`,
-    //  },
-    //  {
-    //    find: '@nestjs/swagger',
-    //    replacement: './src/shims-nestjs.d',
-    //  },
-    //  {
-    //    find: /^class-validator\/(.*)$/,
-    //    replacement: `${path.resolve('./node_modules/class-validator')}/$1`,
-    //  },
-    //  {
-    //    find: /^class-transformer\/(.*)$/,
-    //    replacement: `${path.resolve('./node_modules/class-transformer')}/$1`,
-    //  },
-    //  {
-    //    find: /^@nestjs\/mapped_types\/(.*)$/,
-    //    replacement: `${path.resolve('./@nestjs/mapped_types')}/$1`,
-    //  },
-    //],
   },
   clearScreen: false,
   logLevel: 'error',
