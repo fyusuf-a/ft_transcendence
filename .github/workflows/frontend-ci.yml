@@ -52,6 +52,7 @@ jobs:
           cd frontend
           npm run lint -- --no-fix --max-warnings=0
       - name: Unit tests
+        run: |
           cd frontend
           npm run test:unit
       - name: Set up Docker Buildx
