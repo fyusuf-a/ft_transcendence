@@ -9,6 +9,7 @@ COPY ./frontend/ ./
 
 RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos/
+COPY ./tsconfig.json ../tsconfig.json
 
 ARG BACKEND_PORT=8080
 ARG BACKEND_HOST=localhost
