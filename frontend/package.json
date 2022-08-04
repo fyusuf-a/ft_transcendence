@@ -5,9 +5,10 @@
   "scripts": {
     "serve": "vite preview",
     "build": "vite build",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "vitest",
+    "coverage": "vitest run --coverage",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "dev": "vite",
     "preview": "vite preview"
   },
@@ -19,6 +20,7 @@
     "class-transformer": "^0.3.1",
     "class-validator": "^0.13.2",
     "core-js": "^3.24.0",
+    "reflect-metadata": "^0.1.13",
     "roboto-fontface": "*",
     "socket.io-client": "^4.5.1",
     "vue": "^3.2.37",
@@ -45,6 +47,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.0.3",
     "geckodriver": "^3.0.1",
+    "jsdom": "^20.0.0",
     "prettier": "^2.4.1",
     "sass": "^1.38.0",
     "sass-loader": "^12.0.0",
@@ -52,6 +55,7 @@
     "vite": "^3.0.4",
     "vite-plugin-checker": "^0.4.9",
     "vite-plugin-vuetify": "1.0.0-alpha.14",
+    "vitest": "^0.19.1",
     "vue-cli-plugin-vuetify": "~2.5.1",
     "vue-tsc": "^0.39.4"
   }

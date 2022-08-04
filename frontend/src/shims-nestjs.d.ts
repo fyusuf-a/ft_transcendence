@@ -14,11 +14,11 @@ export interface ApiPropertyOptions {
 // eslint-disable-next-line
 export function ApiProperty(_: ApiPropertyOptions = {}) {
   // eslint-disable-next-line
-  return function (_, _: string | symbol) {};
+  return function (object, property: string | symbol) {};
 }
 
 // eslint-disable-next-line
 export function ApiPropertyOptional(_: ApiPropertyOptions = {}) {
   // eslint-disable-next-line
-  return function (_, _: string | symbol) {}
+  return function (object, property: string | symbol) {}
 }
