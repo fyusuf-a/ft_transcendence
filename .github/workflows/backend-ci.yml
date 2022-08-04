@@ -51,7 +51,9 @@ jobs:
         run: |
           cd backend
           npm run lint -- --no-fix --max-warnings=0
-          npm run test
+      - name: Unit tests
+          cd frontend
+          npm run test:unit
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
