@@ -47,7 +47,7 @@ services:
       - 4443:4443
     volumes:
       - ./frontend:/app
-      - ./dtos:/app/dtos
+      - ./dtos:/dtos
       - ./tsconfig.json:/tsconfig.json
     environment:
       VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}

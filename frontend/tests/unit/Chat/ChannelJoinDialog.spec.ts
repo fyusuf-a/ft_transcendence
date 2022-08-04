@@ -1,6 +1,5 @@
-import { expect } from 'chai';
-import { shallowMount } from '@vue/test-utils';
 import ChannelJoinDialog from '@/components/Chat/ChannelJoinDialog.vue';
+import { myShallowMount } from '@tests/vuetify-test';
 
 describe('ChannelJoinDialog.vue', () => {
   it('renders Join Channel', () => {
@@ -10,7 +9,7 @@ describe('ChannelJoinDialog.vue', () => {
         name: 'ChannelName',
       },
     ];
-    const wrapper = shallowMount(ChannelJoinDialog, {
+    const wrapper = myShallowMount(ChannelJoinDialog, {
       propsData: {
         joinableChannels: joinableChannels,
       },
@@ -25,7 +24,7 @@ describe('ChannelJoinDialog.vue', () => {
         name: 'ChannelName',
       },
     ];
-    const wrapper = shallowMount(ChannelJoinDialog, {
+    const wrapper = myShallowMount(ChannelJoinDialog, {
       propsData: { joinableChannels },
     });
     await wrapper.setData({ action: 'Create' });

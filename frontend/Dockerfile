@@ -3,4 +3,4 @@ FROM node:$NODE_IMAGE
 WORKDIR /app
 EXPOSE 80
 CMD npm install && \
-	npm run dev -- --host 0.0.0.0 --port 80 --debug
+	npm run dev -- --host 0.0.0.0 --port 80
