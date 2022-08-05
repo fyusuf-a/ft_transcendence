@@ -17,7 +17,6 @@
         <channel-list
           @channel-select-event="handleChannelSelection"
           @channel-join-event="handleChannelJoin"
-          title="Channels"
           :channels="subscribedChannels"
           :unreadChannels="unreadChannels"
           :allChannels="allChannels"
