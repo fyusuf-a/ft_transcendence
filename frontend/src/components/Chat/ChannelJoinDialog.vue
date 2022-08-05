@@ -1,8 +1,8 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialogOpen" scrollable max-width="300px">
-      <template v-slot:activator="{ props: tooltip }">
-        <v-btn icon color="primary" dark v-bind="tooltip"> + </v-btn>
+      <template v-slot:activator="{ props: open }">
+        <v-btn icon color="primary" dark v-bind="open"> + </v-btn>
       </template>
       <v-card>
         <v-card-title
