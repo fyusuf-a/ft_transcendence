@@ -1,8 +1,8 @@
 <template>
   <v-card>
     <v-container>
-      <v-row no-gutters align="center">
-        <v-col cols="10">{{ title }}</v-col>
+      <v-row no-gutters align="center" class="header-row">
+        <v-col cols="11">{{ title }}</v-col>
         <v-col cols="1">
           <channel-join-dialog
             @channel-join-event="handleChannelJoin"
@@ -96,3 +96,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+  .header-row {
+    height: 75px;
+  }
+</style>
