@@ -11,7 +11,7 @@
   >
     <v-divider></v-divider>
 
-    <v-list density="compact" nav>
+    <v-list density="compact" nav class="bg-color">
       <v-list-item
         v-for="item in items"
         :key="item.title"
@@ -72,3 +72,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.bg-color {
+  background-color: #03DAC6;
+}
+</style>
