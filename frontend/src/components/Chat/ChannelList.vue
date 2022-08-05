@@ -26,13 +26,12 @@
               >
                 <v-tooltip bottom>
                   <template v-slot:activator="{ props: tooltip }">
-                    <v-list-item-icon v-bind="tooltip">
                       <v-icon
+                        v-bind="tooltip"
                         v-if="unreadChannels.has(item.id)"
                         color="secondary"
                         >{{ unreadMarker }}</v-icon
                       >
-                    </v-list-item-icon>
                     <v-list-item-title v-bind="tooltip">
                       <v-list-item-title> {{ item.name }}</v-list-item-title>
                     </v-list-item-title>
