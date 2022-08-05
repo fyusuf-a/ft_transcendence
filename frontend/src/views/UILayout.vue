@@ -1,7 +1,7 @@
 <template>
   <div>
     <the-app-bar v-model="navigationDrawerVisible" />
-    <the-navigation-drawer v-model="navigationDrawerVisible" />
+    <the-navigation-drawer v-model="navigationDrawerVisible" temporary/>
     <router-view></router-view>
   </div>
 </template>
