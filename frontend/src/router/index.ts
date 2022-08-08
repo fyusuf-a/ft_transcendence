@@ -27,13 +27,8 @@ const routes = [
         component: () => import('../views/AboutView.vue'),
       },
       {
-        name: '404',
-        path: '/404',
+        path: '/:pathMatch(.*)*',
         component: () => import('../views/NotFound.vue'),
-      },
-      {
-        path: '/:catchAll(.*)',
-        redirect: '/404',
       },
     ],
   },
