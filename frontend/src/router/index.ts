@@ -29,6 +29,10 @@ const routes: Array<RouteConfig> = [
         path: 'about',
         component: () => import('../views/AboutView.vue'),
       },
+      {
+        path: '/:pathMatch(.*)*',
+        component: () => import('../views/NotFound.vue'),
+      },
     ],
   },
   {
