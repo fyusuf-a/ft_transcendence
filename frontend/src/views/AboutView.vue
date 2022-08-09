@@ -7,9 +7,9 @@
       <br />
       <p>
         ft_transcendence is the last project of the 42 common core. It is
-        designed to complete the first part of our curriculum. We had to program, as
-        a team, something completely different from what we have done so far. We
-        were supposed to create a website where users can face each other in
+        designed to complete the first part of our curriculum. We had to program,
+        as a team, something completely different from what we have done so far.
+        We were supposed to create a website where users can face each other in
         Pong games. The website where you are now! <br />The specifications
         included: a nice user interface, a chat, and real-time multiplayer
         online games, compatible with the latest stable up-to-date version of
