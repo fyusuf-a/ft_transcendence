@@ -3,7 +3,7 @@
     <v-container fill-height>
       <v-row dense max-height="10px">
         <v-col cols="11">
-          <v-subheader>{{ channel.name }}</v-subheader>
+          {{ channel.name }}
         </v-col>
         <v-col cols="1">
           <chat-window-menu
@@ -16,15 +16,8 @@
           <v-divider></v-divider>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-for="item in messages">
         <v-col cols="12">
-          <v-virtual-scroll
-            :items="messages.get(channel.id)"
-            :item-height="itemHeight"
-            height="300"
-            id="message-scroll"
-          >
-            <template v-slot:default="{ item }">
               <chat-message
                 :sender="getUsername(item.senderId)"
                 :senderId="item.senderId"
@@ -35,8 +28,6 @@
                 "
               >
               </chat-message>
-            </template>
-          </v-virtual-scroll>
         </v-col>
       </v-row>
 
@@ -78,7 +69,7 @@ export default defineComponent({
       required: true,
     },
     messages: {
-      type: Map,
+      type: Object as PropType<MessageDto[]>,
       required: true,
     },
     users: {
@@ -112,18 +103,6 @@ export default defineComponent({
       });
       this.messageContent = '';
     },
-    scrollDown() {
-      if (this.channel) {
-        let index = (this.messages.get(this.channel.id) as Array<MessageDto>)
-          ?.length;
-        if (index === undefined) index = 0;
-        else index -= 1;
-        const scroller = document.getElementById('message-scroll');
-        if (scroller) {
-          scroller.scrollTop = this.itemHeight * index;
-        }
-      }
-    },
     getUsername(userId: number): string {
       const user = this.users.get(userId) as UserDto;
       if (user) {
@@ -137,7 +116,6 @@ export default defineComponent({
   },
   computed: {},
   mounted() {
-    this.scrollDown();
   },
 });
 </script>
