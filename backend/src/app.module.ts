@@ -24,6 +24,7 @@ import { MatchesModule } from './matches/matches.module';
 import { Match } from './matches/entities/match.entity';
 import configuration from './config/configuration';
 import { ChatGateway } from './chat.gateway';
+import { GameGateway } from '@/game/game.gateway';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { ChatGateway } from './chat.gateway';
       provide: APP_GUARD,
       useClass: JwtTwoAuthGuard,
     },
+    GameGateway,
   ],
 })
 export class AppModule {}
