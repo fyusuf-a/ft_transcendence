@@ -19,16 +19,20 @@ class Ball {
   size: number;
   img_data: ImageData;
 
-  constructor() {
-    const canvas = document.getElementById('ball') as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-    ctx?.drawImage(ball, 0, 0);
+  constructor(ballCanvas: HTMLCanvasElement | null) {
+    const ctx = ballCanvas?.getContext('2d') as CanvasRenderingContext2D;
+    ctx.drawImage(ball, 0, 0);
     this.size = 13;
     this.x = random(150, 390);
     this.y = random(100, 380);
     this.dx = this.x < 320 ? SPEED : -SPEED;
     this.dy = random(-SPEED, SPEED);
-    this.img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    this.img_data = ctx.getImageData(
+      0,
+      0,
+      ballCanvas?.width ? ballCanvas.width : 0,
+      ballCanvas?.height ? ballCanvas.height : 0,
+    );
   }
 
   get_size() {

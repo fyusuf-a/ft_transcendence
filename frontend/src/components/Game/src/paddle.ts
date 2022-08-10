@@ -14,9 +14,15 @@ class Paddle {
   down: string;
   img_data: ImageData;
 
-  constructor(x: number, y: number, key_up: string, key_down: string) {
-    const canvas = document.getElementById('paddle') as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  constructor(
+    x: number,
+    y: number,
+    key_up: string,
+    key_down: string,
+    paddleCanvas: HTMLCanvasElement | null,
+  ) {
+    const canvas = paddleCanvas;
+    const ctx = canvas?.getContext('2d') as CanvasRenderingContext2D;
     ctx?.drawImage(paddle, 0, 0);
     this.x = x;
     this.y = y;
@@ -24,7 +30,12 @@ class Paddle {
     this.height = 100;
     this.up = key_up;
     this.down = key_down;
-    this.img_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    this.img_data = ctx.getImageData(
+      0,
+      0,
+      paddleCanvas?.width ? paddleCanvas.width : 0,
+      paddleCanvas?.height ? paddleCanvas.height : 0,
+    );
   }
 
   get_x() {

@@ -3,7 +3,8 @@ import { Ball } from './ball';
 import { Paddle } from './paddle';
 
 class Pong {
-  canvas: HTMLCanvasElement;
+  canvas: HTMLCanvasElement | null;
+  ballCanvas: HTMLCanvasElement | null;
   ctx: CanvasRenderingContext2D;
   background: Background;
   ball: Ball;
@@ -11,13 +12,25 @@ class Pong {
   player2: Paddle;
   requestID: number | undefined;
 
-  constructor() {
-    this.canvas = document.getElementById('pong') as HTMLCanvasElement;
-    this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-    this.background = new Background();
-    this.ball = new Ball();
-    this.player1 = new Paddle(10.0, 320.0, 'z', 's');
-    this.player2 = new Paddle(620.0, 75.0, 'ArrowUp', 'ArrowDown');
+  constructor(
+    pongCanvas: HTMLCanvasElement | null,
+    ballCanvas: HTMLCanvasElement | null,
+    backgroundCanvas: HTMLCanvasElement | null,
+    paddleCanvas: HTMLCanvasElement | null,
+  ) {
+    this.ballCanvas = ballCanvas;
+    this.canvas = pongCanvas;
+    this.ctx = this?.canvas?.getContext('2d') as CanvasRenderingContext2D;
+    this.background = new Background(backgroundCanvas);
+    this.ball = new Ball(ballCanvas);
+    this.player1 = new Paddle(10.0, 320.0, 'z', 's', paddleCanvas);
+    this.player2 = new Paddle(
+      620.0,
+      75.0,
+      'ArrowUp',
+      'ArrowDown',
+      paddleCanvas,
+    );
     this.requestID = undefined;
   }
 
@@ -36,7 +49,7 @@ class Pong {
       } else {
         console.log('Player 1 gets the point');
       }
-      this.ball = new Ball();
+      this.ball = new Ball(this.ballCanvas);
     }
 
     const next_ball_x = this.ball.get_x() + this.ball.get_dx();
