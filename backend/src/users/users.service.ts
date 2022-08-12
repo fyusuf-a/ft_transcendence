@@ -14,6 +14,12 @@ import { paginate } from 'src/common/paginate';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
+enum hexSignature {
+  GIF = '25504446',
+  JPG = 'FFD8FFE1',
+  PNG = '89504E47',
+}
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -113,5 +119,22 @@ export class UsersService {
         userId: id,
       },
     });
+  }
+
+  verifyMagicNum(file: Express.Multer.File): boolean {
+    const uint: Uint8Array = new Uint8Array(file.buffer);
+    const bytes: Array<string> = [];
+    uint.forEach((byte) => {
+      bytes.push(byte.toString(16));
+    });
+    const hex = bytes.join('').toUpperCase();
+    console.log(hex);
+    if (
+      hex == hexSignature.GIF ||
+      hex == hexSignature.PNG ||
+      hex == hexSignature.JPG
+    )
+      return true;
+    return false;
   }
 }

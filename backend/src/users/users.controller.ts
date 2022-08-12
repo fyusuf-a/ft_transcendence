@@ -108,7 +108,7 @@ export class UsersController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file || !file.filename) {
+    if (!file || !file.filename || this.usersService.verifyMagicNum(file)) {
       throw new BadRequestException('Missing or Invalid File');
     }
     return this.usersService.updateAvatar(
