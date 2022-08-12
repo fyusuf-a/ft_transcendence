@@ -9,11 +9,12 @@ import {
   CreateMatchDto,
   UpdateMatchDto,
   ResponseMatchDto,
-  Match,
+  MatchDto,
   MatchStatusType,
 } from '@dtos/matches';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
+import { Match } from './entities/match.entity';
 
 describe('MatchesController', () => {
   let controller: MatchesController;
@@ -25,11 +26,11 @@ describe('MatchesController', () => {
       providers: [
         MatchesService,
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(Match),
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(Match),
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
       ],
@@ -46,7 +47,7 @@ describe('MatchesController', () => {
   describe('findAll()', () => {
     it('should return an array of messages', async () => {
       const expected = new PageDto(
-        Array(5).fill(new Match()),
+        Array(5).fill(new MatchDto()),
         new PageMetaDto(new PageOptionsDto(), takeDefault),
       );
       jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
@@ -57,7 +58,7 @@ describe('MatchesController', () => {
 
   describe('findOne()', () => {
     it('should return a message', async () => {
-      const mockOut = new Match();
+      const mockOut = new MatchDto();
       const expected = new ResponseMatchDto();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
@@ -73,7 +74,7 @@ describe('MatchesController', () => {
 
   describe('create()', () => {
     it('should return a ResponseMatchDto with a status of IN_PROGRESS', async () => {
-      const match = new Match();
+      const match = new MatchDto();
       match.homeId = 2;
       match.awayId = 3;
       match.status = MatchStatusType.IN_PROGRESS;
