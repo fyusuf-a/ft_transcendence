@@ -3,13 +3,6 @@ import { IsNumberString, IsOptional, IsEnum } from 'class-validator';
 import { MatchStatusType } from './match.dto';
 
 export class QueryMatchDto {
-  /*@ApiPropertyOptional({
-    description: 'The id of a match',
-  })
-  @IsPositive()
-  @IsInt()
-  id: number;
-*/
   @ApiPropertyOptional({
     description: "The id of the 'home' user",
   })
