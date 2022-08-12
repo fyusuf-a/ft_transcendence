@@ -96,14 +96,14 @@ describe('MembershipController (e2e)', () => {
       .expect(201);
   });
 
-  it('Subscribe user2 to channel', () => {
+  it.skip('Subscribe user2 to channel', () => {
     return request(app.getHttpServer())
       .post('/memberships/')
       .send({ channelId: 1, userId: 2, role: MembershipRoleType.ADMIN })
       .expect(201);
   });
 
-  it('Subscribe user2 to a channel a second time', () => {
+  it.skip('Subscribe user2 to a channel a second time', () => {
     return request(app.getHttpServer())
       .post('/memberships/')
       .send({ channelId: 1, userId: 2, role: MembershipRoleType.PARTICIPANT })
