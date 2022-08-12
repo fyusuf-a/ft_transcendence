@@ -121,13 +121,6 @@ export class ChannelsService {
   }
 
   async remove(id: number): Promise<DeleteResult> {
-    const memberships: Membership[] = await this.membershipsRepository.find({
-      where: { channelId: id },
-    });
-    memberships.forEach(
-      async (membership) =>
-        await this.membershipsRepository.delete(membership.id),
-    );
     return this.channelsRepository.delete(id);
   }
 }
