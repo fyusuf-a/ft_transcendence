@@ -1,6 +1,14 @@
 <template>
   <v-card class="pa-2 ma-5">
-    <v-card class="ma-4" height="250" width="250" :image="avatar()" />
+    <!-- <v-card class="ma-4" height="250" width="250" :image="avatar()" /> -->
+    <v-col align="center" class="mt-4">
+        <v-img
+          :src="avatar()"
+          height="250"
+          width="250"
+        >
+        </v-img>
+    </v-col>
 
     <v-card-title>{{ username() }}</v-card-title>
 
