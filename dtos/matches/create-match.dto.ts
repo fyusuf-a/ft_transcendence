@@ -1,4 +1,4 @@
 import { PickType } from '@nestjs/mapped-types';
-import { Match } from './match.dto';
+import { MatchDto } from './match.dto';
 
-export class CreateMatchDto extends PickType(Match, ['homeId', 'awayId']) {}
+export class CreateMatchDto extends PickType(MatchDto, ['homeId', 'awayId']) {}
