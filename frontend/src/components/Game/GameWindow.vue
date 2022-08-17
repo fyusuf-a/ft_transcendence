@@ -3,7 +3,8 @@
     <div>
       <v-btn @click="createGame">Create Server-side Game</v-btn>
       <v-btn @click="joinGame">Join Server-side Game</v-btn>
-      <v-btn @click="spectateServerGame">Spectate Server-side Game</v-btn>
+      <v-btn @click="() => spectateServerGame(3)">Spectate Server-side Game</v-btn>
+      <v-btn @click="joinQueue">Join Queue</v-btn>
     </div>
     <canvas ref="pong" id="pong" width="640" height="480"></canvas>
     <canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
@@ -27,6 +28,7 @@ interface DataReturnTypes {
   backgroundCanvas: HTMLCanvasElement | null;
   ballCanvas: HTMLCanvasElement | null;
   paddleCanvas: HTMLCanvasElement | null;
+  gameId: number | null;
 }
 
 export default defineComponent({
@@ -46,19 +48,22 @@ export default defineComponent({
       backgroundCanvas: null,
       ballCanvas: null,
       paddleCanvas: null,
+      gameId: null,
     };
   },
   methods: {
     createGame() {
       const createGame: CreateGameDto = { gameId: 2, room: '2' };
       this.socket.emit('game-create', createGame);
-      this.spectateServerGame();
     },
     joinGame() {
       this.socket.emit('game-join', 2);
-      this.spectateServerGame();
     },
-    spectateServerGame() {
+    joinQueue() {
+      const gameOptions: CreateGameDto = {gameId: 3, room: '3'};
+      this.socket.emit('game-queue', gameOptions);
+    },
+    spectateServerGame(gameId: number) {
       if (!this.pong) {
         this.pong = new Pong(
           this.pongCanvas,
@@ -68,8 +73,37 @@ export default defineComponent({
           this.socket as Socket,
         );
       }
-      this.pong.spectate(2);
+      this.pong.spectate(gameId);
     },
+    startGame(gameId: number) {
+      console.log("Starting game #" + gameId);
+      this.gameId = gameId;
+
+      this.spectateServerGame(this.gameId);
+
+      window.addEventListener("keydown", (event) => {
+      console.log("key down detected!!");
+      console.log("key: " + event.code);
+      if (!this.gameId) return;
+      if (event.code === "ArrowUp") {
+        this.socket.emit('game-move', { gameId: this.gameId, dy: -1 });
+      } else if (event.code === "ArrowDown") {
+        this.socket.emit('game-move', { gameId:  this.gameId, dy: 1 });
+      }
+      console.log("message sent");
+    });
+
+    window.addEventListener("keyup", (event) => {
+      console.log("key up detected!!");
+      console.log("key: " + event.code);
+      if (!this.gameId) return;
+      if (event.code === "ArrowUp") {
+        this.socket.emit('game-move', { gameId:  this.gameId, dy: 0 });
+      } else if (event.code === "ArrowDown") {
+        this.socket.emit('game-move', { gameId:  this.gameId, dy: 0 });
+      }
+    });
+    }
   },
   mounted() {
     console.log('mounted');
@@ -81,27 +115,8 @@ export default defineComponent({
     this.paddleCanvas = document.getElementById('paddle') as HTMLCanvasElement;
     this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-    window.addEventListener("keydown", (event) => {
-      console.log("key down detected!!");
-      console.log("key: " + event.code);
-      if (!this.pong) return;
-      if (event.code === "ArrowUp") {
-        this.socket.emit('game-move', { gameId: 2, dy: -1 });
-      } else if (event.code === "ArrowDown") {
-        this.socket.emit('game-move', { gameId: 2, dy: 1 });
-      }
-    });
-
-    window.addEventListener("keyup", (event) => {
-      console.log("key up detected!!");
-      console.log("key: " + event.code);
-      if (!this.pong) return;
-      if (event.code === "ArrowUp") {
-        this.socket.emit('game-move', { gameId: 2, dy: 0 });
-      } else if (event.code === "ArrowDown") {
-        this.socket.emit('game-move', { gameId: 2, dy: 0 });
-      }
-    });
+    this.socket.on('game-starting', (e: number) => this.startGame(e));
+    
   },
 });
 </script>
