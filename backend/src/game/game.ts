@@ -1,6 +1,9 @@
 import { Server, Socket } from 'socket.io';
 import { CreateGameDto } from '@dtos/game/create-game.dto';
 import { CheckResult, GameState, Winner } from './game-state';
+import { Ball } from './ball';
+
+const FRAMERATE = 30;
 
 export class Game {
   gameId: number;
@@ -21,26 +24,87 @@ export class Game {
     this.update();
   }
 
+  collision_update() {
+    const player1_edge =
+      this.state.players[0].get_x() + this.state.players[0].get_width(); //right edge
+    const player1_top = this.state.players[0].get_y();
+    const player1_bottom = player1_top + this.state.players[0].get_height();
+    const player2_edge = this.state.players[1].get_x(); //left edge
+    const player2_top = this.state.players[1].get_y();
+    const player2_bottom = player2_top + this.state.players[1].get_height();
+
+    if (
+      this.state.ball.get_x() < player1_edge ||
+      this.state.ball.get_x() > player2_edge
+    ) {
+      // ENDING THE POINT
+      if (this.state.ball.get_x() < player1_edge) {
+        console.log('Player 2 gets the point');
+      } else {
+        console.log('Player 1 gets the point');
+      }
+      this.state.ball = new Ball();
+    }
+
+    const next_ball_x = this.state.ball.get_x() + this.state.ball.get_dx();
+    const next_ball_y = this.state.ball.get_y() + this.state.ball.get_dy();
+    if (next_ball_y < 0 || next_ball_y + this.state.ball.get_size() > 480)
+      // WALLS COLLISION
+      this.state.ball.invert_dy();
+    if (
+      next_ball_x <= player1_edge &&
+      next_ball_y >= player1_top &&
+      next_ball_y <= player1_bottom
+    )
+      this.state.ball.invert_dx();
+    if (
+      next_ball_x + this.state.ball.get_size() >= player2_edge &&
+      next_ball_y >= player2_top &&
+      next_ball_y <= player2_bottom
+    )
+      this.state.ball.invert_dx();
+  }
+
+  updateServer() {
+    this.state.players[0].update();
+    this.state.players[1].update();
+    this.collision_update();
+    this.state.ball.update();
+    // this.state.ball.x += 1;
+    const state = {
+      ball: { x: this.state.ball.x, y: this.state.ball.y },
+      player1: { x: this.state.players[0].x, y: this.state.players[0].y },
+      player2: { x: this.state.players[1].x, y: this.state.players[1].y },
+    };
+    this.server.to(this.room).emit('game-state', state);
+    // setInterval(() => this.updateServer(), 100);
+  }
+
+  startServer() {
+    console.log('starting server');
+    setInterval(() => this.updateServer(), 1000 / FRAMERATE);
+  }
+
   nextCollision(): number {
     // calculate time until the ball arrives at one side or the other
     if (this.state.ball.x < this.state.players[0].width) {
-      return this.state.ball.x / Math.abs(this.state.ball.vx); // dt = dx / vx
+      return this.state.ball.x / Math.abs(this.state.ball.dx); // dt = dx / vx
     } else if (
       this.state.ball.x >
       this.state.grid.width - this.state.players[1].width
     ) {
-      return (this.state.grid.width - this.state.ball.x) / this.state.ball.vx;
-    } else if (this.state.ball.vx < 0) {
+      return (this.state.grid.width - this.state.ball.x) / this.state.ball.dx;
+    } else if (this.state.ball.dx < 0) {
       return (
         (this.state.ball.x - this.state.players[0].width) /
-        Math.abs(this.state.ball.vx)
+        Math.abs(this.state.ball.dx)
       ); // dt = dx / vx
     } else {
       return (
         (this.state.grid.width -
           this.state.ball.x -
           this.state.players[1].width) /
-        this.state.ball.vx
+        this.state.ball.dx
       );
     }
   }

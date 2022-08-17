@@ -58,6 +58,8 @@ export class GameGateway
   handeCreate(client: Socket, game: CreateGameDto): string {
     // should create Match and use Match.id as the game id
     // because the client supplying it doesn't make sense
+    this.logger.log(`creating game ${game.gameId}`);
+    this.logger.log(`player1 ${client.id}`);
     if (this.games.has(game.gameId)) {
       return 'Error: game already exists';
     }
@@ -82,16 +84,23 @@ export class GameGateway
       return 'Error: game full';
     }
     game.players[1] = client;
-    client.join(gameId.toString());
-    game.start();
+    client.join(game.room);
+    this.logger.log(`joining game ${game.gameId}`);
+    this.logger.log(`player2 ${client.id}`);
+    game.startServer();
     return 'Success';
   }
 
   @SubscribeMessage('game-spectate')
   handleSpectate(client: Socket, gameId: number): string {
     // add socket to game room
-    client.join(gameId.toString());
-    return 'Success';
+    if (this.games.has(gameId)) {
+      const game = this.games.get(gameId);
+      client.join(gameId.toString());
+      this.logger.log(`spectating game ${game.gameId}`);
+      return 'Success';
+    }
+    return 'Error: game not found';
   }
 
   afterInit() {

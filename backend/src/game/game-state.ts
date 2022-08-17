@@ -23,7 +23,7 @@ export class GameState {
   winner: Winner;
 
   constructor() {
-    this.players = [new Player(), new Player()];
+    this.players = [new Player(10.0, 320.0), new Player(620.0, 75.0)];
     this.grid = new Grid();
     this.ball = new Ball();
     this.score = [0, 0];
@@ -42,8 +42,8 @@ export class GameState {
     const sum = this.score[0] + this.score[1];
     this.ball.x = this.grid.width / 2;
     this.ball.y = this.grid.height / 2;
-    this.ball.vy = 0;
-    this.ball.vx = 1 - 2 * (sum % 2);
+    this.ball.dy = 0;
+    this.ball.dx = 1 - 2 * (sum % 2);
   }
 
   checkForPoints(): CheckResult {
