@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { CreateGameDto } from './dtos/create-game.dto';
+import { CreateGameDto } from '@dtos/game/create-game.dto';
 import { CheckResult, GameState, Winner } from './game-state';
 
 export class Game {
@@ -9,11 +9,11 @@ export class Game {
   room: string;
   state: GameState;
 
-  constructor(init: CreateGameDto) {
+  constructor(init: CreateGameDto, server: Server) {
     this.gameId = init.gameId;
     this.state = new GameState();
     this.players = [undefined, undefined];
-    this.server = init.server;
+    this.server = server;
     this.room = init.room;
   }
 
