@@ -4,7 +4,7 @@ import { Background } from './background';
 import { Ball } from './ball';
 import { Paddle } from './paddle';
 
-const FRAMERATE = 20;
+const FRAMERATE = 30;
 
 class Pong {
   canvas: HTMLCanvasElement | null;
@@ -136,9 +136,9 @@ class Pong {
     this.ball.y = newState.ball.y;
   }
 
-  spectate() {
+  spectate(gameId: number) {
     this.socket.on('game-state', (e) => this.updateState(e));
-    this.socket.emit('game-spectate', 1);
+    this.socket.emit('game-spectate', gameId);
     this.execSpectateFrame(-1);
   }
 }
