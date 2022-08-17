@@ -8,9 +8,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { CreateGameDto } from './dtos/create-game.dto';
-import { MoveDto } from './dtos/move.dto';
+import { StateDto } from '@dtos/game/state.dto';
 import { Game } from './game';
+import { MoveDto } from '@dtos/game/move.dto';
+import { CreateGameDto } from '@dtos/game/create-game.dto';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway
@@ -19,6 +20,18 @@ export class GameGateway
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('GameGateway');
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
+
+  @SubscribeMessage('game-state')
+  handleState(client: Socket, state: StateDto): string {
+    // this.logger.log(JSON.stringify(state));
+    // if client is player in move.gameId
+    const game = this.games.get(state.gameId);
+    if (!game) {
+      return 'Error: game not found';
+    }
+    this.server.to(game.room).emit('game-state', state);
+    return 'Success';
+  }
 
   @SubscribeMessage('game-move')
   handleMove(client: Socket, move: MoveDto): string {
@@ -49,8 +62,8 @@ export class GameGateway
       return 'Error: game already exists';
     }
     game.room = game.gameId.toString();
-    game.server = this.server;
-    const new_game = new Game(game);
+    // game.server = this.server;
+    const new_game = new Game(game, this.server);
     new_game.players[0] = client;
     this.games.set(game.gameId, new_game);
     client.join(game.room);

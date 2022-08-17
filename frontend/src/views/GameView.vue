@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Game</h1>
-    <game-window></game-window>
+    <game-window :socket="socket"></game-window>
   </div>
 </template>
 
@@ -19,7 +19,7 @@ export default defineComponent({
     return {
       socket: io(
         `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT
-        }/chat`,
+        }/game`,
       ),
     }
   },
@@ -49,11 +49,9 @@ export default defineComponent({
   },
   created() {
     this.socket.on('game-connect', this.handleConnection);
-    this.socket.on('game-state', this.handleGameState);
   },
   beforeDestroy() {
     this.socket.off('game-connect');
-    this.socket.off('game-connect', this.handleGameState);
   },
 });
 </script>
