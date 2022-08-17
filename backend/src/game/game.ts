@@ -18,7 +18,7 @@ export class Game {
     this.state = new GameState();
     this.players = [undefined, undefined];
     this.server = server;
-    this.room = init.room;
+    this.room = init.gameId.toString();
     this.updateInterval = undefined;
   }
 

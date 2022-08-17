@@ -29,19 +29,6 @@ export default defineComponent({
   methods: {
     handleConnection(payload: any) {
       console.log(payload);
-    //   this.socket.emit('game-create', { gameId: 1 }, (res: string) => {
-    //     console.log(`Create Response: ${res}`);
-    //     if (res.includes('game already exists')) {
-    //       this.socket.emit('game-join', 1, (res: string) => {
-    //         console.log(`Join Response: ${res}`);
-    //         if (res.includes('Error')) {
-    //           this.socket.emit('game-spectate', 1, (res: string) => {
-    //             console.log(`Spectate Response: ${res}`);
-    //           });
-    //         }
-    //       });
-    //     }
-    //   });
     },
     handleGameState(payload: any) {
       console.log(`Ball: (${payload.ball.x}, ${payload.ball.y}); Player0: ${payload.players[0].y}; Player1: ${payload.players[1].y}`);

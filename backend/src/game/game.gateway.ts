@@ -20,6 +20,7 @@ export class GameGateway
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('GameGateway');
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
+  queue: Array<Socket> = [];
 
   @SubscribeMessage('game-state')
   handleState(client: Socket, state: StateDto): string {
@@ -49,6 +50,7 @@ export class GameGateway
       return 'Error: not a player';
     }
     if (game) {
+      this.logger.log('moving player');
       game.move(player, move.dy);
     }
     return 'Success';
@@ -57,7 +59,6 @@ export class GameGateway
   @SubscribeMessage('game-create')
   handeCreate(client: Socket, game: CreateGameDto): string {
     // should create Match and use Match.id as the game id
-    // because the client supplying it doesn't make sense
     this.logger.log(`creating game ${game.gameId}`);
     this.logger.log(`player1 ${client.id}`);
     if (this.games.has(game.gameId)) {
@@ -70,6 +71,35 @@ export class GameGateway
     this.games.set(game.gameId, new_game);
     client.join(game.room);
     return 'Success';
+  }
+
+  @SubscribeMessage('game-queue')
+  handeQueue(client: Socket, gameOptions: CreateGameDto): string {
+    gameOptions.gameId = -1; // handle game options here instead
+    if (this.queue.length > 0) {
+      const otherPlayer = this.queue.shift();
+      if (otherPlayer) {
+        this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
+        const gameId = 3;
+        if (this.games.has(gameId)) {
+          // this is just because we're re-using 3
+          this.games.get(gameId).end(); // can be removed once id is assigned
+        }
+
+        const newGame = new Game({ gameId: gameId }, this.server);
+        newGame.players[0] = otherPlayer;
+        newGame.players[1] = client;
+        this.games.set(gameId, newGame);
+        client.join(newGame.room);
+        otherPlayer.join(newGame.room);
+        this.server.to(newGame.room).emit('game-starting', newGame.gameId);
+        newGame.startServer();
+        return 'Success: starting game';
+      }
+    }
+    this.queue.push(client);
+    this.logger.log(`${client.id} joining queue`);
+    return 'Success: joined queue';
   }
 
   @SubscribeMessage('game-join')
