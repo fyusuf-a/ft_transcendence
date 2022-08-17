@@ -1,5 +1,5 @@
 import ChannelJoinDialog from '@/components/Chat/ChannelJoinDialog.vue';
-import { myShallowMount } from '@tests/vuetify-test';
+import { myMount } from '@tests/vuetify-test';
 
 describe('ChannelJoinDialog.vue', () => {
   it('renders Join Channel', () => {
@@ -9,7 +9,7 @@ describe('ChannelJoinDialog.vue', () => {
         name: 'ChannelName',
       },
     ];
-    const wrapper = myShallowMount(ChannelJoinDialog, {
+    const wrapper = myMount(ChannelJoinDialog, {
       propsData: {
         joinableChannels: joinableChannels,
       },
@@ -24,7 +24,7 @@ describe('ChannelJoinDialog.vue', () => {
         name: 'ChannelName',
       },
     ];
-    const wrapper = myShallowMount(ChannelJoinDialog, {
+    const wrapper = myMount(ChannelJoinDialog, {
       propsData: { joinableChannels },
     });
     await wrapper.setData({ action: 'Create' });

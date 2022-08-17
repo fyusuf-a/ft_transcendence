@@ -1,4 +1,4 @@
-import { myShallowMount } from '@tests/vuetify-test';
+import { myMount } from '@tests/vuetify-test';
 import ChatWindow from '@/components/Chat/ChatWindow.vue';
 
 describe('ChatWindow.vue', () => {
@@ -10,7 +10,7 @@ describe('ChatWindow.vue', () => {
     const messages = new Map();
     const users = new Map();
     const socket = new Object();
-    const wrapper = myShallowMount(ChatWindow, {
+    const wrapper = myMount(ChatWindow, {
       propsData: { channel, messages, users, socket },
     });
     expect(wrapper.text()).to.include(channel.name);
