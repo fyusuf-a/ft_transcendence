@@ -11,6 +11,7 @@ export class Game {
   server: Server;
   room: string;
   state: GameState;
+  updateInterval: any;
 
   constructor(init: CreateGameDto, server: Server) {
     this.gameId = init.gameId;
@@ -18,10 +19,15 @@ export class Game {
     this.players = [undefined, undefined];
     this.server = server;
     this.room = init.room;
+    this.updateInterval = undefined;
   }
 
   start() {
     this.update();
+  }
+
+  end() {
+    clearInterval(this.updateInterval);
   }
 
   collision_update() {
@@ -77,12 +83,14 @@ export class Game {
       player2: { x: this.state.players[1].x, y: this.state.players[1].y },
     };
     this.server.to(this.room).emit('game-state', state);
-    // setInterval(() => this.updateServer(), 100);
   }
 
   startServer() {
     console.log('starting server');
-    setInterval(() => this.updateServer(), 1000 / FRAMERATE);
+    this.updateInterval = setInterval(
+      () => this.updateServer(),
+      1000 / FRAMERATE,
+    );
   }
 
   nextCollision(): number {

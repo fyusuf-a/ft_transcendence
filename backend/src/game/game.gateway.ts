@@ -113,6 +113,7 @@ export class GameGateway
     for (const gameMap of this.games) {
       for (const player of gameMap[1].players) {
         if (player && !player.connected) {
+          gameMap[1].end();
           this.games.delete(gameMap[0]);
         }
       }

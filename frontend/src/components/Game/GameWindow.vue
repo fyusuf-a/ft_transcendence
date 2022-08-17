@@ -1,8 +1,6 @@
 <template>
   <div>
     <div>
-      <v-btn @click="startGame">Start Game</v-btn>
-      <v-btn @click="spectateGame">Spectate Game</v-btn>
       <v-btn @click="createGame">Create Server-side Game</v-btn>
       <v-btn @click="joinGame">Join Server-side Game</v-btn>
       <v-btn @click="spectateServerGame">Spectate Server-side Game</v-btn>
@@ -51,18 +49,6 @@ export default defineComponent({
     };
   },
   methods: {
-    startGame() {
-      if (!this.pong) {
-        this.pong = new Pong(
-          this.pongCanvas,
-          this.ballCanvas,
-          this.backgroundCanvas,
-          this.paddleCanvas,
-          this.socket as Socket,
-        );
-      }
-      this.pong.start(-1);
-    },
     createGame() {
       const createGame: CreateGameDto = { gameId: 2, room: '2' };
       this.socket.emit('game-create', createGame);
@@ -84,18 +70,6 @@ export default defineComponent({
       }
       this.pong.spectate(2);
     },
-    spectateGame() {
-      if (!this.pong) {
-        this.pong = new Pong(
-          this.pongCanvas,
-          this.ballCanvas,
-          this.backgroundCanvas,
-          this.paddleCanvas,
-          this.socket as Socket,
-        );
-      }
-      this.pong.spectate(1);
-    },
   },
   mounted() {
     console.log('mounted');
@@ -110,6 +84,7 @@ export default defineComponent({
     window.addEventListener("keydown", (event) => {
       console.log("key down detected!!");
       console.log("key: " + event.code);
+      if (!this.pong) return;
       if (event.code === "ArrowUp") {
         this.socket.emit('game-move', { gameId: 2, dy: -1 });
       } else if (event.code === "ArrowDown") {
@@ -120,6 +95,7 @@ export default defineComponent({
     window.addEventListener("keyup", (event) => {
       console.log("key up detected!!");
       console.log("key: " + event.code);
+      if (!this.pong) return;
       if (event.code === "ArrowUp") {
         this.socket.emit('game-move', { gameId: 2, dy: 0 });
       } else if (event.code === "ArrowDown") {
