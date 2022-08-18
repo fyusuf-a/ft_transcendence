@@ -3,7 +3,7 @@
     <div>
       <v-btn @click="createGame">Create Server-side Game</v-btn>
       <v-btn @click="joinGame">Join Server-side Game</v-btn>
-      <v-btn @click="() => spectateServerGame(3)">Spectate Server-side Game</v-btn>
+      <v-btn @click="() => spectateServerGame(+spectateGameId)">Spectate Server-side Game</v-btn> <input v-model="spectateGameId">
       <v-btn @click="joinQueue">Join Queue</v-btn>
     </div>
     <canvas ref="pong" id="pong" width="640" height="480"></canvas>
@@ -29,6 +29,7 @@ interface DataReturnTypes {
   ballCanvas: HTMLCanvasElement | null;
   paddleCanvas: HTMLCanvasElement | null;
   gameId: number | null;
+  spectateGameId: string;
 }
 
 export default defineComponent({
@@ -49,6 +50,7 @@ export default defineComponent({
       ballCanvas: null,
       paddleCanvas: null,
       gameId: null,
+	  spectateGameId: "1",
     };
   },
   methods: {
