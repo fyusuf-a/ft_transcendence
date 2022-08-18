@@ -8,7 +8,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { StateDto } from '@dtos/game/state.dto';
 import { Game } from './game';
 import { MoveDto } from '@dtos/game/move.dto';
 import { CreateGameDto } from '@dtos/game/create-game.dto';
@@ -24,18 +23,6 @@ export class GameGateway
   private logger: Logger = new Logger('GameGateway');
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
   queue: Array<Socket> = [];
-
-  @SubscribeMessage('game-state')
-  handleState(client: Socket, state: StateDto): string {
-    // this.logger.log(JSON.stringify(state));
-    // if client is player in move.gameId
-    const game = this.games.get(state.gameId);
-    if (!game) {
-      return 'Error: game not found';
-    }
-    this.server.to(game.room).emit('game-state', state);
-    return 'Success';
-  }
 
   @SubscribeMessage('game-move')
   handleMove(client: Socket, move: MoveDto): string {
@@ -56,23 +43,6 @@ export class GameGateway
       this.logger.log('moving player');
       game.move(player, move.dy);
     }
-    return 'Success';
-  }
-
-  @SubscribeMessage('game-create')
-  handeCreate(client: Socket, game: CreateGameDto): string {
-    // should create Match and use Match.id as the game id
-    this.logger.log(`creating game ${game.gameId}`);
-    this.logger.log(`player1 ${client.id}`);
-    if (this.games.has(game.gameId)) {
-      return 'Error: game already exists';
-    }
-    game.room = game.gameId.toString();
-    // game.server = this.server;
-    const new_game = new Game(game, this.server);
-    new_game.players[0] = client;
-    this.games.set(game.gameId, new_game);
-    client.join(game.room);
     return 'Success';
   }
 
@@ -103,25 +73,6 @@ export class GameGateway
     this.queue.push(client);
     this.logger.log(`${client.id} joining queue`);
     return 'Success: joined queue';
-  }
-
-  @SubscribeMessage('game-join')
-  handeJoin(client: Socket, gameId: number): string {
-    // eventually we need to use whatever matchmaking system that we develop
-    // or allow a user to join a 'challenge' against a specific user
-    if (!this.games.has(gameId)) {
-      return 'Error: game not found';
-    }
-    const game = this.games.get(gameId);
-    if (game.players[1]) {
-      return 'Error: game full';
-    }
-    game.players[1] = client;
-    client.join(game.room);
-    this.logger.log(`joining game ${game.gameId}`);
-    this.logger.log(`player2 ${client.id}`);
-    game.startServer();
-    return 'Success';
   }
 
   @SubscribeMessage('game-spectate')
