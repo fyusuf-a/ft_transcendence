@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-2 ml-15 mr-15 mt-5" width="100%" >  
+  <v-card class="pa-2 ml-15 mr-15 mt-5" width="84%" >  
     <!-- <v-card-title>{{ username() }}</v-card-title> -->
     <v-card-title>louie</v-card-title>
   

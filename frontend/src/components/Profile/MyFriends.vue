@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="loading" class="ma-5" width="400">
+  <v-card :loading="loading" class="pa-2 ml-15 mr-15 mt-5" width="40%">
     <v-card-title class="white--text orange darken-4">
       Friends
 
