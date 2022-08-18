@@ -12,11 +12,14 @@ import { StateDto } from '@dtos/game/state.dto';
 import { Game } from './game';
 import { MoveDto } from '@dtos/game/move.dto';
 import { CreateGameDto } from '@dtos/game/create-game.dto';
+import { MatchesService } from 'src/matches/matches.service';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  constructor(private matchService: MatchesService) {}
+
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('GameGateway');
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
@@ -74,17 +77,17 @@ export class GameGateway
   }
 
   @SubscribeMessage('game-queue')
-  handeQueue(client: Socket, gameOptions: CreateGameDto): string {
+  async handeQueue(
+    client: Socket,
+    gameOptions: CreateGameDto,
+  ): Promise<string> {
     gameOptions.gameId = -1; // handle game options here instead
     if (this.queue.length > 0) {
       const otherPlayer = this.queue.shift();
       if (otherPlayer) {
         this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
-        const gameId = 3;
-        if (this.games.has(gameId)) {
-          // this is just because we're re-using 3
-          this.games.get(gameId).end(); // can be removed once id is assigned
-        }
+        const match = await this.matchService.create({ homeId: 1, awayId: 2 });
+        const gameId = match.id;
 
         const newGame = new Game({ gameId: gameId }, this.server);
         newGame.players[0] = otherPlayer;
