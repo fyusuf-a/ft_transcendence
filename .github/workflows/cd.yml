@@ -69,6 +69,10 @@ jobs:
       - name: Push images to Dockerhub
         run: |
           docker image push fyusufa/ft_transcendence_frontend:latest
+      - name: Trigger webhook on server
+        uses: wei/curl@master
+        with:
+          args: "-H 'X-Secret: ${{ secrets.WEBHOOK_SECRET }}' ${{ secrets.WEBHOOK_URL }}"
   build-and-push-backend:
     runs-on: ubuntu-latest
     needs: which-image-to-build
@@ -104,3 +108,7 @@ jobs:
       - name: Push images to Dockerhub
         run: |
           docker image push fyusufa/ft_transcendence_backend:latest
+      - name: Trigger webhook on server
+        uses: wei/curl@master
+        with:
+          args: "-H 'X-Secret: ${{ secrets.WEBHOOK_SECRET }}' ${{ secrets.WEBHOOK_URL }}"
