@@ -1,22 +1,24 @@
 # ft_transcendence
 
 ## Requirements
-- Docker
+- `git` and `git-lfs`
+- `docker` and `docker-compose`
 
 ## Getting Started
-### Clone the repository.
+1. Clone the repository.
 ```
 git clone https://github.com/fyusuf-a/ft_transcendence.git && cd ft_transcendence
 ```
 
-### Create the `.env` file
-The [.env.example](https://github.com/fyusuf-a/ft_transcendence/blob/master/.env.example) file shows the required variables to set before starting the containers
+2. Create an application on the 42 intra with the redirect URI set to `http://localhost:8080/auth/callback`
+
+3. Create the `.env` file:
 ```
 cp .env.example .env
 ```
-Copy the example file into `.env` and supply any missing values
+Fill the values in the `.env` with the help of the [information below](#.env-file).
 
-### Build and Start the containers
+4. Build and Start the containers
 ```
 docker-compose up --build
 ```
@@ -27,9 +29,9 @@ This will build and start the default containers (the database and the backend).
 - `--profile frontend` starts the frontend container
 
 ## Usage
-- The backend will be available at `http://localhost:8080/`
-- The frontend will be available at `http://localhost:8000/`
-- Adminer will be available at `http://localhost:8888/`
+- The frontend, if enabled, will be available at `http://localhost:8000/`
+- The backend swagger will be available at `http://localhost:8080/`
+- Adminer, if enabled, will be available at `http://localhost:8888/`
 
 ## Testing
 ### Backend
@@ -39,7 +41,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:watch  # watch for change
 docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end tests one time
 ```
 
-## .env file
+## `.env` file
 
 **Please do not change values in `./.env.example` as those values are used in the CI**
 
