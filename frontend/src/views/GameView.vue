@@ -34,7 +34,9 @@ export default defineComponent({
       });
     },
     handleGameState(payload: any) {
-      console.log(`Ball: (${payload.ball.x}, ${payload.ball.y}); Player0: ${payload.players[0].y}; Player1: ${payload.players[1].y}`);
+      console.log(
+        `Ball: (${payload.ball.x}, ${payload.ball.y}); Player0: ${payload.players[0].y}; Player1: ${payload.players[1].y}`,
+      );
     }
   },
   created() {
