@@ -1,5 +1,5 @@
 export interface GameOptionsDto {
-  player1Id?: number;
-  player2Id?: number;
+  homeId?: number;
+  awayId?: number;
   // other game modes
 }

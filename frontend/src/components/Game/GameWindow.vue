@@ -2,8 +2,11 @@
 	<div>
 		<div>
       <v-btn @click="joinQueue">Join Queue</v-btn>
-			<v-btn @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn> <input
-				v-model="spectateGameId">
+			<v-btn @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
+      <input v-model="spectateGameId">
+      <v-btn @click="() => challengeUser(+userIdField)">Issue Challenge To User</v-btn>
+      <input v-model="userIdField">
+      <v-btn @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
 		</div>
 		<canvas ref="pong" id="pong" width="640" height="480"></canvas>
 		<canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
@@ -16,7 +19,7 @@
 import { Socket } from 'socket.io-client';
 import { defineComponent } from 'vue';
 import { Pong } from './src/pong';
-import { CreateGameDto } from '@dtos/game/create-game.dto'
+import { GameOptionsDto } from '@dtos/game/game-options.dto'
 
 interface DataReturnTypes {
 	ctx: CanvasRenderingContext2D | null;
@@ -29,6 +32,7 @@ interface DataReturnTypes {
 	paddleCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
+  userIdField: string;
 }
 
 export default defineComponent({
@@ -50,13 +54,22 @@ export default defineComponent({
 			paddleCanvas: null,
 			gameId: null,
 			spectateGameId: "1",
+      userIdField: "1",
 		};
 	},
 	methods: {
 		joinQueue() {
-			const gameOptions: CreateGameDto = { gameId: 3, room: '3' };
+			const gameOptions: GameOptionsDto = {  };
 			this.socket.emit('game-queue', gameOptions);
 		},
+    challengeUser(userId: number) {
+      const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
+			this.socket.emit('game-queue', gameOptions);
+    },
+    acceptChallengeFromUser(userId: number) {
+      const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
+			this.socket.emit('game-queue', gameOptions);
+    },
 		spectateGame(gameId: number) {
 			if (!this.pong) {
 				this.pong = new Pong(
