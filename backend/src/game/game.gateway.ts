@@ -79,7 +79,12 @@ export class GameGateway
       const otherPlayer = this.queue.shift();
       if (otherPlayer) {
         this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
-        const match = await this.matchService.create({ homeId: 1, awayId: 2 });
+        const home = this.authenticatedSockets.get(otherPlayer.id);
+        const away = this.authenticatedSockets.get(client.id);
+        const match = await this.matchService.create({
+          homeId: home.id,
+          awayId: away.id,
+        });
         const gameId = match.id;
 
         const newGame = new Game({ gameId: gameId }, this.server);
