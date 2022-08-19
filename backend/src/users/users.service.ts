@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
@@ -15,8 +15,8 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 enum hexSignature {
-  GIF = '25504446',
-  JPG = 'FFD8FFE1',
+  GIF = '47494638',
+  JPG = 'FFD8FF',
   PNG = '89504E47',
 }
 
@@ -121,20 +121,23 @@ export class UsersService {
     });
   }
 
-  verifyMagicNum(file: Express.Multer.File): boolean {
-    const uint: Uint8Array = new Uint8Array(file.buffer);
-    const bytes: Array<string> = [];
-    uint.forEach((byte) => {
-      bytes.push(byte.toString(16));
-    });
-    const hex = bytes.join('').toUpperCase();
-    console.log(hex);
+  verifyMagicNum(filePath: string): boolean {
+    const data: string = fs
+      .readFileSync(filePath, { encoding: 'hex' })
+      .slice(0, 8)
+      .toUpperCase();
+
     if (
-      hex == hexSignature.GIF ||
-      hex == hexSignature.PNG ||
-      hex == hexSignature.JPG
+      data == hexSignature.GIF ||
+      data == hexSignature.PNG ||
+      data.slice(0, 6) == hexSignature.JPG
     )
       return true;
+    const logger: Logger = new Logger('invalid avatar signature.');
+    fs.unlink(filePath, (err) => {
+      if (err) logger.error(err);
+      else logger.log('Deleted ' + filePath + ' : invalid signature.');
+    });
     return false;
   }
 }
