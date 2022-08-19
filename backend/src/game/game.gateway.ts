@@ -11,7 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Game } from './game';
 import { MoveDto } from '@dtos/game/move.dto';
-import { CreateGameDto } from '@dtos/game/create-game.dto';
+import { GameOptionsDto } from '@dtos/game/game-options.dto';
 import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/users/entities/user.entity';
@@ -33,7 +33,7 @@ export class GameGateway
   private logger: Logger = new Logger('GameGateway');
   private authenticatedSockets: Map<string, User> = new Map();
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
-  queue: Array<Socket> = [];
+  queues: Map<string, Array<Socket>> = new Map();
 
   private checkAuth(client: Socket): boolean {
     if (
@@ -71,13 +71,29 @@ export class GameGateway
   @SubscribeMessage('game-queue')
   async handeQueue(
     client: Socket,
-    gameOptions: CreateGameDto,
+    gameOptions: GameOptionsDto,
   ): Promise<string> {
     this.checkAuth(client);
-    gameOptions.gameId = -1; // handle game options here instead
-    if (this.queue.length > 0) {
-      const otherPlayer = this.queue.shift();
-      if (otherPlayer) {
+    const clientUser = this.authenticatedSockets.get(client.id);
+    let selectedQueue;
+    const gameOptionsString = JSON.stringify(gameOptions);
+    if (gameOptions.homeId || gameOptions.awayId) {
+      if (
+        clientUser.id !== gameOptions.homeId &&
+        clientUser.id !== gameOptions.awayId
+      ) {
+        throw new WsException('Invalid Game Options');
+      }
+    }
+    if (this.queues.has(gameOptionsString)) {
+      selectedQueue = this.queues.get(gameOptionsString);
+    } else {
+      selectedQueue = new Array<Socket>();
+      this.queues.set(gameOptionsString, selectedQueue);
+    }
+    if (selectedQueue.length > 0) {
+      const otherPlayer = selectedQueue.shift();
+      if (otherPlayer && otherPlayer.id !== client.id) {
         this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
         const home = this.authenticatedSockets.get(otherPlayer.id);
         const away = this.authenticatedSockets.get(client.id);
@@ -96,10 +112,15 @@ export class GameGateway
         this.server.to(newGame.room).emit('game-starting', newGame.gameId);
         newGame.startServer();
         return 'Success: starting game';
+      } else {
+        selectedQueue.unshift(otherPlayer);
+        throw new WsException('Request already exists');
       }
     }
-    this.queue.push(client);
-    this.logger.log(`${client.id} joining queue`);
+    selectedQueue.push(client);
+    this.logger.log(
+      `${client.id} joining queue with options ${JSON.stringify(gameOptions)}`,
+    );
     return 'Success: joined queue';
   }
 
