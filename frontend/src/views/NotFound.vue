@@ -10,14 +10,9 @@
         <router-link to="/game">play a match</router-link>? <br />Anyway, it's
         dangerous to go alone, take a cute little cat with you.
       </p>
-      <v-card
-        outlined
-        color="transparent"
-        :loading="loading"
-        class="mx-auto my-12"
-      >
-        <v-img :src="errorPicture"></v-img>
-      </v-card>
+      <div class="posImg">
+        <v-img :src="errorImg" max-width="50em"> </v-img>
+      </div>
       <p class="imgSrc">
         <a
           href="https://pixabay.com/fr/photos/cat-animal-de-compagnie-animal-98359/"
@@ -31,13 +26,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-export default Vue.extend({
-  data() {
-    return {
-      errorPicture: require('@/assets/images/40cat.png'),
-    };
-  },
+import { defineComponent } from 'vue';
+import errorImg from '@/assets/images/error-404.jpg';
+
+export default defineComponent({
+  data: () => ({
+    errorImg,
+  }),
 });
 </script>
 
@@ -48,20 +43,29 @@ export default Vue.extend({
 
 .imgSrc {
   text-align: right;
-  padding-top: 75px;
+  margin-top: 10px;
   color: black;
 }
 
 a {
   text-decoration: none;
+  color: black;
 }
 
-a:visited {}
+a:visited {
+}
 
 a:hover {
-  background: teal;
+  background: #03dac6;
   color: white;
   border-radius: 5px;
   padding: 1px 3px 1px 3px;
+}
+
+.posImg {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  margin-top: 50px;
 }
 </style>

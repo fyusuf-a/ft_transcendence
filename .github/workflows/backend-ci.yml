@@ -2,7 +2,9 @@ name: backend-ci
 
 on:
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - '**-dev'
 
 jobs:
   early-exit:
@@ -51,7 +53,10 @@ jobs:
         run: |
           cd backend
           npm run lint -- --no-fix --max-warnings=0
-          npm run test
+      - name: Unit tests
+        run: |
+          cd frontend
+          npm run test:unit
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers

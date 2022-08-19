@@ -1,23 +1,22 @@
 <template>
-  <v-btn icon @click="emitClick">
+  <v-btn icon @click="reverseAlert">
     <v-icon v-if="alert" color="accent">mdi-bell</v-icon>
     <v-icon v-else>mdi-bell-outline</v-icon>
   </v-btn>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
-  props: {
-    alert: {
-      type: Boolean,
-      required: true,
-    },
+export default defineComponent({
+  data() {
+    return {
+      alert: false,
+    };
   },
   methods: {
-    emitClick() {
-      this.$emit('click');
+    reverseAlert() {
+      this.alert = !this.alert;
     },
   },
 });

@@ -13,32 +13,24 @@
       height="100%"
     />
 
-    <notification-icon
-      @click="notification = !notification"
-      :alert="notification"
-    />
+    <notification-icon />
   </v-app-bar>
 </template>
 
 <script lang="ts">
 import NotificationIcon from '@/components/Notifications/NotificationIcon.vue';
 import ProfileCard from '@/components/Profile/ProfileCard.vue';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
-export default Vue.extend({
-  props: ['value'],
+export default defineComponent({
+  props: ['modelValue'],
   components: {
     'profile-card': ProfileCard,
     'notification-icon': NotificationIcon,
   },
-  data() {
-    return {
-      notification: true,
-    };
-  },
   methods: {
     toggleNavigationDrawer() {
-      this.$emit('input', !this.value);
+      this.$emit('update:modelValue', !this.modelValue);
     },
   },
 });

@@ -17,7 +17,8 @@ services:
       - ${BACKEND_PORT}:${BACKEND_PORT}
     volumes:
       - ./backend:/tmp/app
-      - ./dtos:/tmp/app/src/dtos
+      - ./dtos:/tmp/dtos
+      - ./tsconfig.json:/tmp/tsconfig.json
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
       DB_HOST: ${DB_HOST}
@@ -42,13 +43,16 @@ services:
     profiles: ["frontend"]
     ports:
       - 8000:80
+      # the following port is necessary for vite hot module reload (HMR)
+      - 4443:4443
     volumes:
       - ./frontend:/app
-      - ./dtos:/app/src/dtos
+      - ./dtos:/dtos
+      - ./tsconfig.json:/tsconfig.json
     environment:
-      VUE_APP_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
-      VUE_APP_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
-      VUE_APP_BACKEND_PORT: ${BACKEND_PORT}
+      VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+      VITE_BACKEND_HOST: ${FRONTEND_BACKEND_HOST}
+      VITE_BACKEND_PORT: ${BACKEND_PORT}
     build:
       context: .
       dockerfile: frontend/${FRONTEND_DOCKERFILE}
