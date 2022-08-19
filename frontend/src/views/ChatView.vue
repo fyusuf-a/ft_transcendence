@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12" md="10">
         <chat-window
-          v-if="selectedChannel && messages.has(selectedChannel.id)"
+          v-if="selectedChannel"
           :channel="selectedChannel"
           :messages="getMessages(selectedChannel.id)"
           :users="users"
