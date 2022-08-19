@@ -6,26 +6,48 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Game } from './game';
 import { MoveDto } from '@dtos/game/move.dto';
 import { CreateGameDto } from '@dtos/game/create-game.dto';
 import { MatchesService } from 'src/matches/matches.service';
+import { ConfigService } from '@nestjs/config';
+import { User } from 'src/users/entities/user.entity';
+import { TokenUserDto } from '@dtos/auth';
+import { UsersService } from 'src/users/users.service';
+import * as jwt from 'jsonwebtoken';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  constructor(private matchService: MatchesService) {}
+  constructor(
+    private matchService: MatchesService,
+    private readonly usersService: UsersService,
+    private configService: ConfigService,
+  ) {}
 
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('GameGateway');
+  private authenticatedSockets: Map<string, User> = new Map();
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
   queue: Array<Socket> = [];
 
+  private checkAuth(client: Socket): boolean {
+    if (
+      this.configService.get<string>('DISABLE_AUTHENTICATION') == 'true' ||
+      this.authenticatedSockets.has(client.id)
+    ) {
+      return true;
+    }
+    throw new WsException('Not Authorized');
+  }
+
   @SubscribeMessage('game-move')
   handleMove(client: Socket, move: MoveDto): string {
+    this.checkAuth(client);
     // if client is player in move.gameId
     const game = this.games.get(move.gameId);
     let player = -1;
@@ -51,6 +73,7 @@ export class GameGateway
     client: Socket,
     gameOptions: CreateGameDto,
   ): Promise<string> {
+    this.checkAuth(client);
     gameOptions.gameId = -1; // handle game options here instead
     if (this.queue.length > 0) {
       const otherPlayer = this.queue.shift();
@@ -78,6 +101,7 @@ export class GameGateway
   @SubscribeMessage('game-spectate')
   handleSpectate(client: Socket, gameId: number): string {
     // add socket to game room
+    this.checkAuth(client);
     if (this.games.has(gameId)) {
       const game = this.games.get(gameId);
       client.join(gameId.toString());
@@ -85,6 +109,28 @@ export class GameGateway
       return 'Success';
     }
     return 'Error: game not found';
+  }
+
+  @SubscribeMessage('game-auth')
+  async handleAuth(client: Socket, payload: any) {
+    this.logger.log(
+      `Client ${client.id} is trying to auth socket with token: ${payload.authorization}`,
+    );
+    try {
+      const token = payload.authorization;
+      const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      const user = await this.usersService.findOne(
+        +(decode as TokenUserDto).id,
+      );
+      if (!user) {
+        throw new WsException('Invalid Token');
+      }
+      this.authenticatedSockets.set(client.id, user);
+      return 'SUCCESS';
+    } catch (err) {
+      this.authenticatedSockets.delete(client.id);
+      throw new WsException('Not Authorized');
+    }
   }
 
   afterInit() {
