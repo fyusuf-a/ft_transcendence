@@ -68,6 +68,14 @@ export class UsersService {
     return this.usersRepository.delete(id);
   }
 
+  remove_avatar(filePath: string, reason: string) {
+    const logger: Logger = new Logger('remove_avatar');
+    fs.unlink(filePath, (err) => {
+      if (err) logger.error(err);
+      else logger.log('Deleted ' + filePath + reason);
+    });
+  }
+
   updateAvatar(userId: number, filepath: string) {
     return this.usersRepository.update(userId, { avatar: filepath });
   }
@@ -133,11 +141,7 @@ export class UsersService {
       data.slice(0, 6) == hexSignature.JPG
     )
       return true;
-    const logger: Logger = new Logger('invalid avatar signature.');
-    fs.unlink(filePath, (err) => {
-      if (err) logger.error(err);
-      else logger.log('Deleted ' + filePath + ' : invalid signature.');
-    });
+    this.remove_avatar(filePath, ' : invalid signature.');
     return false;
   }
 }
