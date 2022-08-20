@@ -48,7 +48,6 @@ export class GameGateway
   @SubscribeMessage('game-move')
   handleMove(client: Socket, move: MoveDto): string {
     this.checkAuth(client);
-    // if client is player in move.gameId
     const game = this.games.get(move.gameId);
     let player = -1;
     if (!game) {
@@ -62,7 +61,6 @@ export class GameGateway
       return 'Error: not a player';
     }
     if (game) {
-      this.logger.log('moving player');
       game.move(player, move.dy);
     }
     return 'Success';
@@ -126,7 +124,6 @@ export class GameGateway
 
   @SubscribeMessage('game-spectate')
   handleSpectate(client: Socket, gameId: number): string {
-    // add socket to game room
     this.checkAuth(client);
     if (this.games.has(gameId)) {
       const game = this.games.get(gameId);
