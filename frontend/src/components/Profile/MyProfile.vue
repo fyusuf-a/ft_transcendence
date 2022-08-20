@@ -12,11 +12,10 @@
                ></v-img>
             </v-card>
             <v-card-actions>
+
               <v-btn color="deep-purple lighten-2" text @click="reserve">
                 Change picture
               </v-btn>
-              
-              
               
               <!-- <v-btn color="deep-purple lighten-2" text @click="changeUsername">
                 Change username
@@ -29,7 +28,10 @@
                   v-model="dialog"
                   activator="parent"
                 >
-                  <v-card>
+                  <v-card >
+                    <v-card-text v-if="nameAlreadyUsed === 500">
+                        This username is already used
+                      </v-card-text>
                     <v-form
                       ref="form"
                       v-model="valid"
@@ -42,10 +44,11 @@
                         label="Name"
                         required
                       ></v-text-field>
+                    
 
                       <v-checkbox
                         v-model="checkbox"
-                        :rules="[(v: string) => !!v || 'You must agree to continue!']"
+                        :rules="checkboxRules"
                         label="Do you agree?"
                         required
                       ></v-checkbox>
@@ -100,9 +103,13 @@ export default defineComponent({
     dialog: false,
     valid: true,
     name: '',
+    nameAlreadyUsed: 0,
     nameRules: [
       (v: string) => !!v || 'Name is required',
       (v: string) => (v && v.length <= 15) || 'Name must be less than 15 characters',
+    ],
+    checkboxRules: [
+      (v: string) => !!v || 'You must agree to continue!',
     ],
     select: null,
     checkbox: false,
@@ -113,6 +120,7 @@ export default defineComponent({
   },
   methods: {
     ...mapGetters(['username', 'avatar', 'id']),
+
     reserve() {
       // TODO: remove and replace with 2 methods: one to change the username, one to change the picture
     },
@@ -120,20 +128,18 @@ export default defineComponent({
     validate () {
       this.changeUsername(this.name);
       (this.$refs.form as any).validate();
-      this.dialog = false;
-      (this.$refs.form as any).reset();
       this.checkbox = false;
+      (this.$refs.form as any).reset();
+      this.nameAlreadyUsed = 0;
     },
+    
     reset () {
       (this.$refs.form as any).reset();
       this.checkbox = false;
+      this.nameAlreadyUsed = 0;
     },
+
     async changeUsername(name: string) {
-       
-const response = await axios.get('/users/' + this.id());
-console.log(response.data);
-console.log(response.data.username);
-      
       const data = {
         username: name,
     	};
@@ -144,14 +150,14 @@ console.log(response.data.username);
         })
         .catch( (error) => {
           console.log(error.response);
+          this.nameAlreadyUsed = error.response.status;
         })
       ;
 
       const response2 = await axios.get('http://localhost:8080/users/' + this.id());
-console.log(response2.data);
-console.log(response2.data.username);
-        
+
         this.$store.commit('setUsername', response2.data.username);
+        if (this.nameAlreadyUsed === 0) { this.dialog = false; };
     },
   },
 
