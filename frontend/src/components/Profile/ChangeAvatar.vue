@@ -24,7 +24,7 @@
             <v-btn
               color="primary"
               text
-              @click="dialog = false"
+              @click="submitAvatar"
             >
               Save
             </v-btn>
@@ -46,11 +46,19 @@ import axios from 'axios';
 export default defineComponent({
   data: () => ({
     dialog: false,
+    avatarImg: null,
   }),
 
   methods: {
     ...mapGetters(['username', 'avatar', 'id']),
 
+    async submitAvatar() {
+      if (this.avatarImg === null)
+        console.log("There are no file");
+      else {
+        console.log("Let's a go");
+      }
+    },
   },
 
 });
