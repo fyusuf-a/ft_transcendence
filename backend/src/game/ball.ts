@@ -1,23 +1,16 @@
-const SPEED = 3.5;
-const BALL_SIZE = 13;
-
-function random(min: number, max: number) {
-  return min + Math.random() * (max - min);
-}
-
 export class Ball {
   x: number; // x position
   y: number; // y position
-  dx: number; // x velocity
-  dy: number; // y velocity
+  vx: number; // x velocity
+  vy: number; // y velocity
   size: number; // size of the ball (probably constant, but maybe changed by options or powerups)
 
-  constructor() {
-    this.size = BALL_SIZE;
-    this.x = random(150, 390);
-    this.y = random(100, 380);
-    this.dx = this.x < 320 ? SPEED : -SPEED;
-    this.dy = random(-SPEED, SPEED);
+  constructor(x: number, y: number, vx: number, vy: number, size: number) {
+    this.size = size;
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
   }
 
   get_size() {
@@ -30,22 +23,22 @@ export class Ball {
     return this.y;
   }
   get_dx() {
-    return this.dx;
+    return this.vx;
   }
   get_dy() {
-    return this.dy;
+    return this.vy;
   }
 
   invert_dy() {
-    this.dy *= -1;
+    this.vy *= -1;
   }
 
   invert_dx() {
-    this.dx *= -1;
+    this.vx *= -1;
   }
 
   update() {
-    this.x += this.dx;
-    this.y += this.dy;
+    this.x += this.vx;
+    this.y += this.vy;
   }
 }
