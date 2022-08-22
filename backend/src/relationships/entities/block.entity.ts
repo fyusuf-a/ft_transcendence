@@ -24,14 +24,14 @@ export class Block {
   id: number;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   source: User;
   @Column()
   @RelationId((block: Block) => block.source)
   sourceId: number;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   target: User;
   @Column()
   @RelationId((block: Block) => block.target)
