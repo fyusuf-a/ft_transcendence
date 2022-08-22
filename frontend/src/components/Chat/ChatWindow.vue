@@ -3,7 +3,7 @@
     <v-container fill-height>
       <v-row dense max-height="10px">
         <v-col cols="11">
-          <v-subheader>{{ channel.name }}</v-subheader>
+          {{ channel.name }}
         </v-col>
         <v-col cols="1">
           <chat-window-menu
@@ -16,15 +16,8 @@
           <v-divider></v-divider>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row v-for="item in messages">
         <v-col cols="12">
-          <v-virtual-scroll
-            :items="messages.get(channel.id)"
-            :item-height="itemHeight"
-            height="300"
-            id="message-scroll"
-          >
-            <template v-slot:default="{ item }">
               <chat-message
                 :sender="getUsername(item.senderId)"
                 :senderId="item.senderId"
@@ -35,8 +28,6 @@
                 "
               >
               </chat-message>
-            </template>
-          </v-virtual-scroll>
         </v-col>
       </v-row>
 
@@ -59,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import ChatMessage from '@/components/Chat/ChatMessage.vue';
 import ChatWindowMenu from '@/components/Chat/ChatWindowMenu.vue';
 import { ChannelDto } from '@/common/dto/channel.dto';
@@ -69,14 +60,15 @@ interface DataReturnType {
   messageContent: string;
   itemHeight: number;
 }
-export default Vue.extend({
+
+export default defineComponent({
   props: {
     channel: {
       type: Object as PropType<ChannelDto>,
       required: true,
     },
     messages: {
-      type: Map,
+      type: Object as PropType<MessageDto[]>,
       required: true,
     },
     users: {
@@ -110,18 +102,6 @@ export default Vue.extend({
       });
       this.messageContent = '';
     },
-    scrollDown() {
-      if (this.channel) {
-        let index = (this.messages.get(this.channel.id) as Array<MessageDto>)
-          ?.length;
-        if (index === undefined) index = 0;
-        else index -= 1;
-        const scroller = document.getElementById('message-scroll');
-        if (scroller) {
-          scroller.scrollTop = this.itemHeight * index;
-        }
-      }
-    },
     getUsername(userId: number): string {
       const user = this.users.get(userId) as UserDto;
       if (user) {
@@ -135,7 +115,6 @@ export default Vue.extend({
   },
   computed: {},
   mounted() {
-    this.scrollDown();
   },
 });
 </script>

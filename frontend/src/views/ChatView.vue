@@ -5,7 +5,7 @@
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
-          :messages="messages"
+          :messages="getMessages(selectedChannel.id)"
           :users="users"
           :socket="socket"
           :key="newMessage"
@@ -17,7 +17,6 @@
         <channel-list
           @channel-select-event="handleChannelSelection"
           @channel-join-event="handleChannelJoin"
-          title="Channels"
           :channels="subscribedChannels"
           :unreadChannels="unreadChannels"
           :allChannels="allChannels"
@@ -29,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 import ChannelList from '@/components/Chat/ChannelList.vue';
@@ -55,11 +54,13 @@ interface DataReturnType {
   users: Map<number, UserDto>;
   memberships: Array<MembershipDto>;
 }
-export default Vue.extend({
+export default defineComponent({
   data(): DataReturnType {
     return {
       socket: io(
-        `http://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/chat`,
+        `http://${import.meta.env.VITE_BACKEND_HOST}:${
+          import.meta.env.VITE_BACKEND_PORT
+        }/chat`,
       ),
       channels: [],
       allChannels: new Map(),
@@ -78,6 +79,11 @@ export default Vue.extend({
     'chat-window': ChatWindow,
   },
   methods: {
+    getMessages(channelId: number): MessageDto[] {
+      const found = this.messages.get(channelId);
+      if (found) return found;
+      return [];
+    },
     printResponse(response: string) {
       console.log(`Server: ${response}`);
     },

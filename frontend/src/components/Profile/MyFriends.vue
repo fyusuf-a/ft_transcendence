@@ -10,30 +10,24 @@
       </v-btn>
     </v-card-title>
 
-    <v-virtual-scroll :items="users" item-height="50" height="300" width="500">
-      <template v-slot:default="{ item }">
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>{{ item.username }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </template>
-    </v-virtual-scroll>
+    <v-card>
+      <v-list :items="users" />
+    </v-card>
   </v-card>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { ResponseFriendshipDto } from '@dtos/friendships';
 import { PageDto } from '@dtos/pages';
 
 interface MyFriendsData {
   loading: boolean;
-  users: { username: string }[];
+  users: { value: number; title: string }[];
 }
 
-export default Vue.extend({
+export default defineComponent({
   data(): MyFriendsData {
     return {
       loading: true,
@@ -52,7 +46,10 @@ export default Vue.extend({
     );
     response.data.data.forEach(async (friendship) => {
       let userResponse = await axios.get('/users/' + friendship.targetId);
-      this.users.push({ username: userResponse.data.username });
+      this.users.push({
+        value: userResponse.data.id,
+        title: userResponse.data.username,
+      });
     });
     this.loading = false;
   },

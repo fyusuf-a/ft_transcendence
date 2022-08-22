@@ -1,11 +1,10 @@
-import { expect } from 'chai';
-import { shallowMount } from '@vue/test-utils';
 import ChatMessageMenu from '@/components/Chat/ChatMessageMenu.vue';
+import { myMount } from '@tests/vuetify-test';
 
 describe('ChatMessageMenu.vue', () => {
   it('renders regular options', () => {
     const targetId = 1;
-    const wrapper = shallowMount(ChatMessageMenu, {
+    const wrapper = myMount(ChatMessageMenu, {
       propsData: { targetId },
     });
     expect(wrapper.text()).to.include('Profile');
@@ -15,7 +14,7 @@ describe('ChatMessageMenu.vue', () => {
 
   it('renders admin options, if isAdmin === true', () => {
     const targetId = 1;
-    const wrapper = shallowMount(ChatMessageMenu, {
+    const wrapper = myMount(ChatMessageMenu, {
       propsData: {
         targetId,
         clientIsAdmin: true,

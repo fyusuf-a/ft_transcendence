@@ -1,27 +1,22 @@
 <template>
   <v-menu :offset-x="true">
-    <template v-slot:activator="{ on, attrs }">
-      <v-btn light icon v-bind="attrs" v-on="on">
+    <template v-slot:activator="{ props: tooltip }">
+      <v-btn light icon v-bind="tooltip">
         <slot>Default</slot>
       </v-btn>
     </template>
 
     <v-list>
-      <v-list-item-group
-        v-model="selectedOption"
-        color="primary"
-        @change="handleOptionSelection"
-      >
-        <v-list-item v-for="(item, i) in options" :key="i">
+        <v-list-item v-for="(item, i) in options" :key="i" active-color="primary"
+        @click="() => handleOptionSelection(item)">
           <v-list-item-title>{{ item.label }}</v-list-item-title>
         </v-list-item>
-      </v-list-item-group>
     </v-list>
   </v-menu>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 
 declare interface OptionType {
   label: string;
@@ -29,12 +24,11 @@ declare interface OptionType {
 }
 
 declare interface DataReturnType {
-  selectedOption: number;
   regularOptions: OptionType[];
   adminOptions: OptionType[];
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     targetId: {
       type: Number,
@@ -47,7 +41,6 @@ export default Vue.extend({
   },
   data(): DataReturnType {
     return {
-      selectedOption: 0,
       regularOptions: [
         { label: 'View Profile', event: 'chat-profile-user' },
         { label: 'Challenge', event: 'chat-challenge-user' },
@@ -62,12 +55,11 @@ export default Vue.extend({
     };
   },
   methods: {
-    handleOptionSelection() {
+    handleOptionSelection(item: OptionType) {
       this.$emit('chat-message-menu-selection', {
-        option: this.options[this.selectedOption].event,
+        option: item.event,
         target: this.targetId,
       });
-      this.selectedOption = 0;
     },
   },
   computed: {

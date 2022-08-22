@@ -1,21 +1,18 @@
 <template>
   <v-card :color="color" class="ma-y8" elevation="0">
-    <v-list-item>
+    <v-list-item :title="username()">
       <v-list-item-avatar>
         <v-img :src="avatar()" alt="profile picture" />
       </v-list-item-avatar>
-      <v-list-item-content>
-        {{ username() }}
-      </v-list-item-content>
     </v-list-item>
   </v-card>
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 
-export default Vue.extend({
+export default defineComponent({
   data: function () {
     return {
       ...mapGetters(['username', 'avatar']),
