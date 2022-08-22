@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/swagger';
+import { PickType } from '@nestjs/mapped-types';
 import { ChannelDto } from './channel.dto';
 
 export class CreateChannelDto extends PickType(ChannelDto, [

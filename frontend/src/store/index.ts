@@ -1,8 +1,12 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import axios from 'axios';
+import kingPongImg from '@/assets/images/king-pong.png';
+import VuexPersister from 'vuex-persister';
 
-Vue.use(Vuex);
+const vuexPersister = new VuexPersister({
+  key: 'my_key',
+  overwrite: true,
+});
 
 interface State {
   isAuthenticated: boolean;
@@ -20,7 +24,7 @@ const state: State = {
   token: undefined,
 };
 
-export default new Vuex.Store({
+export default createStore({
   state: state,
   getters: {
     username: (state) => state.username,
@@ -30,6 +34,9 @@ export default new Vuex.Store({
     token: (state) => state.token,
   },
   mutations: {
+    setUsername(state, username: string) {
+      state.username = username;
+    },
     login(state, payload) {
       state.username = payload.username;
       state.id = payload.id;
@@ -50,10 +57,11 @@ export default new Vuex.Store({
         context.state.avatar = URL.createObjectURL(blob);
       } finally {
         if (!context.state.avatar) {
-          context.state.avatar = require('@/assets/images/king-pong.png');
+          context.state.avatar = kingPongImg;
         }
       }
     },
   },
   modules: {},
+  plugins: [vuexPersister.persist],
 });

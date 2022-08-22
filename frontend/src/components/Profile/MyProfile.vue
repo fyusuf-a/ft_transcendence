@@ -1,6 +1,6 @@
 <template>
   <v-card class="pa-2 ma-5">
-    <v-card class="ma-4" height="250" width="250" :img="avatar()" />
+    <v-card class="ma-4" height="250" width="250" :image="avatar()" />
 
     <v-card-title>{{ username() }}</v-card-title>
 
@@ -16,10 +16,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 
-export default Vue.extend({
+export default defineComponent({
   methods: {
     ...mapGetters(['username', 'avatar']),
     reserve() {

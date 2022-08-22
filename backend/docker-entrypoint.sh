@@ -1,4 +1,4 @@
-ln -s /tmp/app /app
+ln -snf /tmp/app /app
 cd /app
 npm install
 

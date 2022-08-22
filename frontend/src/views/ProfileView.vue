@@ -7,14 +7,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import MyFriends from '@/components/Profile/MyFriends.vue';
 import MyProfile from '@/components/Profile/MyProfile.vue';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   components: {
     'my-friends': MyFriends,
     'my-profile': MyProfile,
   },
-};
+});
 </script>

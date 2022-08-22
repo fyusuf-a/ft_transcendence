@@ -1,10 +1,9 @@
-import { expect } from 'chai';
-import { shallowMount } from '@vue/test-utils';
+import { myMount } from '@tests/vuetify-test';
 import App from '@/App.vue';
 
 describe('App.vue', () => {
   it('should mount', () => {
-    const wrapper = shallowMount(App, {});
+    const wrapper = myMount(App, {});
     expect(wrapper.text()).to.equal('');
   });
 });

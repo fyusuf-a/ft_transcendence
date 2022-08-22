@@ -1,5 +1,4 @@
+.git
 backend
 frontend/dist
 frontend/node_modules
-frontend/dtos
-frontend/uploads

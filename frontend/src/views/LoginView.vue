@@ -1,5 +1,5 @@
 <template>
-  <v-form @submit.prevent.stop>
+  <v-form>
     <v-container>
       <v-row>
         <v-col cols="12" md="4">
@@ -10,7 +10,7 @@
           ></v-text-field>
         </v-col>
         <v-col>
-          <v-btn color="primary" @click="authenticate">Sign-in</v-btn>
+          <v-btn @click="authenticate" color="primary">Sign-in</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import axios from 'axios';
 
-export default Vue.extend({
+export default defineComponent({
   data() {
     return {
       username: 'string',
