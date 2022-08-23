@@ -47,6 +47,7 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
   async generate(@Req() req, @Res() res) {
@@ -61,21 +62,7 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Post('2fa/turnon')
-  async turnOnTwoFactorAuthentication(@Req() req, @Body() body: twoFACodeDto) {
-    const isCodeValid =
-      await this.authService.verifyTwoFactorAuthenticationCode(
-        body.twoFACode,
-        req.user,
-      );
-    if (!isCodeValid) {
-      throw new UnauthorizedException('Invalid two factor authentication code');
-    }
-    await this.usersService.setTwoFA(true, req.user.id);
-  }
-
-  @ApiBearerAuth()
+  @Public()
   @UseGuards(JwtAuthGuard)
   @Post('2fa/authenticate')
   async authenticate(@Req() req, @Body() body: twoFACodeDto) {
@@ -86,6 +73,7 @@ export class AuthController {
     if (!isCodeValid) {
       throw new UnauthorizedException('Invalid two factor authentication code');
     }
+    await this.usersService.setTwoFA(true, req.user.id);
     return {
       id: req.user.id,
       token: this.jwtService.sign({
