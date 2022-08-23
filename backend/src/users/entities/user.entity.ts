@@ -48,4 +48,10 @@ export class User {
   @Exclude()
   @RelationId((user: User) => user.memberships)
   membershipIds: number[];
+
+  @Column({ default: false })
+  isTwoFAEnabled: boolean;
+
+  @Column({ default: '' })
+  twoFASecret!: string;
 }

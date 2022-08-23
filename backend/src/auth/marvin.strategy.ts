@@ -65,7 +65,7 @@ export class MarvinStrategy extends PassportStrategy(Strategy, 'marvin') {
     }
     return {
       id: user.id,
-      token: this.jwtService.sign({ id: user.id }),
+      token: this.jwtService.sign({ id: user.id, isTwoFAAuthenticated: false }),
     };
   }
 }

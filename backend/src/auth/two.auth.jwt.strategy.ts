@@ -3,14 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-
-export interface JwtPayload {
-  id: number;
-  isTwoFAAuthenticated: boolean;
-}
+import { JwtPayload } from './auth.jwt.strategy';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class TwoAuthJwtStrategy extends PassportStrategy(Strategy, 'two-auth') {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
@@ -25,9 +21,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: JwtPayload) {
     try {
       const user = await this.usersService.findOne(payload.id);
-      return user;
+      if (!user.isTwoFAEnabled) {
+        return user;
+      }
+      if (payload.isTwoFAAuthenticated) {
+        return user;
+      }
     } catch {
       throw new UnauthorizedException('Invalid Token');
     }
+    throw new UnauthorizedException('Invalid Token');
   }
 }
