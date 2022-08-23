@@ -76,7 +76,12 @@ export class UsersService {
     });
   }
 
-  updateAvatar(userId: number, filepath: string) {
+  async updateAvatar(userId: number, filepath: string) {
+    const user: User = await this.usersRepository.findOneByOrFail({
+      id: userId,
+    });
+    if (filepath != user.avatar)
+      this.remove_avatar(user.avatar, ' remplacing with new avatar.');
     return this.usersRepository.update(userId, { avatar: filepath });
   }
 
