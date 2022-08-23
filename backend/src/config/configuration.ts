@@ -9,5 +9,6 @@ export default () => {
     JWT_SECRET: process.env.JWT_SECRET_KEY,
     MAX_FILE_SIZE: 2 * 1000 * 1000,
     UPLOADS_PATH: './uploads/',
+    TWO_FACTOR_AUTHENTICATION_APP_NAME: 'ft_transcendence',
   };
 };
