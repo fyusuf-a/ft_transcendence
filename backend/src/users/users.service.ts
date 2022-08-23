@@ -22,6 +22,7 @@ enum hexSignature {
 
 @Injectable()
 export class UsersService {
+  logger: Logger;
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -31,7 +32,9 @@ export class UsersService {
     private blockRepository: Repository<Block>,
     @InjectRepository(AchievementsLog)
     private achievementsLogRepository: Repository<AchievementsLog>,
-  ) {}
+  ) {
+    this.logger = new Logger('remove_avatar');
+  }
 
   async findAll(
     query?: QueryUserDto,
@@ -69,10 +72,9 @@ export class UsersService {
   }
 
   remove_avatar(filePath: string, reason: string) {
-    const logger: Logger = new Logger('remove_avatar');
     fs.unlink(filePath, (err) => {
-      if (err) logger.error(err);
-      else logger.log('Deleted ' + filePath + reason);
+      if (err) this.logger.error(err);
+      else this.logger.log('Deleted ' + filePath + reason);
     });
   }
 
@@ -81,7 +83,7 @@ export class UsersService {
       id: userId,
     });
     if (filepath != user.avatar)
-      this.remove_avatar(user.avatar, ' remplacing with new avatar.');
+      this.remove_avatar(user.avatar, ': remplacing with new avatar.');
     return this.usersRepository.update(userId, { avatar: filepath });
   }
 
@@ -146,7 +148,7 @@ export class UsersService {
       data.slice(0, 6) == hexSignature.JPG
     )
       return true;
-    this.remove_avatar(filePath, ' : invalid signature.');
+    this.remove_avatar(filePath, ': invalid signature.');
     return false;
   }
 }
