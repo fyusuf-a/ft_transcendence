@@ -49,7 +49,7 @@ export class MessagesService {
     const message: Message = new Message();
     message.content = messageDto.content;
     message.channelId = messageDto.channelId;
-    message.channel = await this.channelsRepository.findOneBy({
+    message.channel = await this.channelsRepository.findOneByOrFail({
       id: message.channelId,
     });
     if (
@@ -59,7 +59,7 @@ export class MessagesService {
       throw new EntityDoesNotExistError(`Channel #${messageDto.channelId}`);
     }
     message.senderId = messageDto.senderId;
-    message.sender = await this.usersRepository.findOneBy({
+    message.sender = await this.usersRepository.findOneByOrFail({
       id: message.senderId,
     });
     if (
