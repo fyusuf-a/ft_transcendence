@@ -9,9 +9,9 @@
 
             <v-card class="mr-10" max-width="400"  >
               <v-img
-              :src="tmpAvata"
-               ></v-img>
-              <!-- :src="avatar()" -->
+              :src="avatar()"
+              ></v-img>
+              <!-- :src="tmpAvata" -->
             </v-card>
 
             <v-card-actions class="pt-10">
@@ -46,12 +46,10 @@ import MyStatistics from '@/components/Profile/MyStatistics.vue';
 import ChangeUsername from '@/components/Profile/ChangeUsername.vue';
 import ChangeAvatar from '@/components/Profile/ChangeAvatar.vue';
 
-import kingPongImg from '@/assets/images/king-pong.png'; //
 
 export default defineComponent({
   data: () => ({
     dialog: false,
-    tmpAvata: kingPongImg, //
     }),
   components: {
     'my-statistics': MyStatistics,
