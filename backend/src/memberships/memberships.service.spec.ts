@@ -175,7 +175,7 @@ describe('MembershipsService', () => {
     it('returns a  Membership', async () => {
       const expected = new Membership();
       jest
-        .spyOn(membershipsRepository, 'findOneBy')
+        .spyOn(membershipsRepository, 'findOneByOrFail')
         .mockResolvedValueOnce(expected);
       const results = await service.findOne(1);
       return expect(results).toEqual(expected);

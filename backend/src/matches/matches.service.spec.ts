@@ -3,11 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MatchesService } from './matches.service';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
-import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { Match } from './entities/match.entity';
 import { CreateMatchDto, UpdateMatchDto, MatchStatusType } from '@dtos/matches';
 import { User } from 'src/users/entities/user.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  EntityNotFoundError,
+  DeleteResult,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 
 const userNumber = 2;
 const matchNumber = 2;
@@ -52,7 +56,7 @@ describe('MatchesService', () => {
     });
 
     it('when looking up a non-existing Match, should return undefined', async () => {
-      expect(await service.findOne(matchNumber + 1)).toEqual(undefined);
+      expect(await service.findOne(matchNumber + 1)).toThrow();
     });
   });
 
@@ -82,7 +86,7 @@ describe('MatchesService', () => {
     });
     it('should return a ResponseMatchDto with a status of IN_PROGRESS', async () => {
       jest
-        .spyOn(usersRepository, 'findOneBy')
+        .spyOn(usersRepository, 'findOneByOrFail')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(away);
       jest.spyOn(matchRepository, 'save').mockResolvedValueOnce(match);
@@ -91,24 +95,25 @@ describe('MatchesService', () => {
     });
 
     it('should throw EntityDoesNotExistError if the home user does not exist', async () => {
-      jest.spyOn(usersRepository, 'findOneBy').mockReturnValue(undefined);
+      jest
+        .spyOn(usersRepository, 'findOneByOrFail')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
       expect(service.create(createMatchDto)).rejects.toThrow(
-        EntityDoesNotExistError,
+        EntityNotFoundError,
       );
     });
 
     it('should throw EntityDoesNotExistError if the away user does not exist', async () => {
       jest
-        .spyOn(usersRepository, 'findOneBy')
-        .mockResolvedValueOnce(home)
-        .mockResolvedValueOnce(undefined);
+        .spyOn(usersRepository, 'findOneByOrFail')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
       expect(service.create(createMatchDto)).rejects.toThrow(
-        EntityDoesNotExistError,
+        EntityNotFoundError,
       );
     });
     it('should throw RangeError if the home user is the away user', async () => {
       jest
-        .spyOn(usersRepository, 'findOneBy')
+        .spyOn(usersRepository, 'findOneByOrFail')
         .mockResolvedValueOnce(home)
         .mockResolvedValueOnce(home);
       expect(service.create(createMatchDto)).rejects.toThrow(RangeError);

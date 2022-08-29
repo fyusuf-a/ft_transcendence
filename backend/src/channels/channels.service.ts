@@ -55,11 +55,9 @@ export class ChannelsService {
     channel.name =
       '-' + createChannelDto.userOneId + '-' + createChannelDto.userTwoId;
     if (
-      await this.channelsRepository.findOne({
-        where: {
-          type: ChannelType.DIRECT,
-          name: channel.name,
-        },
+      await this.channelsRepository.findOneByOrFail({
+        type: ChannelType.DIRECT,
+        name: channel.name,
       })
     )
       throw 'Direct channel already exists.';

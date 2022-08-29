@@ -46,7 +46,7 @@ describe('ChannelsService', () => {
 
   describe('when looking up an non-existing Channel by id', () => {
     it('should return undefined', async () => {
-      expect(await service.findOne(channelNumber + 1)).toEqual(undefined);
+      expect(await service.findOne(channelNumber + 1)).toThrow();
     });
   });
 
