@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
 import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
@@ -12,7 +12,6 @@ import {
   MatchDto,
   MatchStatusType,
 } from '@dtos/matches';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { Match } from './entities/match.entity';
 
@@ -94,13 +93,13 @@ describe('MatchesController', () => {
       jest
         .spyOn(service, 'create')
         .mockImplementation(async () => {
-          throw new EntityDoesNotExistError('User #2 not found');
+          throw new EntityNotFoundError('User #2 not found', '');
         })
         .mockImplementationOnce(async () => {
           throw new RangeError();
         });
       let result = controller.create(createMatchDto);
-      expect(result).rejects.toThrow(BadRequestException);
+      expect(result).rejects.toThrow(EntityNotFoundError);
       result = controller.create(createMatchDto);
       expect(result).rejects.toThrow(BadRequestException);
     });

@@ -30,11 +30,9 @@ export class AchievementsLogService {
     achievementsLogdto: CreateAchievementLogDto,
   ): Promise<AchievementsLog> {
     if (
-      (await this.achievementsLogRepository.findOne({
-        where: {
-          achievementId: achievementsLogdto.achievementId,
-          userId: achievementsLogdto.userId,
-        },
+      (await this.achievementsLogRepository.findOneByOrFail({
+        achievementId: achievementsLogdto.achievementId,
+        userId: achievementsLogdto.userId,
       })) !== undefined
     )
       throw 'Achievements already unlocked.';

@@ -8,7 +8,6 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
   Query,
 } from '@nestjs/common';
 import {
@@ -24,7 +23,7 @@ import {
   UpdateChannelDto,
   QueryChannelDto,
 } from '@dtos/channels';
-import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
 
@@ -61,13 +60,7 @@ export class ChannelsController {
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Channel Not Found' })
   async findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
-    try {
-      return await this.channelsService.findOne(+id);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException(`Channel #${id} not found`);
-      }
-    }
+    return await this.channelsService.findOne(+id);
   }
 
   @Patch(':id')

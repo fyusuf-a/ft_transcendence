@@ -70,7 +70,7 @@ describe('UsersService', () => {
 
   describe('when looking up an non-existing User by id', () => {
     it('should return undefined', async () => {
-      expect(await service.findOne(userNumber + 1)).toEqual(undefined);
+      expect(await service.findOne(userNumber + 1)).toThrow();
     });
   });
 

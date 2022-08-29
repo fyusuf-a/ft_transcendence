@@ -88,7 +88,7 @@ describe('MessagesController', () => {
         throw new EntityNotFoundError(Message, 'not found');
       });
       expect(controller.create(createMessageDto)).rejects.toThrow(
-        BadRequestException,
+        EntityNotFoundError
       );
     });
 
