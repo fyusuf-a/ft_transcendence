@@ -38,7 +38,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
-import { ResponseFriendshipDto } from '@dtos/friendships';
+import { ListFriendshipDto, ResponseFriendshipDto } from '@dtos/friendships';
 import { ResponseBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
 
@@ -146,8 +146,8 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('/:id/friendships')
-  findFriendships(@Param('id') id: string): Promise<ResponseFriendshipDto[]> {
-    return this.usersService.findFriendships(+id);
+  async findFriendships(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+    return await this.usersService.findFriendships(+id);
   }
 
   @ApiBearerAuth()

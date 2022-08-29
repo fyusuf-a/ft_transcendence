@@ -5,7 +5,11 @@ import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
-import { ResponseFriendshipDto, FriendshipTypeEnum } from '@dtos/friendships';
+import {
+  ResponseFriendshipDto,
+  FriendshipTypeEnum,
+  ListFriendshipDto,
+} from '@dtos/friendships';
 import { ResponseBlockDto, BlockTypeEnum } from '@dtos/blocks';
 import { AchievementsLogDto } from '@dtos/achievements-log';
 import { Block } from 'src/relationships/entities/block.entity';
@@ -81,13 +85,29 @@ export class UsersService {
     return { fileStream: new StreamableFile(stream), ext: ext };
   }
 
-  findFriendships(id: number): Promise<ResponseFriendshipDto[]> {
-    return this.friendshipRepository.find({
+  async findFriendships(id: number): Promise<ListFriendshipDto[]> {
+    const tmp: ResponseFriendshipDto[] = await this.friendshipRepository.find({
       where: [
         { targetId: id, status: FriendshipTypeEnum.ACCEPTED },
         { sourceId: id, status: FriendshipTypeEnum.ACCEPTED },
       ],
     });
+
+    const ret: ListFriendshipDto[] = [];
+
+    for (let i = 0; i < tmp.length; i++) {
+      const friendId: number =
+        tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId;
+      const friend: UpdateUserDto = (await this.usersRepository.findOneByOrFail(
+        {
+          id: friendId,
+        },
+      )) as UpdateUserDto;
+      ret[i] = new ListFriendshipDto(tmp[i], friend as UpdateUserDto);
+    }
+
+    console.log(ret);
+    return ret;
   }
 
   findFriendRequests(id: number): Promise<ResponseFriendshipDto[]> {
