@@ -1,23 +1,22 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, UseGuards, Req, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Public } from './auth.public.decorator';
-import { AuthService } from './auth.service';
-import { LoginUserDto } from '@dtos/auth';
-import { UnauthorizedException } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ConfigService } from '@nestjs/config';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly configService: ConfigService) {}
 
-  @ApiBody({ type: LoginUserDto })
+  @Get('callback')
   @Public()
-  @Post('login')
-  async login(@Body() userDto: LoginUserDto) {
-    try {
-      return await this.authService.login(userDto);
-    } catch (EntityNotFoundError) {
-      throw new UnauthorizedException('Username is incorrect');
-    }
+  @UseGuards(AuthGuard('marvin'))
+  marvinCallback(@Req() req, @Res() res) {
+    const url = new URL(
+      `${this.configService.get<string>('FRONTEND_URL')}/login`,
+    );
+    url.search = new URLSearchParams(req.user).toString();
+    return res.redirect(url.toString());
   }
 }
