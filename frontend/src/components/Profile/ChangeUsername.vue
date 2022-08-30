@@ -107,8 +107,7 @@ export default defineComponent({
         .catch( (error) => {
           console.log(error.response);
           this.nameAlreadyUsed = error.response.status;
-        })
-      ;
+        });
 
       const response2 = await axios.get('http://localhost:8080/users/' + this.id());
 

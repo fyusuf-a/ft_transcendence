@@ -8,23 +8,23 @@
       activator="parent"
     >
       <v-card >
-        <v-card width="500">
+        <v-card width="400">
           <v-card-title>
-            <span class="text-h5">Chose a file</span>
+            <span class="text-h5">Select an avatar</span>
           </v-card-title>
-          <v-card-text>
-            <v-file-input
-              accept="image/*"
-              label="File input"
-            ></v-file-input>
-          </v-card-text>
+            <v-container >
+              <label for="file-upload" class="custom-file-upload">
+                <v-icon>mdi-cloud-upload</v-icon> Browse
+              </label>
+              <input id="file-upload" type="file" ref="file" v-on:change="handleFileUpload()"/>
+            </v-container>
           <v-card-actions>
             <v-spacer></v-spacer>
-            
+        
             <v-btn
               color="primary"
               text
-              @click="submitAvatar"
+              @click="submitFile"
             >
               Save
             </v-btn>
@@ -46,20 +46,45 @@ import axios from 'axios';
 export default defineComponent({
   data: () => ({
     dialog: false,
-    avatarImg: null,
+    file: "",
   }),
 
   methods: {
     ...mapGetters(['username', 'avatar', 'id']),
 
-    async submitAvatar() {
-      if (this.avatarImg === null)
-        console.log("There are no file");
-      else {
-        console.log("Let's a go");
-      }
+    submitFile(){
+      let formData = new FormData();
+      formData.append('file', this.file);
+      axios.post( '/users/' + this.id() +'/avatar',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(() =>{
+          console.log('SUCCESS!!');
+          window.location.reload();
+        })
+        .catch(function(){
+          console.log('FAILURE!!');
+        });
+      },
+      // Handles a change on the file upload
+      handleFileUpload(){
+        this.file = (this.$refs as any).file.files[0];
+      },
     },
-  },
-
 });
 </script>
+
+<style scoped>
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 15px 25px;
+    cursor: pointer;
+}
+</style>

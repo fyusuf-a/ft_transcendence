@@ -2,7 +2,7 @@ import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
+import { CreateUserDto, QueryUserDto, ResponseUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
 import {
@@ -17,6 +17,7 @@ import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { paginate } from 'src/common/paginate';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { instanceToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -98,12 +99,13 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       const friendId: number =
         tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId;
-      const friend: UpdateUserDto = (await this.usersRepository.findOneByOrFail(
+      const friend: User = await this.usersRepository.findOneByOrFail(
         {
           id: friendId,
         },
-      )) as UpdateUserDto;
-      ret[i] = new ListFriendshipDto(tmp[i], friend as UpdateUserDto);
+      );
+      const uUd : UpdateUserDto = { username : friend.username, avatar: friend.avatar };
+      ret[i] = new ListFriendshipDto(tmp[i],uUd);
     }
 
     console.log(ret);
@@ -117,6 +119,7 @@ export class UsersService {
   }
 
   findBlocks(id: number): Promise<ResponseBlockDto[]> {
+    /* warning: do not send anything else than a list of usernames/avatars, as target and source naming convention can give away a block to a blocked user*/
     return this.blockRepository.find({
       where: [
         { sourceId: id, status: BlockTypeEnum.MUTUAL },

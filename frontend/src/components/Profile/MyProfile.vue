@@ -11,7 +11,6 @@
               <v-img
               :src="avatar()"
               ></v-img>
-              <!-- :src="tmpAvata" -->
             </v-card>
 
             <v-card-actions class="pt-10">
@@ -46,7 +45,6 @@ import MyStatistics from '@/components/Profile/MyStatistics.vue';
 import ChangeUsername from '@/components/Profile/ChangeUsername.vue';
 import ChangeAvatar from '@/components/Profile/ChangeAvatar.vue';
 import axios from 'axios';
-import  { ListFriendshipDto } from '@/dtos/friendships/list-friendship.dto';
 
 export default defineComponent({
   data: () => ({
@@ -59,14 +57,13 @@ export default defineComponent({
 
   },
   methods: {
-    ...mapGetters(['username', 'avatar']),
+    ...mapGetters(['username', 'avatar', 'id']),
   },
   async created() {
     if (this.avatar() !== undefined) return;
     this.$store.dispatch('getAvatar');
-
-    const response1 = await axios.get('http://localhost:8080/users/1/friendships');
-    console.log(response1.data);
+    const friends = await axios.get('/users/1/friendships');
+    console.log(friends);
   },
 });
 </script>
