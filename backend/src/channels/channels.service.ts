@@ -78,7 +78,7 @@ export class ChannelsService {
     return paginate(this.channelsRepository, query, orderOptions, pageOptions);
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<Channel> {
     return this.channelsRepository.findOneByOrFail({ id: id });
   }
 

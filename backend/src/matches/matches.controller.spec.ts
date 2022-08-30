@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
@@ -65,9 +64,8 @@ describe('MatchesController', () => {
     });
 
     it('should return 404 if match not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
-      expect(controller.findOne('5')).rejects.toThrow('Not Found');
+      jest.spyOn(service, 'findOne').mockRejectedValue(EntityNotFoundError);
+      expect(controller.findOne('5')).rejects.toThrow();
     });
   });
 
@@ -92,16 +90,11 @@ describe('MatchesController', () => {
       createMatchDto.awayId = 3;
       jest
         .spyOn(service, 'create')
-        .mockImplementation(async () => {
-          throw new EntityNotFoundError('User #2 not found', '');
-        })
-        .mockImplementationOnce(async () => {
-          throw new RangeError();
-        });
-      let result = controller.create(createMatchDto);
+        .mockRejectedValueOnce(
+          new EntityNotFoundError('User #2 not found', ''),
+        );
+      const result = controller.create(createMatchDto);
       expect(result).rejects.toThrow(EntityNotFoundError);
-      result = controller.create(createMatchDto);
-      expect(result).rejects.toThrow(BadRequestException);
     });
   });
 

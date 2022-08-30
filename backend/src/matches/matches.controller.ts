@@ -3,14 +3,13 @@ import {
   Controller,
   Delete,
   Get,
-  BadRequestException,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { MatchesService } from './matches.service';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
@@ -49,15 +48,7 @@ export class MatchesController {
   async create(
     @Body() createUserDto: CreateMatchDto,
   ): Promise<ResponseMatchDto> {
-    try {
-      return await this.matchesService.create(createUserDto);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new BadRequestException(error.message);
-      } else if (error instanceof RangeError) {
-        throw new BadRequestException(error.message);
-      } else throw error;
-    }
+    return await this.matchesService.create(createUserDto);
   }
 
   @ApiBearerAuth()

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Query,
@@ -19,7 +20,7 @@ import {
   QueryMessageDto,
   ResponseMessageDto,
 } from '@dtos/messages';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError } from 'typeorm';
 import { MessagesService } from './messages.service';
 
 @ApiBearerAuth()
@@ -48,7 +49,13 @@ export class MessagesController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findOne(@Param('id') id: string): Promise<ResponseMessageDto> {
-    return await this.messagesService.findOne(+id);
+    try {
+      return await this.messagesService.findOne(+id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException('Not Found');
+      }
+    }
   }
 
   @Delete(':id')
