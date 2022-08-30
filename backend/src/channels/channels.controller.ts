@@ -23,7 +23,7 @@ import {
   UpdateChannelDto,
   QueryChannelDto,
 } from '@dtos/channels';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { Channel } from './entities/channel.entity';
 
@@ -60,7 +60,13 @@ export class ChannelsController {
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Channel Not Found' })
   async findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
-    return await this.channelsService.findOne(+id);
+    try {
+      return await this.channelsService.findOne(+id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+    }
   }
 
   @Patch(':id')

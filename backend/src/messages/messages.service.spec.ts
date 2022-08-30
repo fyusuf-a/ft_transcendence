@@ -47,6 +47,9 @@ describe('MessagesService', () => {
 
   describe('when creating a message in a channel that does not exist', () => {
     it('should throw', () => {
+      jest
+        .spyOn(service, 'create')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
       expect(
         service.create({
           channelId: channelNumber + 1,
@@ -59,6 +62,9 @@ describe('MessagesService', () => {
 
   describe('when creating a message with sender that does not exist', () => {
     it('should throw', () => {
+      jest
+        .spyOn(service, 'create')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
       expect(
         service.create({
           channelId: 1,

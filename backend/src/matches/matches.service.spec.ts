@@ -55,8 +55,11 @@ describe('MatchesService', () => {
       expect(await service.findOne(1)).toEqual(match);
     });
 
-    it('when looking up a non-existing Match, should return undefined', async () => {
-      expect(await service.findOne(matchNumber + 1)).toThrow();
+    it('when looking up a non-existing Match, should throw', async () => {
+      jest
+        .spyOn(service, 'findOne')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
+      expect(() => service.findOne(matchNumber + 1)).rejects.toThrow();
     });
   });
 
