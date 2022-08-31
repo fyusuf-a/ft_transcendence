@@ -8,7 +8,7 @@
     <v-spacer />
 
     <profile-card
-      v-if="$store.state.isAuthenticated"
+      v-if="$store.state.userIsAuthenticated"
       color="primary"
       height="100%"
     />
