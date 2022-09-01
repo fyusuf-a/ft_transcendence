@@ -124,11 +124,17 @@ export class UsersService {
     });
 
     for (let i = 0; i < tmp.length; i++) {
-      const uUd: UpdateUserDto = {
-        username: friends[i].username,
-        avatar: friends[i].avatar,
-      };
-      ret[i] = new ListFriendshipDto(tmp[i], uUd);
+      for (let j = 0; j < friends.length; j++)
+      {
+        if (ids[i] == friends[j].id)
+        {
+          const uUd: UpdateUserDto = {
+            username: friends[j].username,
+            avatar: friends[j].avatar,
+          };
+          ret[i] = new ListFriendshipDto(tmp[i], uUd);
+        }
+      }
     }
     return ret;
   }
@@ -154,7 +160,7 @@ export class UsersService {
       },
     });
     for (let i = 0; i < tmp.length; i++) {
-      ret[i] = { username: blocks[i].username, avatar: blocks[i].avatar };
+      ret[i] = { username: blocks[i].username, avatar: blocks[i].avatar, id: tmp[i].id };
     }
     return ret;
   }

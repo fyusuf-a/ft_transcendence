@@ -16,13 +16,8 @@
             <v-card-actions class="pt-10">
 
               <v-row>
-                <v-btn color="primary">
-                  <avatar-button />
-                </v-btn>
-
-                <v-btn color="primary">
-                  <username-button />
-                </v-btn>
+                <avatar-button />
+                <username-button />
               </v-row>
             </v-card-actions>
 
@@ -62,8 +57,8 @@ export default defineComponent({
   async created() {
     if (this.avatar() !== undefined) return;
     this.$store.dispatch('getAvatar');
-    const friends = await axios.get('/users/1/friendships');
-    console.log(friends);
+    // const friends = await axios.get('/users/1/friendships');
+    // console.log(friends);
   },
 });
 </script>
