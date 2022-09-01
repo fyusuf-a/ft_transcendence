@@ -38,8 +38,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
-import { ListFriendshipDto, ResponseFriendshipDto } from '@dtos/friendships';
-import { ResponseBlockDto } from '@dtos/blocks';
+import { ListFriendshipDto } from '@dtos/friendships';
+import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
 
 @ApiTags('users')
@@ -147,20 +147,18 @@ export class UsersController {
   @ApiBearerAuth()
   @Get('/:id/friendships')
   async findFriendships(@Param('id') id: string): Promise<ListFriendshipDto[]> {
-    return await this.usersService.findFriendships(+id);
+    return await this.usersService.findFriendships(+id, 1);
   }
 
   @ApiBearerAuth()
   @Get('/:id/friendships/invites')
-  findFriendRequests(
-    @Param('id') id: string,
-  ): Promise<ResponseFriendshipDto[]> {
-    return this.usersService.findFriendRequests(+id);
+  findFriendRequests(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+    return this.usersService.findFriendships(+id, 0);
   }
 
   @ApiBearerAuth()
   @Get('/:id/blocks')
-  findBlocks(@Param('id') id: string): Promise<ResponseBlockDto[]> {
+  findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
     return this.usersService.findBlocks(+id);
   }
 

@@ -2,7 +2,7 @@ import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
-import { CreateUserDto, QueryUserDto, ResponseUserDto, UpdateUserDto } from '@dtos/users';
+import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
 import {
@@ -10,14 +10,19 @@ import {
   FriendshipTypeEnum,
   ListFriendshipDto,
 } from '@dtos/friendships';
-import { ResponseBlockDto, BlockTypeEnum } from '@dtos/blocks';
+import { BlockTypeEnum, ListBlockDto } from '@dtos/blocks';
 import { AchievementsLogDto } from '@dtos/achievements-log';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { paginate } from 'src/common/paginate';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeleteResult,
+  FindManyOptions,
+  In,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
-import { instanceToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -86,41 +91,50 @@ export class UsersService {
     return { fileStream: new StreamableFile(stream), ext: ext };
   }
 
-  async findFriendships(id: number): Promise<ListFriendshipDto[]> {
-    const tmp: ResponseFriendshipDto[] = await this.friendshipRepository.find({
-      where: [
-        { targetId: id, status: FriendshipTypeEnum.ACCEPTED },
-        { sourceId: id, status: FriendshipTypeEnum.ACCEPTED },
-      ],
-    });
+  async findFriendships(
+    id: number,
+    mode: number,
+  ): Promise<ListFriendshipDto[]> {
+    const options: FindManyOptions = mode
+      ? {
+          where: [
+            { targetId: id, status: FriendshipTypeEnum.ACCEPTED },
+            { sourceId: id, status: FriendshipTypeEnum.ACCEPTED },
+          ],
+        }
+      : {
+          where: { targetId: id, status: FriendshipTypeEnum.PENDING },
+        };
 
+    const tmp: ResponseFriendshipDto[] = await this.friendshipRepository.find(
+      options,
+    );
+
+    const ids: number[] = [];
     const ret: ListFriendshipDto[] = [];
 
     for (let i = 0; i < tmp.length; i++) {
-      const friendId: number =
-        tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId;
-      const friend: User = await this.usersRepository.findOneByOrFail(
-        {
-          id: friendId,
-        },
-      );
-      const uUd : UpdateUserDto = { username : friend.username, avatar: friend.avatar };
-      ret[i] = new ListFriendshipDto(tmp[i],uUd);
+      ids.push(tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId);
     }
 
-    console.log(ret);
+    const friends: User[] = await this.usersRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
+
+    for (let i = 0; i < tmp.length; i++) {
+      const uUd: UpdateUserDto = {
+        username: friends[i].username,
+        avatar: friends[i].avatar,
+      };
+      ret[i] = new ListFriendshipDto(tmp[i], uUd);
+    }
     return ret;
   }
 
-  findFriendRequests(id: number): Promise<ResponseFriendshipDto[]> {
-    return this.friendshipRepository.find({
-      where: { targetId: id, status: FriendshipTypeEnum.PENDING },
-    });
-  }
-
-  findBlocks(id: number): Promise<ResponseBlockDto[]> {
-    /* warning: do not send anything else than a list of usernames/avatars, as target and source naming convention can give away a block to a blocked user*/
-    return this.blockRepository.find({
+  async findBlocks(id: number): Promise<ListBlockDto[]> {
+    const tmp: Block[] = await this.blockRepository.find({
       where: [
         { sourceId: id, status: BlockTypeEnum.MUTUAL },
         { targetId: id, status: BlockTypeEnum.MUTUAL },
@@ -128,6 +142,21 @@ export class UsersService {
         { targetId: id, status: BlockTypeEnum.T_BLOCKS_S },
       ],
     });
+    const ids: number[] = [];
+    const ret: ListBlockDto[] = [];
+
+    for (let i = 0; i < tmp.length; i++) {
+      ids.push(tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId);
+    }
+    const blocks: User[] = await this.usersRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
+    for (let i = 0; i < tmp.length; i++) {
+      ret[i] = { username: blocks[i].username, avatar: blocks[i].avatar };
+    }
+    return ret;
   }
 
   findUnlockedAchievements(id: number): Promise<AchievementsLogDto[]> {
