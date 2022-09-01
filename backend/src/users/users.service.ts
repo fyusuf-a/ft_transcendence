@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
@@ -14,8 +14,15 @@ import { paginate } from 'src/common/paginate';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
+enum hexSignature {
+  GIF = '47494638',
+  JPG = 'FFD8FF',
+  PNG = '89504E47',
+}
+
 @Injectable()
 export class UsersService {
+  logger: Logger;
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -25,7 +32,9 @@ export class UsersService {
     private blockRepository: Repository<Block>,
     @InjectRepository(AchievementsLog)
     private achievementsLogRepository: Repository<AchievementsLog>,
-  ) {}
+  ) {
+    this.logger = new Logger('remove_avatar');
+  }
 
   async findAll(
     query?: QueryUserDto,
@@ -50,6 +59,13 @@ export class UsersService {
     });
   }
 
+  // Find by 42 pseudo
+  findByMarvinId(marvinId: string): Promise<User> {
+    return this.usersRepository.findOneOrFail({
+      where: { identity: marvinId },
+    });
+  }
+
   create(userDto: CreateUserDto): Promise<User> {
     return this.usersRepository.save(userDto);
   }
@@ -62,7 +78,19 @@ export class UsersService {
     return this.usersRepository.delete(id);
   }
 
-  updateAvatar(userId: number, filepath: string) {
+  remove_avatar(filePath: string, reason: string) {
+    fs.unlink(filePath, (err) => {
+      if (err) this.logger.error(err);
+      else this.logger.log('Deleted ' + filePath + reason);
+    });
+  }
+
+  async updateAvatar(userId: number, filepath: string) {
+    const user: User = await this.usersRepository.findOneByOrFail({
+      id: userId,
+    });
+    if (filepath != user.avatar)
+      this.remove_avatar(user.avatar, ': remplacing with new avatar.');
     return this.usersRepository.update(userId, { avatar: filepath });
   }
 
@@ -113,5 +141,21 @@ export class UsersService {
         userId: id,
       },
     });
+  }
+
+  verifyMagicNum(filePath: string): boolean {
+    const data: string = fs
+      .readFileSync(filePath, { encoding: 'hex' })
+      .slice(0, 8)
+      .toUpperCase();
+
+    if (
+      data == hexSignature.GIF ||
+      data == hexSignature.PNG ||
+      data.slice(0, 6) == hexSignature.JPG
+    )
+      return true;
+    this.remove_avatar(filePath, ': invalid signature.');
+    return false;
   }
 }
