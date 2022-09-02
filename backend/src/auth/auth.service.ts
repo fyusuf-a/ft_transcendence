@@ -3,7 +3,6 @@ import { UsersService } from 'src/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { authenticator } from 'otplib';
-import { User } from '../users/entities/user.entity';
 import { toFileStream } from 'qrcode';
 import { Response } from 'express';
 
@@ -22,7 +21,7 @@ export class AuthService {
     }
   }
 
-  async generateTwoFASecret(userId: number) {
+  async generateTwoFASecret(userId: number): Promise<string> {
     const secret = authenticator.generateSecret();
     const otpAuthUrl = authenticator.keyuri(
       userId.toString(),
@@ -30,9 +29,7 @@ export class AuthService {
       secret,
     );
     await this.usersService.setTwoFASecret(secret, userId);
-    return {
-      otpAuthUrl,
-    };
+    return otpAuthUrl;
   }
 
   async pipeQrCodeStream(stream: Response, otpAuthUrl: string) {
@@ -41,8 +38,9 @@ export class AuthService {
 
   async verifyTwoFactorAuthenticationCode(
     twoFACode: string,
-    user: User,
+    id: number,
   ): Promise<boolean> {
+    const user = await this.usersService.findOne(id);
     return authenticator.verify({
       token: twoFACode,
       secret: user.twoFASecret,

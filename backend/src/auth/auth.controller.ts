@@ -14,16 +14,16 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Public } from './auth.public.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
-import { JwtTwoAuthGuard } from 'src/auth/auth.jwt-twoauth.guard';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UserDto } from '@dtos/users';
+import { JwtToken } from './types';
 
-interface RequestWithUser {
+type RequestWithUser = {
   user: UserDto;
-}
+};
 
 @ApiTags('auth')
 @Controller('auth')
@@ -38,11 +38,18 @@ export class AuthController {
   @Get('callback')
   @Public()
   @UseGuards(AuthGuard('marvin'))
-  marvinCallback(@Req() req, @Res() res) {
+  marvinCallback(@Req() req: RequestWithUser, @Res() res) {
     const url = new URL(
       `${this.configService.get<string>('FRONTEND_URL')}/login`,
     );
-    url.search = new URLSearchParams(req.user).toString();
+    const token = this.jwtService.sign({
+      id: req.user.id,
+      isTwoFAAuthenticated: false,
+    });
+    url.search = new URLSearchParams({
+      id: req.user.id,
+      token: token,
+    } as unknown as Record<string, string>).toString();
     return res.redirect(url.toString());
   }
 
@@ -50,14 +57,15 @@ export class AuthController {
   @Public()
   @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
-  async generate(@Req() req, @Res() res) {
-    if (!req.user?.id) {
-      throw new BadRequestException('Invalid token');
+  async generate(@Req() req: RequestWithUser, @Res() res) {
+    const user: UserDto = await this.usersService.findOne(req.user.id);
+    if (user.isTwoFAEnabled) {
+      throw new BadRequestException(
+        'Two factor authentication already enabled',
+      );
     }
     res.set({ 'Content-Type': 'image/png' });
-    const { otpAuthUrl } = await this.authService.generateTwoFASecret(
-      req.user.id,
-    );
+    const otpAuthUrl = await this.authService.generateTwoFASecret(req.user.id);
     return this.authService.pipeQrCodeStream(res, otpAuthUrl);
   }
 
@@ -65,21 +73,21 @@ export class AuthController {
   @Public()
   @UseGuards(JwtAuthGuard)
   @Post('2fa/authenticate')
-  async authenticate(@Req() req, @Body() body: twoFACodeDto) {
+  async authenticate(
+    @Req() req: RequestWithUser,
+    @Body() body: twoFACodeDto,
+  ): Promise<JwtToken> {
     const isCodeValid = this.authService.verifyTwoFactorAuthenticationCode(
       body.twoFACode,
-      req.user,
+      req.user.id,
     );
     if (!isCodeValid) {
       throw new UnauthorizedException('Invalid two factor authentication code');
     }
     await this.usersService.setTwoFA(true, req.user.id);
-    return {
+    return this.jwtService.sign({
       id: req.user.id,
-      token: this.jwtService.sign({
-        id: req.user.id,
-        isTwoFAAuthenticated: true,
-      }),
-    };
+      isTwoFAAuthenticated: true,
+    });
   }
 }

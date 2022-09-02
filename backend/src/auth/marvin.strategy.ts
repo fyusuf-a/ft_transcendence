@@ -7,7 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuthService } from 'src/auth/auth.service';
 import axios from 'axios';
 import { AxiosResponse } from 'axios';
-import { CreateUserDto } from '@dtos/users';
+import { CreateUserDto, UserDto } from '@dtos/users';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 
@@ -42,7 +42,7 @@ export class MarvinStrategy extends PassportStrategy(Strategy, 'marvin') {
     });
   }
 
-  async validate(accessToken: string) {
+  async validate(accessToken: string): Promise<UserDto> {
     let response: AxiosResponse<MarvinUser>;
     try {
       response = await axios.get<MarvinUser>('https://api.intra.42.fr/v2/me', {
@@ -63,9 +63,6 @@ export class MarvinStrategy extends PassportStrategy(Strategy, 'marvin') {
         throw new UnauthorizedException();
       }
     }
-    return {
-      id: user.id,
-      token: this.jwtService.sign({ id: user.id, isTwoFAAuthenticated: false }),
-    };
+    return user;
   }
 }
