@@ -90,4 +90,10 @@ export class AuthController {
       isTwoFAAuthenticated: true,
     });
   }
+
+  @ApiBearerAuth()
+  @Get('2fa/deactivate')
+  async deactivate(@Req() req: RequestWithUser) {
+    await this.usersService.setTwoFA(false, req.user.id);
+  }
 }
