@@ -2,10 +2,11 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { AchievementsService } from 'src/achievements/achievements.service';
+import { AchievementsModule } from './achievements/achievements.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   const config = new DocumentBuilder()
     .setTitle('Transcendence')
     .setDescription('Transcendence API')
@@ -33,8 +34,8 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
   app.enableCors();
+  await app.select(AchievementsModule).get(AchievementsService).init();
   await app.listen(process.env.BACKEND_PORT);
 }
 bootstrap();
