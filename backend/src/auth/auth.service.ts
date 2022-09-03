@@ -3,7 +3,6 @@ import { UsersService } from 'src/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { authenticator } from 'otplib';
-import { toFileStream } from 'qrcode';
 import { Response } from 'express';
 
 @Injectable()
@@ -30,10 +29,6 @@ export class AuthService {
     );
     await this.usersService.setTwoFASecret(secret, userId);
     return otpAuthUrl;
-  }
-
-  async pipeQrCodeStream(stream: Response, otpAuthUrl: string) {
-    return toFileStream(stream, otpAuthUrl);
   }
 
   async verifyTwoFactorAuthenticationCode(

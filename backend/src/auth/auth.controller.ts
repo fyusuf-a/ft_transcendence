@@ -18,12 +18,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { UserDto } from '@dtos/users';
-import { JwtToken } from './types';
-
-type RequestWithUser = {
-  user: UserDto;
-};
+import { RequestWithUser, JwtToken } from './types';
+import { ResponseUserDto } from '@dtos/users';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -57,16 +53,14 @@ export class AuthController {
   @Public()
   @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
-  async generate(@Req() req: RequestWithUser, @Res() res) {
-    const user: UserDto = await this.usersService.findOne(req.user.id);
+  async generate(@Req() req: RequestWithUser) {
+    const user: ResponseUserDto = await this.usersService.findOne(req.user.id);
     if (user.isTwoFAEnabled) {
       throw new BadRequestException(
         'Two factor authentication already enabled',
       );
     }
-    res.set({ 'Content-Type': 'image/png' });
-    const otpAuthUrl = await this.authService.generateTwoFASecret(req.user.id);
-    return this.authService.pipeQrCodeStream(res, otpAuthUrl);
+    return await this.authService.generateTwoFASecret(req.user.id);
   }
 
   @ApiBearerAuth()
