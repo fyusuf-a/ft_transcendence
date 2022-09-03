@@ -3,6 +3,7 @@ import axios from 'axios';
 import kingPongImg from '@/assets/images/king-pong.png';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
+import { LoginUserDto } from '@dtos/auth';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
@@ -43,7 +44,7 @@ export default createStore({
     setUsername(state, username: string) {
       state.user.username = username;
     },
-    login(state, { id, token }: { id: number; token: string }) {
+    login(state, { id, token }: LoginUserDto) {
       state.user.id = id;
       state.token = token;
     },
