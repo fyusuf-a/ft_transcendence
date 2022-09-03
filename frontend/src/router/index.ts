@@ -37,11 +37,6 @@ const routes = [
     path: '/login',
     component: () => import('../views/LoginView.vue'),
   },
-  {
-    name: 'Create account',
-    path: '/create-account',
-    component: () => import('../views/CreateAccountView.vue'),
-  },
 ];
 
 const router = createRouter({
@@ -59,9 +54,8 @@ router.beforeEach((to, _, next) => {
     disableAuthentification
   ) {
     next();
-  } else if (store.getters.userIsAuthenticated) {
-    if (!store.getters.userIsCreated) next({ name: 'Create account' });
-    else next();
+  } else if (store.getters.isUserAuthenticated) {
+    next();
   } else {
     next({ name: 'Login' });
   }

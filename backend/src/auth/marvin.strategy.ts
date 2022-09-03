@@ -57,6 +57,7 @@ export class MarvinStrategy extends PassportStrategy(Strategy, 'marvin') {
     } catch {
       const createUserDto = new CreateUserDto();
       createUserDto.identity = response.data.login;
+      createUserDto.username = response.data.login;
       try {
         user = await this.userService.create(createUserDto);
       } catch {

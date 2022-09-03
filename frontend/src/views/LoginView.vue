@@ -22,19 +22,16 @@ export default defineComponent({
   },
   async created() {
     if (this.$route.query.id && this.$route.query.token) {
-      await this.$store.commit('login', {
-        id: this.$route.query.id,
-        token: this.$route.query.token,
-      });
-    }
-    if (this.$store.getters.userIsAuthenticated) {
-      if (this.$store.getters.username) {
+      try {
+        await this.$store.dispatch('verifyLoginInfo', {
+          id: this.$route.query.id,
+          token: this.$route.query.token,
+        });
         this.$router.push('/profile');
-        return;
-      } else {
-        this.$router.push('/create-account');
-        return;
+      } catch (error) {
+        console.error(error);
       }
+      return;
     }
     this.authenticate();
   },

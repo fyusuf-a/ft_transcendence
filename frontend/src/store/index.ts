@@ -27,38 +27,41 @@ export default createStore({
   getters: {
     user: (state) => state.user,
     username: (state) => state.user.username,
-    userIsAuthenticated(state): boolean {
+    isUserAuthenticated(state): boolean {
       return state.user.id !== undefined && state.token !== '';
-    },
-    userIsCreated(state): boolean {
-      return state.user.username !== undefined;
     },
     avatar: (state) => state.avatar,
     id: (state) => state.user.id,
     token: (state) => state.token,
   },
   mutations: {
-    setToken(state, token: string) {
-      state.token = token;
-    },
-    setUsername(state, username: string) {
-      state.user.username = username;
-    },
     login(state, { id, token }: LoginUserDto) {
       state.user.id = id;
       state.token = token;
     },
+    logout(state) {
+      state.user = new UserDto();
+      state.token = undefined;
+    },
   },
   actions: {
-    async getUser(context, { id, token }: { id: number; token: string }) {
-      context.state.token = token;
-      context.state.user.id = id;
-      const response = await axios.get<ResponseUserDto>('/users/' + id);
-      context.state.user = {
-        avatar: '',
-        membershipIds: [],
-        ...response.data,
-      };
+    async verifyLoginInfo(
+      context,
+      { id, token }: { id: number; token: string },
+    ) {
+      try {
+        context.state.token = token;
+        const response = await axios.get<ResponseUserDto>('/users/' + id);
+        context.commit('login', { id, token });
+        context.state.user = {
+          avatar: '',
+          membershipIds: [],
+          ...response.data,
+        };
+      } catch (e) {
+        context.commit('logout');
+        throw e;
+      }
     },
     async getAvatar(context) {
       try {
