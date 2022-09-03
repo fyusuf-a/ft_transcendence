@@ -20,6 +20,7 @@ export class User {
   @Column({ unique: true, nullable: true })
   username: string;
 
+  @Exclude()
   @Column({
     nullable: true,
     default: null,
@@ -52,6 +53,7 @@ export class User {
   @Column({ default: false })
   isTwoFAEnabled: boolean;
 
+  @Exclude()
   @Column({ default: '' })
   twoFASecret!: string;
 }
