@@ -71,7 +71,7 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Body() body: twoFACodeDto,
   ): Promise<JwtToken> {
-    const isCodeValid = this.authService.verifyTwoFactorAuthenticationCode(
+    const isCodeValid = await this.authService.verifyTwoFactorAuthenticationCode(
       body.twoFACode,
       req.user.id,
     );
