@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import store from '../store';
+import axios from 'axios';
 
 const routes = [
   {
@@ -54,10 +54,13 @@ router.beforeEach((to, _, next) => {
     disableAuthentification
   ) {
     next();
-  } else if (store.getters.isUserAuthenticated) {
-    next();
   } else {
-    next({ name: 'Login' });
+    try {
+      axios.get('/users/me');
+      next();
+    } catch {
+      next({ name: 'Login' });
+    }
   }
 });
 

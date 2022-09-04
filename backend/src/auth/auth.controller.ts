@@ -31,6 +31,12 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
+  @ApiBearerAuth()
+  @Get('connected')
+  connected(): boolean {
+    return true;
+  }
+
   @Get('callback')
   @Public()
   @UseGuards(AuthGuard('marvin'))
@@ -71,12 +77,13 @@ export class AuthController {
     @Req() req: RequestWithUser,
     @Body() body: twoFACodeDto,
   ): Promise<JwtToken> {
-    const isCodeValid = await this.authService.verifyTwoFactorAuthenticationCode(
-      body.twoFACode,
-      req.user.id,
-    );
+    const isCodeValid =
+      await this.authService.verifyTwoFactorAuthenticationCode(
+        body.twoFACode,
+        req.user.id,
+      );
     if (!isCodeValid) {
-      throw new UnauthorizedException('Invalid two factor authentication code');
+      throw new BadRequestException('Invalid two factor authentication code');
     }
     await this.usersService.setTwoFA(true, req.user.id);
     return this.jwtService.sign({

@@ -11,7 +11,7 @@ const vuexPersister = new VuexPersister({
 });
 
 interface State {
-  user: UserDto;
+  user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
 }
@@ -48,20 +48,27 @@ export default createStore({
     async verifyLoginInfo(
       context,
       { id, token }: { id: number; token: string },
-    ) {
+    ): Promise<ResponseUserDto> {
+      let user: ResponseUserDto;
       try {
         context.state.token = token;
-        const response = await axios.get<ResponseUserDto>('/users/' + id);
+        const response = await axios.get<ResponseUserDto>('/users/me');
+        user = response.data;
         context.commit('login', { id, token });
         context.state.user = {
-          avatar: '',
-          membershipIds: [],
           ...response.data,
         };
+        return user;
       } catch (e) {
         context.commit('logout');
         throw e;
       }
+    },
+    async verify2FA(context, { code }: { code: number }): Promise<void> {
+      const response = await axios.post<string>('/auth/2fa/authenticate', {
+        twoFACode: code,
+      });
+      context.commit('login', { id: context.getters.id, token: response.data });
     },
     async getAvatar(context) {
       try {

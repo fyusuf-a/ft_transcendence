@@ -3,7 +3,8 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-progress-circular indeterminate color="primary" />
+          <v-progress-circular v-if="waiting" indeterminate color="primary" />
+          <two-fa v-if="isTwoFAEnabled" @success="goToProfile" />
         </v-col>
       </v-row>
     </v-container>
@@ -13,27 +14,47 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import config from '../config';
+import TwoFA from '@/components/Login/TwoFA.vue';
 
 export default defineComponent({
+  components: {
+    'two-fa': TwoFA,
+  },
+  data() {
+    return {
+      isTwoFAEnabled: false,
+      waiting: true,
+    };
+  },
   methods: {
     async authenticate() {
       window.location.href = `${config.backendURL}/auth/callback`;
     },
+    goToProfile() {
+      this.$router.push('/profile');
+    },
   },
   async created() {
+    this.waiting = true;
     if (this.$route.query.id && this.$route.query.token) {
       try {
-        await this.$store.dispatch('verifyLoginInfo', {
+        const user = await this.$store.dispatch('verifyLoginInfo', {
           id: this.$route.query.id,
           token: this.$route.query.token,
         });
-        this.$router.push('/profile');
+        if (user.isTwoFAEnabled) {
+          this.isTwoFAEnabled = true;
+        } else {
+          this.goToProfile();
+        }
       } catch (error) {
         console.error(error);
       }
+      this.waiting = false;
       return;
     }
     this.authenticate();
+    this.waiting = false;
   },
 });
 </script>
