@@ -14,7 +14,6 @@ import {
   ResponseMatchDto,
   MatchStatusType,
 } from '@dtos/matches';
-import { EntityDoesNotExistError } from '../errors/entityDoesNotExist';
 import { Match } from './entities/match.entity';
 import { User } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
@@ -48,20 +47,18 @@ export class MatchesService {
   }
 
   findOne(id: number): Promise<ResponseMatchDto> {
-    return this.matchRepository.findOneBy({ id: id });
+    return this.matchRepository.findOneByOrFail({ id: id });
   }
 
   async create(matchDto: CreateMatchDto): Promise<ResponseMatchDto> {
     const match: Match = new Match();
-    match.home = await this.usersRepository.findOneBy({ id: matchDto.homeId });
-    if (match.home === undefined) {
-      throw new EntityDoesNotExistError(`User #${matchDto.homeId} not found`);
-    }
+    match.home = await this.usersRepository.findOneByOrFail({
+      id: matchDto.homeId,
+    });
     match.homeId = match.home.id;
-    match.away = await this.usersRepository.findOneBy({ id: matchDto.awayId });
-    if (match.away === undefined) {
-      throw new EntityDoesNotExistError(`User #${matchDto.awayId} not found`);
-    }
+    match.away = await this.usersRepository.findOneByOrFail({
+      id: matchDto.awayId,
+    });
     match.awayId = match.away.id;
     match.status = MatchStatusType.IN_PROGRESS;
     if (match.homeId === match.awayId) {

@@ -1,5 +1,5 @@
-import { PickType } from '@nestjs/mapped-types';
-import { IsDate, IsOptional } from 'class-validator';
+import { PickType } from '@nestjs/swagger';
+import { IsDate, IsOptional, IsString } from 'class-validator';
 import { MembershipDto } from './membership.dto';
 
 export class CreateMembershipDto extends PickType(MembershipDto, [
@@ -14,4 +14,8 @@ export class CreateMembershipDto extends PickType(MembershipDto, [
   @IsOptional()
   @IsDate()
   bannedUntil?: Date;
+
+  @IsOptional()
+  @IsString()
+  password?: string;
 }

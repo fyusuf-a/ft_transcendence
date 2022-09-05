@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import {
   CreateFriendshipDto,
   QueryFriendshipDto,
@@ -24,31 +23,14 @@ export class FriendshipsService {
 
   async create(createFriendshipDto: CreateFriendshipDto) {
     const friendship: Friendship = new Friendship();
-    friendship.source = await this.userRepository.findOneBy({
+    friendship.source = await this.userRepository.findOneByOrFail({
       id: createFriendshipDto.sourceId,
     });
     friendship.sourceId = createFriendshipDto.sourceId;
-    if (
-      friendship.source === undefined ||
-      friendship.source.id !== friendship.sourceId
-    ) {
-      throw new EntityDoesNotExistError(
-        `User #${createFriendshipDto.sourceId}`,
-      );
-    }
-
-    friendship.target = await this.userRepository.findOneBy({
+    friendship.target = await this.userRepository.findOneByOrFail({
       id: createFriendshipDto.targetId,
     });
     friendship.targetId = createFriendshipDto.targetId;
-    if (
-      friendship.target === undefined ||
-      friendship.target.id !== friendship.targetId
-    ) {
-      throw new EntityDoesNotExistError(
-        `User #${createFriendshipDto.targetId}`,
-      );
-    }
 
     return await this.friendshipRepository.save(friendship);
   }
@@ -73,7 +55,7 @@ export class FriendshipsService {
   }
 
   findOne(id: number) {
-    return this.friendshipRepository.findOneBy({ id: id });
+    return this.friendshipRepository.findOneByOrFail({ id: id });
   }
 
   update(id: number, updateFriendshipDto: UpdateFriendshipDto) {

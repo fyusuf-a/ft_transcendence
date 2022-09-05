@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
   Query,
 } from '@nestjs/common';
 import { BlocksService } from './blocks.service';
@@ -17,7 +16,6 @@ import {
   QueryBlockDto,
 } from '@dtos/blocks';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult, UpdateResult } from 'typeorm';
 
 @ApiBearerAuth()
@@ -30,15 +28,7 @@ export class BlocksController {
   async create(
     @Body() createblockDto: CreateBlockDto,
   ): Promise<ResponseBlockDto> {
-    try {
-      return await this.blocksService.create(createblockDto);
-    } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
-        throw new BadRequestException(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return await this.blocksService.create(createblockDto);
   }
 
   @Get()

@@ -29,6 +29,7 @@ import { ChatGateway } from './chat.gateway';
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
+      isGlobal: true,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

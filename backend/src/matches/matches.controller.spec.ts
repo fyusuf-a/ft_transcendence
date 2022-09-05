@@ -1,7 +1,6 @@
-import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
 import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
@@ -9,11 +8,11 @@ import {
   CreateMatchDto,
   UpdateMatchDto,
   ResponseMatchDto,
-  Match,
+  MatchDto,
   MatchStatusType,
 } from '@dtos/matches';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
+import { Match } from './entities/match.entity';
 
 describe('MatchesController', () => {
   let controller: MatchesController;
@@ -25,11 +24,11 @@ describe('MatchesController', () => {
       providers: [
         MatchesService,
         {
-          provide: getRepositoryToken(User),
+          provide: getRepositoryToken(Match),
           useValue: jest.fn(),
         },
         {
-          provide: getRepositoryToken(Match),
+          provide: getRepositoryToken(User),
           useValue: jest.fn(),
         },
       ],
@@ -46,7 +45,7 @@ describe('MatchesController', () => {
   describe('findAll()', () => {
     it('should return an array of messages', async () => {
       const expected = new PageDto(
-        Array(5).fill(new Match()),
+        Array(5).fill(new MatchDto()),
         new PageMetaDto(new PageOptionsDto(), takeDefault),
       );
       jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
@@ -57,7 +56,7 @@ describe('MatchesController', () => {
 
   describe('findOne()', () => {
     it('should return a message', async () => {
-      const mockOut = new Match();
+      const mockOut = new MatchDto();
       const expected = new ResponseMatchDto();
       jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
       const result = await controller.findOne('1');
@@ -65,15 +64,14 @@ describe('MatchesController', () => {
     });
 
     it('should return 404 if match not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
-      expect(controller.findOne('5')).rejects.toThrow('Not Found');
+      jest.spyOn(service, 'findOne').mockRejectedValue(EntityNotFoundError);
+      expect(controller.findOne('5')).rejects.toThrow();
     });
   });
 
   describe('create()', () => {
     it('should return a ResponseMatchDto with a status of IN_PROGRESS', async () => {
-      const match = new Match();
+      const match = new MatchDto();
       match.homeId = 2;
       match.awayId = 3;
       match.status = MatchStatusType.IN_PROGRESS;
@@ -92,16 +90,11 @@ describe('MatchesController', () => {
       createMatchDto.awayId = 3;
       jest
         .spyOn(service, 'create')
-        .mockImplementation(async () => {
-          throw new EntityDoesNotExistError('User #2 not found');
-        })
-        .mockImplementationOnce(async () => {
-          throw new RangeError();
-        });
-      let result = controller.create(createMatchDto);
-      expect(result).rejects.toThrow(BadRequestException);
-      result = controller.create(createMatchDto);
-      expect(result).rejects.toThrow(BadRequestException);
+        .mockRejectedValueOnce(
+          new EntityNotFoundError('User #2 not found', ''),
+        );
+      const result = controller.create(createMatchDto);
+      expect(result).rejects.toThrow(EntityNotFoundError);
     });
   });
 

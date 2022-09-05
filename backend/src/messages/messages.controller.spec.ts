@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { CreateMessageDto, ResponseMessageDto } from '@dtos/messages';
-import { BadRequestException } from '@nestjs/common';
 import { DeleteResult, EntityNotFoundError } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { PageMetaDto, PageDto, PageOptionsDto, takeDefault } from '@dtos/pages';
@@ -88,7 +87,7 @@ describe('MessagesController', () => {
         throw new EntityNotFoundError(Message, 'not found');
       });
       expect(controller.create(createMessageDto)).rejects.toThrow(
-        BadRequestException,
+        EntityNotFoundError,
       );
     });
 

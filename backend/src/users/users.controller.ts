@@ -36,7 +36,6 @@ import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
 import { ListFriendshipDto } from '@dtos/friendships';
 import { ListBlockDto } from '@dtos/blocks';
@@ -108,7 +107,11 @@ export class UsersController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file || !file.filename) {
+    if (
+      !file ||
+      !file.filename ||
+      !this.usersService.verifyMagicNum(file.path)
+    ) {
       throw new BadRequestException('Missing or Invalid File');
     }
     return this.usersService.updateAvatar(
@@ -134,10 +137,7 @@ export class UsersController {
       });
       return file.fileStream;
     } catch (error) {
-      if (
-        error instanceof EntityDoesNotExistError &&
-        error.message === 'Avatar does not exist'
-      ) {
+      if (error instanceof EntityNotFoundError) {
         throw new HttpException(error.message, HttpStatus.NO_CONTENT);
       }
       throw new BadRequestException(error.message);

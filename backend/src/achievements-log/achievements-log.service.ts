@@ -44,9 +44,10 @@ export class AchievementsLogService {
       newLog.achievement = await this.achievementRepository.findOneByOrFail({
         id: achievementsLogdto.achievementId,
       });
+      console.log(newLog);
       return this.achievementsLogRepository.save(newLog);
     }
-    return undefined;
+    throw 'Achievements already unlocked.';
   }
 
   remove(id: number): Promise<DeleteResult> {
