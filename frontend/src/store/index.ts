@@ -3,22 +3,32 @@ import axios from 'axios';
 import kingPongImg from '@/assets/images/king-pong.png';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
+import Vue from 'vue';
+import Vuex from 'vuex';
+
+import { fetchAvatar } from '@/utils/avatar';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
   overwrite: true,
 });
 
+interface Cache {
+  avatars: Map<number, string>;
+}
+
 interface State {
   user: UserDto;
   avatar: string | undefined;
   token: string | undefined;
+  cache: Cache | undefined;
 }
 
 const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
+  cache: undefined,
 };
 
 export default createStore({
@@ -49,30 +59,22 @@ export default createStore({
     },
   },
   actions: {
-    async getUser(context, { id, token }: { id: number; token: string }) {
-      context.state.token = token;
-      context.state.user.id = id;
-      const response = await axios.get<ResponseUserDto>('/users/' + id);
-      context.state.user = {
-        avatar: '',
-        membershipIds: [],
-        ...response.data,
-      };
+    async getAvatarById(context, id: string) {
+      if (id) {
+        if (context.state.cache?.avatars.has(+id)) {
+          return context.state.cache?.avatars.get(+id);
+        }
+        return await fetchAvatar(id);
+      }
     },
     async getAvatar(context) {
-      try {
-        const id = context.state.user.id;
-        if (id === undefined) return undefined;
-        const response = await axios.get('/users/' + id + '/avatar', {
-          responseType: 'blob',
-        });
-        if (response.status === 204) return;
-        const blob = new Blob([response.data]);
-        context.state.avatar = URL.createObjectURL(blob);
-      } finally {
-        if (!context.state.avatar) {
-          context.state.avatar = kingPongImg;
+      if (context?.state?.id) {
+        if (context.state.cache?.avatars.has(+context?.state?.id)) {
+          context.state.avatar = context.state.cache?.avatars.get(
+            +context?.state?.id,
+          );
         }
+        context.state.avatar = await fetchAvatar(context.state.id);
       }
     },
   },
