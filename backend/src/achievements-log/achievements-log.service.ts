@@ -29,24 +29,25 @@ export class AchievementsLogService {
   async create(
     achievementsLogdto: CreateAchievementLogDto,
   ): Promise<AchievementsLog> {
-    if (
-      (await this.achievementsLogRepository.findOneByOrFail({
+    try {
+      await this.achievementsLogRepository.findOneByOrFail({
         achievementId: achievementsLogdto.achievementId,
         userId: achievementsLogdto.userId,
-      })) !== undefined
-    )
-      throw 'Achievements already unlocked.';
-    const newLog = new AchievementsLog();
-    await this.userRepository.findOneByOrFail({
-      id: achievementsLogdto.userId,
-    });
-    newLog.userId = achievementsLogdto.userId;
+      });
+    } catch (EntityNotFoundError) {
+      const newLog = new AchievementsLog();
+      await this.userRepository.findOneByOrFail({
+        id: achievementsLogdto.userId,
+      });
+      newLog.userId = achievementsLogdto.userId;
 
-    newLog.achievement = await this.achievementRepository.findOneByOrFail({
-      id: achievementsLogdto.achievementId,
-    });
-    console.log(newLog);
-    return this.achievementsLogRepository.save(newLog);
+      newLog.achievement = await this.achievementRepository.findOneByOrFail({
+        id: achievementsLogdto.achievementId,
+      });
+      console.log(newLog);
+      return this.achievementsLogRepository.save(newLog);
+    }
+    throw 'Achievements already unlocked.';
   }
 
   remove(id: number): Promise<DeleteResult> {
