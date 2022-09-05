@@ -1,4 +1,4 @@
-import { PartialType, PickType } from '@nestjs/mapped-types';
+import { PartialType, PickType } from '@nestjs/swagger';
 import { CreateMembershipDto } from './create-membership.dto';
 
 export class UpdateMembershipDto extends PickType(
