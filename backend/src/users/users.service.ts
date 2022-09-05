@@ -1,7 +1,6 @@
 import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
@@ -11,7 +10,12 @@ import { AchievementsLogDto } from '@dtos/achievements-log';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { paginate } from 'src/common/paginate';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeleteResult,
+  EntityNotFoundError,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 enum hexSignature {
@@ -54,8 +58,8 @@ export class UsersService {
   }
 
   findByName(username: string): Promise<User> {
-    return this.usersRepository.findOneOrFail({
-      where: { username: username },
+    return this.usersRepository.findOneByOrFail({
+      username: username,
     });
   }
 
@@ -95,13 +99,10 @@ export class UsersService {
   }
 
   async getAvatar(id: number) {
-    const user: User = await this.usersRepository.findOneBy({ id: id });
-    if (user === undefined) {
-      throw new EntityDoesNotExistError(`User #${id}`);
-    }
+    const user: User = await this.usersRepository.findOneByOrFail({ id: id });
     const filepath = user.avatar;
     if (filepath === null || !fs.existsSync(filepath)) {
-      throw new EntityDoesNotExistError('Avatar');
+      throw new EntityNotFoundError('Avatar', '');
     }
     const splitPath = filepath.split('.');
     const ext = splitPath[splitPath.length - 1];

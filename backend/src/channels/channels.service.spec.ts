@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 import { CreateChannelDto, UpdateChannelDto } from '@dtos/channels';
 import { MockChannelEntity } from './mocks/channel.entity.mock';
@@ -45,8 +45,11 @@ describe('ChannelsService', () => {
   });
 
   describe('when looking up an non-existing Channel by id', () => {
-    it('should return undefined', async () => {
-      expect(await service.findOne(channelNumber + 1)).toEqual(undefined);
+    it('should throw', async () => {
+      jest.spyOn(service, 'findOne').mockRejectedValue(EntityNotFoundError);
+      expect(
+        async () => await service.findOne(channelNumber + 1),
+      ).rejects.toThrow();
     });
   });
 

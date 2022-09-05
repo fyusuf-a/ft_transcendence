@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
   Query,
 } from '@nestjs/common';
 import { FriendshipsService } from './friendships.service';
@@ -17,7 +16,6 @@ import {
   ResponseFriendshipDto,
 } from '@dtos/friendships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { PageDto } from '@dtos/pages';
 
@@ -31,15 +29,7 @@ export class FriendshipsController {
   async create(
     @Body() createfriendshipDto: CreateFriendshipDto,
   ): Promise<ResponseFriendshipDto> {
-    try {
-      return await this.friendshipsService.create(createfriendshipDto);
-    } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
-        throw new BadRequestException(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return await this.friendshipsService.create(createfriendshipDto);
   }
 
   @Get()
