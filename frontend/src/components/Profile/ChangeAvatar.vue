@@ -62,11 +62,9 @@ export default defineComponent({
             'Content-Type': 'multipart/form-data'
           }
         }).then(() =>{
-          console.log('SUCCESS!!');
           window.location.reload();
         })
         .catch(function(){
-          console.log('FAILURE!!');
         });
       },
       // Handles a change on the file upload

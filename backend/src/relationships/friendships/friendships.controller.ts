@@ -32,6 +32,17 @@ export class FriendshipsController {
     return await this.friendshipsService.create(createfriendshipDto);
   }
 
+  @Post(':username')
+  async createFromUsername(
+    @Param('username') username: string,
+    @Body() createfriendshipDto: CreateFriendshipDto,
+  ): Promise<ResponseFriendshipDto> {
+    return await this.friendshipsService.createFromUsername(
+      username,
+      createfriendshipDto,
+    );
+  }
+
   @Get()
   findAll(
     @Query() query?: QueryFriendshipDto,

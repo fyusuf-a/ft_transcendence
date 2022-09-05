@@ -20,12 +20,5 @@ export default defineComponent({
   methods: {
     ...mapGetters(['username', 'avatar', 'id']),
   },
-
-async created() {
-//          const response2 = await axios.get('http://localhost:8080/users/' + this.id());
-// console.log(response2.data);
-// // console.log(response2.data.username);
-//const response1 = await axios.get('http://localhost:8080/achievements/1');
-},
 });
 </script>

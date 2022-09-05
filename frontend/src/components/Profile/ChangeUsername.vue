@@ -7,7 +7,7 @@
       v-model="dialog"
       activator="parent"
     >
-      <v-card >
+      <v-card width="300">
         <v-card-text v-if="nameAlreadyUsed === 500">
             This username is already used
         </v-card-text>
@@ -24,13 +24,6 @@
             required
           ></v-text-field>
 
-          <v-checkbox
-            v-model="checkbox"
-            :rules="checkboxRules"
-            label="Do you agree?"
-            required
-          ></v-checkbox>
-
           <v-btn
             :disabled="!valid"
             color="success"
@@ -40,13 +33,6 @@
             Validate
           </v-btn>
 
-          <v-btn
-            color="error"
-            class="mr-4"
-            @click="reset"
-          >
-            Reset Form
-          </v-btn>
         </v-form>
         <v-card-actions>
           <v-btn color="primary" block @click="dialog = false">I changed my mind</v-btn>
@@ -71,11 +57,7 @@ export default defineComponent({
       (v: string) => !!v || 'Name is required',
       (v: string) => (v && v.length <= 15) || 'Name must be less than 15 characters',
     ],
-    checkboxRules: [
-      (v: string) => !!v || 'You must agree to continue!',
-    ],
     select: null,
-    checkbox: false,
   }),
 
   methods: {
@@ -84,17 +66,9 @@ export default defineComponent({
     validate () {
       this.changeUsername(this.name);
       (this.$refs.form as any).validate();
-      this.checkbox = false;
       (this.$refs.form as any).reset();
       this.nameAlreadyUsed = 0;
     },
-    
-    reset () {
-      (this.$refs.form as any).reset();
-      this.checkbox = false;
-      this.nameAlreadyUsed = 0;
-    },
-
     async changeUsername(name: string) {
       const data = {
         username: name,
@@ -109,8 +83,7 @@ export default defineComponent({
           this.nameAlreadyUsed = error.response.status;
         });
 
-      const response2 = await axios.get('http://localhost:8080/users/' + this.id());
-
+        const response2 = await axios.get('http://localhost:8080/users/' + this.id());
         this.$store.commit('setUsername', response2.data.username);
         if (this.nameAlreadyUsed === 0) { this.dialog = false; };
     },

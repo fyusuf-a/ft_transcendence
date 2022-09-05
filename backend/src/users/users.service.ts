@@ -89,6 +89,9 @@ export class UsersService {
   }
 
   remove_avatar(filePath: string, reason: string) {
+    if (!fs.existsSync(filePath)) {
+      return;
+    }
     fs.unlink(filePath, (err) => {
       if (err) this.logger.error(err);
       else this.logger.log('Deleted ' + filePath + reason);
@@ -96,6 +99,7 @@ export class UsersService {
   }
 
   async updateAvatar(userId: number, filepath: string) {
+    console.log('filepath update: ' + filepath);
     const user: User = await this.usersRepository.findOneByOrFail({
       id: userId,
     });
@@ -156,7 +160,6 @@ export class UsersService {
             avatar: friends[j].avatar,
           };
           ret[i] = new ListFriendshipDto(tmp[i], uUd);
-          friends.splice(j);
           break;
         }
       }

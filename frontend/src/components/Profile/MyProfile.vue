@@ -39,7 +39,6 @@ import { mapGetters } from 'vuex';
 import MyStatistics from '@/components/Profile/MyStatistics.vue';
 import ChangeUsername from '@/components/Profile/ChangeUsername.vue';
 import ChangeAvatar from '@/components/Profile/ChangeAvatar.vue';
-import axios from 'axios';
 
 export default defineComponent({
   data: () => ({
@@ -57,8 +56,6 @@ export default defineComponent({
   async created() {
     if (this.avatar() !== undefined) return;
     this.$store.dispatch('getAvatar');
-    // const friends = await axios.get('/users/1/friendships');
-    // console.log(friends);
   },
 });
 </script>

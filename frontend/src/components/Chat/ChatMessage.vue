@@ -7,7 +7,12 @@
           $emit('chat-message-menu-selection', $event)
         "
       >
-        <v-img max-height="45" max-width="45" :src="avatar"> </v-img>
+      <v-avatar size="45">
+        <v-img
+          :src="'https://static.generated.photos/vue-static/home/hero/3.png'"
+        >
+        </v-img>
+        </v-avatar>
       </chat-message-menu>
     
       <v-list-item-title
@@ -22,7 +27,6 @@
 <script lang="ts">
 import ChatMessageMenu from './ChatMessageMenu.vue';
 import { defineComponent } from 'vue';
-
 export default defineComponent({
   props: {
     sender: {
@@ -43,9 +47,7 @@ export default defineComponent({
     },
   },
   data() {
-    return {
-      avatar: '',
-    };
+    return {};
   },
   components: {
     'chat-message-menu': ChatMessageMenu,
@@ -62,12 +64,6 @@ export default defineComponent({
         minute: '2-digit',
       });
     },
-  },
-  async created() {
-    this.avatar = await this.$store.dispatch(
-      'getAvatarById',
-      this.senderId.toString(),
-    );
   },
 });
 </script>
