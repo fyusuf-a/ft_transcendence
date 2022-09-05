@@ -1,3 +1,5 @@
+export { PickType, OmitType, PartialType } from '@nestjs/mapped-types';
+
 export interface ApiPropertyOptions {
   description?: string;
   enumName?: string;
