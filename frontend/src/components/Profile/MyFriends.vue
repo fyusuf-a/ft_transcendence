@@ -11,7 +11,7 @@
     <v-card-text>
       <li v-for="friend in friends" :key="friend.username">
         {{ friend.username }}
-        <!-- <v-img :src="friend.avatar" ></v-img> -->
+        <v-img :src="friend.avatar" ></v-img>
       </li>
     </v-card-text>
   </v-card>
@@ -47,7 +47,7 @@ export default defineComponent({
     for (let i: number = 0; i < response.data.length; i++) {
       this.friends.push({
         username: response.data[i].user.username,
-        avatar: response.data[i].user.avatar,
+        avatar: response.data[i].avatar,
       });
     } 
     this.loading = false;

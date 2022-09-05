@@ -9,7 +9,7 @@ describe('fetchAvatar', () => {
   });
 
   it('takes an id as a parameter', async () => {
-    const response = fetchAvatar('5');
+    const response = fetchAvatar(5);
     expect(response).to.exist;
   });
 
@@ -18,7 +18,7 @@ describe('fetchAvatar', () => {
     mock.onGet('/users/5/avatar').reply(200, 'response');
     const convertBlob = () => 'success';
 
-    const response = await fetchAvatar('5', convertBlob);
+    const response = await fetchAvatar(5, convertBlob);
     mock.reset();
     expect(response).to.be.a('string');
     expect(response).to.equal('success');
@@ -28,7 +28,7 @@ describe('fetchAvatar', () => {
     const mock = new MockAdapter(axios, { onNoMatch: 'throwException' });
     mock.onGet('/users/5/avatar').reply(204);
 
-    const response = await fetchAvatar('5');
+    const response = await fetchAvatar(5);
     mock.reset();
     expect(response).to.be.a('string');
     try {
@@ -44,7 +44,7 @@ describe('fetchAvatar', () => {
     const mock = new MockAdapter(axios, { onNoMatch: 'throwException' });
     mock.onGet('/users/5/avatar').reply(400);
 
-    const response = await fetchAvatar('5');
+    const response = await fetchAvatar(5);
     mock.reset();
     expect(response).to.be.a('string');
     try {

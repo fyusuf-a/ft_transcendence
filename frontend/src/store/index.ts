@@ -59,7 +59,7 @@ export default createStore({
     },
   },
   actions: {
-    async getAvatarById(context, id: string) {
+    async getAvatarById(context, id: number) {
       if (id) {
         if (context.state.cache?.avatars.has(+id)) {
           return context.state.cache?.avatars.get(+id);
@@ -68,13 +68,13 @@ export default createStore({
       }
     },
     async getAvatar(context) {
-      if (context?.state?.id) {
-        if (context.state.cache?.avatars.has(+context?.state?.id)) {
+      if (context?.state?.user.id) {
+        if (context.state.cache?.avatars.has(+context?.state?.user.id)) {
           context.state.avatar = context.state.cache?.avatars.get(
-            +context?.state?.id,
+            +context?.state?.user.id,
           );
         }
-        context.state.avatar = await fetchAvatar(context.state.id);
+        context.state.avatar = await fetchAvatar(context.state.user.id);
       }
     },
   },

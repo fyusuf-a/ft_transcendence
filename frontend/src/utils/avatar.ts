@@ -1,7 +1,8 @@
 import axios from 'axios';
+import kingPong from '@/assets/images/king-pong.png';
 
 export async function fetchAvatar(
-  id: string,
+  id: number,
   convertBlob = URL.createObjectURL,
 ): Promise<string> {
   let avatar;
@@ -13,7 +14,8 @@ export async function fetchAvatar(
     const blob = new Blob([response.data]);
     return convertBlob(blob);
   } catch (error) {
-    avatar = require('@/assets/images/king-pong.png');
+    avatar = kingPong;
   }
   return avatar;
 }
+
