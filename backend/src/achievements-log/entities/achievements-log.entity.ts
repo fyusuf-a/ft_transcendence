@@ -7,10 +7,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
+  Unique,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
 @Entity()
+@Unique(['achievement', 'userId'])
 export class AchievementsLog {
   @PrimaryGeneratedColumn()
   id: number;
