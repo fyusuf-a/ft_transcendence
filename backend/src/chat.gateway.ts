@@ -20,7 +20,7 @@ import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
 import { MembershipsService } from './memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
-import { CreateMembershipDto, MembershipDto } from '@dtos/memberships';
+import { CreateMembershipDto } from '@dtos/memberships';
 
 export class ChatJoinDto {
   channel: string;
@@ -122,10 +122,7 @@ export class ChatGateway
         throw new WsException('Invalid Token');
       }
       this.authenticatedSockets.set(client.id, user);
-      user.memberships.forEach((membership) =>
-        this.handleJoin(client, { channel: membership.channel.id.toString() }),
-      );
-      return user.memberships as MembershipDto[];
+      return 'SUCCESS';
     } catch (err) {
       this.authenticatedSockets.delete(client.id);
       throw new WsException('Not Authorized');
@@ -134,7 +131,6 @@ export class ChatGateway
 
   @SubscribeMessage('chat-send')
   async handleSend(client: Socket, payload: ChatSendDto): Promise<string> {
-    console.log('target ' + payload.channel + ' message: ' + payload.message);
     this.checkAuth(client);
     const target = payload.channel;
     const message = payload.message;

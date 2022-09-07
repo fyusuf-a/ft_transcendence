@@ -43,7 +43,7 @@ export class ChannelsService {
 
     channel.type = createChannelDto.type;
     if (channel.type == ChannelType.DIRECT)
-      await this.checkDirectUsers(createChannelDto, channel);
+      return await this.createDirectChannel(createChannelDto, channel);
     else {
       if (createChannelDto.name[0] == '-')
         throw "Channel name cannot start with a '-'.";
@@ -67,7 +67,12 @@ export class ChannelsService {
     return ret;
   }
 
-  async checkDirectUsers(createChannelDto: CreateChannelDto, channel: Channel) {
+  async createDirectChannel(
+    createChannelDto: CreateChannelDto,
+    channel: Channel,
+  ) {
+    if (!createChannelDto.userOneId || !createChannelDto.userTwoId)
+      throw 'User 1 or user 2 is not defined.';
     if (createChannelDto.userOneId > createChannelDto.userTwoId)
       [createChannelDto.userOneId, createChannelDto.userTwoId] = [
         createChannelDto.userTwoId,
@@ -76,26 +81,25 @@ export class ChannelsService {
 
     channel.name =
       '-' + createChannelDto.userOneId + '-' + createChannelDto.userTwoId;
-    if (
-      await this.channelsRepository.findOneByOrFail({
-        type: ChannelType.DIRECT,
-        name: channel.name,
-      })
-    )
-      throw 'Direct channel already exists.';
     channel.userOne = await this.usersRepository.findOneByOrFail({
       id: createChannelDto.userOneId,
     });
     channel.userTwo = await this.usersRepository.findOneByOrFail({
       id: createChannelDto.userTwoId,
     });
-    //const user : User = this.usersRepository.findOneByOrFail( {id: userId} );
+
+    const ret: ResponseChannelDto = await this.channelsRepository.save(channel);
     this.membershipsService.create({
-      userId: +createChannelDto.userId,
+      userId: +createChannelDto.userOneId,
       role: MembershipRoleType.PARTICIPANT,
       channelId: channel.id,
     });
-    return;
+    this.membershipsService.create({
+      userId: +createChannelDto.userTwoId,
+      role: MembershipRoleType.PARTICIPANT,
+      channelId: channel.id,
+    });
+    return ret;
   }
 
   async findAll(
