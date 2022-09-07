@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 import { MockUserEntity } from './mocks/user.entity.mock';
 import { MockRepository } from 'src/common/mocks/repository.mock';
 import { PageDto } from '@dtos/pages';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './entities/user.entity';
@@ -69,8 +69,9 @@ describe('UsersService', () => {
   });
 
   describe('when looking up an non-existing User by id', () => {
-    it('should return undefined', async () => {
-      expect(await service.findOne(userNumber + 1)).toEqual(undefined);
+    it('should throw', async () => {
+      jest.spyOn(service, 'findOne').mockRejectedValue(EntityNotFoundError);
+      expect(service.findOne(userNumber + 1)).rejects.toThrow();
     });
   });
 

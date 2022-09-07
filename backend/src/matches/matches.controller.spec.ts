@@ -1,7 +1,6 @@
-import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
 import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
@@ -12,7 +11,6 @@ import {
   MatchDto,
   MatchStatusType,
 } from '@dtos/matches';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { User } from 'src/users/entities/user.entity';
 import { Match } from './entities/match.entity';
 
@@ -66,9 +64,8 @@ describe('MatchesController', () => {
     });
 
     it('should return 404 if match not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
-      expect(controller.findOne('5')).rejects.toThrow('Not Found');
+      jest.spyOn(service, 'findOne').mockRejectedValue(EntityNotFoundError);
+      expect(controller.findOne('5')).rejects.toThrow();
     });
   });
 
@@ -93,16 +90,11 @@ describe('MatchesController', () => {
       createMatchDto.awayId = 3;
       jest
         .spyOn(service, 'create')
-        .mockImplementation(async () => {
-          throw new EntityDoesNotExistError('User #2 not found');
-        })
-        .mockImplementationOnce(async () => {
-          throw new RangeError();
-        });
-      let result = controller.create(createMatchDto);
-      expect(result).rejects.toThrow(BadRequestException);
-      result = controller.create(createMatchDto);
-      expect(result).rejects.toThrow(BadRequestException);
+        .mockRejectedValueOnce(
+          new EntityNotFoundError('User #2 not found', ''),
+        );
+      const result = controller.create(createMatchDto);
+      expect(result).rejects.toThrow(EntityNotFoundError);
     });
   });
 

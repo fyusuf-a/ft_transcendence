@@ -8,7 +8,6 @@ import {
   Delete,
   BadRequestException,
   Query,
-  NotFoundException,
   UnauthorizedException,
   Req,
 } from '@nestjs/common';
@@ -21,7 +20,6 @@ import {
   MembershipRoleType,
 } from '@dtos/memberships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelType } from 'src/channels/entities/channel.entity';
 import { EntityNotFoundError } from 'typeorm';
@@ -124,15 +122,7 @@ export class MembershipsController {
       }
       throw error;
     }
-    try {
-      return await this.membershipsService.create(createMembershipDto);
-    } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
-        throw new BadRequestException(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return await this.membershipsService.create(createMembershipDto);
   }
 
   @Get()
@@ -146,9 +136,6 @@ export class MembershipsController {
   async findOne(@Param('id') id: string): Promise<ResponseMembershipDto> {
     const membership: ResponseMembershipDto =
       await this.membershipsService.findOne(+id);
-    if (membership === undefined) {
-      throw new NotFoundException(`Channel membership #${id} not found`);
-    }
     return membership;
   }
 

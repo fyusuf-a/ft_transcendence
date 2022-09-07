@@ -3,9 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  BadRequestException,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -14,7 +11,6 @@ import {
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { MatchesService } from './matches.service';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
   ResponseMatchDto,
@@ -42,9 +38,7 @@ export class MatchesController {
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findOne(@Param('id') id: string): Promise<ResponseMatchDto> {
     const user: ResponseMatchDto = await this.matchesService.findOne(+id);
-    if (user === undefined) {
-      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-    }
+
     return user;
   }
 
@@ -54,15 +48,7 @@ export class MatchesController {
   async create(
     @Body() createUserDto: CreateMatchDto,
   ): Promise<ResponseMatchDto> {
-    try {
-      return await this.matchesService.create(createUserDto);
-    } catch (error) {
-      if (error instanceof EntityDoesNotExistError) {
-        throw new BadRequestException(error.message);
-      } else if (error instanceof RangeError) {
-        throw new BadRequestException(error.message);
-      } else throw error;
-    }
+    return await this.matchesService.create(createUserDto);
   }
 
   @ApiBearerAuth()

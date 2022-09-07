@@ -1,7 +1,6 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import {
   CreateMembershipDto,
   UpdateMembershipDto,
@@ -10,7 +9,7 @@ import {
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
@@ -74,8 +73,7 @@ describe('MembershipsController', () => {
     });
 
     it('should return 404 if membership not found', async () => {
-      const mockOut = undefined;
-      jest.spyOn(service, 'findOne').mockImplementation(async () => mockOut);
+      jest.spyOn(service, 'findOne').mockRejectedValue(EntityNotFoundError);
       expect(controller.findOne('5')).rejects.toThrow();
     });
   });
@@ -115,14 +113,14 @@ describe('MembershipsController', () => {
       createMembershipDto.userId = 0;
       createMembershipDto.role = MembershipRoleType.PARTICIPANT;
       jest.spyOn(service, 'create').mockImplementation(async () => {
-        throw new EntityDoesNotExistError('error');
+        throw new EntityNotFoundError('', '');
       });
       const mockChannel = new Channel();
       mockChannel.type = ChannelType.PUBLIC;
       jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
       expect(
         controller.create(createMembershipDto, mockRequest),
-      ).rejects.toThrow(BadRequestException);
+      ).rejects.toThrow(EntityNotFoundError);
     });
 
     it('should throw if service throws', async () => {
@@ -169,7 +167,7 @@ describe('MembershipsController', () => {
       createMembershipDto.userId = 0;
       createMembershipDto.role = MembershipRoleType.PARTICIPANT;
       jest.spyOn(service, 'create').mockImplementation(async () => {
-        throw new EntityDoesNotExistError('error');
+        throw new EntityNotFoundError('', '');
       });
       const mockChannel = new Channel();
       mockChannel.type = ChannelType.PRIVATE;

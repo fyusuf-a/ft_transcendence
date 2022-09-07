@@ -8,7 +8,6 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
   Query,
 } from '@nestjs/common';
 import {
@@ -64,7 +63,7 @@ export class ChannelsController {
       return await this.channelsService.findOne(+id);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException(`Channel #${id} not found`);
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
       }
     }
   }
