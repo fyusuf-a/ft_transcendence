@@ -10,15 +10,18 @@
     "useDefineForClassFields": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env",
       "mocha",
       "chai",
-      "node"
+      "node",
+      "vite/client",
+      "vitest/globals"
     ],
     "paths": {
       "*": ["*", "node_modules/*"],
       "@/*": ["src/*"],
-      "@dtos/*": ["src/dtos/*"]
+      "@dtos/*": ["../dtos/*"],
+      "@nestjs/swagger": ["src/shims-nestjs.d"],
+      "@tests/*": ["tests/*"]
     },
     "lib": [
       "esnext",
@@ -28,8 +31,9 @@
     ]
   },
   "include": [
+    "../dtos/**/*.ts",
     "src/**/*.ts",
-    "src/**/*.tsx",
+    "src/**/*.d.ts",
     "src/**/*.vue",
     "tests/**/*.ts"
   ],

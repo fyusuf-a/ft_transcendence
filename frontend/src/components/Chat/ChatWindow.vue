@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import ChatMessage from '@/components/Chat/ChatMessage.vue';
 import ChatWindowMenu from '@/components/Chat/ChatWindowMenu.vue';
 import { ChannelDto } from '@/common/dto/channel.dto';
@@ -62,7 +62,7 @@ interface DataReturnType {
   itemHeight: number;
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     channel: {
       type: Object as PropType<ChannelDto>,

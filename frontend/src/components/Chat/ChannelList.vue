@@ -7,7 +7,8 @@
           <channel-join-dialog
             @channel-join-event="handleChannelJoin"
             :joinableChannels="getJoinableChannels"
-          ></channel-join-dialog>
+          >
+          </channel-join-dialog>
         </v-col>
         <v-spacer></v-spacer>
       </v-row>
@@ -16,30 +17,28 @@
       </v-row>
       <v-row>
         <v-col>
-          <v-list dense>
-            <v-list-item-group
-              v-model="selectedChannel"
-              color="primary"
-              @change="handleChannelSelection($event)"
-            >
-              <v-list-item v-for="(item, i) in channels" :key="i">
+          <v-list density="compact">
+              <v-list-item
+                v-for="(item, i) in channels"
+                :key="i"
+                active-color="primary"
+                @click="() => handleChannelSelection(item)"
+              >
                 <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-list-item-icon v-bind="attrs" v-on="on">
+                  <template v-slot:activator="{ props: tooltip }">
                       <v-icon
+                        v-bind="tooltip"
                         v-if="unreadChannels.has(item.id)"
                         color="secondary"
                         >{{ unreadMarker }}</v-icon
                       >
-                    </v-list-item-icon>
-                    <v-list-item-content v-bind="attrs" v-on="on">
-                      <v-list-item-title v-text="item.name"></v-list-item-title>
-                    </v-list-item-content>
+                    <v-list-item-title v-bind="tooltip">
+                      <v-list-item-title> {{ item.name }}</v-list-item-title>
+                    </v-list-item-title>
                   </template>
                   <span>{{ item.name }}</span>
                 </v-tooltip>
               </v-list-item>
-            </v-list-item-group>
           </v-list>
         </v-col>
       </v-row>
@@ -49,42 +48,42 @@
 
 <script lang="ts">
 import { ChannelDto } from '@/common/dto/channel.dto';
-import Vue, { PropType } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import ChannelJoinDialog from './ChannelJoinDialog.vue';
 
 interface DataReturnType {
   title: string;
-  selectedChannel?: number;
   unreadMarker: string;
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     channels: {
       type: Array as () => Array<ChannelDto>,
+      required: true,
     },
     allChannels: {
       type: Map as PropType<Map<number, ChannelDto>>,
+      required: true,
     },
     unreadChannels: {
       type: Set, //Set<number>,
+      required: true,
     },
   },
   data(): DataReturnType {
     return {
       title: 'Channels',
-      selectedChannel: -1,
       unreadMarker: 'mdi-new-box',
     };
   },
-  components: { 'channel-join-dialog': Vue.extend(ChannelJoinDialog) },
+  components: { 'channel-join-dialog': defineComponent(ChannelJoinDialog) },
   methods: {
-    async handleChannelSelection(channelId: number) {
-      console.log('Handling a channel selection');
-      this.$emit('channel-select-event', this.channels[channelId]);
+    async handleChannelSelection(channel: ChannelDto) {
+      console.log(`Handling a channel selection: ${channel.id}`);
+      this.$emit('channel-select-event', channel);
     },
     handleChannelJoin(channelId: number) {
-      this.selectedChannel = this.channels.length;
       this.$emit('channel-join-event', channelId);
     },
   },

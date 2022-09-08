@@ -11,11 +11,7 @@
         dangerous to go alone, take a cute little cat with you.
       </p>
       <div class="posImg">
-        <v-img
-          :src="errorImg"
-          max-width="50em"
-        >
-        </v-img>
+        <v-img :src="errorImg" max-width="50em"> </v-img>
       </div>
       <p class="imgSrc">
         <a
@@ -34,10 +30,10 @@ import { defineComponent } from 'vue';
 import errorImg from '@/assets/images/error-404.jpg';
 
 export default defineComponent({
-data: () => ({
-      errorImg,
+  data: () => ({
+    errorImg,
   }),
-})
+});
 </script>
 
 <style scoped>
@@ -56,10 +52,11 @@ a {
   color: black;
 }
 
-a:visited {}
+a:visited {
+}
 
 a:hover {
-  background: #03DAC6;
+  background: #03dac6;
   color: white;
   border-radius: 5px;
   padding: 1px 3px 1px 3px;
