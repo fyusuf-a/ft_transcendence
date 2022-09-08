@@ -34,7 +34,7 @@
         </v-window-item>
 
         <v-window-item value="blocked">
-          Blocked users
+          blocked users
         </v-window-item>
 
       </v-window>
