@@ -29,7 +29,7 @@
               <br />
             </li>
             <p v-if="!requesters.length" class="text--primary">
-              No pending friend request.
+              No request to accept.
             </p>
         </v-window-item>
 
