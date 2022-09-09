@@ -30,7 +30,8 @@ export default defineComponent({
     handleConnection(payload: any) {
       console.log(payload);
       this.socket.emit('game-auth', {
-        authorization: this.$store.getters.token,
+        id: this.$store.getters.id,
+        token: this.$store.getters.token,
       });
     },
     handleGameState(payload: any) {

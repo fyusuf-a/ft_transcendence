@@ -1,42 +1,22 @@
 <template>
-  <v-form>
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-progress-circular indeterminate color="primary" />
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-form>
+  <component :is="loginComponent" />
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import config from '../config';
+import { defineComponent, defineAsyncComponent, Component } from 'vue';
 
 export default defineComponent({
-  methods: {
-    async authenticate() {
-      window.location.href = `${config.backendURL}/auth/callback`;
-    },
-  },
-  async created() {
-    if (this.$route.query.id && this.$route.query.token) {
-      await this.$store.commit('login', {
-        id: this.$route.query.id,
-        token: this.$route.query.token,
+  computed: {
+    loginComponent() {
+      return defineAsyncComponent(() => {
+        let component: Promise<Component> = import(
+          `@/components/Login/${
+            import.meta.env.VITE_DISABLE_AUTHENTICATION ? 'NoAuth' : 'FortyTwo'
+          }.vue`
+        );
+        return component;
       });
-    }
-    if (this.$store.getters.userIsAuthenticated) {
-      if (this.$store.getters.username) {
-        this.$router.push('/profile');
-        return;
-      } else {
-        this.$router.push('/create-account');
-        return;
-      }
-    }
-    this.authenticate();
+    },
   },
 });
 </script>
