@@ -1,6 +1,6 @@
 import { Ball } from './ball';
 import { Grid } from './grid';
-import { Player } from './player';
+import { Player, Direction } from './player';
 
 const BALL_SPEED = 3.5;
 const BALL_SIZE = 13;
@@ -29,6 +29,8 @@ export class GameState {
         this.grid.height - PADDLE_HEIGHT - paddle_height_offset,
         PADDLE_WIDTH,
         PADDLE_HEIGHT,
+        this.grid,
+        Direction.ToTheRight,
         PADDLE_SPEED,
       ),
       new Player(
@@ -36,6 +38,8 @@ export class GameState {
         paddle_height_offset,
         PADDLE_WIDTH,
         PADDLE_HEIGHT,
+        this.grid,
+        Direction.ToTheLeft,
         PADDLE_SPEED,
       ),
     ];
@@ -43,12 +47,19 @@ export class GameState {
     this.score = [0, 0];
   }
 
+  get player1() {
+    return this.players[0];
+  }
+  get player2() {
+    return this.players[1];
+  }
+
   newBall(): Ball {
     const startX = random(150, 390);
     const startY = random(100, 380);
     const startVx = startX < 320 ? BALL_SPEED : -BALL_SPEED;
     const startVy = random(-BALL_SPEED, BALL_SPEED);
-    return new Ball(startX, startY, startVx, startVy, BALL_SIZE);
+    return new Ball(startX, startY, startVx, startVy, BALL_SIZE, this.grid);
   }
 
   move(player: number, dy: number) {
@@ -56,65 +67,32 @@ export class GameState {
   }
 
   collision_update() {
-    if (this.players[0].get_y() < 0) {
-      this.players[0].y = 0;
-    }
+    const next_ball = this.ball;
+    next_ball.x = this.ball.x + this.ball.dx;
+    next_ball.y = this.ball.y + this.ball.dy;
     if (
-      this.players[0].get_y() >
-      this.grid.height - this.players[0].get_height()
-    ) {
-      this.players[0].y = this.grid.height - this.players[0].get_height();
-    }
-    if (this.players[1].get_y() < 0) {
-      this.players[1].y = 0;
-    }
-    if (
-      this.players[1].get_y() >
-      this.grid.height - this.players[1].get_height()
-    ) {
-      this.players[1].y = this.grid.height - this.players[1].get_height();
-    }
-
-    const player1_edge = this.players[0].get_x() + this.players[0].get_width(); //right edge
-    const player1_top = this.players[0].get_y();
-    const player1_bottom = player1_top + this.players[0].get_height();
-    const player2_edge = this.players[1].get_x(); //left edge
-    const player2_top = this.players[1].get_y();
-    const player2_bottom = player2_top + this.players[1].get_height();
-
-    if (this.ball.get_x() < player1_edge || this.ball.get_x() > player2_edge) {
-      // ENDING THE POINT
-      if (this.ball.get_x() < player1_edge) {
-        console.log('Player 2 gets the point');
-      } else {
-        console.log('Player 1 gets the point');
-      }
-      this.ball = this.newBall();
-    }
-
-    const next_ball_x = this.ball.get_x() + this.ball.get_dx();
-    const next_ball_y = this.ball.get_y() + this.ball.get_dy();
-    if (
-      next_ball_y < 0 ||
-      next_ball_y + this.ball.get_size() > this.grid.height
-    )
-      // WALLS COLLISION
-      this.ball.invert_dy();
-    if (
-      next_ball_x <= player1_edge &&
-      next_ball_y >= player1_top &&
-      next_ball_y <= player1_bottom
+      next_ball.left <= this.player1.edge &&
+      next_ball.top > this.player1.bottom &&
+      next_ball.bottom < this.player1.top
     )
       this.ball.invert_dx();
     if (
-      next_ball_x + this.ball.get_size() >= player2_edge &&
-      next_ball_y >= player2_top &&
-      next_ball_y <= player2_bottom
+      next_ball.right >= this.player2.edge &&
+      next_ball.top > this.player2.bottom &&
+      next_ball.bottom < this.player2.top
     )
       this.ball.invert_dx();
   }
 
   update() {
+    if (this.ball.x < this.player1.edge || this.ball.x > this.player2.edge) {
+      // ENDING THE POINT
+      if (this.ball.x < this.player1.edge)
+        console.log('Player 2 gets the point');
+      else console.log('Player 1 gets the point');
+      this.ball = this.newBall();
+      return;
+    }
     this.players[0].update();
     this.players[1].update();
     this.collision_update();
