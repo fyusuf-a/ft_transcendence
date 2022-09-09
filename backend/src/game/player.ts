@@ -1,40 +1,76 @@
-export class Player {
-  x: number; // x position
-  y: number; // y position
-  dy: number; // y velocity
-  width: number; // (probably constant, but maybe changed by options or powerups)
-  height: number; // (probably constant, but maybe changed by options or powerups)
-  direction: number;
+import { Grid } from './grid';
 
-  constructor(x = 0, y = 0, width = 10, height = 100, speed = 0) {
-    this.x = x;
-    this.y = y;
-    this.dy = speed;
-    this.direction = 0;
-    this.width = width;
-    this.height = height;
+export enum Direction {
+  ToTheLeft,
+  ToTheRight,
+}
+
+export class Player {
+  #x: number; // x position
+  #y: number; // y position
+  #vy: number; // y velocity
+  #width: number; // (probably constant, but maybe changed by options or powerups)
+  #height: number; // (probably constant, but maybe changed by options or powerups)
+  #grid: Grid;
+  #orientation: Direction;
+  #direction: number;
+
+  constructor(
+    x = 0,
+    y = 0,
+    width = 10,
+    height = 100,
+    grid = new Grid(),
+    orientation = Direction.ToTheRight,
+    speed = 0,
+  ) {
+    this.#x = x;
+    this.#y = y;
+    this.#vy = Math.abs(speed);
+    this.#direction = 0;
+    this.#width = width;
+    this.#grid = grid;
+    this.#orientation = orientation;
+    this.#height = height;
   }
 
   move(dy: number) {
-    if (dy < 0) this.direction = -1;
-    else if (dy > 0) this.direction = 1;
-    else this.direction = 0;
+    if (dy < 0) this.#direction = -1;
+    else if (dy > 0) this.#direction = 1;
+    else this.#direction = 0;
   }
 
-  get_x() {
-    return this.x;
+  get x() {
+    return this.#x;
   }
-  get_y() {
-    return this.y;
+  get y() {
+    return this.#y;
   }
-  get_width() {
-    return this.width;
+  set y(y: number) {
+    if (y < 0) this.#y = 0;
+    else if (y > this.#grid.height - this.#height)
+      this.#y = this.#grid.height - this.#height;
+    else this.#y = y;
   }
-  get_height() {
-    return this.height;
+  get width() {
+    return this.#width;
   }
-
+  get height() {
+    return this.#height;
+  }
+  get edge() {
+    return this.#orientation === Direction.ToTheRight
+      ? this.#x + this.#width
+      : this.#x;
+  }
   update() {
-    this.y += this.dy * this.direction;
+    this.y += this.#vy * this.#direction;
+  }
+
+  get bottom() {
+    return this.#y;
+  }
+  get top() {
+    return this.#y + this.#height;
   }
 }

@@ -38,22 +38,9 @@ class Paddle {
     );
   }
 
-  get_x() {
-    return this.x;
-  }
-  get_y() {
-    return this.y;
-  }
-  get_width() {
-    return this.width;
-  }
-  get_height() {
-    return this.height;
-  }
-
   update() {
-    if (isKeyPressed(this.up) && this.get_y() > 0.0) this.y -= SPEED;
-    if (isKeyPressed(this.down) && this.get_y() < 380.0) this.y += SPEED;
+    if (isKeyPressed(this.up) && this.y > 0.0) this.y -= SPEED;
+    if (isKeyPressed(this.down) && this.y < 380.0) this.y += SPEED;
   }
 
   render(ctx: CanvasRenderingContext2D) {

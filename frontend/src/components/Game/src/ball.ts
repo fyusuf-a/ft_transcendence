@@ -7,10 +7,6 @@ function random(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
-// function randomChoice (...args: any) {
-//   return args[Math.floor(random(0, args.length))];
-// }
-
 class Ball {
   x: number;
   y: number;
