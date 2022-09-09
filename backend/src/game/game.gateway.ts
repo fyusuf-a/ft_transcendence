@@ -135,16 +135,19 @@ export class GameGateway
   }
 
   @SubscribeMessage('game-auth')
-  async handleAuth(client: Socket, payload: any) {
+  async handleAuth(client: Socket, payload: { id: number; token: string }) {
     this.logger.log(
-      `Client ${client.id} is trying to auth socket with token: ${payload.authorization}`,
+      `Client ${client.id} is trying to auth socket with token: ${payload.token}`,
     );
     try {
-      const token = payload.authorization;
-      const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      const user = await this.usersService.findOne(
-        +(decode as TokenUserDto).id,
-      );
+      let id: number = payload.id;
+      if (
+        this.configService.get<string>('DISABLE_AUTHENTICATION') === 'false'
+      ) {
+        const decode = jwt.verify(payload.token, process.env.JWT_SECRET_KEY);
+        id = (decode as TokenUserDto).id;
+      }
+      const user = await this.usersService.findOne(id);
       if (!user) {
         throw new WsException('Invalid Token');
       }

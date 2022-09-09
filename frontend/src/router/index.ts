@@ -44,14 +44,11 @@ const router = createRouter({
   routes,
 });
 
-const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
-
 router.beforeEach((to, _, next) => {
   if (
     to.name === 'Login' ||
     to.name === 'Login callback' ||
-    to.name === 'Create account' ||
-    disableAuthentification
+    to.name === 'Create account'
   ) {
     next();
   } else {
