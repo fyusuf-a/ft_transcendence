@@ -53,13 +53,13 @@ jobs:
         run: |
           cd backend
           npm ci
-      - name: Test and Lint
+      - name: Lint
         run: |
           cd backend
           npm run lint -- --no-fix --max-warnings=0
       - name: Unit tests
         run: |
-          cd frontend
+          cd backend
           npm run test:unit
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
