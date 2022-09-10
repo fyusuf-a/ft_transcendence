@@ -1,57 +1,126 @@
 <template>
-  <v-card :loading="loading" class="ma-5" max-width="400">
-    <v-card-title class="white--text orange darken-4">
-      Friends
+  <v-card :loading="loading" class="pa-2 ml-15 mr-15 mt-5" width="40%">
+    <v-tabs
+      v-model="tab"
+      background-color="white"
+    >
+      <v-tab value="friends">Friends</v-tab>
+      <v-tab value="blocked">Blocked</v-tab>
+    </v-tabs>
 
-      <v-spacer></v-spacer>
+    <v-card-text>
+      <v-window v-model="tab">
+        <v-window-item value="friends">
+          <li v-for="friend in friends" :key="friend.username">
+            {{ friend.username }}
+            <v-img :src="friend.avatar" ></v-img>
+          </li>
 
-      <v-btn color="white" class="text--primary" fab small>
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-    </v-card-title>
+          <add-friend class="mb-5 mt-5"/>
 
-    <v-card>
-      <v-list :items="users" />
-    </v-card>
+          <v-divider></v-divider>
+
+          <h3 class="mt-5">Pending friend requests</h3><br />
+            <li v-for="requester in requesters" :key="requester.username">
+              <div>{{ requester.username }}</div>
+              <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
+              <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
+              <v-img :src="requester.avatar" ></v-img>
+              <br />
+            </li>
+            <p v-if="!requesters.length" class="text--primary">
+              No request to accept.
+            </p>
+        </v-window-item>
+        <v-window-item value="blocked">
+          blocked users
+        </v-window-item>
+      </v-window>
+    </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
 import { defineComponent } from 'vue';
-import { ResponseFriendshipDto } from '@dtos/friendships';
-import { PageDto } from '@dtos/pages';
+import { mapGetters } from 'vuex';
+import AddFriend from '@/components/Profile/AddFriend.vue';
 
 interface MyFriendsData {
   loading: boolean;
-  users: { value: number; title: string }[];
+  friends: { username: string ; avatar: string }[];
+  requesters: { username: string ; avatar: string, frienshipId: number }[];
+  tab: any,
 }
 
 export default defineComponent({
   data(): MyFriendsData {
     return {
       loading: true,
-      users: [],
+      friends: [],
+      requesters: [],
+      tab: null,
     };
   },
+  components: {
+    'add-friend': AddFriend,
+  },
+  methods: {
+    ...mapGetters(['avatar', 'id']),
+    async accept (frienshipId: number) {
+      const data = {
+        id: frienshipId,
+        status: "accepted"
+      };      
+      await axios.patch('/friendships/' + frienshipId, data)
+        .then(response => {
+          console.log(response);
+          window.location.reload();
+        })
+        .catch( (error) => {
+          console.log(error.response.status);
+        });
+    },
+    async decline (frienshipId: number) {
+      await axios.delete('/friendships/' + frienshipId)
+        .then(response => {
+          console.log(response);
+          window.location.reload();
+        })
+        .catch( (error) => {
+          console.log(error.response.status);
+        });
+    },
+  },
   async created() {
-    let response = await axios.get<PageDto<ResponseFriendshipDto>>(
-      '/friendships/',
-      {
-        params: {
-          sourceId: this.$store.getters.id,
-          status: 'accepted',
-        },
-      },
-    );
-    response.data.data.forEach(async (friendship) => {
-      let userResponse = await axios.get('/users/' + friendship.targetId);
-      this.users.push({
-        value: userResponse.data.id,
-        title: userResponse.data.username,
+    // get list of friends
+    let response = await axios.get('/users/' + this.id() + '/friendships/');
+    for (let i: number = 0; i < response.data.length; i++) {
+      this.friends.push({
+        username: response.data[i].user.username,
+        avatar: response.data[i].avatar,
       });
-    });
+    };
+
+    // get list of requesters
+    let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
+    for (let i: number = 0; i < response2.data.length; i++) {
+      this.requesters.push({
+        username: response2.data[i].user.username,
+        avatar: response2.data[i].avatar,
+        frienshipId: response2.data[i].id,
+      });
+    };
     this.loading = false;
   },
 });
 </script>
+
+<style scoped>
+li {
+  list-style: none;
+}
+p {
+  color: #03dac6;
+}
+</style>

@@ -146,8 +146,8 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('/:id/friendships')
-  findFriendships(@Param('id') id: string): Promise<ResponseFriendshipDto[]> {
-    return this.usersService.findFriendships(+id);
+  async findFriendships(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+    return await this.usersService.findFriendships(+id, 1);
   }
 
   @ApiBearerAuth()

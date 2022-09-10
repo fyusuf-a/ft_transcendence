@@ -49,13 +49,13 @@ export class AchievementsLogController {
   async create(
     @Body() dto: CreateAchievementLogDto,
   ): Promise<ResponseAchievementsLogDto> {
-  const ret: ResponseAchievementsLogDto =
-    await this.achievementsLogService.create(dto);
-  if (ret == undefined)
-    throw new HttpException(
-      'Achievement already unlocked',
-      HttpStatus.BAD_REQUEST,
-    );
+    const ret: ResponseAchievementsLogDto =
+      await this.achievementsLogService.create(dto);
+    if (ret == undefined)
+      throw new HttpException(
+        'Achievement already unlocked',
+        HttpStatus.BAD_REQUEST,
+      );
     return ret;
   }
 

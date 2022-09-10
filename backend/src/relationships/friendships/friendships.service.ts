@@ -46,7 +46,6 @@ export class FriendshipsService {
       });
     } else friendship.target = target;
     friendship.targetId = createFriendshipDto.targetId;
-
     return await this.friendshipRepository.save(friendship);
   }
 

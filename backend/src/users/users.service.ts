@@ -99,7 +99,7 @@ export class UsersService {
   }
 
   async updateAvatar(userId: number, filepath: string) {
-    // console.log('filepath update: ' + filepath);
+    console.log('filepath update: ' + filepath);
     const user: User = await this.usersRepository.findOneByOrFail({
       id: userId,
     });

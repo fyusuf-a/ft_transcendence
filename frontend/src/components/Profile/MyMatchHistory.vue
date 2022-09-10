@@ -1,0 +1,20 @@
+<template>
+  <v-card class="pa-2 ml-15 mt-5" width="40%">
+    <v-card-title class="white--text orange darken-4" align="center">
+       My matches
+    </v-card-title>
+    <v-card-text>
+      last 10 matches history
+    </v-card-text>
+    <v-spacer></v-spacer>
+    <v-card>
+    </v-card>
+  </v-card>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+export default defineComponent({
+
+});
+</script>
