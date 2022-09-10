@@ -21,15 +21,30 @@ export class FriendshipsService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createFriendshipDto: CreateFriendshipDto) {
+  async createFromUsername(
+    username: string,
+    createFriendshipDto: CreateFriendshipDto,
+  ): Promise<Friendship> {
+    // console.log(username);
+    const target: User = await this.userRepository.findOneByOrFail({
+      username: username,
+    });
+    createFriendshipDto.targetId = target.id;
+    // console.log(createFriendshipDto);
+    return await this.create(createFriendshipDto, target);
+  }
+
+  async create(createFriendshipDto: CreateFriendshipDto, target: User = null) {
     const friendship: Friendship = new Friendship();
     friendship.source = await this.userRepository.findOneByOrFail({
       id: createFriendshipDto.sourceId,
     });
     friendship.sourceId = createFriendshipDto.sourceId;
-    friendship.target = await this.userRepository.findOneByOrFail({
-      id: createFriendshipDto.targetId,
-    });
+    if (!target) {
+      friendship.target = await this.userRepository.findOneByOrFail({
+        id: createFriendshipDto.targetId,
+      });
+    } else friendship.target = target;
     friendship.targetId = createFriendshipDto.targetId;
 
     return await this.friendshipRepository.save(friendship);
