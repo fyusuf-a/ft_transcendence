@@ -57,10 +57,10 @@ export class Ball {
   get bottom() {
     return this.#y;
   }
-  get dx() {
+  get vx() {
     return this.#vx;
   }
-  get dy() {
+  get vy() {
     return this.#vy;
   }
 
