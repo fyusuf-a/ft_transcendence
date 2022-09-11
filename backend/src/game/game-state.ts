@@ -94,32 +94,41 @@ export class GameState {
     this.players[player].move(dy);
   }
 
-  collision_update() {
+  collision_update(): boolean {
     const next_ball = this.ball;
     next_ball.x = this.ball.x + this.ball.vx;
     next_ball.y = this.ball.y + this.ball.vy;
     if (
       next_ball.left <= this.player0.edge &&
-      next_ball.top > this.player0.bottom &&
-      next_ball.bottom < this.player0.top
-    )
+      next_ball.top >= this.player0.bottom &&
+      next_ball.bottom <= this.player0.top
+    ) {
+      this.ball.x = 2 * this.player0.edge - next_ball.left;
+      this.ball.y += this.ball.vy;
       this.ball.invert_dx();
+      return true;
+    }
     if (
       next_ball.right >= this.player1.edge &&
-      next_ball.top > this.player1.bottom &&
-      next_ball.bottom < this.player1.top
-    )
+      next_ball.top >= this.player1.bottom &&
+      next_ball.bottom <= this.player1.top
+    ) {
+      this.ball.x = 2 * this.player1.edge - next_ball.right;
+      this.ball.y += this.ball.vy;
       this.ball.invert_dx();
+      return true;
+    }
+    return false;
   }
 
   checkForPoints() {
     this.lastResult = CheckResult.NONE;
-    if (this.ball.left < this.player0.edge) {
+    if (this.ball.right < this.player0.edge) {
       this.score[1] += 1;
       this.lastResult = CheckResult.PLAYER_1;
       this.ball = this.newBall();
     }
-    if (this.ball.right > this.player1.edge) {
+    if (this.ball.left > this.player1.edge) {
       this.score[0] += 1;
       this.lastResult = CheckResult.PLAYER_0;
       this.ball = this.newBall();
@@ -134,7 +143,7 @@ export class GameState {
   update() {
     this.players[0].update();
     this.players[1].update();
-    this.collision_update();
-    this.ball.update();
+    if (this.collision_update() === false) this.ball.update();
+    this.checkForPoints();
   }
 }
