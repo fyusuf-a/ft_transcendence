@@ -6,20 +6,21 @@
       <h2>ft_transcendence</h2>
       <br />
       <p>
-        ft_transcendence is the last project of the 42 common core. It is
-        designed to complete the first part of our curriculum. We had to program,
-        as a team, something completely different from what we have done so far.
-        We were supposed to create a website where users can face each other in
-        Pong games. The website where you are now! <br />The specifications
-        included: a nice user interface, a chat, and real-time multiplayer
-        online games, compatible with the latest stable up-to-date version of
-        Google Chrome, Firefox, and Safari. <br />We have developed our website
-        with these technologies:
+        Hi everyone! We're a team of students from 42 Paris and ft_transcendence
+        is the last project of the 42 common core, which concludes the first part
+        of our curriculum. For this poject, the challenge was to program
+        something completely different from what we have done so far. We were
+        supposed to create a website where users can face each other in Pong
+        games. The website where you are now! <br />The specifications included:
+        a nice user interface, a chat, and real-time multiplayer online games,
+        compatible with the latest stable up-to-date version of Google Chrome and
+        one additional web browser of our choice. <br /> We have developed our
+        website with these technologies:
       </p>
       <br />
       <ul>
         <li>backend: NestJS;</li>
-        <li>frontend: TypeScript, with Vue.js 3 as a framework;</li>
+        <li>frontend: TypeScript, with Vue.js 3 as a framework and the library Vuetify 3;</li>
         <li>database: PostgreSQL.</li>
       </ul>
       <br />
