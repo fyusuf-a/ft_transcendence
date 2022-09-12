@@ -16,9 +16,9 @@ import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway extends SecureGateway {
   constructor(
-    private matchService: MatchesService,
     protected readonly usersService: UsersService,
-    protected configService: ConfigService,
+    protected readonly configService: ConfigService,
+    private readonly matchService: MatchesService,
   ) {
     super('GameGateway', usersService, configService);
   }
