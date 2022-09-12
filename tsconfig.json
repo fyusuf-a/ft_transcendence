@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "types": [
+      "node"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@dtos/*": ["dtos/*"]
+    }
+  }
+}

@@ -1,3 +1,3 @@
-import { Match } from './match.dto';
+import { MatchDto } from './match.dto';
 
-export class ResponseMatchDto extends Match {}
+export class ResponseMatchDto extends MatchDto {}

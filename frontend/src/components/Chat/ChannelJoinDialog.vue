@@ -1,8 +1,8 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="dialogOpen" scrollable max-width="300px">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn icon color="primary" dark v-bind="attrs" v-on="on"> + </v-btn>
+      <template v-slot:activator="{ props: open }">
+        <v-btn icon color="primary" dark v-bind="open"> + </v-btn>
       </template>
       <v-card>
         <v-card-title
@@ -60,7 +60,7 @@
 
 <script lang="ts">
 import axios from 'axios';
-import Vue from 'vue';
+import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 
 interface DataReturnType {
@@ -71,7 +71,7 @@ interface DataReturnType {
   channelTypes: Array<string>;
 }
 
-export default Vue.extend({
+export default defineComponent({
   props: {
     joinableChannels: {
       type: Array as () => Array<ChannelDto>,

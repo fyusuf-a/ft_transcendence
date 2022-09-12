@@ -1,6 +1,5 @@
-import { expect } from 'chai';
-import { shallowMount } from '@vue/test-utils';
 import ChannelList from '@/components/Chat/ChannelList.vue';
+import { myMount } from '@tests/vuetify-test';
 
 describe('ChannelList.vue', () => {
   it('renders props', async () => {
@@ -10,7 +9,7 @@ describe('ChannelList.vue', () => {
     ];
     const allChannels = new Map();
     const unreadChannels = new Set();
-    const wrapper = shallowMount(ChannelList, {
+    const wrapper = myMount(ChannelList, {
       propsData: { channels, allChannels, unreadChannels },
     });
     await wrapper.setData({ title: 'ChannelsTitle' });

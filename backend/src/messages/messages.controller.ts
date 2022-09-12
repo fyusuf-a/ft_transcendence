@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -44,15 +43,7 @@ export class MessagesController {
   async create(
     @Body() createMessageDto: CreateMessageDto,
   ): Promise<ResponseMessageDto> {
-    try {
-      return await this.messagesService.create(createMessageDto);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new BadRequestException(error.message);
-      } else {
-        throw error;
-      }
-    }
+    return await this.messagesService.create(createMessageDto);
   }
 
   @Get(':id')
@@ -61,7 +52,9 @@ export class MessagesController {
     try {
       return await this.messagesService.findOne(+id);
     } catch (error) {
-      throw new NotFoundException('Not Found');
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException('Not Found');
+      }
     }
   }
 

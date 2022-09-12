@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MockRepository } from 'src/common/mocks/repository.mock';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 
 import { User } from 'src/users/entities/user.entity';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
-import { Repository } from 'typeorm';
+import { EntityNotFoundError, Repository } from 'typeorm';
 import { Friendship } from '../entities/friendship.entity';
 import { FriendshipsService } from './friendships.service';
 
@@ -55,11 +54,10 @@ describe('friendshipsService', () => {
       const user2 = new User();
       user2.id = 2;
       jest
-        .spyOn(usersRepository, 'findOneBy')
-        .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined))
-        .mockImplementationOnce((): Promise<any> => Promise.resolve(user2));
+        .spyOn(usersRepository, 'findOneByOrFail')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
 
-      expect(tryCreate()).rejects.toThrow(EntityDoesNotExistError);
+      expect(tryCreate()).rejects.toThrow(EntityNotFoundError);
     });
 
     it('should throw without valid targetId', async () => {
@@ -72,11 +70,10 @@ describe('friendshipsService', () => {
       const user2 = new User();
       user2.id = 2;
       jest
-        .spyOn(usersRepository, 'findOneBy')
-        .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
-        .mockImplementationOnce((): Promise<any> => Promise.resolve(undefined));
+        .spyOn(usersRepository, 'findOneByOrFail')
+        .mockRejectedValue(new EntityNotFoundError('', ''));
 
-      expect(tryCreate()).rejects.toThrow(EntityDoesNotExistError);
+      expect(tryCreate()).rejects.toThrow(EntityNotFoundError);
     });
 
     it('should return friendship with valid users', async () => {
@@ -94,7 +91,7 @@ describe('friendshipsService', () => {
       friendship1.sourceId = user2.id;
       friendship1.targetId = user1.id;
       jest
-        .spyOn(usersRepository, 'findOneBy')
+        .spyOn(usersRepository, 'findOneByOrFail')
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user2))
         .mockImplementationOnce((): Promise<any> => Promise.resolve(user1));
 

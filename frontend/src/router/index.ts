@@ -1,10 +1,7 @@
-import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store';
 
-Vue.use(VueRouter);
-
-const routes: Array<RouteConfig> = [
+const routes = [
   {
     path: '/',
     component: () => import('../views/UILayout.vue'),
@@ -29,6 +26,10 @@ const routes: Array<RouteConfig> = [
         path: 'about',
         component: () => import('../views/AboutView.vue'),
       },
+      {
+        path: '/:pathMatch(.*)*',
+        component: () => import('../views/NotFound.vue'),
+      },
     ],
   },
   {
@@ -36,24 +37,34 @@ const routes: Array<RouteConfig> = [
     path: '/login',
     component: () => import('../views/LoginView.vue'),
   },
+  {
+    name: 'Create account',
+    path: '/create-account',
+    component: () => import('../views/CreateAccountView.vue'),
+  },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
   routes,
 });
 
+const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
+
 router.beforeEach((to, _, next) => {
-  const disableAuthentification = process.env.VUE_APP_DISABLE_AUTHENTICATION;
   if (
-    // In production, disableAuthentification is not defined
-    (disableAuthentification ? disableAuthentification === 'false' : true) &&
-    to.name !== 'Login' &&
-    !store.state.isAuthenticated
-  )
+    to.name === 'Login' ||
+    to.name === 'Login callback' ||
+    to.name === 'Create account' ||
+    disableAuthentification
+  ) {
+    next();
+  } else if (store.getters.userIsAuthenticated) {
+    if (!store.getters.userIsCreated) next({ name: 'Create account' });
+    else next();
+  } else {
     next({ name: 'Login' });
-  else next();
+  }
 });
 
 export default router;

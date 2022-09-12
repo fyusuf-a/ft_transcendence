@@ -3,14 +3,14 @@ export class MessageDto {
   senderId: number;
   channelId: number;
   content: string;
-  createdAt: Date;
+  createdAt: string;
 
   constructor(
     id: number,
     content: string,
     senderId: number,
     channelId: number,
-    createdAt: Date,
+    createdAt: string,
   ) {
     this.id = id;
     this.content = content;

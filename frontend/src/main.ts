@@ -1,23 +1,12 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
-import axios from 'axios';
+import { configureAxios } from './plugins/axios';
+import { loadFonts } from './plugins/webfontloader';
 
-Vue.config.productionTip = false;
+loadFonts();
+configureAxios();
 
-const vue = new Vue({
-  router,
-  store,
-  vuetify,
-  render: (h) => h(App),
-}).$mount('#app');
-
-axios.defaults.baseURL = `http://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}`;
-
-axios.interceptors.request.use((config) => {
-  config.headers = config.headers || {};
-  config.headers['Authorization'] = 'Bearer ' + vue.$store.getters.token;
-  return config;
-});
+createApp(App).use(vuetify).use(router).use(store).mount('#app');

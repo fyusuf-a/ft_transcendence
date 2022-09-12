@@ -10,7 +10,7 @@ export enum MatchStatusType {
   IN_PROGRESS = 'IN_PROGRESS',
 }
 
-export class Match {
+export class MatchDto {
   @ApiProperty({
     description: 'The id of a match',
   })

@@ -2,7 +2,9 @@ name: backend-ci
 
 on:
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - '**-dev'
 
 jobs:
   early-exit:
@@ -35,9 +37,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - name: Read environment file
+      - name: Set environment variables
         run: |
           cat .env.example | grep -v '^#' >> ${GITHUB_ENV}
+          echo "BACKEND_42_UID=${{ secrets.BACKEND_42_UID }}" >> ${GITHUB_ENV}
+          echo "BACKEND_42_SECRET=${{ secrets.BACKEND_42_SECRET }}" >> ${GITHUB_ENV}
+          echo "BACKEND_JWT_SECRET_KEY=${{ secrets.BACKEND_JWT_SECRET_KEY }}" >> ${GITHUB_ENV}
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${GITHUB_ENV}
       - uses: actions/setup-node@v3
         with:
           node-version: "${{ env.node_version }}"
@@ -51,7 +57,10 @@ jobs:
         run: |
           cd backend
           npm run lint -- --no-fix --max-warnings=0
-          npm run test
+      - name: Unit tests
+        run: |
+          cd frontend
+          npm run test:unit
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
