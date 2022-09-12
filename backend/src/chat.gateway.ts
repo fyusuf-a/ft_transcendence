@@ -27,10 +27,10 @@ export class ChatSendDto {
 @WebSocketGateway({ cors: true, namespace: 'chat' })
 export class ChatGateway extends SecureGateway {
   constructor(
-    private readonly messagesService: MessagesService,
     protected readonly usersService: UsersService,
-    private readonly membershipsService: MembershipsService,
     protected readonly configService: ConfigService,
+    private readonly messagesService: MessagesService,
+    private readonly membershipsService: MembershipsService,
   ) {
     super('ChatGateway', usersService, configService);
   }

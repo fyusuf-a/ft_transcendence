@@ -27,11 +27,11 @@ export function CheckAuth(target, key, descriptor) {
 export class SecureGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  protected logger: Logger;
   private authenticatedSockets: Map<string, User> = new Map();
+  protected readonly logger: Logger;
 
   constructor(
-    private readonly loggerName: string,
+    loggerName: string,
     protected readonly usersService: UsersService,
     protected readonly configService: ConfigService,
   ) {
