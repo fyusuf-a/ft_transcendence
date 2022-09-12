@@ -274,7 +274,7 @@ export default defineComponent({
     },
   },
   async created() {
-    this.socket.emit('chat-auth', {
+    this.socket.emit('auth', {
       id: this.$store.getters.id,
       token: this.$store.getters.token,
     });

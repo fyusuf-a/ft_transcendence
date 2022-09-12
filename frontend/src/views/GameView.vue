@@ -18,18 +18,18 @@ export default defineComponent({
   data(): DataReturnType {
     return {
       socket: io(
-        `http://${import.meta.env.VITE_BACKEND_HOST}:${import.meta.env.VITE_BACKEND_PORT
+        `http://${import.meta.env.VITE_BACKEND_HOST}:${
+          import.meta.env.VITE_BACKEND_PORT
         }/game`,
       ),
-    }
+    };
   },
   components: {
     'game-window': GameWindowVue,
   },
   methods: {
-    handleConnection(payload: any) {
-      console.log(payload);
-      this.socket.emit('game-auth', {
+    handleConnection() {
+      this.socket.emit('auth', {
         id: this.$store.getters.id,
         token: this.$store.getters.token,
       });
@@ -38,7 +38,7 @@ export default defineComponent({
       console.log(
         `Ball: (${payload.ball.x}, ${payload.ball.y}); Player0: ${payload.players[0].y}; Player1: ${payload.players[1].y}`,
       );
-    }
+    },
   },
   created() {
     this.socket.on('game-connect', this.handleConnection);
