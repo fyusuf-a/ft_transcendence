@@ -1,16 +1,16 @@
 <template>
-    <v-btn color="white" class="text--primary ml-15">
-        Add friend <v-icon>mdi-plus</v-icon>
-        <v-dialog
-          v-model="dialog"
-          activator="parent"
-        >
-        <v-card width="300">
-          <v-card-text v-if="nameDoesNotExist === 500">
-            This user cannot be found.<br />
-            Isn't he already your friend?<br />
-            Or did he not accept your request...? :(
-          </v-card-text>
+  <v-btn color="white" class="text--primary ml-15">
+    Add friend <v-icon>mdi-plus</v-icon>
+    <v-dialog
+      v-model="dialog"
+      activator="parent"
+    >
+      <v-card width="300">
+        <v-card-text v-if="nameDoesNotExist === 500">
+          This user cannot be found.<br />
+          Isn't he already your friend?<br />
+          Or did he not accept your request...? :(
+        </v-card-text>
         <v-form
           ref="form"
           v-model="valid"
@@ -39,8 +39,8 @@
           <v-btn color="primary" block @click="reset">I changed my mind</v-btn>
         </v-card-actions>
       </v-card>
-        </v-dialog>
-    </v-btn>
+    </v-dialog>
+  </v-btn>
 </template>
 
 <script lang="ts">
@@ -75,11 +75,18 @@ export default defineComponent({
       const data = {
         sourceId: parseInt(this.id()),
         targetId: 0
-      };      
+      };
       await axios.post('/friendships/' + name, data)
-        .then(response => {
+        .then(async response => {
           console.log(response);
-          window.alert('Your friend request has been sent');
+          let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
+          for (let i: number = 0; i < response2.data.length; i++) {
+            if (response2.data[i].user.username === name) {
+              window.alert('This user already sends you a friend request. Check your pending requests :)');
+              return;
+            }
+          };
+          window.alert('Your friend request has been sent.');
         })
         .catch( (error) => {
           console.log(error.response.status);
