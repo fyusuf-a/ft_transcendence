@@ -70,7 +70,7 @@ export default createStore({
         if (context.state.cache?.avatars.has(+id)) {
           return context.state.cache?.avatars.get(+id);
         }
-        return await fetchAvatar(id);
+        return await fetchAvatar(+id);
       }
     },
     async getAvatar(context) {
