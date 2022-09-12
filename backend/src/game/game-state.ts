@@ -100,6 +100,7 @@ export class GameState {
     next_ball.y = this.ball.y + this.ball.vy;
     if (
       next_ball.left <= this.player0.edge &&
+      next_ball.left >= this.player0.back &&
       next_ball.top >= this.player0.bottom &&
       next_ball.bottom <= this.player0.top
     ) {
@@ -110,10 +111,11 @@ export class GameState {
     }
     if (
       next_ball.right >= this.player1.edge &&
+      next_ball.right <= this.player1.back &&
       next_ball.top >= this.player1.bottom &&
       next_ball.bottom <= this.player1.top
     ) {
-      this.ball.x = 2 * this.player1.edge - next_ball.right;
+      this.ball.x = 2 * this.player1.edge - next_ball.right - this.ball.size;
       this.ball.y += this.ball.vy;
       this.ball.invert_dx();
       return true;
@@ -123,12 +125,12 @@ export class GameState {
 
   checkForPoints() {
     this.lastResult = CheckResult.NONE;
-    if (this.ball.right < this.player0.edge) {
+    if (this.ball.left < 0) {
       this.score[1] += 1;
       this.lastResult = CheckResult.PLAYER_1;
       this.ball = this.newBall();
     }
-    if (this.ball.left > this.player1.edge) {
+    if (this.ball.right >= this.grid.width) {
       this.score[0] += 1;
       this.lastResult = CheckResult.PLAYER_0;
       this.ball = this.newBall();

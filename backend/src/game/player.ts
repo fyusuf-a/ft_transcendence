@@ -63,6 +63,11 @@ export class Player {
       ? this.#x + this.#width
       : this.#x;
   }
+  get back() {
+    return this.#orientation === Direction.ToTheRight
+      ? this.#x
+      : this.#x + this.#width;
+  }
   update() {
     this.y += this.#vy * this.#direction;
   }
