@@ -1,6 +1,5 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
-import kingPongImg from '@/assets/images/king-pong.png';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
 import { fetchAvatar } from '@/utils/avatar';
