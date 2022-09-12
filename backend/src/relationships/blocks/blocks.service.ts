@@ -1,11 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  CreateBlockDto,
-  QueryBlockDto,
-  UpdateBlockDto,
-  BlockTypeEnum,
-} from '@dtos/blocks';
+import { CreateBlockDto, QueryBlockDto, UpdateBlockDto } from '@dtos/blocks';
 import { FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
 import { Block } from '../entities/block.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -19,28 +14,30 @@ export class BlocksService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createBlockDto: CreateBlockDto) {
-    const previous = await this.blockRepository.findOneByOrFail({
-      sourceId: createBlockDto.targetId,
-      targetId: createBlockDto.sourceId,
+  async createFromUsername(
+    username: string,
+    createBlockDto: CreateBlockDto,
+  ): Promise<Block> {
+    const target: User = await this.userRepository.findOneByOrFail({
+      username: username,
     });
-    if (previous != undefined) {
-      previous.status = BlockTypeEnum.MUTUAL;
-      await this.blockRepository.update(previous.id, previous);
-      return previous;
-    }
+    createBlockDto.targetId = target.id;
+    return await this.create(createBlockDto, target);
+  }
 
-    const block: Block = new Block();
-    block.source = await this.userRepository.findOneByOrFail({
+  async create(createBlockDto: CreateBlockDto, target: User = null) {
+    const blocked: Block = new Block();
+    blocked.source = await this.userRepository.findOneByOrFail({
       id: createBlockDto.sourceId,
     });
-    block.sourceId = createBlockDto.sourceId;
-
-    block.target = await this.userRepository.findOneByOrFail({
-      id: createBlockDto.targetId,
-    });
-    block.targetId = createBlockDto.targetId;
-    return await this.blockRepository.save(block);
+    blocked.sourceId = createBlockDto.sourceId;
+    if (!target) {
+      blocked.target = await this.userRepository.findOneByOrFail({
+        id: createBlockDto.targetId,
+      });
+    } else blocked.target = target;
+    blocked.targetId = createBlockDto.targetId;
+    return await this.blockRepository.save(blocked);
   }
 
   findAll(query?: QueryBlockDto) {

@@ -99,7 +99,6 @@ export class UsersService {
   }
 
   async updateAvatar(userId: number, filepath: string) {
-    console.log('filepath update: ' + filepath);
     const user: User = await this.usersRepository.findOneByOrFail({
       id: userId,
     });
@@ -182,6 +181,7 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       ids.push(tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId);
     }
+
     const blocks: User[] = await this.usersRepository.find({
       where: {
         id: In(ids),
@@ -191,12 +191,10 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       for (let j = 0; j < blocks.length; j++) {
         if (ids[i] == blocks[j].id) {
-          ret[i] = {
-            username: blocks[i].username,
-            avatar: blocks[i].avatar,
-            id: tmp[i].id,
+          const uUd: UpdateUserDto = {
+            username: blocks[j].username,
           };
-          blocks.splice(j);
+          ret[i] = new ListBlockDto(tmp[i], uUd);
           break;
         }
       }
