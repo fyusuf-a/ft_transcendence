@@ -1,8 +1,4 @@
-import { Logger } from '@nestjs/common';
 import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -14,40 +10,27 @@ import { MoveDto } from '@dtos/game/move.dto';
 import { GameOptionsDto } from '@dtos/game/game-options.dto';
 import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
-import { User } from 'src/users/entities/user.entity';
-import { TokenUserDto } from '@dtos/auth';
 import { UsersService } from 'src/users/users.service';
-import * as jwt from 'jsonwebtoken';
+import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
-export class GameGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class GameGateway extends SecureGateway {
   constructor(
     private matchService: MatchesService,
-    private readonly usersService: UsersService,
-    private configService: ConfigService,
-  ) {}
+    protected readonly usersService: UsersService,
+    protected configService: ConfigService,
+  ) {
+    super('GameGateway', usersService, configService);
+  }
 
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('GameGateway');
-  private authenticatedSockets: Map<string, User> = new Map();
+
   games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
   queues: Map<string, Array<Socket>> = new Map();
 
-  private checkAuth(client: Socket): boolean {
-    if (
-      this.configService.get<string>('DISABLE_AUTHENTICATION') == 'true' ||
-      this.authenticatedSockets.has(client.id)
-    ) {
-      return true;
-    }
-    throw new WsException('Not Authorized');
-  }
-
   @SubscribeMessage('game-move')
+  @CheckAuth
   handleMove(client: Socket, move: MoveDto): string {
-    this.checkAuth(client);
     const game = this.games.get(move.gameId);
     let player = -1;
     if (!game) {
@@ -67,12 +50,12 @@ export class GameGateway
   }
 
   @SubscribeMessage('game-queue')
+  @CheckAuth
   async handeQueue(
     client: Socket,
     gameOptions: GameOptionsDto,
   ): Promise<string> {
-    this.checkAuth(client);
-    const clientUser = this.authenticatedSockets.get(client.id);
+    const clientUser = this.getAuthenticatedUser(client);
     let selectedQueue;
     const gameOptionsString = JSON.stringify(gameOptions);
     if (gameOptions.homeId || gameOptions.awayId) {
@@ -93,8 +76,8 @@ export class GameGateway
       const otherPlayer = selectedQueue.shift();
       if (otherPlayer && otherPlayer.id !== client.id) {
         this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
-        const home = this.authenticatedSockets.get(otherPlayer.id);
-        const away = this.authenticatedSockets.get(client.id);
+        const home = this.getAuthenticatedUser(otherPlayer);
+        const away = this.getAuthenticatedUser(client);
         const match = await this.matchService.create({
           homeId: home.id,
           awayId: away.id,
@@ -123,8 +106,8 @@ export class GameGateway
   }
 
   @SubscribeMessage('game-spectate')
+  @CheckAuth
   handleSpectate(client: Socket, gameId: number): string {
-    this.checkAuth(client);
     if (this.games.has(gameId)) {
       const game = this.games.get(gameId);
       client.join(gameId.toString());
@@ -132,35 +115,6 @@ export class GameGateway
       return 'Success';
     }
     return 'Error: game not found';
-  }
-
-  @SubscribeMessage('game-auth')
-  async handleAuth(client: Socket, payload: { id: number; token: string }) {
-    this.logger.log(
-      `Client ${client.id} is trying to auth socket with token: ${payload.token}`,
-    );
-    try {
-      let id: number = payload.id;
-      if (
-        this.configService.get<string>('DISABLE_AUTHENTICATION') === 'false'
-      ) {
-        const decode = jwt.verify(payload.token, process.env.JWT_SECRET_KEY);
-        id = (decode as TokenUserDto).id;
-      }
-      const user = await this.usersService.findOne(id);
-      if (!user) {
-        throw new WsException('Invalid Token');
-      }
-      this.authenticatedSockets.set(client.id, user);
-      return 'SUCCESS';
-    } catch (err) {
-      this.authenticatedSockets.delete(client.id);
-      throw new WsException('Not Authorized');
-    }
-  }
-
-  afterInit() {
-    // setup games or anything else that needs to be done
   }
 
   handleDisconnect(client: Socket) {
@@ -174,6 +128,7 @@ export class GameGateway
         }
       }
     }
+    super.handleDisconnect(client);
   }
 
   async handleConnection(client: Socket) {
