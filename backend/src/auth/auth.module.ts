@@ -3,7 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from 'src/users/users.module';
+import { UsersService } from '../users/users.service';
 import { JwtStrategy } from './auth.jwt.strategy';
+import { TwoAuthJwtStrategy } from './two.auth.jwt.strategy';
 import { MarvinStrategy } from './marvin.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -26,7 +28,13 @@ import { AuthController } from './auth.controller';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy, MarvinStrategy],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    TwoAuthJwtStrategy,
+    MarvinStrategy,
+    UsersService,
+  ],
   controllers: [AuthController],
   exports: [AuthService],
 })

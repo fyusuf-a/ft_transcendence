@@ -20,6 +20,7 @@ export class User {
   @Column({ unique: true, nullable: true })
   username: string;
 
+  @Exclude()
   @Column({
     nullable: true,
     default: null,
@@ -48,4 +49,11 @@ export class User {
   @Exclude()
   @RelationId((user: User) => user.memberships)
   membershipIds: number[];
+
+  @Column({ default: false })
+  isTwoFAEnabled: boolean;
+
+  @Exclude()
+  @Column({ default: '' })
+  twoFASecret!: string;
 }

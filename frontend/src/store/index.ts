@@ -3,6 +3,7 @@ import axios from 'axios';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
 import { fetchAvatar } from '@/utils/avatar';
+import { LoginUserDto } from '@dtos/auth';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
@@ -14,7 +15,7 @@ interface Cache {
 }
 
 interface State {
-  user: UserDto;
+  user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
   cache: Cache | undefined;
@@ -32,38 +33,48 @@ export default createStore({
   getters: {
     user: (state) => state.user,
     username: (state) => state.user.username,
-    userIsAuthenticated(state): boolean {
+    isUserAuthenticated(state): boolean {
       return state.user.id !== undefined && state.token !== '';
-    },
-    userIsCreated(state): boolean {
-      return state.user.username !== undefined;
     },
     avatar: (state) => state.avatar,
     id: (state) => state.user.id,
     token: (state) => state.token,
   },
   mutations: {
-    setToken(state, token: string) {
-      state.token = token;
-    },
-    setUsername(state, username: string) {
-      state.user.username = username;
-    },
-    login(state, { id, token }: { id: number; token: string }) {
+    login(state, { id, token }: LoginUserDto) {
       state.user.id = id;
       state.token = token;
     },
+    logout(state) {
+      state.user = new UserDto();
+      state.token = undefined;
+    },
   },
   actions: {
-    async getUser(context, { id, token }: { id: number; token: string }) {
-      context.state.token = token;
-      context.state.user.id = id;
-      const response = await axios.get<ResponseUserDto>('/users/' + id);
-      context.state.user = {
-        avatar: '',
-        membershipIds: [],
-        ...response.data,
-      };
+    async verifyLoginInfo(
+      context,
+      { id, token }: { id: number; token: string },
+    ): Promise<ResponseUserDto> {
+      let user: ResponseUserDto;
+      try {
+        context.state.token = token;
+        const response = await axios.get<ResponseUserDto>('/users/me');
+        user = response.data;
+        context.commit('login', { id, token });
+        context.state.user = {
+          ...response.data,
+        };
+        return user;
+      } catch (e) {
+        context.commit('logout');
+        throw e;
+      }
+    },
+    async verify2FA(context, { code }: { code: number }): Promise<void> {
+      const response = await axios.post<string>('/auth/2fa/authenticate', {
+        twoFACode: code,
+      });
+      context.commit('login', { id: context.getters.id, token: response.data });
     },
     async getAvatarById(context, id: string) {
       if (id) {

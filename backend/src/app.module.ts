@@ -14,7 +14,7 @@ import { BlocksModule } from './relationships/blocks/blocks.module';
 import { Friendship } from './relationships/entities/friendship.entity';
 import { Block } from './relationships/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/auth.jwt-auth.guard';
+import { JwtTwoAuthGuard } from './auth/auth.jwt-twoauth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
@@ -67,7 +67,7 @@ import { ChatGateway } from './chat.gateway';
     ChatGateway,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      useClass: JwtTwoAuthGuard,
     },
   ],
 })
