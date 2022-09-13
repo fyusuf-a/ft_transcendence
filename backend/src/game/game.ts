@@ -10,7 +10,7 @@ export class Game {
   server: Server;
   room: string;
   state: GameState;
-  updateInterval: any;
+  updateInterval: NodeJS.Timer;
 
   constructor(init: CreateGameDto, server: Server) {
     this.gameId = init.gameId;
