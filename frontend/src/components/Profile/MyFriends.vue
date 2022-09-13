@@ -33,7 +33,13 @@
             </p>
         </v-window-item>
         <v-window-item value="blocked">
-          blocked users
+          <li v-for="blocke in blocked" :key="blocke.username">
+            {{ blocke.username }}
+            <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="unblock(blocke.blockedId)">unblock</v-btn>
+          </li>
+
+          <block-user class="mb-5 mt-5"/>
+
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -45,12 +51,14 @@ import axios from 'axios';
 import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import AddFriend from '@/components/Profile/AddFriend.vue';
+import BlockUser from '@/components/Profile/BlockUser.vue'
 
 interface MyFriendsData {
   loading: boolean;
   friends: { username: string ; avatar: string }[];
   requesters: { username: string ; avatar: string, frienshipId: number }[];
   tab: any,
+  blocked: { username: string ; blockedId: number }[],
 }
 
 export default defineComponent({
@@ -60,10 +68,12 @@ export default defineComponent({
       friends: [],
       requesters: [],
       tab: null,
+      blocked: [],
     };
   },
   components: {
     'add-friend': AddFriend,
+    'block-user': BlockUser,
   },
   methods: {
     ...mapGetters(['avatar', 'id']),
@@ -91,6 +101,11 @@ export default defineComponent({
           console.log(error.response.status);
         });
     },
+    async unblock (blockedId: number) {
+      await axios.delete('/blocks/' + blockedId);
+      window.alert('The user has been unblock.');
+      window.location.reload();
+    },
   },
   async created() {
     // get list of friends
@@ -109,6 +124,15 @@ export default defineComponent({
         username: response2.data[i].user.username,
         avatar: response2.data[i].avatar,
         frienshipId: response2.data[i].id,
+      });
+    };
+
+    // get list of blocked users
+    let response3 = await axios.get('/users/' + this.id() + '/blocks/');
+    for (let i: number = 0; i < response3.data.length; i++) {
+      this.blocked.push({
+        username: response3.data[i].user.username,
+        blockedId: response3.data[i].id,
       });
     };
     this.loading = false;
