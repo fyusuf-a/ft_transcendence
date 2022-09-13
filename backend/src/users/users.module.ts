@@ -48,6 +48,9 @@ import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.
   ],
   providers: [UsersService],
   controllers: [UsersController],
-  exports: [UsersService],
+  exports: [
+    UsersService,
+    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog]),
+  ],
 })
 export class UsersModule {}
