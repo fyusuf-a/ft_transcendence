@@ -14,7 +14,7 @@ import {
   CreateAchievementLogDto,
   ResponseAchievementsLogDto,
 } from '@/dtos/achievements-log';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, QueryFailedError } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 @ApiBearerAuth()
 @ApiTags('achievements log')
@@ -52,7 +52,9 @@ export class AchievementsLogController {
     try {
       return await this.achievementsLogService.create(dto);
     } catch (err) {
-      throw new HttpException(err, HttpStatus.BAD_REQUEST);
+      if (err instanceof QueryFailedError)
+        throw new HttpException(err.driverError.detail, HttpStatus.BAD_REQUEST);
+      else throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 
