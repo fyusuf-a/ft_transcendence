@@ -56,7 +56,6 @@ import ChatWindowMenu from '@/components/Chat/ChatWindowMenu.vue';
 import { ChannelDto } from '@/common/dto/channel.dto';
 import { MessageDto } from '@/common/dto/message.dto';
 import { UserDto } from '@/common/dto/user.dto';
-
 interface DataReturnType {
   messageContent: string;
   itemHeight: number;

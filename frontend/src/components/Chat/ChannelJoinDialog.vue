@@ -62,7 +62,6 @@
 import axios from 'axios';
 import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
-
 interface DataReturnType {
   selectedChannel: string;
   dialogOpen: boolean;

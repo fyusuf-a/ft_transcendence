@@ -23,15 +23,17 @@ export class Membership {
   id: number;
 
   @Exclude()
-  @ManyToOne(() => Channel)
+  @ManyToOne(() => Channel, { onDelete: 'CASCADE' })
   channel: Channel;
   @RelationId((membership: Membership) => membership.channel)
+  @Column()
   channelId: number;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;
   @RelationId((membership: Membership) => membership.user)
+  @Column()
   userId: number;
 
   @Column({

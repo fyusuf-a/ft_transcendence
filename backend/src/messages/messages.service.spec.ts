@@ -49,7 +49,7 @@ describe('MessagesService', () => {
     it('should throw', () => {
       jest
         .spyOn(service, 'create')
-        .mockRejectedValue(new EntityNotFoundError('', ''));
+        .mockRejectedValueOnce(new EntityNotFoundError('', ''));
       expect(
         service.create({
           channelId: channelNumber + 1,
@@ -64,7 +64,7 @@ describe('MessagesService', () => {
     it('should throw', () => {
       jest
         .spyOn(service, 'create')
-        .mockRejectedValue(new EntityNotFoundError('', ''));
+        .mockRejectedValueOnce(new EntityNotFoundError('', ''));
       expect(
         service.create({
           channelId: 1,

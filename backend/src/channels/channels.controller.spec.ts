@@ -12,6 +12,8 @@ import {
   UpdateChannelDto,
 } from '@dtos/channels';
 import { Channel, ChannelType } from './entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
+import { MembershipsService } from 'src/memberships/memberships.service';
 
 describe('ChannelsController', () => {
   let controller: ChannelsController;
@@ -22,6 +24,7 @@ describe('ChannelsController', () => {
       controllers: [ChannelsController],
       providers: [
         ChannelsService,
+        MembershipsService,
         {
           provide: getRepositoryToken(Channel),
           useValue: jest.fn(),
@@ -29,6 +32,10 @@ describe('ChannelsController', () => {
         {
           provide: getRepositoryToken(User),
           useValue: new MockRepository(() => new User()),
+        },
+        {
+          provide: getRepositoryToken(Membership),
+          useValue: new MockRepository(() => new Membership()),
         },
       ],
     }).compile();

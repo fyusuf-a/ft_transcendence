@@ -19,13 +19,15 @@ export class Message {
   content: string;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   sender: User;
   @RelationId((message: Message) => message.sender)
   senderId: number;
 
   @Exclude()
-  @ManyToOne(() => Channel, (channel) => channel.messages)
+  @ManyToOne(() => Channel, (channel) => channel.messages, {
+    onDelete: 'CASCADE',
+  })
   channel: Channel;
   @RelationId((message: Message) => message.channel)
   channelId: number;
