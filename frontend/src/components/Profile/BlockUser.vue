@@ -1,15 +1,14 @@
 <template>
   <v-btn color="white" class="text--primary ml-15">
-    Add friend <v-icon>mdi-plus</v-icon>
+    Block a user <v-icon>mdi-plus</v-icon>
     <v-dialog
       v-model="dialog"
       activator="parent"
     >
-      <v-card width="300">
+      <v-card width="360">
         <v-card-text v-if="nameDoesNotExist === 500">
           This user cannot be found.<br />
-          Are they already your friend?<br />
-          Or have they not accepted your request...? :(
+          Isn't the user already blocked?
         </v-card-text>
         <v-form
           ref="form"
@@ -20,7 +19,7 @@
             v-model="name"
             :counter="15"
             :rules="nameRules"
-            label="Enter the name of your friend"
+            label="Enter the name of the user you want to block"
             required
           ></v-text-field>
           <v-card-actions>
@@ -59,7 +58,7 @@ export default defineComponent({
     nameDoesNotExist: 0,
   }),
   methods: {
-    ...mapGetters(['username', 'avatar', 'id']),
+    ...mapGetters(['id']),
     validate () {
       this.checkName(this.name);
       (this.$refs.form as any).validate();
@@ -75,24 +74,24 @@ export default defineComponent({
       const data = {
         sourceId: parseInt(this.id()),
         targetId: 0
-      };
-      await axios.post('/friendships/' + name, data)
-        .then(async response => {
-          console.log(response);
-          let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
-          for (let i: number = 0; i < response2.data.length; i++) {
-            if (response2.data[i].user.username === name) {
-              window.alert('This user already sends you a friend request. Check your pending requests :)');
-              return;
-            }
-          };
-          window.alert('Your friend request has been sent.');
-        })
-        .catch( (error) => {
-          console.log(error.response.status);
-          this.nameDoesNotExist = error.response.status;
-        });
-        if (this.nameDoesNotExist === 0) { this.dialog = false; };
+      };      
+      await axios.post('/blocks/' + name, data)
+      .then(async response => {
+        // console.log(response);
+        let response2 = await axios.get('/users/' + this.id() + '/friendships/');
+        for (let i: number = 0; i < response2.data.length; i++) {
+          if (response2.data[i].user.username === name) {
+            await axios.delete('/friendships/' + response2.data[i].id);
+          }
+        };
+        window.alert('The user is blocked');
+        window.location.reload();
+      })
+      .catch( (error) => {
+        console.log(error.response.status);
+        this.nameDoesNotExist = error.response.status;
+      });
+      if (this.nameDoesNotExist === 0) { this.dialog = false; };
     },
   },
 });
