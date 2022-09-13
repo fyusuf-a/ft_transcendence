@@ -22,6 +22,9 @@ const PADDLE_SPEED = 7.5;
 const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 100;
 
+const GRID_WIDTH = 640;
+const GRID_HEIGHT = 480;
+
 export const SCORE_TO_WIN = 5;
 
 function random(min: number, max: number) {
@@ -38,7 +41,7 @@ export class GameState {
 
   constructor() {
     const paddle_width_offset = 10.0;
-    this.grid = new Grid();
+    this.grid = new Grid(GRID_WIDTH, GRID_HEIGHT);
     this.players = [
       new Player(
         paddle_width_offset,
@@ -73,7 +76,7 @@ export class GameState {
   }
 
   newBall(): Ball {
-    const x = this.grid.width / 2;
+    const x = (this.grid.width - BALL_SIZE) / 2;
     const y = random(0, this.grid.height - BALL_SIZE);
     const vy = random(-BALL_SPEED, BALL_SPEED);
     let vx: number;

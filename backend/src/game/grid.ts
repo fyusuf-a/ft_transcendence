@@ -3,7 +3,7 @@ export class Grid {
   #width: number;
   #height: number;
 
-  constructor(width = 640, height = 480) {
+  constructor(width: number, height: number) {
     this.#width = width;
     this.#height = height;
   }

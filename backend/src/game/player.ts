@@ -20,7 +20,7 @@ export class Player {
     y = 0,
     width = 10,
     height = 100,
-    grid = new Grid(),
+    grid: Grid,
     orientation = Direction.ToTheRight,
     speed = 0,
   ) {
