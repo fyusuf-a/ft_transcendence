@@ -8,8 +8,8 @@
         <v-card width="300">
           <v-card-text v-if="nameDoesNotExist === 500">
             This user cannot be found.<br />
-            Isn't he already your friend?<br />
-            Or did he not accept your request...? :(
+            Are they already your friend?<br />
+            Or have they not accepted your request...? :(
           </v-card-text>
         <v-form
           ref="form"

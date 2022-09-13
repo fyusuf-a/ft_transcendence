@@ -34,7 +34,7 @@ methods: {
   ...mapGetters(['id']),
 },
 async created() {
-  const response = await axios.get('http://localhost:8080/users/' + this.id());
+  const response = await axios.get('/users/' + this.id());
   
   this.wins = response.data.wins;
   this.losses = response.data.losses;

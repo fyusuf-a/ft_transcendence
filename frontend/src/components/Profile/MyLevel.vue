@@ -30,7 +30,7 @@ export default defineComponent({
     ...mapGetters(['id']),
   },
   async created() {
-    const response = await axios.get('http://localhost:8080/users/' + this.id());
+    const response = await axios.get('/users/' + this.id());
     this.rating = response.data.rating;
   },
 });

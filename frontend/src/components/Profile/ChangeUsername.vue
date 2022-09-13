@@ -78,7 +78,7 @@ export default defineComponent({
           console.log(error.response);
           this.nameAlreadyUsed = error.response.status;
         });
-        const response2 = await axios.get('http://localhost:8080/users/' + this.id());
+        const response2 = await axios.get('/users/' + this.id());
         this.$store.commit('setUsername', response2.data.username);
         if (this.nameAlreadyUsed === 0) { this.dialog = false; };
     },
