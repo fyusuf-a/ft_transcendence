@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import store from '../store';
+import axios from 'axios';
 
 const routes = [
   {
@@ -44,16 +44,24 @@ const router = createRouter({
   routes,
 });
 
+const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
+
 router.beforeEach((to, _, next) => {
-  const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
   if (
-    // In production, disableAuthentification is not defined
-    (disableAuthentification ? disableAuthentification === 'false' : true) &&
-    to.name !== 'Login' &&
-    !store.state.isAuthenticated
-  )
-    next({ name: 'Login' });
-  else next();
+    to.name === 'Login' ||
+    to.name === 'Login callback' ||
+    to.name === 'Create account' ||
+    disableAuthentification
+  ) {
+    next();
+  } else {
+    try {
+      axios.get('/users/me');
+      next();
+    } catch {
+      next({ name: 'Login' });
+    }
+  }
 });
 
 export default router;

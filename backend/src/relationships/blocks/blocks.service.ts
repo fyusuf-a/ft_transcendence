@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import {
   CreateBlockDto,
   QueryBlockDto,
@@ -21,11 +20,9 @@ export class BlocksService {
   ) {}
 
   async create(createBlockDto: CreateBlockDto) {
-    const previous = await this.blockRepository.findOne({
-      where: {
-        sourceId: createBlockDto.targetId,
-        targetId: createBlockDto.sourceId,
-      },
+    const previous = await this.blockRepository.findOneByOrFail({
+      sourceId: createBlockDto.targetId,
+      targetId: createBlockDto.sourceId,
     });
     if (previous != undefined) {
       previous.status = BlockTypeEnum.MUTUAL;
@@ -34,21 +31,15 @@ export class BlocksService {
     }
 
     const block: Block = new Block();
-    block.source = await this.userRepository.findOneBy({
+    block.source = await this.userRepository.findOneByOrFail({
       id: createBlockDto.sourceId,
     });
     block.sourceId = createBlockDto.sourceId;
-    if (block.source === undefined || block.source.id !== block.sourceId) {
-      throw new EntityDoesNotExistError(`User #${createBlockDto.sourceId}`);
-    }
 
-    block.target = await this.userRepository.findOneBy({
+    block.target = await this.userRepository.findOneByOrFail({
       id: createBlockDto.targetId,
     });
     block.targetId = createBlockDto.targetId;
-    if (block.target === undefined || block.target.id !== block.targetId) {
-      throw new EntityDoesNotExistError(`User #${createBlockDto.targetId}`);
-    }
     return await this.blockRepository.save(block);
   }
 
@@ -62,7 +53,7 @@ export class BlocksService {
   }
 
   findOne(id: number): Promise<Block> {
-    return this.blockRepository.findOneBy({ id: id });
+    return this.blockRepository.findOneByOrFail({ id: id });
   }
 
   update(id: number, updateBlockDto: UpdateBlockDto): Promise<UpdateResult> {

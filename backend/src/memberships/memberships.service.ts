@@ -46,7 +46,7 @@ export class MembershipsService {
   }
 
   findOne(id: number) {
-    return this.membershipRepository.findOneBy({ id: id });
+    return this.membershipRepository.findOneByOrFail({ id: id });
   }
 
   update(id: number, updateMembershipDto: UpdateMembershipDto) {

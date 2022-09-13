@@ -2,15 +2,9 @@
   <v-form>
     <v-container>
       <v-row>
-        <v-col cols="12" md="4">
-          <v-text-field
-            v-model="username"
-            label="Username"
-            required
-          ></v-text-field>
-        </v-col>
         <v-col>
-          <v-btn @click="authenticate" color="primary">Sign-in</v-btn>
+          <v-progress-circular v-if="waiting" indeterminate color="primary" />
+          <two-fa v-if="isTwoFAEnabled" @success="goToProfile" />
         </v-col>
       </v-row>
     </v-container>
@@ -19,34 +13,48 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import axios from 'axios';
+import config from '../config';
+import TwoFA from '@/components/Login/TwoFA.vue';
 
 export default defineComponent({
+  components: {
+    'two-fa': TwoFA,
+  },
   data() {
     return {
-      username: 'string',
-      loading: false,
+      isTwoFAEnabled: false,
+      waiting: true,
     };
   },
   methods: {
     async authenticate() {
-      if (this.loading) return;
-      this.loading = true;
-      let response = await axios.post('/auth/login', {
-        username: this.username,
-      });
-      if (response.data.access_token === undefined) {
-        console.log(`Could not login as user ${this.username}`);
-        return;
-      }
-      this.$store.commit('login', {
-        id: response.data.id,
-        username: this.username,
-        token: response.data.access_token,
-      });
-      this.$router.push('/profile');
-      this.loading = false;
+      window.location.href = `${config.backendURL}/auth/callback`;
     },
+    goToProfile() {
+      this.$router.push('/profile');
+    },
+  },
+  async created() {
+    this.waiting = true;
+    if (this.$route.query.id && this.$route.query.token) {
+      try {
+        const user = await this.$store.dispatch('verifyLoginInfo', {
+          id: this.$route.query.id,
+          token: this.$route.query.token,
+        });
+        if (user.isTwoFAEnabled) {
+          this.isTwoFAEnabled = true;
+        } else {
+          this.goToProfile();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      this.waiting = false;
+      return;
+    }
+    this.authenticate();
+    this.waiting = false;
   },
 });
 </script>

@@ -29,15 +29,6 @@ export class AchievementsLogService {
   async create(
     achievementsLogdto: CreateAchievementLogDto,
   ): Promise<AchievementsLog> {
-    if (
-      (await this.achievementsLogRepository.findOne({
-        where: {
-          achievementId: achievementsLogdto.achievementId,
-          userId: achievementsLogdto.userId,
-        },
-      })) !== undefined
-    )
-      throw 'Achievements already unlocked.';
     const newLog = new AchievementsLog();
     await this.userRepository.findOneByOrFail({
       id: achievementsLogdto.userId,
@@ -47,7 +38,6 @@ export class AchievementsLogService {
     newLog.achievement = await this.achievementRepository.findOneByOrFail({
       id: achievementsLogdto.achievementId,
     });
-    console.log(newLog);
     return this.achievementsLogRepository.save(newLog);
   }
 

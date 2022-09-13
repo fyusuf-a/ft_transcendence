@@ -11,10 +11,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Response,
   StreamableFile,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -36,11 +38,12 @@ import { Public } from 'src/auth/auth.public.decorator';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
-import { EntityDoesNotExistError } from 'src/errors/entityDoesNotExist';
 import { ConfigService } from '@nestjs/config';
 import { ResponseFriendshipDto } from '@dtos/friendships';
 import { ResponseBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
+import { RequestWithUser } from 'src/auth/types';
+import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -49,6 +52,14 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {}
+
+  @ApiBearerAuth()
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
+    return this.usersService.findOne(req.user.id);
+  }
 
   @ApiBearerAuth()
   @Get()
@@ -108,7 +119,11 @@ export class UsersController {
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file || !file.filename) {
+    if (
+      !file ||
+      !file.filename ||
+      !this.usersService.verifyMagicNum(file.path)
+    ) {
       throw new BadRequestException('Missing or Invalid File');
     }
     return this.usersService.updateAvatar(
@@ -134,10 +149,7 @@ export class UsersController {
       });
       return file.fileStream;
     } catch (error) {
-      if (
-        error instanceof EntityDoesNotExistError &&
-        error.message === 'Avatar does not exist'
-      ) {
+      if (error instanceof EntityNotFoundError) {
         throw new HttpException(error.message, HttpStatus.NO_CONTENT);
       }
       throw new BadRequestException(error.message);
