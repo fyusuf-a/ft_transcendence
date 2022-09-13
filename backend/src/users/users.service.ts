@@ -23,6 +23,7 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { plainToInstance } from 'class-transformer';
 
 enum hexSignature {
   GIF = '47494638',
@@ -226,5 +227,19 @@ export class UsersService {
       return true;
     this.remove_avatar(filePath, ': invalid signature.');
     return false;
+  }
+
+  async setTwoFASecret(secret: string, userId: number): Promise<UpdateResult> {
+    const updateDto = plainToInstance(UpdateUserDto, {
+      twoFASecret: secret,
+    });
+    return this.update(userId, updateDto);
+  }
+
+  async setTwoFA(bool: boolean, userId: number): Promise<UpdateResult> {
+    const updateDto = plainToInstance(UpdateUserDto, {
+      isTwoFAEnabled: bool,
+    });
+    return this.update(userId, updateDto);
   }
 }

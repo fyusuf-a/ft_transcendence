@@ -6,7 +6,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtPayload } from './types';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class TwoAuthJwtStrategy extends PassportStrategy(Strategy, 'two-auth') {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
@@ -21,9 +21,15 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: JwtPayload) {
     try {
       const user = await this.usersService.findOne(payload.id);
-      return user;
+      if (!user.isTwoFAEnabled) {
+        return user;
+      }
+      if (payload.isTwoFAAuthenticated) {
+        return user;
+      }
     } catch {
       throw new UnauthorizedException('Invalid Token');
     }
+    throw new UnauthorizedException('Invalid Token');
   }
 }
