@@ -14,7 +14,7 @@ import {
   CreateAchievementLogDto,
   ResponseAchievementsLogDto,
 } from '@/dtos/achievements-log';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, QueryFailedError } from 'typeorm';
 import { HttpException, HttpStatus } from '@nestjs/common';
 @ApiBearerAuth()
 @ApiTags('achievements log')
@@ -49,14 +49,13 @@ export class AchievementsLogController {
   async create(
     @Body() dto: CreateAchievementLogDto,
   ): Promise<ResponseAchievementsLogDto> {
-    const ret: ResponseAchievementsLogDto =
-      await this.achievementsLogService.create(dto);
-    if (ret == undefined)
-      throw new HttpException(
-        'Achievement already unlocked',
-        HttpStatus.BAD_REQUEST,
-      );
-    return ret;
+    try {
+      return await this.achievementsLogService.create(dto);
+    } catch (err) {
+      if (err instanceof QueryFailedError)
+        throw new HttpException(err.driverError.detail, HttpStatus.BAD_REQUEST);
+      else throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Delete(':id')
