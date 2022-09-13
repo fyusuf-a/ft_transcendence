@@ -78,14 +78,14 @@ describe('MembershipController (e2e)', () => {
   it('Create user1', async () => {
     return await request(app.getHttpServer())
       .post('/users/')
-      .send({ identity: 'ident3', username: 'user3' })
+      .send({ identity: 'ident1', username: 'user1' })
       .expect(201);
   });
 
   it('Create user2', async () => {
     return await request(app.getHttpServer())
       .post('/users/')
-      .send({ identity: 'ident4', username: 'user4' })
+      .send({ identity: 'ident2', username: 'user2' })
       .expect(201);
   });
 
