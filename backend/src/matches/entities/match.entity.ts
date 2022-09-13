@@ -23,13 +23,13 @@ export class Match {
   end: Date;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   home: User;
   @RelationId((match: Match) => match.home)
   homeId: number;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   away: User;
   @RelationId((match: Match) => match.away)
   awayId: number;

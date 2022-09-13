@@ -37,7 +37,6 @@ import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
-
 interface MenuSelectionEvent {
   option: string;
   target: string;
