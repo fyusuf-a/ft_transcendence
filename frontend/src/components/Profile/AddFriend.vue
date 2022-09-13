@@ -1,10 +1,10 @@
 <template>
-    <v-btn color="white" class="text--primary ml-15">
-        Add friend <v-icon>mdi-plus</v-icon>
-        <v-dialog
-          v-model="dialog"
-          activator="parent"
-        >
+  <v-btn color="white" class="text--primary ml-15">
+    Add friend <v-icon>mdi-plus</v-icon>
+      <v-dialog
+        v-model="dialog"
+        activator="parent"
+      >
         <v-card width="300">
           <v-card-text v-if="nameDoesNotExist === 500">
             This user cannot be found.<br />
@@ -39,8 +39,8 @@
           <v-btn color="primary" block @click="reset">I changed my mind</v-btn>
         </v-card-actions>
       </v-card>
-        </v-dialog>
-    </v-btn>
+    </v-dialog>
+  </v-btn>
 </template>
 
 <script lang="ts">
