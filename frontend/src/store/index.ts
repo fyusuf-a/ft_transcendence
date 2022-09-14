@@ -1,8 +1,8 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
-import kingPongImg from '@/assets/images/king-pong.png';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
+import { fetchAvatar } from '@/utils/avatar';
 import { LoginUserDto } from '@dtos/auth';
 
 const vuexPersister = new VuexPersister({
@@ -10,16 +10,22 @@ const vuexPersister = new VuexPersister({
   overwrite: true,
 });
 
+interface Cache {
+  avatars: Map<number, string>;
+}
+
 interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
+  cache: Cache | undefined;
 }
 
 const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
+  cache: undefined,
 };
 
 export default createStore({
@@ -70,19 +76,22 @@ export default createStore({
       });
       context.commit('login', { id: context.getters.id, token: response.data });
     },
+    async getAvatarById(context, id: string) {
+      if (id) {
+        if (context.state.cache?.avatars.has(+id)) {
+          return context.state.cache?.avatars.get(+id);
+        }
+        return await fetchAvatar(+id);
+      }
+    },
     async getAvatar(context) {
-      try {
-        const id = context.state.user.id;
-        if (id === undefined) return undefined;
-        const response = await axios.get('/users/' + id + '/avatar', {
-          responseType: 'blob',
-        });
-        if (response.status === 204) return;
-        const blob = new Blob([response.data]);
-        context.state.avatar = URL.createObjectURL(blob);
-      } finally {
-        if (!context.state.avatar) {
-          context.state.avatar = kingPongImg;
+      if (context?.state?.user?.id) {
+        if (context.state.cache?.avatars.has(+context?.state?.user?.id)) {
+          context.state.avatar = context.state.cache?.avatars.get(
+            +context?.state?.user?.id,
+          );
+        } else {
+          context.state.avatar = await fetchAvatar(+context.state.user.id);
         }
       }
     },
