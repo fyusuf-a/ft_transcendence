@@ -90,6 +90,8 @@ export default createStore({
           context.state.avatar = context.state.cache?.avatars.get(
             +context?.state?.user?.id,
           );
+        } else {
+          context.state.avatar = await fetchAvatar(+context.state.user.id);
         }
       }
     },
