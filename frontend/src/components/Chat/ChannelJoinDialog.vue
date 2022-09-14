@@ -92,6 +92,7 @@ export default defineComponent({
         name: channelObject.name,
         type: channelObject.type,
         password: channelObject.password,
+        userId: this.$store.getters.id,
       });
       if (response.status === 201) {
         console.log(response.data);
