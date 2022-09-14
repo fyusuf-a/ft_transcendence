@@ -25,6 +25,7 @@ import { ChannelsService } from './channels/channels.service';
 
 export class ChatJoinDto {
   channel: string;
+  password?: string;
 }
 
 export class ChatSendDto {
@@ -68,6 +69,7 @@ export class ChatGateway
       channelId: +payload.channel,
       userId: userId,
       role: MembershipRoleType.PARTICIPANT,
+      password: payload.password,
     };
     try {
       await this.membershipsService.isAuthorized(
