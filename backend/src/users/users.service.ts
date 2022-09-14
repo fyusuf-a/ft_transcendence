@@ -84,6 +84,9 @@ export class UsersService {
   }
 
   remove_avatar(filePath: string, reason: string) {
+    if (!fs.existsSync(filePath)) {
+      return;
+    }
     fs.unlink(filePath, (err) => {
       if (err) this.logger.error(err);
       else this.logger.log('Deleted ' + filePath + reason);
