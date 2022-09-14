@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import {
@@ -6,9 +6,10 @@ import {
   CreateMembershipDto,
   UpdateMembershipDto,
 } from '@dtos/memberships';
-import { Membership } from './entities/membership.entity';
+import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Channel } from 'src/channels/entities/channel.entity';
+import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class MembershipsService {
@@ -55,5 +56,65 @@ export class MembershipsService {
 
   remove(id: number) {
     return this.membershipRepository.delete(id);
+  }
+
+  async userIsAdmin(userId: number, channelId: number): Promise<boolean> {
+    const creatorMembership = await this.findAll({
+      user: userId.toString(),
+      channel: channelId.toString(),
+    });
+    if (
+      creatorMembership.length === 1 &&
+      (creatorMembership[0].role === MembershipRoleType.ADMIN ||
+        creatorMembership[0].role === MembershipRoleType.OWNER)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  async userIsOwner(userId: number, channelId: number): Promise<boolean> {
+    const creatorMembership = await this.findAll({
+      user: userId.toString(),
+      channel: channelId.toString(),
+    });
+    if (
+      creatorMembership.length === 1 &&
+      creatorMembership[0].role === MembershipRoleType.OWNER
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  async isAuthorized(
+    createMembershipDto: CreateMembershipDto,
+    user: User,
+    channel: Channel,
+  ) {
+    let isAuthorized = false;
+    if (createMembershipDto.role === MembershipRoleType.OWNER) {
+      throw new UnauthorizedException();
+    }
+    if (createMembershipDto.role === MembershipRoleType.ADMIN) {
+      if (!(await this.userIsOwner(user.id, channel.id))) {
+        throw new UnauthorizedException();
+      }
+    }
+    if (channel.type === ChannelType.PRIVATE) {
+      isAuthorized = await this.userIsAdmin(
+        user.id,
+        createMembershipDto.channelId,
+      );
+    } else if (channel.type === ChannelType.PROTECTED) {
+      isAuthorized =
+        createMembershipDto.password &&
+        (await bcrypt.compare(createMembershipDto.password, channel.password));
+    } else {
+      isAuthorized = true;
+    }
+    if (!isAuthorized) {
+      throw new UnauthorizedException();
+    }
   }
 }
