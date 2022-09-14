@@ -27,6 +27,14 @@ const routes = [
         component: () => import('../views/AboutView.vue'),
       },
       {
+        path: 'leaderboard',
+        component: () => import('../views/Leaderboard.vue'),
+      },
+      {
+        path: 'leaderboard/:id',
+        component: () => import('../components/Profile/UserDetails.vue'),
+      },
+      {
         path: '/:pathMatch(.*)*',
         component: () => import('../views/NotFound.vue'),
       },

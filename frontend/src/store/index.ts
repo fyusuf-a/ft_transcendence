@@ -4,6 +4,8 @@ import kingPongImg from '@/assets/images/king-pong.png';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
 import { LoginUserDto } from '@dtos/auth';
+import usersModule from './modules/users/index';
+
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
@@ -87,6 +89,8 @@ export default createStore({
       }
     },
   },
-  modules: {},
+  modules: {
+    usersModule: usersModule,
+  },
   plugins: [vuexPersister.persist],
 });
