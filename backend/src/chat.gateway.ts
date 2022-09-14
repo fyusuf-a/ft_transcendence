@@ -21,6 +21,7 @@ import { MembershipsService } from './memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
 import { CreateMembershipDto } from '@dtos/memberships';
+import { ChannelsService } from './channels/channels.service';
 
 export class ChatJoinDto {
   channel: string;
@@ -39,6 +40,7 @@ export class ChatGateway
     private readonly messagesService: MessagesService,
     private readonly usersService: UsersService,
     private readonly membershipsService: MembershipsService,
+    private readonly channelsService: ChannelsService,
     private configService: ConfigService,
   ) {}
 
@@ -61,12 +63,18 @@ export class ChatGateway
     this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
     this.checkAuth(client);
     // TODO: Check if User has permission to join channel here
+    const userId = this.authenticatedSockets.get(client.id)?.id;
     const membershipDto: CreateMembershipDto = {
       channelId: +payload.channel,
-      userId: this.authenticatedSockets.get(client.id)?.id,
+      userId: userId,
       role: MembershipRoleType.PARTICIPANT,
     };
     try {
+      await this.membershipsService.isAuthorized(
+        membershipDto,
+        { id: userId } as User,
+        await this.channelsService.findOne(membershipDto.channelId),
+      );
       await this.membershipsService.create(membershipDto);
     } catch (error) {
       if (error.code == 23505) {
@@ -75,7 +83,7 @@ export class ChatGateway
           `User ${membershipDto.userId} is already a member of channel ${payload.channel}`,
         );
       } else {
-        throw error;
+        throw new WsException(error.message);
       }
     }
     client.join(payload.channel);
