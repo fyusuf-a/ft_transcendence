@@ -20,13 +20,14 @@ import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Achievement } from 'src/achievements/entities/achievements.entity';
+import { UsersModule } from 'src/users/users.module';
 
 describe('ChannelController (e2e)', () => {
   let app: INestApplication;
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
+        UsersModule,
         ChannelsModule,
         ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
@@ -70,6 +71,16 @@ describe('ChannelController (e2e)', () => {
     await app.close();
   });
 
+  it('/users (POST)', () => {
+    return request(app.getHttpServer())
+      .post('/users')
+      .send({
+        identity: 'ident1',
+        username: 'user1',
+      })
+      .expect(201);
+  });
+
   it('/channels (GET) empty', async () => {
     const response = await request(app.getHttpServer()).get('/channels/');
     expect(response.status).toBe(200);
@@ -82,12 +93,13 @@ describe('ChannelController (e2e)', () => {
       .send({
         name: 'channel1',
         type: ChannelType.PUBLIC,
+        userId: 1,
       })
       .expect(201);
   });
 
   it('/channels (GET) with one', async () => {
-    const response = await request(app.getHttpServer()).get('/channels/');
+    const response = await request(app.getHttpServer()).get('/channels');
     expect(response.status).toBe(200);
     const responseChannelPages: PageDto<ResponseChannelDto> = response.body;
     expect(responseChannelPages.meta.itemCount).toBe(1);
@@ -110,6 +122,7 @@ describe('ChannelController (e2e)', () => {
         name: 'channel2',
         type: ChannelType.PROTECTED,
         password: 'example',
+        userId: 1,
       })
       .expect(201);
   });
@@ -129,6 +142,7 @@ describe('ChannelController (e2e)', () => {
       .send({
         name: 'channel3',
         type: ChannelType.PRIVATE,
+        userId: 1,
       })
       .expect(201);
   });
