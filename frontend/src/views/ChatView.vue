@@ -101,7 +101,6 @@ export default defineComponent({
       const channel = this.allChannels.get(channelId);
       if (channel) {
         this.joinChannelById(channelId); // check if it succeeds
-        this.subscribedChannels.push(channel);
         this.handleChannelSelection(channel);
       } else {
         // Try to fetch channel ?
@@ -211,8 +210,11 @@ export default defineComponent({
     },
     joinChannelById(id: number) {
       console.log(`Vue: Asking to join channel #${id}`);
+      const channel = this.allChannels.get(id);
+      if (!channel) return;
       this.socket.emit('chat-join', { channel: id }, (response: string) => {
         this.printResponse(response);
+        this.subscribedChannels.push(channel);
       });
     },
     leaveChannelById(id: number) {
@@ -282,7 +284,6 @@ export default defineComponent({
       const channel = this.allChannels.get(membership.channelId);
       if (channel) {
         console.log('Matched membership to channel');
-        this.subscribedChannels.push(channel);
         this.joinChannelById(channel.id);
       } else {
         console.log("Couldn't match membership to channel");
