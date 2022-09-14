@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="pa-2 ml-15 mt-5" width="40%">
     <v-card-title>
       <v-icon>mdi-shield-key</v-icon>
       <span class="ml-2">Two-factor authentication</span>

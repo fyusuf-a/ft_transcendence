@@ -25,7 +25,6 @@ export class FriendshipDto {
     description: 'The id of the second user',
   })
   @IsInt()
-  @IsPositive()
   targetId!: number;
 
   @ApiProperty({
