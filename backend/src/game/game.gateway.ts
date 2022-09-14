@@ -51,7 +51,7 @@ export class GameGateway extends SecureGateway {
 
   @SubscribeMessage('game-queue')
   @CheckAuth
-  async handeQueue(
+  async handleQueue(
     client: Socket,
     gameOptions: GameOptionsDto,
   ): Promise<string> {
