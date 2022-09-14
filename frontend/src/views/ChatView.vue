@@ -37,6 +37,7 @@ import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
+import { ChannelType } from '@dtos/channels';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -100,7 +101,12 @@ export default defineComponent({
       console.log('Vue: joining channel ' + channelId);
       const channel = this.allChannels.get(channelId);
       if (channel) {
-        this.joinChannelById(channelId); // check if it succeeds
+        if (channel.type === ChannelType.PROTECTED) {
+          console.log('trying to join protected');
+          this.joinChannelById(channelId, 'string'); // check if it succeeds
+        } else {
+          this.joinChannelById(channelId); // check if it succeeds
+        }
         this.handleChannelSelection(channel);
       } else {
         // Try to fetch channel ?
@@ -208,14 +214,18 @@ export default defineComponent({
         }
       }
     },
-    joinChannelById(id: number) {
+    joinChannelById(id: number, password?: string) {
       console.log(`Vue: Asking to join channel #${id}`);
       const channel = this.allChannels.get(id);
       if (!channel) return;
-      this.socket.emit('chat-join', { channel: id }, (response: string) => {
-        this.printResponse(response);
-        this.subscribedChannels.push(channel);
-      });
+      this.socket.emit(
+        'chat-join',
+        { channel: id, password: password },
+        (response: string) => {
+          this.printResponse(response);
+          this.subscribedChannels.push(channel);
+        },
+      );
     },
     leaveChannelById(id: number) {
       console.log(`Vue: Asking to leave channel #${id}`);
