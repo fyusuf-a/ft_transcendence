@@ -26,6 +26,7 @@ export class User {
   @Column({ unique: true, nullable: true })
   username: string;
 
+  @Exclude()
   @Column({
     nullable: true,
     default: null,
@@ -59,4 +60,10 @@ export class User {
     default: UserStatusEnum.offline
   })
   status: UserStatusEnum;
+  @Column({ default: false })
+  isTwoFAEnabled: boolean;
+
+  @Exclude()
+  @Column({ default: '' })
+  twoFASecret!: string;
 }

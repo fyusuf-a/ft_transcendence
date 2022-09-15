@@ -44,7 +44,7 @@ export class Channel {
 
   @Exclude()
   @IsOptional()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   userOne?: User;
   @RelationId((channel: Channel) => channel.userOne)
   @IsOptional()
@@ -52,7 +52,7 @@ export class Channel {
 
   @Exclude()
   @IsOptional()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   userTwo?: User;
   @RelationId((channel: Channel) => channel.userTwo)
   @IsOptional()

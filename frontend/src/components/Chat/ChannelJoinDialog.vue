@@ -62,7 +62,6 @@
 import axios from 'axios';
 import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
-
 interface DataReturnType {
   selectedChannel: string;
   dialogOpen: boolean;
@@ -93,6 +92,7 @@ export default defineComponent({
         name: channelObject.name,
         type: channelObject.type,
         password: channelObject.password,
+        userId: this.$store.getters.id,
       });
       if (response.status === 201) {
         console.log(response.data);

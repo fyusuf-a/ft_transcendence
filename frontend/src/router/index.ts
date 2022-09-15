@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import store from '../store';
+import axios from 'axios';
 
 const routes = [
   {
@@ -37,11 +37,6 @@ const routes = [
     path: '/login',
     component: () => import('../views/LoginView.vue'),
   },
-  {
-    name: 'Create account',
-    path: '/create-account',
-    component: () => import('../views/CreateAccountView.vue'),
-  },
 ];
 
 const router = createRouter({
@@ -56,11 +51,13 @@ router.beforeEach((to, _, next) => {
     to.name === 'Create account'
   ) {
     next();
-  } else if (store.getters.userIsAuthenticated) {
-    if (!store.getters.userIsCreated) next({ name: 'Create account' });
-    else next();
   } else {
-    next({ name: 'Login' });
+    try {
+      axios.get('/users/me');
+      next();
+    } catch {
+      next({ name: 'Login' });
+    }
   }
 });
 

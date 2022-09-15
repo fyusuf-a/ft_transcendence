@@ -7,10 +7,12 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
+  Unique,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
 @Entity()
+@Unique(['achievement', 'userId'])
 export class AchievementsLog {
   @PrimaryGeneratedColumn()
   id: number;
@@ -19,13 +21,13 @@ export class AchievementsLog {
   createdAt: Date;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;
   @RelationId((achievementsLog: AchievementsLog) => achievementsLog.user)
   @Column()
   userId: number;
 
-  @ManyToOne(() => Achievement)
+  @ManyToOne(() => Achievement, { onDelete: 'CASCADE' })
   achievement: Achievement;
   @Column()
   @RelationId((achievementsLog: AchievementsLog) => achievementsLog.achievement)

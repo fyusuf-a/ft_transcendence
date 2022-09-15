@@ -1,22 +1,60 @@
 <template>
-  <component :is="loginComponent" />
+  <v-form>
+    <v-container>
+      <v-row>
+        <v-col>
+          <v-progress-circular v-if="waiting" indeterminate color="primary" />
+          <two-fa v-if="isTwoFAEnabled" @success="goToProfile" />
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-form>
 </template>
 
 <script lang="ts">
-import { defineComponent, defineAsyncComponent, Component } from 'vue';
+import { defineComponent } from 'vue';
+import config from '../config';
+import TwoFA from '@/components/Login/TwoFA.vue';
 
 export default defineComponent({
-  computed: {
-    loginComponent() {
-      return defineAsyncComponent(() => {
-        let component: Promise<Component> = import(
-          `@/components/Login/${
-            import.meta.env.VITE_DISABLE_AUTHENTICATION ? 'NoAuth' : 'FortyTwo'
-          }.vue`
-        );
-        return component;
-      });
+  components: {
+    'two-fa': TwoFA,
+  },
+  data() {
+    return {
+      isTwoFAEnabled: false,
+      waiting: true,
+    };
+  },
+  methods: {
+    async authenticate() {
+      window.location.href = `${config.backendURL}/auth/callback`;
     },
+    goToProfile() {
+      this.$router.push('/profile');
+    },
+  },
+  async created() {
+    this.waiting = true;
+    if (this.$route.query.id && this.$route.query.token) {
+      try {
+        const user = await this.$store.dispatch('verifyLoginInfo', {
+          id: this.$route.query.id,
+          token: this.$route.query.token,
+        });
+        if (user.isTwoFAEnabled) {
+          this.isTwoFAEnabled = true;
+        } else {
+          this.goToProfile();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      this.waiting = false;
+      return;
+    }
+    this.authenticate();
+    this.waiting = false;
   },
 });
 </script>

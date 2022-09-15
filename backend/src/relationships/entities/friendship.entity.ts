@@ -23,14 +23,14 @@ export class Friendship {
   id: number;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   source: User;
   @RelationId((friendship: Friendship) => friendship.source)
   @Column()
   sourceId: number;
 
   @Exclude()
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   target: User;
   @RelationId((friendship: Friendship) => friendship.target)
   @Column()

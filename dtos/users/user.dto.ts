@@ -51,4 +51,16 @@ export class UserDto {
   @IsArray()
   @IsInt()
   membershipIds!: number[];
+
+  @ApiProperty({
+    description: 'Whether the user has activated the two-factor authentication',
+  })
+  @IsNotEmpty()
+  isTwoFAEnabled!: boolean;
+
+  @ApiProperty({
+    description: 'The secret for the two-factor authentication',
+  })
+  @IsNotEmpty()
+  twoFASecret!: string;
 }

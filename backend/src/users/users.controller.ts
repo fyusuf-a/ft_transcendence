@@ -11,10 +11,12 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Response,
   StreamableFile,
   UploadedFile,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -37,9 +39,11 @@ import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
 import { ConfigService } from '@nestjs/config';
-import { ResponseFriendshipDto } from '@dtos/friendships';
-import { ResponseBlockDto } from '@dtos/blocks';
+import { ListFriendshipDto } from '@dtos/friendships';
+import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
+import { RequestWithUser } from 'src/auth/types';
+import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -48,6 +52,14 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {}
+
+  @ApiBearerAuth()
+  @Public()
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
+    return this.usersService.findOne(req.user.id);
+  }
 
   @ApiBearerAuth()
   @Get()
@@ -146,21 +158,19 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('/:id/friendships')
-  findFriendships(@Param('id') id: string): Promise<ResponseFriendshipDto[]> {
-    return this.usersService.findFriendships(+id);
+  async findFriendships(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+    return await this.usersService.findFriendships(+id, 1);
   }
 
   @ApiBearerAuth()
   @Get('/:id/friendships/invites')
-  findFriendRequests(
-    @Param('id') id: string,
-  ): Promise<ResponseFriendshipDto[]> {
-    return this.usersService.findFriendRequests(+id);
+  findFriendRequests(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+    return this.usersService.findFriendships(+id, 0);
   }
 
   @ApiBearerAuth()
   @Get('/:id/blocks')
-  findBlocks(@Param('id') id: string): Promise<ResponseBlockDto[]> {
+  findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
     return this.usersService.findBlocks(+id);
   }
 
