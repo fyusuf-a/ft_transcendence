@@ -8,10 +8,7 @@
         "
       >
       <v-avatar size="45">
-        <v-img
-          :src="'https://static.generated.photos/vue-static/home/hero/3.png'"
-        >
-        </v-img>
+        <v-img :src="avatar"> </v-img>
         </v-avatar>
       </chat-message-menu>
     
@@ -48,7 +45,9 @@ export default defineComponent({
     },
   },
   data() {
-    return {};
+    return {
+      avatar: '',
+    };
   },
   components: {
     'chat-message-menu': ChatMessageMenu,
@@ -65,6 +64,12 @@ export default defineComponent({
         minute: '2-digit',
       });
     },
+  },
+  async created() {
+    this.avatar = await this.$store.dispatch(
+      'getAvatarById',
+      this.senderId.toString(),
+    );
   },
 });
 </script>
