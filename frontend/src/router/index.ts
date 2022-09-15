@@ -13,6 +13,7 @@ const routes = [
       {
         path: 'profile',
         component: () => import('../views/ProfileView.vue'),
+        props: true,
       },
       {
         path: 'game',
@@ -31,8 +32,9 @@ const routes = [
         component: () => import('../views/Leaderboard.vue'),
       },
       {
-        path: 'leaderboard/:id',
-        component: () => import('../components/Profile/UserDetails.vue'),
+        path: 'profile/:user',
+        component: () => import('../views/ProfileView.vue'),
+        props: true,
       },
       {
         path: '/:pathMatch(.*)*',

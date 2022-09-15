@@ -5,7 +5,7 @@
       background-color="white"
     >
       <v-tab value="friends">Friends</v-tab>
-      <v-tab value="blocked">Blocked</v-tab>
+      <v-tab v-if="!user" value="blocked">Blocked</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -16,21 +16,23 @@
             <v-img :src="friend.avatar" ></v-img>
           </li>
 
-          <add-friend class="mb-5 mt-5"/>
+          <add-friend v-if="!user" class="mb-5 mt-5"/>
 
-          <v-divider></v-divider>
+          <div v-if="!user">
+            <v-divider></v-divider>
 
-          <h3 class="mt-5">Pending friend requests</h3><br />
-            <li v-for="requester in requesters" :key="requester.username">
-              <div>{{ requester.username }}</div>
-              <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
-              <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
-              <v-img :src="requester.avatar" ></v-img>
-              <br />
-            </li>
-            <p v-if="!requesters.length" class="text--primary">
-              No request to accept.
-            </p>
+            <h3 class="mt-5">Pending friend requests</h3><br />
+              <li v-for="requester in requesters" :key="requester.username">
+                <div>{{ requester.username }}</div>
+                <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
+                <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
+                <v-img :src="requester.avatar" ></v-img>
+                <br />
+              </li>
+              <p v-if="!requesters.length" class="text--primary">
+                No request to accept.
+              </p>
+            </div>
         </v-window-item>
         <v-window-item value="blocked">
           blocked users
@@ -62,6 +64,7 @@ export default defineComponent({
       tab: null,
     };
   },
+  props: ['user'],
   components: {
     'add-friend': AddFriend,
   },
@@ -93,6 +96,7 @@ export default defineComponent({
     },
   },
   async created() {
+    console.log("user: " + this.user);
     // get list of friends
     let response = await axios.get('/users/' + this.id() + '/friendships/');
     for (let i: number = 0; i < response.data.length; i++) {

@@ -8,8 +8,8 @@
         <v-btn>Refresh</v-btn>
       </div>
       <ul>
-        <li v-for="user in filteredUsers" :key="user.id">
-          {{ user.username }}
+        <li v-for="user in users" :key="user.rating">
+          {{ user.user }} {{ user.rating }} <router-link :to="user.userLink">View Details</router-link>
         </li>
       </ul>
     </div>
@@ -18,25 +18,37 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
+import axios from 'axios';
+
+interface UsersList {
+  users: { user: string, rating: number, userLink: string }[];
+}
 
 export default defineComponent({
+  data(): UsersList {
+    return {
+      users: [],
+    };
+  },
+  
   computed: {
-    filteredUsers() {
-      // console.log("store: " + this.$store.getters.usersList);
-      // console.log("hmm: " + this.$store.getters('users/users'));
-      return this.$store.getters['usersModule/users'];
-    },
+
   },
   methods: {
-    
-   
+
   },
-  created() {
-   
+  async created() {
+    let response = await axios.get('/users/');
+    for (let i: number = 0; i < response.data.data.length; i++) {
+      this.users.push({
+        user: response.data.data[i].username,
+        rating: response.data.data[i].rating,
+        userLink: '/profile/' + response.data.data[i].username,
+      });
+    };
   },
   components: {
-    
+
   },
 });
 </script>

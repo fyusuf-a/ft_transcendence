@@ -13,7 +13,7 @@
               ></v-img>
             </v-card>
 
-            <v-card-actions class="pt-10">
+            <v-card-actions v-if="!user" class="pt-10">
 
               <v-row>
                 <avatar-button />
@@ -47,6 +47,7 @@ export default defineComponent({
     'username-button': ChangeUsername,
     'avatar-button': ChangeAvatar,
   },
+  props: ['user'],
   methods: {
     ...mapGetters(['username', 'avatar', 'id']),
   },

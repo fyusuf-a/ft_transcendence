@@ -4,8 +4,6 @@ import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
 import { fetchAvatar } from '@/utils/avatar';
 import { LoginUserDto } from '@dtos/auth';
-import usersModule from './modules/users/index';
-
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
@@ -98,8 +96,6 @@ export default createStore({
       }
     },
   },
-  modules: {
-    usersModule: usersModule,
-  },
+  modules: {},
   plugins: [vuexPersister.persist],
 });

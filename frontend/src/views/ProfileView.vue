@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-row>
-      <my-profile />
-      <my-friends />
+      <my-profile :user="user" />
+      <my-friends :user="user" />
       <my-matches/>
-      <my-achievements/>
-      <activate-two-fa />
+      <my-achievements />
+      <activate-two-fa v-if="!user" />
     </v-row>
   </div>
 </template>
@@ -25,5 +25,11 @@ export default defineComponent({
     'my-achievements': MyAchievements,
     'my-matches': MyMatchHistory,
   },
+  props: ['user'],
+  async created() {
+    if (this.user) {
+      console.log("user: " + this.user);
+    }
+  }
 });
 </script>
