@@ -3,6 +3,7 @@ import axios from 'axios';
 import kingPongImg from '@/assets/images/king-pong.png';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
+import { io, Socket } from 'socket.io-client';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
@@ -13,12 +14,14 @@ interface State {
   user: UserDto;
   avatar: string | undefined;
   token: string | undefined;
+  socket: Socket;
 }
 
 const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
+  socket: io(),
 };
 
 export default createStore({
@@ -35,6 +38,7 @@ export default createStore({
     avatar: (state) => state.avatar,
     id: (state) => state.user.id,
     token: (state) => state.token,
+    socket: (state) => state.socket,
   },
   mutations: {
     setToken(state, token: string) {
@@ -47,6 +51,9 @@ export default createStore({
       state.user.id = id;
       state.token = token;
     },
+    setSocket(state, socket: Socket) {
+      state.socket = socket;
+    }
   },
   actions: {
     async getUser(context, { id, token }: { id: number; token: string }) {
