@@ -11,7 +11,9 @@ export default defineComponent({
       return defineAsyncComponent(() => {
         let component: Promise<Component> = import(
           `@/components/Login/${
-            import.meta.env.VITE_DISABLE_AUTHENTICATION ? 'NoAuth' : 'FortyTwo'
+            import.meta.env.VITE_DISABLE_AUTHENTICATION === 'true'
+              ? 'NoAuth'
+              : 'FortyTwo'
           }.vue`
         );
         return component;

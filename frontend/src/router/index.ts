@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import axios from 'axios';
+import store from '../store';
 
 const routes = [
   {
@@ -44,7 +45,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _, next) => {
+router.beforeEach(async (to, _, next) => {
   if (
     to.name === 'Login' ||
     to.name === 'Login callback' ||
@@ -53,7 +54,13 @@ router.beforeEach((to, _, next) => {
     next();
   } else {
     try {
-      axios.get('/users/me');
+      if (import.meta.env.VITE_DISABLE_AUTHENTICATION === 'false') {
+        await axios.get('/users/me');
+      } else {
+        if (!store.getters.isUserAuthenticated) {
+          throw new Error('User not in store');
+        }
+      }
       next();
     } catch {
       next({ name: 'Login' });

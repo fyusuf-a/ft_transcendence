@@ -58,7 +58,11 @@ export default createStore({
       let user: ResponseUserDto;
       try {
         context.state.token = token;
-        const response = await axios.get<ResponseUserDto>('/users/me');
+        const response = await axios.get<ResponseUserDto>(
+          import.meta.env.VITE_DISABLE_AUTHENTICATION === 'true'
+            ? `/users/${id}`
+            : '/users/me',
+        );
         user = response.data;
         context.commit('login', { id, token });
         context.state.user = {

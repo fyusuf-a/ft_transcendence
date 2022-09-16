@@ -49,7 +49,7 @@ export default defineComponent({
         if (response.data?.data.length === 0) {
           throw new Error('Login not found');
         }
-        this.$store.dispatch('getUser', {
+        this.$store.dispatch('verifyLoginInfo', {
           id: response.data.data[0].id,
           token: 'dummy_token',
         });
