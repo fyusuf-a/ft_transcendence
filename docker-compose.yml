@@ -15,8 +15,6 @@ services:
     image: fyusufa/ft_transcendence_backend
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
-      # the port for debugging
-      - 9229:9229
     volumes:
       - ./backend:/tmp/app
       - ./dtos:/tmp/dtos
@@ -47,7 +45,6 @@ services:
 
   frontend:
     image: fyusufa/ft_transcendence_frontend
-    profiles: ["frontend"]
     ports:
       - ${FRONTEND_PORT}:80
       # the following port is necessary for vite hot module reload (HMR)
