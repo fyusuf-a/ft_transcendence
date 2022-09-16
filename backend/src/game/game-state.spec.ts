@@ -84,7 +84,6 @@ describe('GameState', () => {
       state.ball.x = 0;
       state.checkForPoints();
       expect(state.score).toEqual([0, 1]);
-      expect(state.ball.x).toEqual(state.grid.width / 2);
       expect(state.ball.vx).toBeGreaterThan(0);
     });
 
@@ -93,7 +92,6 @@ describe('GameState', () => {
       state.ball.x = 0;
       state.checkForPoints();
       expect(state.score).toEqual([0, 2]);
-      expect(state.ball.x).toEqual(state.grid.width / 2);
       expect(state.ball.vx).toBeGreaterThan(0);
     });
   });
