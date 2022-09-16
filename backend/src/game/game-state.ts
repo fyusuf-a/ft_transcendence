@@ -128,7 +128,7 @@ export class GameState {
 
   checkForPoints() {
     this.lastResult = CheckResult.NONE;
-    if (this.ball.left < 0) {
+    if (this.ball.left <= 0) {
       this.score[1] += 1;
       this.lastResult = CheckResult.PLAYER_1;
       this.ball = this.newBall();
