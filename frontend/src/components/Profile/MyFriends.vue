@@ -53,6 +53,7 @@ interface MyFriendsData {
   friends: { username: string ; avatar: string }[];
   requesters: { username: string ; avatar: string, frienshipId: number }[];
   tab: any,
+  idOther: number,
 }
 
 export default defineComponent({
@@ -62,6 +63,7 @@ export default defineComponent({
       friends: [],
       requesters: [],
       tab: null,
+      idOther: 0,
     };
   },
   props: ['user'],
@@ -94,17 +96,36 @@ export default defineComponent({
           console.log(error.response.status);
         });
     },
+    async listOfFriends(id: number) {
+      let response = await axios.get('/users/' + id + '/friendships/');
+      for (let i: number = 0; i < response.data.length; i++) {
+        this.friends.push({
+          username: response.data[i].user.username,
+          avatar: response.data[i].avatar,
+        });
+      };
+    }
   },
   async created() {
-    console.log("user: " + this.user);
+    
     // get list of friends
-    let response = await axios.get('/users/' + this.id() + '/friendships/');
-    for (let i: number = 0; i < response.data.length; i++) {
-      this.friends.push({
-        username: response.data[i].user.username,
-        avatar: response.data[i].avatar,
-      });
-    };
+    if (this.user) {
+      let response = await axios.get('/users/');
+      for (let i: number = 0; i < response.data.data.length; i++) {
+        if (this.user === response.data.data[i].username) {
+          this.idOther = response.data.data[i].id
+        }
+      };
+      if (this.idOther == this.id()) {
+        this.listOfFriends(this.id());
+      }
+      else {
+        this.listOfFriends(this.idOther);
+      }
+      }
+    else {
+      this.listOfFriends(this.id());
+    }
 
     // get list of requesters
     let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');

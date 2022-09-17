@@ -24,7 +24,7 @@
           </v-col>
 
           <v-col :cols="8">
-            <my-statistics />
+            <my-statistics :user="user" />
           </v-col>
 
         </v-row>
