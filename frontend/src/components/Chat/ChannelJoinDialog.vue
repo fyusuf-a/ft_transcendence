@@ -82,7 +82,7 @@ export default defineComponent({
       selectedChannel: '',
       dialogOpen: false,
       action: 'Join',
-      createdChannel: { name: '', type: '', password: '' },
+      createdChannel: { name: '', type: 'public', password: '' },
       channelTypes: ['public', 'protected', 'private'],
     };
   },
@@ -130,7 +130,7 @@ export default defineComponent({
       this.action = 'Join';
       this.createdChannel = {
         name: '',
-        type: '',
+        type: 'public',
         password: '',
       };
     },
