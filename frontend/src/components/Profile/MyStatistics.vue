@@ -60,7 +60,7 @@ export default defineComponent({
       else {
         this.assingStats(this.idOther);
       }
-      }
+    }
     else {
       this.assingStats(this.id());
     }
