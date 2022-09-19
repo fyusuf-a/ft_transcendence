@@ -179,8 +179,8 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('/:id/blocks')
-  findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
-    return this.usersService.findBlocks(+id);
+  async findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
+    return await this.usersService.findBlocks(+id);
   }
 
   @ApiBearerAuth()
