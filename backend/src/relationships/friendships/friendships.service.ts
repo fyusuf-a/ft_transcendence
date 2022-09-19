@@ -25,12 +25,10 @@ export class FriendshipsService {
     username: string,
     createFriendshipDto: CreateFriendshipDto,
   ): Promise<Friendship> {
-    // console.log(username);
     const target: User = await this.userRepository.findOneByOrFail({
       username: username,
     });
     createFriendshipDto.targetId = target.id;
-    // console.log(createFriendshipDto);
     return await this.create(createFriendshipDto, target);
   }
 
