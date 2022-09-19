@@ -31,6 +31,7 @@
             label="Type"
           ></v-select>
           <v-text-field
+            v-if="createdChannel.type === 'protected'"
             v-model="createdChannel.password"
             label="Password"
           ></v-text-field>
