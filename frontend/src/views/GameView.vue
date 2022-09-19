@@ -34,11 +34,6 @@ export default defineComponent({
         token: this.$store.getters.token,
       });
     },
-    handleGameState(payload: any) {
-      console.log(
-        `Ball: (${payload.ball.x}, ${payload.ball.y}); Player0: ${payload.players[0].y}; Player1: ${payload.players[1].y}`,
-      );
-    },
   },
   created() {
     this.socket.on('game-connect', this.handleConnection);

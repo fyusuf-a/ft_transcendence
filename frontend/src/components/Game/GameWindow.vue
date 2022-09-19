@@ -129,28 +129,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#pong {
-	border: solid black 1px;
-	width: 640px;
-	height: 480px;
-	margin-left: 10px;
-}
-
-#ball {
-	border: solid black 1px;
-	width: 640px;
-	height: 480px;
-	margin-left: 10px;
-}
-
-#paddle {
-	border: solid black 1px;
-	width: 640px;
-	height: 480px;
-	margin-left: 10px;
-}
-
-#background {
+#pong, #ball, #paddle, #background {
 	border: solid black 1px;
 	width: 640px;
 	height: 480px;

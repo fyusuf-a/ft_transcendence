@@ -36,7 +36,13 @@
             </p>
         </v-window-item>
         <v-window-item value="blocked">
-          blocked users
+          <li v-for="blocke in blocked" :key="blocke.username">
+            {{ blocke.username }} <br />
+            <v-btn color="error" variant="outlined" class="text--primary ml-15" @click="unblock(blocke.blockedId)">unblock</v-btn>
+          </li>
+
+          <block-user class="mb-5 mt-5"/>
+
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -52,6 +58,7 @@ import { fetchAvatar } from '@/utils/avatar';
 import { Socket } from 'socket.io-client';
 import { StatusUpdateDto } from '@dtos/users'
 
+import BlockUser from '@/components/Profile/BlockUser.vue'
 interface MyFriendsData {
   loading: boolean;
   friends: { id: number, username: string ; avatar: string ; status: number }[];
@@ -59,10 +66,9 @@ interface MyFriendsData {
   tab: any,
   statusColors : string[],
   socket : Socket,
+
+  blocked: { username: string ; blockedId: number }[],
 }
-
-
-
 export default defineComponent({
   data(): MyFriendsData {
     return {
@@ -76,10 +82,12 @@ export default defineComponent({
       'light-blue accent-3'
       ],
       socket: this.$store.getters.socket,
+      blocked: [],
     };
   },
   components: {
     'add-friend': AddFriend,
+    'block-user': BlockUser,
   },
   methods: {
     ...mapGetters(['avatar', 'id']),
@@ -116,6 +124,11 @@ export default defineComponent({
       })
       console.log(statusUpdate);
     }, 
+    async unblock (blockedId: number) {
+      await axios.delete('/blocks/' + blockedId);
+      window.alert('The user has been unblock.');
+      window.location.reload();
+    },
   },
   async created() {
     // get list of friends
@@ -128,7 +141,6 @@ export default defineComponent({
         status: response.data[i].user.status,
       });
     };
-
     // get list of requesters
     let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
     for (let i: number = 0; i < response2.data.length; i++) {
@@ -136,6 +148,14 @@ export default defineComponent({
         username: response2.data[i].user.username,
         avatar: await fetchAvatar(response.data[i].user.id),
         frienshipId: response2.data[i].id,
+      });
+    };
+    // get list of blocked users
+    let response3 = await axios.get('/users/' + this.id() + '/blocks/');
+    for (let i: number = 0; i < response3.data.length; i++) {
+      this.blocked.push({
+        username: response3.data[i].user.username,
+        blockedId: response3.data[i].id,
       });
     };
     this.loading = false;

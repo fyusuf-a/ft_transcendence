@@ -37,7 +37,7 @@ services:
       BACKEND_HOST: ${BACKEND_HOST}
     build:
       context: .
-      dockerfile: backend/${FRONTEND_DOCKERFILE}
+      dockerfile: backend/${BACKEND_DOCKERFILE}
       args:
           NODE_IMAGE: ${NODE_IMAGE}
           BACKEND_PORT: ${BACKEND_PORT}

@@ -51,7 +51,7 @@ export default defineComponent({
     return {
       isTwoFAEnabled: false,
       qrCode: '',
-      isSwitchDisabled: false,
+      isSwitchDisabled: true,
       twoFACode: '',
     };
   },

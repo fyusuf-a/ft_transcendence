@@ -58,7 +58,16 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
-    return this.usersService.findOne(req.user.id);
+    if (!req.user) {
+      throw new BadRequestException();
+    }
+    let user: ResponseUserDto;
+    try {
+      user = await this.usersService.findOne(req.user.id);
+    } catch (error) {
+      throw new BadRequestException();
+    }
+    return user;
   }
 
   @ApiBearerAuth()
@@ -170,8 +179,8 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('/:id/blocks')
-  findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
-    return this.usersService.findBlocks(+id);
+  async findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
+    return await this.usersService.findBlocks(+id);
   }
 
   @ApiBearerAuth()
