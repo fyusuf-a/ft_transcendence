@@ -12,8 +12,11 @@
       <v-window v-model="tab">
         <v-window-item value="friends">
           <li v-for="friend in friends" :key="friend.username">
+            <div class="listElement">
             {{ friend.username }}
-            <v-img :src="friend.avatar" ></v-img>
+            <v-badge overlap :color="statusColors[friend.status]"></v-badge>
+            <v-img class="avatar" :src="friend.avatar" max-height="100" max-width="100" ></v-img>
+          </div>
           </li>
 
           <add-friend class="mb-5 mt-5"/>
@@ -25,7 +28,7 @@
               <div>{{ requester.username }}</div>
               <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
               <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
-              <v-img :src="requester.avatar" ></v-img>
+              <v-img class="avatar" :src="requester.avatar" max-height="100" max-width="100" ></v-img>
               <br />
             </li>
             <p v-if="!requesters.length" class="text--primary">
@@ -45,13 +48,20 @@ import axios from 'axios';
 import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import AddFriend from '@/components/Profile/AddFriend.vue';
+import { fetchAvatar } from '@/utils/avatar';
+import { Socket } from 'socket.io-client';
+import { StatusUpdateDto } from '@dtos/users'
 
 interface MyFriendsData {
   loading: boolean;
-  friends: { username: string ; avatar: string }[];
+  friends: { id: number, username: string ; avatar: string ; status: number }[];
   requesters: { username: string ; avatar: string, frienshipId: number }[];
   tab: any,
+  statusColors : string[],
+  socket : Socket,
 }
+
+
 
 export default defineComponent({
   data(): MyFriendsData {
@@ -60,6 +70,12 @@ export default defineComponent({
       friends: [],
       requesters: [],
       tab: null,
+      statusColors : [
+      'red',
+      'green',
+      'light-blue accent-3'
+      ],
+      socket: this.$store.getters.socket,
     };
   },
   components: {
@@ -91,14 +107,25 @@ export default defineComponent({
           console.log(error.response.status);
         });
     },
+    handleStatusUpdate(statusUpdate: StatusUpdateDto) {
+      this.friends.forEach(friend => {
+        if (friend.id == statusUpdate.id) {
+          friend.status = statusUpdate.status;
+        }
+          
+      })
+      console.log(statusUpdate);
+    }, 
   },
   async created() {
     // get list of friends
     let response = await axios.get('/users/' + this.id() + '/friendships/');
     for (let i: number = 0; i < response.data.length; i++) {
       this.friends.push({
+        id: response.data[i].user.id,
         username: response.data[i].user.username,
-        avatar: response.data[i].avatar,
+        avatar: await fetchAvatar(response.data[i].user.id),
+        status: response.data[i].user.status,
       });
     };
 
@@ -107,11 +134,13 @@ export default defineComponent({
     for (let i: number = 0; i < response2.data.length; i++) {
       this.requesters.push({
         username: response2.data[i].user.username,
-        avatar: response2.data[i].avatar,
+        avatar: await fetchAvatar(response.data[i].user.id),
         frienshipId: response2.data[i].id,
       });
     };
     this.loading = false;
+
+    this.socket.on('status-update', this.handleStatusUpdate);
   },
 });
 </script>
@@ -119,6 +148,14 @@ export default defineComponent({
 <style scoped>
 li {
   list-style: none;
+}
+.listElement {
+  height: 50;
+  width: 100%;
+  background-color: beige;
+}
+.avatar {
+  border-radius: 50%;
 }
 p {
   color: #03dac6;

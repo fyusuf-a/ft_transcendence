@@ -65,4 +65,10 @@ export class MatchesController {
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.matchesService.remove(+id);
   }
+
+  @ApiBearerAuth()
+  @Get(':id/disconnect')
+  disco(@Param('id') id: string) {
+    return this.matchesService.disco(+id);
+  }
 }

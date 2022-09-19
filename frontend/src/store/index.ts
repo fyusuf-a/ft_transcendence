@@ -1,4 +1,4 @@
-import { createStore } from 'vuex';
+import { createStore, Plugin, Store } from 'vuex';
 import axios from 'axios';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
@@ -31,6 +31,28 @@ const state: State = {
   cache: undefined,
 };
 
+interface Mutation {
+  type: string;
+}
+
+const createWebSocketPlugin: Plugin<State> = (store: Store<State>) => {
+  store.subscribe((mutation: Mutation) => {
+    if (mutation.type === 'setSocket') {
+      store.state.socket = io(
+        `http://${import.meta.env.VITE_BACKEND_HOST}:${
+          import.meta.env.VITE_BACKEND_PORT
+        }/notifications`,
+        {
+          query: {
+            id: store.state.user.id,
+            token: store.state.token as string,
+          },
+        },
+      );
+    }
+  });
+};
+
 export default createStore({
   state: state,
   getters: {
@@ -49,8 +71,8 @@ export default createStore({
       state.user.id = id;
       state.token = token;
     },
-    setSocket(state, socket: Socket) {
-      state.socket = socket;
+    setSocket() {
+      console.log('Connecting to notifications socket.');
     },
     logout(state) {
       state.user = new UserDto();
@@ -104,5 +126,5 @@ export default createStore({
     },
   },
   modules: {},
-  plugins: [vuexPersister.persist],
+  plugins: [vuexPersister.persist, createWebSocketPlugin],
 });

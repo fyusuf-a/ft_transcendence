@@ -25,6 +25,8 @@ import { Match } from './matches/entities/match.entity';
 import configuration from './config/configuration';
 import { ChatGateway } from './chat.gateway';
 import { GameGateway } from '@/game/game.gateway';
+import { NotificationsGateway } from './notifications.gateway';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -65,12 +67,14 @@ import { GameGateway } from '@/game/game.gateway';
   ],
   controllers: [],
   providers: [
+    Repository,
     ChatGateway,
     {
       provide: APP_GUARD,
       useClass: JwtTwoAuthGuard,
     },
     GameGateway,
+    NotificationsGateway,
   ],
 })
 export class AppModule {}

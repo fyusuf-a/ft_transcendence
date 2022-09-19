@@ -11,7 +11,7 @@ import {
 export enum UserStatusEnum {
   offline = 0,
   online = 1,
-  ingame = 2
+  ingame = 2,
 }
 
 @Entity()
@@ -57,7 +57,7 @@ export class User {
   membershipIds: number[];
 
   @Column({
-    default: UserStatusEnum.offline
+    default: UserStatusEnum.offline,
   })
   status: UserStatusEnum;
   @Column({ default: false })
