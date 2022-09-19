@@ -30,12 +30,6 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  @ApiBearerAuth()
-  @Get('connected')
-  connected(): boolean {
-    return true;
-  }
-
   @Get('callback')
   @Public()
   @UseGuards(AuthGuard('marvin'))
