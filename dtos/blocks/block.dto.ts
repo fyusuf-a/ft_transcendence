@@ -26,7 +26,6 @@ export class BlockDto {
     description: 'The id of the second user',
   })
   @IsInt()
-  @IsPositive()
   targetId!: number;
 
   @ApiProperty({

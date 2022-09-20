@@ -16,8 +16,28 @@ import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 
 export default defineComponent({
+  data: () => ({
+    idOther: 0,
+  }),
   methods: {
-    ...mapGetters(['username', 'avatar', 'id']),
+    ...mapGetters(['id']),
+  },
+  props: ['user'],
+  async created() {
+    if (this.user) {
+      let response = await axios.get('/users/');
+      for (let i: number = 0; i < response.data.data.length; i++) {
+        if (this.user === response.data.data[i].username) {
+          this.idOther = response.data.data[i].id
+        }
+      };
+      if (this.idOther == this.id()) {
+      }
+      else {
+      }
+      }
+    else {
+    }
   },
 });
 </script>
