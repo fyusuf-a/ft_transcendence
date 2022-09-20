@@ -18,7 +18,7 @@
                 </v-row>
               </v-card-actions>
             </v-col>
-            <v-col :cols="8">
+            <v-col v-if="idOther || !user" :cols="8">
               <my-statistics :user="user" />
             </v-col>
           </v-row>
@@ -76,9 +76,7 @@ export default defineComponent({
   methods: {
     ...mapGetters(['id']),
     async fetchUserById(userId: number) {
-      console.log(`Vue: Grabbing user #${userId}`);
       const response = await axios.get(`/users/${userId}`);
-      console.log(response.data);
       if (response.data) {
         return response.data;
       } else {
@@ -97,7 +95,6 @@ export default defineComponent({
     },
   },
   async created() {
-    console.log(this.user);
     if (this.user) {
       let response = await axios.get('/users/');
       for (let i: number = 0; i < response.data.data.length; i++) {
@@ -105,7 +102,14 @@ export default defineComponent({
           this.idOther = response.data.data[i].id
         }
       };
-      if (this.idOther == this.id()) {
+      if (this.idOther == 0) {
+        this.$router.push({
+          name: '404',
+          params: { path: '/404' },
+        });
+        return;
+      }
+      else if (this.idOther == this.id()) {
         this.getUserInfo(this.id());
       }
       else {
