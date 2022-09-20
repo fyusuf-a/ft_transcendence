@@ -14,6 +14,7 @@ const routes = [
       {
         path: 'profile',
         component: () => import('../views/ProfileView.vue'),
+        props: true,
       },
       {
         path: 'game',
@@ -26,6 +27,15 @@ const routes = [
       {
         path: 'about',
         component: () => import('../views/AboutView.vue'),
+      },
+      {
+        path: 'leaderboard',
+        component: () => import('../views/Leaderboard.vue'),
+      },
+      {
+        path: 'profile/:user',
+        component: () => import('../views/ProfileView.vue'),
+        props: true,
       },
       {
         path: '/:pathMatch(.*)*',

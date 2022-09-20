@@ -63,6 +63,11 @@ export default defineComponent({
           route: '/chat',
         },
         {
+          title: 'Leaderboard',
+          icon: 'mdi-numeric-1-box',
+          route: '/leaderboard',
+        },
+        {
           title: 'About',
           icon: 'mdi-information-outline',
           route: '/about',

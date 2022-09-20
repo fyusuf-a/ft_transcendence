@@ -33,11 +33,11 @@ export class NotificationsGateway extends SecureGateway {
     this.logger.log(
       `User ${client.handshake.query.id} connected on socket ${client.id} `,
     );
-    const user: User = await this.usersService.findOne(
-      +client.handshake.query.id,
-    );
-    try {
-      this.matchRepository.findOneByOrFail([
+    const user: User = await this.usersRepository.findOneByOrFail({
+      id: +client.handshake.query.id,
+    });
+    if (
+      await this.matchRepository.findOneBy([
         {
           status: MatchStatusType.IN_PROGRESS,
           homeId: +client.handshake.query.id,
@@ -46,10 +46,11 @@ export class NotificationsGateway extends SecureGateway {
           status: MatchStatusType.IN_PROGRESS,
           awayId: +client.handshake.query.id,
         },
-      ]);
+      ])
+    ) {
       user.status = UserStatusEnum.ingame;
       this.usersRepository.save(user);
-    } catch {
+    } else {
       user.status = UserStatusEnum.online;
       this.usersRepository.save(user);
     }

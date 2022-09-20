@@ -5,7 +5,7 @@
       background-color="white"
     >
       <v-tab value="friends">Friends</v-tab>
-      <v-tab value="blocked">Blocked</v-tab>
+      <v-tab v-if="!user" value="blocked">Blocked</v-tab>
     </v-tabs>
 
     <v-card-text>
@@ -19,21 +19,23 @@
           </div>
           </li>
 
-          <add-friend class="mb-5 mt-5"/>
+          <add-friend v-if="!user" class="mb-5 mt-5"/>
 
-          <v-divider></v-divider>
+          <div v-if="!user">
+            <v-divider></v-divider>
 
-          <h3 class="mt-5">Pending friend requests</h3><br />
-            <li v-for="requester in requesters" :key="requester.username">
-              <div>{{ requester.username }}</div>
-              <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
-              <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
-              <v-img class="avatar" :src="requester.avatar" max-height="100" max-width="100" ></v-img>
-              <br />
-            </li>
-            <p v-if="!requesters.length" class="text--primary">
-              No request to accept.
-            </p>
+            <h3 class="mt-5">Pending friend requests</h3><br />
+              <li v-for="requester in requesters" :key="requester.username">
+                <div>{{ requester.username }}</div>
+                <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
+                <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
+                <v-img :src="requester.avatar" ></v-img>
+                <br />
+              </li>
+              <p v-if="!requesters.length" class="text--primary">
+                No request to accept.
+              </p>
+            </div>
         </v-window-item>
         <v-window-item value="blocked">
           <li v-for="blocke in blocked" :key="blocke.username">
@@ -68,6 +70,7 @@ interface MyFriendsData {
   socket : Socket,
 
   blocked: { username: string ; blockedId: number }[],
+  idOther: number,
 }
 export default defineComponent({
   data(): MyFriendsData {
@@ -83,8 +86,10 @@ export default defineComponent({
       ],
       socket: this.$store.getters.socket,
       blocked: [],
+      idOther: 0,
     };
   },
+  props: ['user'],
   components: {
     'add-friend': AddFriend,
     'block-user': BlockUser,
@@ -124,6 +129,17 @@ export default defineComponent({
       })
       console.log(statusUpdate);
     }, 
+    async listOfFriends(id: number) {
+      let response = await axios.get('/users/' + id + '/friendships/');
+      for (let i: number = 0; i < response.data.length; i++) {
+        this.friends.push({
+        id: response.data[i].user.id,
+        username: response.data[i].user.username,
+        avatar: await fetchAvatar(response.data[i].user.id),
+        status: response.data[i].user.status,
+        });
+      };
+    },
     async unblock (blockedId: number) {
       await axios.delete('/blocks/' + blockedId);
       window.alert('The user has been unblock.');
@@ -132,21 +148,30 @@ export default defineComponent({
   },
   async created() {
     // get list of friends
-    let response = await axios.get('/users/' + this.id() + '/friendships/');
-    for (let i: number = 0; i < response.data.length; i++) {
-      this.friends.push({
-        id: response.data[i].user.id,
-        username: response.data[i].user.username,
-        avatar: await fetchAvatar(response.data[i].user.id),
-        status: response.data[i].user.status,
-      });
-    };
+    if (this.user) {
+      let response = await axios.get('/users/');
+      for (let i: number = 0; i < response.data.data.length; i++) {
+        if (this.user === response.data.data[i].username) {
+          this.idOther = response.data.data[i].id
+        }
+      };
+      if (this.idOther == this.id()) {
+        this.listOfFriends(this.id());
+      }
+      else {
+        this.listOfFriends(this.idOther);
+      }
+      }
+    else {
+      this.listOfFriends(this.id());
+    }
+
     // get list of requesters
     let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
     for (let i: number = 0; i < response2.data.length; i++) {
       this.requesters.push({
         username: response2.data[i].user.username,
-        avatar: await fetchAvatar(response.data[i].user.id),
+        avatar: await fetchAvatar(response2.data[i].user.id),
         frienshipId: response2.data[i].id,
       });
     };

@@ -73,13 +73,12 @@ export default defineComponent({
       await axios.patch('/users/' + this.id(), data)
         .then(response => {
           console.log(response);
+          window.location.reload();
         })
         .catch( (error) => {
           console.log(error.response);
           this.nameAlreadyUsed = error.response.status;
         });
-        const response2 = await axios.get('/users/' + this.id());
-        this.$store.commit('setUsername', response2.data.username);
         if (this.nameAlreadyUsed === 0) { this.dialog = false; };
     },
   },
