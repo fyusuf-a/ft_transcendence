@@ -105,7 +105,6 @@ export default defineComponent({
       if (this.action == 'Join') {
         this.$emit('channel-join-event', this.selectedChannel);
       } else {
-        console.log('Created:');
         if (!this.createdChannel.name || !this.createdChannel.type) {
           console.log('Invalid channel dto');
         } else {
@@ -116,11 +115,7 @@ export default defineComponent({
           if (this.createdChannel.password) {
             dto.password = this.createdChannel.password;
           }
-          const createdChannelId: number = await this.createChannel(dto);
-          if (createdChannelId > 0) {
-            console.log('Joining new channel');
-            this.$emit('channel-join-event', createdChannelId.toString());
-          }
+          this.$emit('channel-create-event', dto);
         }
       }
       this.dialogOpen = false;

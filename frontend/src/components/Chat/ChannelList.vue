@@ -6,6 +6,7 @@
         <v-col cols="1">
           <channel-join-dialog
             @channel-join-event="handleChannelJoin"
+            @channel-create-event="handleChannelCreate"
             :joinableChannels="getJoinableChannels"
           >
           </channel-join-dialog>
@@ -47,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { ChannelDto } from '@/common/dto/channel.dto';
+import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { defineComponent, PropType } from 'vue';
 import ChannelJoinDialog from './ChannelJoinDialog.vue';
 
@@ -86,6 +87,9 @@ export default defineComponent({
     handleChannelJoin(channelId: number) {
       this.$emit('channel-join-event', channelId);
     },
+    handleChannelCreate(dto: CreateChannelDto) {
+      this.$emit('channel-create-event', dto);
+    }
   },
   computed: {
     getJoinableChannels(): ChannelDto[] {
