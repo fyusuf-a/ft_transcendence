@@ -9,6 +9,7 @@ import { Match } from '../matches/entities/match.entity';
 import { MatchesService } from '../matches/matches.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
+import { NotificationsGateway } from 'src/notifications.gateway';
 
 describe('GameGateway', () => {
   let gateway: GameGateway;
@@ -20,6 +21,7 @@ describe('GameGateway', () => {
         GameGateway,
         MatchesService,
         UsersService,
+        NotificationsGateway,
         {
           provide: getRepositoryToken(Match),
           useValue: jest.fn(),
