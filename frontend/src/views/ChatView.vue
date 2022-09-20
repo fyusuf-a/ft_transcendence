@@ -86,6 +86,8 @@ export default defineComponent({
         type: channelObject.type,
         password: channelObject.password,
         userId: this.$store.getters.id,
+        userOneId: channelObject.userOneId,
+        userTwoId: channelObject.userTwoId,
       });
       if (response.status === 201) {
         console.log(response.data);
@@ -94,7 +96,6 @@ export default defineComponent({
       return -1;
     },
     async handleChannelCreation(dto: CreateChannelDto) {
-      console.log('Created:');
       if (!dto.name || !dto.type) {
         console.log('Invalid channel dto');
       } else {
@@ -153,6 +154,14 @@ export default defineComponent({
         }
       } else if (event.option === 'chat-message-user') {
         console.log('messaging user ' + username);
+        let dto = new CreateChannelDto(
+          'direct' + event.target,
+          'direct',
+          undefined,
+          +this.$store.getters.id,
+          +event.target,
+        );
+        this.handleChannelCreation(dto);
       }
     },
     handleMessage(messageDto: MessageDto) {
