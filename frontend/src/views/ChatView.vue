@@ -120,6 +120,12 @@ export default defineComponent({
     },
     handleChatMessageMenuSelection(event: MenuSelectionEvent) {
       console.log(`Request to ${event.option} ${event.target}`);
+      if (event.option === 'chat-profile-user') {
+        let user = this.users.get(+event.target);
+        if (user && user.username) {
+          this.$router.push('/profile/' + user.username);
+        }
+      }
     },
     handleMessage(messageDto: MessageDto) {
       console.log('Vue: incoming...');
