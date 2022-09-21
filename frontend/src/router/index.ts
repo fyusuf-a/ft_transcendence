@@ -34,7 +34,7 @@ const routes = [
       },
       {
         path: 'profile/:user',
-        component: () => import('../views/ProfileView.vue'),
+        component: () => import('../components/Profile/OtherUsersProfile.vue'),
         props: true,
       },
       {
