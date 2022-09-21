@@ -11,28 +11,41 @@
     <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="friends">
-          <li v-for="friend in friends" :key="friend.username">
-            <div class="listElement">
-            {{ friend.username }}
-            <v-badge overlap :color="statusColors[friend.status]"></v-badge>
-            <v-img class="avatar" :src="friend.avatar" max-height="100" max-width="100" ></v-img>
-          </div>
+          <li class="listFriends" v-for="friend in friends" :key="friend.username">
+            <v-row>
+              <v-col>
+                <div class="listElement">
+                  <v-img class="avatar" :src="friend.avatar"></v-img>
+                  <v-badge overlap class="" :color="statusColors[friend.status]"></v-badge>
+                  <p class="userName">{{ friend.username }}</p>
+                  <br />
+                </div>
+              </v-col>
+            </v-row>
           </li>
 
           <add-friend v-if="!user" class="mb-5 mt-5"/>
 
           <div v-if="!user">
             <v-divider></v-divider>
-
             <h3 class="mt-5">Pending friend requests</h3><br />
               <li v-for="requester in requesters" :key="requester.username">
-                <div>{{ requester.username }}</div>
-                <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
-                <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
-                <v-img :src="requester.avatar" ></v-img>
-                <br />
+                <v-row>
+                  <v-col>
+                    <div class="listPending">
+                      <v-img class="avatar" :src="requester.avatar" ></v-img>
+                      <p class="userName">{{ requester.username }}</p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <div class="pb-3">
+                    <v-btn color="success" variant="outlined" class="text--primary ml-15" title="accept" @click="accept(requester.frienshipId)">✔</v-btn>
+                    <v-btn color="error" variant="outlined" class="text--primary ml-10" title="decline" @click="decline(requester.frienshipId)">✘</v-btn>
+                  </div>
+                </v-row>
               </li>
-              <p v-if="!requesters.length" class="text--primary">
+              <p v-if="!requesters.length" class="text--primary noRequest">
                 No request to accept.
               </p>
             </div>
@@ -63,12 +76,11 @@ import { StatusUpdateDto } from '@dtos/users'
 import BlockUser from '@/components/Profile/BlockUser.vue'
 interface MyFriendsData {
   loading: boolean;
-  friends: { id: number, username: string ; avatar: string ; status: number }[];
+  friends: { id: number, username: string ; avatar: string ; status: number, friendLink: string }[];
   requesters: { username: string ; avatar: string, frienshipId: number }[];
   tab: any,
   statusColors : string[],
   socket : Socket,
-
   blocked: { username: string ; blockedId: number }[],
   idOther: number,
 }
@@ -133,10 +145,11 @@ export default defineComponent({
       let response = await axios.get('/users/' + id + '/friendships/');
       for (let i: number = 0; i < response.data.length; i++) {
         this.friends.push({
-        id: response.data[i].user.id,
-        username: response.data[i].user.username,
-        avatar: await fetchAvatar(response.data[i].user.id),
-        status: response.data[i].user.status,
+          id: response.data[i].user.id,
+          username: response.data[i].user.username,
+          avatar: await fetchAvatar(response.data[i].user.id),
+          status: response.data[i].user.status,
+          friendLink: '/profile/' + response.data[i].user.username,
         });
       };
     },
@@ -161,7 +174,7 @@ export default defineComponent({
       else {
         this.listOfFriends(this.idOther);
       }
-      }
+    }
     else {
       this.listOfFriends(this.id());
     }
@@ -194,15 +207,36 @@ export default defineComponent({
 li {
   list-style: none;
 }
+.listFriends {
+  background-color: beige;
+}
 .listElement {
   height: 50;
   width: 100%;
   background-color: beige;
+  display: flex;
+  padding: 15px 0 5px 5px;
+}
+.listPending {
+  height: 50;
+  width: 100%;
+  display: flex;
+  padding: 15px 0 5px 5px;
 }
 .avatar {
+  display: flex;
   border-radius: 50%;
+  max-height: 50px;
+  max-width: 50px;
 }
-p {
+.userName {
+  display: flex;
+  float: left;
+  padding-top: 10px;
+  padding-left: 2em;
+  font-weight: bold;
+}
+.noRequest {
   color: #03dac6;
 }
 </style>
