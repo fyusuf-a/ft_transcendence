@@ -26,7 +26,7 @@ import imageAch3 from '@/assets/achievements/addict.png';
 import imageAch4 from '@/assets/achievements/beginnersLuck.png';
 import imageAch5 from '@/assets/achievements/playerDiff.png';
 import imageAch6 from '@/assets/achievements/mastery.png';
-import imageAch7 from '@/assets/images/king-pong.png';
+import imageAch7 from '@/assets/achievements/king-pong.png';
 
 interface Achievements {
   idOther: number,
