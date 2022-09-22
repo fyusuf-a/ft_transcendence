@@ -1,7 +1,7 @@
 <template>
   <v-card class="pa-2 ml-15 mt-5" width="40%">
     <v-card-title class="white--text orange darken-4" align="center">
-       My matches
+       Last matches played
     </v-card-title>
     <v-card-text>
       last 10 matches history
