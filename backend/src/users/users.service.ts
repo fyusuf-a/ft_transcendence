@@ -24,6 +24,8 @@ import {
 } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { plainToInstance } from 'class-transformer';
+import { Match } from 'src/matches/entities/match.entity';
+import { MatchStatusType, ResponseMatchDto } from 'src/dtos/matches';
 
 enum hexSignature {
   GIF = '47494638',
@@ -43,6 +45,8 @@ export class UsersService {
     private blockRepository: Repository<Block>,
     @InjectRepository(AchievementsLog)
     private achievementsLogRepository: Repository<AchievementsLog>,
+    @InjectRepository(Match)
+    private matchRepository: Repository<Match>,
   ) {
     this.logger = new Logger('remove_avatar');
   }
@@ -239,5 +243,16 @@ export class UsersService {
       isTwoFAEnabled: bool,
     });
     return this.update(userId, updateDto);
+  }
+
+  async findMatches(id: number): Promise<ResponseMatchDto[]> {
+    return this.matchRepository.findBy([
+      { status: MatchStatusType.HOME, awayId: id },
+      { status: MatchStatusType.AWAY, awayId: id },
+      { status: MatchStatusType.DRAW, awayId: id },
+      { status: MatchStatusType.HOME, homeId: id },
+      { status: MatchStatusType.AWAY, homeId: id },
+      { status: MatchStatusType.DRAW, homeId: id },
+    ]);
   }
 }

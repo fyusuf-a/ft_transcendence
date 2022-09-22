@@ -44,6 +44,7 @@ import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
 import { RequestWithUser } from 'src/auth/types';
 import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
+import { ResponseMatchDto } from 'src/dtos/matches';
 
 @ApiTags('users')
 @Controller('users')
@@ -189,5 +190,11 @@ export class UsersController {
     @Param('id') id: string,
   ): Promise<ResponseAchievementsLogDto[]> {
     return this.usersService.findUnlockedAchievements(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/matches')
+  findPlayedMatches(@Param('id') id: string): Promise<ResponseMatchDto[]> {
+    return this.usersService.findMatches(+id);
   }
 }

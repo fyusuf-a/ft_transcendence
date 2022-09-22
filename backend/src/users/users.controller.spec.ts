@@ -10,6 +10,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Match } from 'src/matches/entities/match.entity';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -35,6 +36,10 @@ describe('UsersController', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Match),
           useValue: jest.fn(),
         },
       ],
