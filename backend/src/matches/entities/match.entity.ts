@@ -25,12 +25,14 @@ export class Match {
   @Exclude()
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   home: User;
+  @Column()
   @RelationId((match: Match) => match.home)
   homeId: number;
 
   @Exclude()
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   away: User;
+  @Column()
   @RelationId((match: Match) => match.away)
   awayId: number;
 

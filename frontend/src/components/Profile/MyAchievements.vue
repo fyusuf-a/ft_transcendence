@@ -6,8 +6,11 @@
     <v-divider></v-divider>
     <v-row>
       <div v-for="tabAch in tabAchs" :key="tabAch.id">
-        <v-col><img v-if="tabAch.img" :src="tabAch.img" :title="tabAch.description" /></v-col>
-        <v-col><p class="achievementsName">{{ tabAch.name }}</p></v-col>
+        <v-col align="center">
+        <img v-if="tabAch.img" :src="tabAch.img" :title="tabAch.description" /></v-col>
+        <v-col align="center">
+        <p class="achievementsName">{{ tabAch.name }}</p>
+      </v-col>
       </div>
       <p class="pt-10 achievementsName" v-if="!tabAchs.length" >
         No achievement obtained yet.
@@ -84,6 +87,9 @@ export default defineComponent({
   },
   props: ['user'],
   async created() {
+
+
+    // change the roooooute
     if (this.user) {
       let response = await axios.get('/users/');
       for (let i: number = 0; i < response.data.data.length; i++) {
@@ -98,6 +104,9 @@ export default defineComponent({
         this.getAchievements(this.idOther);
       }
     }
+    // change the roooooute
+
+
     else {
       this.getAchievements(this.id());
     }
@@ -109,8 +118,6 @@ export default defineComponent({
 img {
   max-width: 70px;
   margin-left: 20px;
-  margin-right: 20px;
-  margin-top: 0px;
   margin-top: 40px;
 }
 .achievementsName {
