@@ -20,8 +20,13 @@
 import axios from 'axios';
 import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
-import imageAch1 from '@/assets/achievements/default.png'
-import imageAch2 from '@/assets/achievements/car.png'
+import imageAch1 from '@/assets/achievements/ping.png';
+import imageAch2 from '@/assets/achievements/pong.png';
+import imageAch3 from '@/assets/achievements/addict.png';
+import imageAch4 from '@/assets/achievements/beginnersLuck.png';
+import imageAch5 from '@/assets/achievements/playerDiff.png';
+import imageAch6 from '@/assets/achievements/mastery.png';
+import imageAch7 from '@/assets/images/king-pong.png';
 
 interface Achievements {
   idOther: number,
@@ -46,19 +51,19 @@ export default defineComponent({
           this.tabAchs[i].img = imageAch2;
         }
         if (this.tabAchs[i].id == 3) {
-          this.tabAchs[i].img = imageAch1;
+          this.tabAchs[i].img = imageAch3;
         }
         if (this.tabAchs[i].id == 4) {
-          this.tabAchs[i].img = imageAch2;
+          this.tabAchs[i].img = imageAch4;
         }
         if (this.tabAchs[i].id == 5) {
-          this.tabAchs[i].img = imageAch1;
+          this.tabAchs[i].img = imageAch5;
         }
         if (this.tabAchs[i].id == 6) {
-          this.tabAchs[i].img = imageAch2;
+          this.tabAchs[i].img = imageAch6;
         }
         if (this.tabAchs[i].id == 7) {
-          this.tabAchs[i].img = imageAch1;
+          this.tabAchs[i].img = imageAch7;
         }
       }
     },
