@@ -60,38 +60,26 @@
     },
     methods: {
       ...mapGetters(['id']),
-      async fetchUserById(userId: number) {
-        const response = await axios.get(`/users/${userId}`);
-        if (response.data) {
-          return response.data;
-        } else {
-          return { id: -1, username: 'Unknown User' };
-        }
-      },
     },
     async created() {
-        let response = await axios.get('/users/');
-        for (let i: number = 0; i < response.data.data.length; i++) {
-          if (this.user === response.data.data[i].username) {
-            this.idOther = response.data.data[i].id
-          }
-        };
-        if (this.idOther == 0) {
+      let response;
+        try { 
+          response = await axios.get(`/users/name/${this.user}`);
+        } catch {
           this.$router.push({
             name: '404',
             params: { path: '/404' },
           });
           return;
-        }
-        else {
-          const newUser: UserDto = await this.fetchUserById(this.idOther);
-          this.users.set(this.idOther, newUser);
-          this.username = newUser.username;
-          this.avatar = await this.$store.dispatch(
-            'getAvatarById',
-            this.idOther.toString(),
-          );
-        }
+      }
+        this.idOther = response.data.id;
+        const newUser: UserDto = response.data;
+        this.users.set(this.idOther, newUser);
+        this.username = newUser.username;
+        this.avatar = await this.$store.dispatch(
+          'getAvatarById',
+          this.idOther.toString(),
+        );
     }
   });
   </script>
