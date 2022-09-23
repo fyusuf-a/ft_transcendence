@@ -25,9 +25,9 @@
         </v-container>
       </v-card>
       <my-friends :user="user" />
-      <my-matches/>
-      <my-achievements />
-      <activate-two-fa />
+      <my-matches :user="user"/>
+      <my-achievements :user="user" />
+      <activate-two-fa v-if="!user" />
     </v-row>
   </div>
 </template>
