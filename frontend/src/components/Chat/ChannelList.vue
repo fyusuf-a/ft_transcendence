@@ -115,7 +115,7 @@ export default defineComponent({
   },
   computed: {
     getJoinableChannels(): ChannelDto[] {
-      return Array.from(this.allChannels.values()).filter(
+      return Array.from(this.allChannels.values()).filter((chan) => chan.type === 'public' || chan.type === 'protected').filter(
         (chan) => !this.channels.includes(chan),
       ) as ChannelDto[];
     },
