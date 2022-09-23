@@ -122,19 +122,9 @@ export default defineComponent({
   async created() {
     // get list of friends
     if (this.user) {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        if (this.user === response.data.data[i].username) {
-          this.idOther = response.data.data[i].id
-        }
-      };
-      if (this.idOther == this.id()) {
-        this.listOfFriends(this.id());
-      }
-      else {
-        this.listOfFriends(this.idOther);
-      }
-      }
+      let response = await axios.get(`/users/name/${this.user}`);
+      this.listOfFriends(response.data.id);
+    }
     else {
       this.listOfFriends(this.id());
     }

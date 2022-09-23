@@ -34,12 +34,13 @@ const routes = [
       },
       {
         path: 'profile/:user',
-        component: () => import('../views/ProfileView.vue'),
+        component: () => import('../components/Profile/OtherUsersProfile.vue'),
         props: true,
       },
       {
         path: '/:pathMatch(.*)*',
         component: () => import('../views/NotFound.vue'),
+        name: '404',
       },
     ],
   },

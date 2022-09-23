@@ -109,6 +109,21 @@ export class UsersController {
   }
 
   @ApiBearerAuth()
+  @Get('/name/:username')
+  @ApiResponse({ status: 404, description: 'Record not found' })
+  async findOneByUsername(
+    @Param('username') username: string,
+  ): Promise<ResponseUserDto> {
+    try {
+      return await this.usersService.findByName(username);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException('Not Found');
+      }
+    }
+  }
+
+  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.usersService.remove(+id);
