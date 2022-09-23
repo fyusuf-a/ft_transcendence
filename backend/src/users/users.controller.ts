@@ -35,6 +35,7 @@ import {
 } from '@dtos/users';
 import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { Public } from 'src/auth/auth.public.decorator';
+import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
@@ -43,7 +44,6 @@ import { ListFriendshipDto } from '@dtos/friendships';
 import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
 import { RequestWithUser } from 'src/auth/types';
-import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -55,7 +55,7 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
     if (!req.user) {
