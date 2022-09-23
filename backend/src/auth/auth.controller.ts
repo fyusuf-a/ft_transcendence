@@ -49,8 +49,6 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @Public()
-  @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
   async generate(@Req() req: RequestWithUser) {
     const user: ResponseUserDto = await this.usersService.findOne(req.user.id);
