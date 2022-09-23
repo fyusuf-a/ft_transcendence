@@ -1,9 +1,13 @@
 export class ChannelDto {
   id: number;
   name: string;
+  type?: string;
+  userOneId?: number;
+  userTwoId?: number;
 
-  constructor(id: number, name: string) {
+  constructor(id: number, name: string, type?: string) {
     this.id = id;
+    this.type = type;
     this.name = name;
   }
 }
