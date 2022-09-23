@@ -48,18 +48,8 @@ export default defineComponent({
   props: ['user'],
   async created() {
     if (this.user) {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        if (this.user === response.data.data[i].username) {
-          this.idOther = response.data.data[i].id
-        }
-      };
-      if (this.idOther == this.id()) {
-        this.assingStats(this.id());
-      }
-      else {
-        this.assingStats(this.idOther);
-      }
+      let response = await axios.get(`/users/name/${this.user}`);
+      this.assingStats(response.data.id);
     }
     else {
       this.assingStats(this.id());
