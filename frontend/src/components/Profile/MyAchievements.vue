@@ -87,26 +87,10 @@ export default defineComponent({
   },
   props: ['user'],
   async created() {
-
-
-    // change the roooooute
     if (this.user) {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        if (this.user === response.data.data[i].username) {
-          this.idOther = response.data.data[i].id
-        }
-      };
-      if (this.idOther == this.id()) {
-        this.getAchievements(this.id());
-      }
-      else {
-        this.getAchievements(this.idOther);
-      }
+      let response = await axios.get(`/users/name/${this.user}`);
+      this.getAchievements(response.data.id);
     }
-    // change the roooooute
-
-
     else {
       this.getAchievements(this.id());
     }

@@ -1,14 +1,32 @@
 <template>
   <v-card class="pa-2 ml-15 mt-5" width="40%">
     <v-card-title class="white--text orange darken-4" align="center">
-       Last 10 matches played
+      The last 10 games {{ username }} played
     </v-card-title>
     <v-divider></v-divider>
     <v-card-text>
-      <v-row v-for="tabMatch in sortedArray().slice(0, 10) " :key="tabMatch.matchId" >
-        <p class="versus">Match #{{ tabMatch.matchId }} - {{ tabMatch.usernameOne }} versus {{ tabMatch.usernameTwo}} winner: </p><p class="winner">{{ tabMatch.usernameOne }} 🌟</p>   
+      <v-row v-for="tabMatch in tabMatchs.slice(-10) " :key="tabMatch.matchId" >
+        <p class="versus">Match #{{ tabMatch.matchNum }} - {{ tabMatch.usernameOne }} versus {{ tabMatch.usernameTwo}} winner: </p><p class="winner">{{ tabMatch.usernameOne }} 🌟</p>   
       </v-row>
     </v-card-text>
+    <br />
+    <div align="center">
+      <v-btn>
+        See all games played by {{ username }}
+        <v-dialog
+          model="dialog"
+          activator="parent"
+        >
+          <v-card>
+            <v-card-text>
+              <v-row v-for="tabMatch in tabMatchs" :key="tabMatch.matchId" >
+                <p class="versus">Match #{{ tabMatch.matchNum }} - {{ tabMatch.usernameOne }} versus {{ tabMatch.usernameTwo}} winner: </p><p class="winner">{{ tabMatch.usernameOne }} 🌟</p>   
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+      </v-btn>
+    </div>
   </v-card>
 </template>
 
@@ -19,8 +37,10 @@ import { mapGetters } from 'vuex';
 
 interface Match {
   idOther: number,
-  tabMatchs: { status: string, homeId: number, awayId: number, matchId: number, isAWin: boolean, usernameOne: string, usernameTwo: string} [],
+  tabMatchs: { status: string, homeId: number, awayId: number, matchId: number, usernameOne: string, usernameTwo: string, matchNum: number, } [],
   idMatch: number,
+  dialog: boolean,
+  username: string,
 }
 
 export default defineComponent({
@@ -29,13 +49,12 @@ export default defineComponent({
       idOther: 0,
       tabMatchs: [],
       idMatch: 0,
+      dialog: false,
+      username: '',
     };
   },
   methods: {
     ...mapGetters(['id']),
-    sortedArray() {
-      return this.tabMatchs.sort((a: { matchId: number; }, b: { matchId: number; }) => b.matchId - a.matchId);
-    },
     async setWinner(id: number) {
       let response = await axios.get('/users/' + id + '/matches');
       for (let i: number = 0 ; i < response.data.length ; i++) {
@@ -46,76 +65,60 @@ export default defineComponent({
           homeId: response2.data.homeId,
           awayId: response2.data.awayId,
           matchId: response2.data.id,
-          isAWin: false,
           usernameOne: '',
           usernameTwo: '',
+          matchNum: 0,
         });
-        console.log(this.tabMatchs[i].matchId)
       }
-
-      console.log()
-
       for (let i: number = 0 ; i < this.tabMatchs.length ; i++) {
-        console.log(this.tabMatchs[i].matchId)
-        console.log(i)
+        this.tabMatchs[i].matchNum = i + 1;
 
         if (this.tabMatchs[i].status === "HOME") {
           if (id == this.tabMatchs[i].homeId) {
             // win
             let response = await axios.get('/users/' + id)
             this.tabMatchs[i].usernameOne = response.data.username
-            console.log("userone: " + this.tabMatchs[i].usernameOne)
             let response2 = await axios.get('/users/' + this.tabMatchs[i].awayId)
             this.tabMatchs[i].usernameTwo = response2.data.username
-            console.log("usertwo: " + this.tabMatchs[i].usernameTwo)
           }
           else {
             //lose
             let response = await axios.get('/users/' + this.tabMatchs[i].homeId)
             this.tabMatchs[i].usernameOne = response.data.username
-            console.log("userone: " + this.tabMatchs[i].usernameOne)
             let response2 = await axios.get('/users/' + id)
             this.tabMatchs[i].usernameTwo = response2.data.username
-            console.log("usertwo: " + this.tabMatchs[i].usernameTwo)
-
           }
         }
-        if (this.tabMatchs[i].status === "AWAY") {
+        else if (this.tabMatchs[i].status === "AWAY") {
           if (id == this.tabMatchs[i].homeId) {
             //lose
             let response = await axios.get('/users/' + this.tabMatchs[i].awayId)
             this.tabMatchs[i].usernameOne = response.data.username
-            console.log("userone: " + this.tabMatchs[i].usernameOne)
             let response2 = await axios.get('/users/' + id)
             this.tabMatchs[i].usernameTwo = response2.data.username
-            console.log("usertwo: " + this.tabMatchs[i].usernameTwo)
           }
           else {
             //win
             let response = await axios.get('/users/' + id)
             this.tabMatchs[i].usernameOne = response.data.username
-            console.log("userone: " + this.tabMatchs[i].usernameOne)
             let response2 = await axios.get('/users/' + this.tabMatchs[i].homeId)
             this.tabMatchs[i].usernameTwo = response2.data.username
-            console.log("usertwo: " + this.tabMatchs[i].usernameTwo)
-            console.log()
           }
         }
-        console.log()
       }
-      
     }
   },
   props: ['user'],
   async created() {
-
-    // change the roooooute
     if (this.user) {
-      console.log("change de route");
+      let response = await axios.get(`/users/name/${this.user}`);
+      this.setWinner(response.data.id);
+      this.username = this.user;
     }
-    // change the roooooute
     else {
       this.setWinner(this.id());
+      let response = await axios.get('/users/me');
+      this.username = response.data.username;
     }
   },
 });
