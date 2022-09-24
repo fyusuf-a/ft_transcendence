@@ -12,6 +12,12 @@ import {
   Repository,
   UpdateResult,
 } from 'typeorm';
+import { UsersService } from 'src/users/users.service';
+import { NotificationsGateway } from 'src/notifications.gateway';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { ConfigService } from '@nestjs/config';
 
 const userNumber = 2;
 const matchNumber = 2;
@@ -24,7 +30,10 @@ describe('MatchesService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        ConfigService,
         MatchesService,
+        UsersService,
+        NotificationsGateway,
         {
           provide: getRepositoryToken(User),
           useValue: new MockRepository<MockUserEntity>(
@@ -33,8 +42,20 @@ describe('MatchesService', () => {
           ),
         },
         {
+          provide: getRepositoryToken(Friendship),
+          useValue: new MockRepository(() => new Match(), 1),
+        },
+        {
+          provide: getRepositoryToken(Block),
+          useValue: jest.fn(),
+        },
+        {
           provide: getRepositoryToken(Match),
           useValue: new MockRepository(() => new Match(), matchNumber),
+        },
+        {
+          provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
         },
       ],
     }).compile();
