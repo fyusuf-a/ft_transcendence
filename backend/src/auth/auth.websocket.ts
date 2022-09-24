@@ -27,7 +27,7 @@ export function CheckAuth(target, key, descriptor) {
 export class SecureGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-  private authenticatedSockets: Map<string, User> = new Map();
+  protected authenticatedSockets: Map<string, User> = new Map();
   protected readonly logger: Logger;
 
   constructor(

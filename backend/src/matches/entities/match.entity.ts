@@ -27,6 +27,7 @@ export class Match {
   home: User;
   @Column()
   @RelationId((match: Match) => match.home)
+  @Column()
   homeId: number;
 
   @Exclude()
@@ -34,6 +35,7 @@ export class Match {
   away: User;
   @Column()
   @RelationId((match: Match) => match.away)
+  @Column()
   awayId: number;
 
   @Column({

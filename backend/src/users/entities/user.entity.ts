@@ -8,6 +8,12 @@ import {
   RelationId,
 } from 'typeorm';
 
+export enum UserStatusEnum {
+  offline = 0,
+  online = 1,
+  ingame = 2,
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -50,6 +56,10 @@ export class User {
   @RelationId((user: User) => user.memberships)
   membershipIds: number[];
 
+  @Column({
+    default: UserStatusEnum.offline,
+  })
+  status: UserStatusEnum;
   @Column({ default: false })
   isTwoFAEnabled: boolean;
 

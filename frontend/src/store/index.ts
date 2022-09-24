@@ -1,7 +1,8 @@
-import { createStore } from 'vuex';
+import { createStore, Plugin, Store } from 'vuex';
 import axios from 'axios';
 import VuexPersister from 'vuex-persister';
 import { ResponseUserDto, UserDto } from '@dtos/users';
+import { io, Socket } from 'socket.io-client';
 import { fetchAvatar } from '@/utils/avatar';
 import { LoginUserDto } from '@dtos/auth';
 
@@ -18,6 +19,8 @@ interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
+  //socket: string,
+  socket: Socket | undefined;
   cache: Cache | undefined;
 }
 
@@ -25,7 +28,31 @@ const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
+  //socket: 'i am okay',
+  socket: undefined, //new Socket(),//io(),
   cache: undefined,
+};
+
+interface Mutation {
+  type: string;
+}
+
+const createWebSocketPlugin: Plugin<State> = (store: Store<State>) => {
+  store.subscribe((mutation: Mutation) => {
+    if (mutation.type === 'setSocket') {
+      store.state.socket = io(
+        `http://${import.meta.env.VITE_BACKEND_HOST}:${
+          import.meta.env.VITE_BACKEND_PORT
+        }/notifications`,
+        {
+          query: {
+            id: store.state.user.id,
+            token: store.state.token as string,
+          },
+        },
+      );
+    }
+  });
 };
 
 export default createStore({
@@ -39,11 +66,17 @@ export default createStore({
     avatar: (state) => state.avatar,
     id: (state) => state.user.id,
     token: (state) => state.token,
+    socket: (state) => state.socket,
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
+      console.log('how are you');
       state.user.id = id;
       state.token = token;
+      console.log('very well!');
+    },
+    setSocket() {
+      console.log('Connecting to notifications socket.');
     },
     logout(state) {
       state.user = new UserDto();
@@ -64,7 +97,9 @@ export default createStore({
             : '/users/me',
         );
         user = response.data;
+        console.log('yo');
         context.commit('login', { id, token });
+        console.log('bye');
         context.state.user = {
           ...response.data,
         };
@@ -101,5 +136,5 @@ export default createStore({
     },
   },
   modules: {},
-  plugins: [vuexPersister.persist],
+  plugins: [vuexPersister.persist, createWebSocketPlugin],
 });
