@@ -106,7 +106,4 @@ export class MatchesService {
   remove(id: number): Promise<DeleteResult> {
     return this.matchRepository.delete(id);
   }
-  disco(id: number) {
-    return this.notificationGateway.handleDisconnectPhony(id);
-  }
 }

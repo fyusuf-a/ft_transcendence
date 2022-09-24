@@ -19,7 +19,8 @@ interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
-  socket: Socket;
+  //socket: string,
+  socket: Socket | undefined;
   cache: Cache | undefined;
 }
 
@@ -27,7 +28,8 @@ const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
-  socket: io(),
+  //socket: 'i am okay',
+  socket: undefined, //new Socket(),//io(),
   cache: undefined,
 };
 
@@ -68,8 +70,10 @@ export default createStore({
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
+      console.log('how are you');
       state.user.id = id;
       state.token = token;
+      console.log('very well!');
     },
     setSocket() {
       console.log('Connecting to notifications socket.');
@@ -93,7 +97,9 @@ export default createStore({
             : '/users/me',
         );
         user = response.data;
+        console.log('yo');
         context.commit('login', { id, token });
+        console.log('bye');
         context.state.user = {
           ...response.data,
         };

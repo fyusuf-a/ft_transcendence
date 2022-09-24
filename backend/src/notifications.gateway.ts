@@ -49,11 +49,23 @@ export class NotificationsGateway extends SecureGateway {
       ])
     ) {
       user.status = UserStatusEnum.ingame;
-      this.usersRepository.save(user);
+      await this.usersRepository.save(user);
     } else {
       user.status = UserStatusEnum.online;
-      this.usersRepository.save(user);
+      await this.usersRepository.save(user);
     }
+    const friendsList: ListFriendshipDto[] =
+      await this.usersService.findFriendships(user.id, 1);
+    const friendsIds: number[] = friendsList.map((a) =>
+      a.targetId == user.id ? a.sourceId : a.targetId,
+    );
+    this.authenticatedSockets.forEach((value: User, key: string) => {
+      if (friendsIds.includes(value.id))
+        this.server.to(key).emit('status-update', {
+          id: user.id,
+          status: user.status,
+        });
+    });
   }
   async handleDisconnect(client: Socket) {
     this.authenticatedSockets.delete(client.id);
@@ -66,11 +78,12 @@ export class NotificationsGateway extends SecureGateway {
       );
       return;
     }
-    this.logger.log(
-      `User ${client.handshake.query.id} disconnected from socket ${client.id} `,
-    );
+    this.logger.log(`User ${user.id} disconnected from socket ${client.id} `);
     const values: User[] = [...this.authenticatedSockets.values()];
     if (values.some((u) => u.id == user.id)) return;
+
+    user.status = UserStatusEnum.offline;
+    await this.usersRepository.save(user);
 
     const friendsList: ListFriendshipDto[] =
       await this.usersService.findFriendships(user.id, 1);
@@ -79,29 +92,13 @@ export class NotificationsGateway extends SecureGateway {
     );
     this.authenticatedSockets.forEach((value: User, key: string) => {
       if (friendsIds.includes(value.id))
-        this.server.sockets[key].emit('status-update', {
-          id: value.id,
+        this.server.to(key).emit('status-update', {
+          id: user.id,
           status: user.status,
         });
-      user.status = UserStatusEnum.offline;
-      this.usersRepository.save(user);
     });
   }
 
-  async handleDisconnectPhony(id: number) {
-    const friendsList: ListFriendshipDto[] =
-      await this.usersService.findFriendships(id, 1);
-    const friendsIds: number[] = friendsList.map((a) =>
-      a.targetId == id ? a.sourceId : a.targetId,
-    );
-    this.authenticatedSockets.forEach((value: User, key: string) => {
-      if (friendsIds.includes(value.id))
-        this.server.to(key).emit('status-update', {
-          id: id,
-          status: 0,
-        });
-    });
-  }
   async handleMatchStatusUpdate(
     home: User,
     homeFriendList: ListFriendshipDto[],
@@ -116,16 +113,19 @@ export class NotificationsGateway extends SecureGateway {
     );
 
     this.authenticatedSockets.forEach((value: User, key: string) => {
-      if (homeFriendsIds.includes(value.id))
-        this.server.sockets[key].emit('status-update', {
-          id: value.id,
-          status: home.status,
+      console.log(value.id);
+      if (homeFriendsIds.includes(value.id)) {
+        this.server.to(key).emit('status-update', {
+          id: home.id,
+          status: 2,
         });
-      if (awayFriendsIds.includes(value.id))
-        this.server.sockets[key].emit('status-update', {
-          id: value.id,
-          status: away.status,
+      }
+      if (awayFriendsIds.includes(value.id)) {
+        this.server.to(key).emit('status-update', {
+          id: away.id,
+          status: 2,
         });
+      }
     });
   }
 }
