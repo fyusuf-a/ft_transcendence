@@ -101,7 +101,6 @@ export default defineComponent({
 <style scoped>
 img {
   max-width: 70px;
-  margin-left: 20px;
   margin-top: 40px;
 }
 .achievementsName {
