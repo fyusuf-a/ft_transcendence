@@ -15,7 +15,8 @@ import { Friendship } from './relationships/entities/friendship.entity';
 import { Block } from './relationships/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
 import { GlobalAuthGuard } from './auth/auth.global.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './all-exceptions.filter';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
 import { AchievementsLogModule } from './achievements-log/achievements-log.module';
@@ -80,6 +81,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     },
     GameGateway,
     NotificationsGateway,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
   ],
 })
 export class AppModule {}
