@@ -25,8 +25,6 @@
 import { defineComponent } from 'vue';
 import config from '@/config';
 import axios from 'axios';
-import { UpdateUserDto, UserDto } from '@dtos/users';
-import { PageDto } from '@dtos/pages';
 
 export default defineComponent({
   data() {
@@ -36,7 +34,26 @@ export default defineComponent({
       errors: [] as string[],
     };
   },
+  async created() {
+    if (this.$route.query.id && this.$route.query.token) {
+      try {
+        await this.$store.dispatch('verifyLoginInfo', {
+          id: this.$route.query.id,
+          token: this.$route.query.token,
+        });
+        this.goToProfile();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  },
   methods: {
+    async authenticate({ username }: { username: string }) {
+      window.location.href = `${config.backendURL}/auth/fake-callback?username=${username}`;
+    },
+    goToProfile() {
+      this.$router.push('/profile');
+    },
     async verifyLogin() {
       this.errors.pop();
       if (this.login.length === 0) return;
@@ -49,15 +66,11 @@ export default defineComponent({
         if (response.data?.data.length === 0) {
           throw new Error('Login not found');
         }
-        this.$store.dispatch('verifyLoginInfo', {
-          id: response.data.data[0].id,
-          token: 'dummy_token',
-        });
         this.alertShown = true;
         setTimeout(() => {
-          this.$router.push('/profile');
+          this.authenticate({ username: response.data.data[0].username });
+          this.alertShown = false;
         }, 1500);
-        return;
       } catch (e) {
         this.errors.push('Invalid login');
       }
