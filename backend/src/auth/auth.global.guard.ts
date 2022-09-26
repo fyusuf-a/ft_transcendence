@@ -29,9 +29,6 @@ export class GlobalAuthGuard extends AuthGuard('two-auth') {
     if (isPublic) {
       return true;
     }
-    if (this.configService.get<string>('DISABLE_AUTHENTICATION') === 'true') {
-      return true;
-    }
     return super.canActivate(context);
   }
 }
