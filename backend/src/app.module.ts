@@ -14,7 +14,7 @@ import { BlocksModule } from './relationships/blocks/blocks.module';
 import { Friendship } from './relationships/entities/friendship.entity';
 import { Block } from './relationships/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
-import { JwtTwoAuthGuard } from './auth/auth.jwt-twoauth.guard';
+import { GlobalAuthGuard } from './auth/auth.global.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
@@ -25,6 +25,8 @@ import { Match } from './matches/entities/match.entity';
 import configuration from './config/configuration';
 import { ChatGateway } from './chat.gateway';
 import { GameGateway } from '@/game/game.gateway';
+import { NotificationsGateway } from './notifications.gateway';
+import { Repository } from 'typeorm';
 
 @Module({
   imports: [
@@ -65,12 +67,14 @@ import { GameGateway } from '@/game/game.gateway';
   ],
   controllers: [],
   providers: [
+    Repository,
     ChatGateway,
     {
       provide: APP_GUARD,
-      useClass: JwtTwoAuthGuard,
+      useClass: GlobalAuthGuard,
     },
     GameGateway,
+    NotificationsGateway,
   ],
 })
 export class AppModule {}

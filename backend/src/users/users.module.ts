@@ -9,10 +9,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { User } from './entities/user.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Match } from 'src/matches/entities/match.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog]),
+    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog, Match]),
     ConfigModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
@@ -50,7 +51,7 @@ import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.
   controllers: [UsersController],
   exports: [
     UsersService,
-    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog]),
+    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog, Match]),
   ],
 })
 export class UsersModule {}

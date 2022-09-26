@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Match } from 'src/matches/entities/match.entity';
 
 const userNumber = 2;
 const mockConfig = () => ({ get: () => undefined });
@@ -50,6 +51,10 @@ describe('UsersService', () => {
           useValue: new MockRepository<AchievementsLog>(
             () => new AchievementsLog(),
           ),
+        },
+        {
+          provide: getRepositoryToken(Match),
+          useValue: new MockRepository<Match>(() => new Match()),
         },
       ],
     }).compile();
