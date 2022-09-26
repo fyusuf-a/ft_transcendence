@@ -1,17 +1,27 @@
 <template>
-	<div>
-		<div>
-      <v-btn @click="joinQueue">Join Queue</v-btn>
-			<v-btn @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
-      <input v-model="spectateGameId">
-      <v-btn @click="() => challengeUser(+userIdField)">Issue Challenge To User</v-btn>
-      <input v-model="userIdField">
-      <v-btn @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
+	<div class="page">
+		<div class="actions">
+      <v-row>
+        <v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
+      </v-row>
+      <v-row>
+        <v-btn class="button" title="Enter the id of the game you want to watch" @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
+        <input v-model="spectateGameId">
+      </v-row>
+      <v-row>
+        <v-btn class="button" title="Enter the name of the user you want to challenge" @click="() => challengeUser(+userIdField)">Issue Challenge To User</v-btn>
+        <input id="userInput" v-model="userIdField">
+      </v-row>
+      <v-row>
+        <v-btn class="button" title="Accept challenge from user" @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
+      </v-row>
 		</div>
-		<canvas ref="pong" id="pong" width="640" height="480"></canvas>
-		<canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
-		<canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
-		<canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
+    <div align="center">
+		  <canvas ref="pong" width="640" height="480" style="width:80%; height:80%" id="pong" ></canvas>
+		  <canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
+		  <canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
+		  <canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
+    </div>
 	</div>
 </template>
 
@@ -131,8 +141,28 @@ export default defineComponent({
 <style scoped>
 #pong, #ball, #paddle, #background {
 	border: solid black 1px;
-	width: 640px;
-	height: 480px;
+	margin-top: 80px;
 	margin-left: 10px;
+}
+.page {
+	padding-top: 30px;
+}
+.actions {
+  margin: 15px 0px 5px 100px;
+}
+.button {
+  margin: 15px 2px 5px 0;
+}
+#userInput {
+  margin-left: 20px;
+}
+input {
+  padding: 4px 12px;
+  color: rgba(0,0,0,.70);
+  border: 1px solid rgba(0,0,0,.12);
+  transition: .15s all ease-in-out;
+  background: white;
+  margin-top: 15px;
+  margin-right: 20px;
 }
 </style>
