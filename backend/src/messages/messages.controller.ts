@@ -63,13 +63,7 @@ export class MessagesController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findOne(@Param('id') id: string): Promise<ResponseMessageDto> {
-    try {
-      return await this.messagesService.findOne(+id);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException('Not Found');
-      }
-    }
+    return await this.messagesService.findOne(+id);
   }
 
   @Delete(':id')

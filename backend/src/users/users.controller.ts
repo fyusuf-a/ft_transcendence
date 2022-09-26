@@ -6,7 +6,6 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -100,13 +99,7 @@ export class UsersController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found' })
   async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
-    try {
-      return await this.usersService.findOne(+id);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException('Not Found');
-      }
-    }
+    return await this.usersService.findOne(+id);
   }
 
   @ApiBearerAuth()

@@ -23,7 +23,7 @@ import {
   UpdateChannelDto,
   QueryChannelDto,
 } from '@dtos/channels';
-import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
 
 @ApiBearerAuth()
@@ -59,13 +59,7 @@ export class ChannelsController {
   @Get(':id')
   @ApiNotFoundResponse({ description: 'Channel Not Found' })
   async findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
-    try {
-      return await this.channelsService.findOne(+id);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-      }
-    }
+    return this.channelsService.findOne(+id);
   }
 
   @Patch(':id')

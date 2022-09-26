@@ -1,12 +1,6 @@
 import { AchievementsLogService } from './achievements-log.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { Public } from 'src/auth/auth.public.decorator';
 import { ResponseAchievementsLogDto } from '@/dtos/achievements-log';
 import { DeleteResult } from 'typeorm';
@@ -29,11 +23,7 @@ export class AchievementsLogController {
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findById(@Param('id') id: string): Promise<ResponseAchievementsLogDto> {
-    try {
-      return await this.achievementsLogService.findById(+id);
-    } catch (EntityNotFoundError) {
-      throw new NotFoundException('Found no achievement log with matching id.');
-    }
+    return await this.achievementsLogService.findById(+id);
   }
 
   @Delete(':id')

@@ -17,25 +17,19 @@ import { DeleteResult } from 'typeorm';
 @ApiTags('achievements')
 @Controller('achievements')
 export class AchievementsController {
-  constructor(private readonly achivementsService: AchievementsService) {}
+  constructor(private readonly achievementsService: AchievementsService) {}
 
   @Public()
   @Get()
   async findAll(): Promise<ResponseAchievementDto[]> {
-    return await this.achivementsService.findAll();
+    return await this.achievementsService.findAll();
   }
 
   @Public()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findById(@Param('id') id: string): Promise<AchievementDto> {
-    const num: number = +id;
-
-    try {
-      return await this.achivementsService.findById(num);
-    } catch (EntityNotFoundError) {
-      throw new NotFoundException('Found no achievement with matching id.');
-    }
+    return await this.achievementsService.findById(+id);
   }
 
   @Post()
@@ -44,11 +38,11 @@ export class AchievementsController {
     description: 'Achievement could not be created.',
   })
   create(@Body() dto: AchievementDto): Promise<ResponseAchievementDto> {
-    return this.achivementsService.create(dto);
+    return this.achievementsService.create(dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
-    return this.achivementsService.remove(+id);
+    return this.achievementsService.remove(+id);
   }
 }

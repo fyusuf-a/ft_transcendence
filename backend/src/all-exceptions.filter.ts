@@ -1,4 +1,5 @@
 import { ForbiddenError } from '@casl/ability';
+import { EntityNotFoundError } from 'typeorm';
 import {
   ExceptionFilter,
   Catch,
@@ -18,10 +19,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
 
     let httpStatus: number;
-    if (exception instanceof HttpException) {
-      httpStatus = exception.getStatus();
-    } else if (exception instanceof ForbiddenError) {
+    if (exception instanceof ForbiddenError) {
       httpStatus = HttpStatus.FORBIDDEN;
+    } else if (exception instanceof EntityNotFoundError) {
+      httpStatus = HttpStatus.NOT_FOUND;
+    } else if (exception instanceof HttpException) {
+      httpStatus = exception.getStatus();
     } else {
       httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     }
