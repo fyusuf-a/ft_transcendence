@@ -2,7 +2,9 @@ import { Socket } from 'socket.io-client';
 import { StateDto } from '@dtos/game/state.dto';
 import { Background } from './background';
 import { Ball } from './ball';
+import { Score } from './score';
 import { Paddle } from './paddle';
+// import { Score } from './score';
 
 const FRAMERATE = 30;
 
@@ -12,6 +14,7 @@ class Pong {
   ctx: CanvasRenderingContext2D;
   background: Background;
   ball: Ball;
+  score: Score;
   player1: Paddle;
   player2: Paddle;
   requestID: number | undefined;
@@ -23,6 +26,7 @@ class Pong {
     ballCanvas: HTMLCanvasElement | null,
     backgroundCanvas: HTMLCanvasElement | null,
     paddleCanvas: HTMLCanvasElement | null,
+    scoreCanvas: HTMLCanvasElement | null,
     socket: Socket,
   ) {
     this.ballCanvas = ballCanvas;
@@ -37,7 +41,8 @@ class Pong {
       'ArrowUp',
       'ArrowDown',
       paddleCanvas,
-    );
+      );
+    this.score = new Score(this.player1.get_score(), this.player2.get_score(), scoreCanvas);
     this.requestID = undefined;
     this.socket = socket;
     this.lastUpdate = -1;
@@ -48,6 +53,7 @@ class Pong {
     this.ball.render(this.ctx);
     this.player1.render(this.ctx);
     this.player2.render(this.ctx);
+    this.score.render(this.ctx);
   }
 
   execSpectateFrame(timestamp: number) {

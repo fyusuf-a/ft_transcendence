@@ -21,6 +21,7 @@
 		  <canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
 		  <canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
 		  <canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
+		  <canvas id="score" width="70" height="70" style="visibility: hidden"></canvas>
     </div>
 	</div>
 </template>
@@ -40,6 +41,7 @@ interface DataReturnTypes {
 	backgroundCanvas: HTMLCanvasElement | null;
 	ballCanvas: HTMLCanvasElement | null;
 	paddleCanvas: HTMLCanvasElement | null;
+	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
   userIdField: string;
@@ -63,6 +65,7 @@ export default defineComponent({
 			ballCanvas: null,
 			paddleCanvas: null,
 			gameId: null,
+			scoreCanvas: null,
 			spectateGameId: "1",
       userIdField: "1",
 		};
@@ -87,6 +90,7 @@ export default defineComponent({
 					this.ballCanvas,
 					this.backgroundCanvas,
 					this.paddleCanvas,
+					this.scoreCanvas,
 					this.socket as Socket,
 				);
 			}
@@ -130,6 +134,7 @@ export default defineComponent({
 		) as HTMLCanvasElement;
 		this.ballCanvas = document.getElementById('ball') as HTMLCanvasElement;
 		this.paddleCanvas = document.getElementById('paddle') as HTMLCanvasElement;
+		this.scoreCanvas = document.getElementById('score') as HTMLCanvasElement;
 		this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
 
 		this.socket.on('game-starting', (e: number) => this.startGame(e));

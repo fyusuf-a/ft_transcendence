@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { CreateGameDto, StateDto } from '@dtos/game';
 import { GameState } from './game-state';
+import { Winner } from './game-state';
 const FRAMERATE = 30;
 
 export class Game {
@@ -10,6 +11,7 @@ export class Game {
   room: string;
   state: GameState;
   updateInterval: NodeJS.Timer;
+  winner: Winner;
 
   constructor(init: CreateGameDto, server: Server) {
     this.gameId = init.gameId;
@@ -18,6 +20,7 @@ export class Game {
     this.server = server;
     this.room = init.gameId.toString();
     this.updateInterval = undefined;
+    // this.winner = new Winner();
   }
 
   end() {
@@ -31,6 +34,10 @@ export class Game {
       player1: { x: this.state.players[0].x, y: this.state.players[0].y },
       player2: { x: this.state.players[1].x, y: this.state.players[1].y },
     };
+    
+    // if (0) {
+    //   this.end();
+    // }
     this.server.to(this.room).emit('game-state', state);
   }
 
