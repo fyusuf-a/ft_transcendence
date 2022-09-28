@@ -2,7 +2,7 @@
 	<div class="page">
 		<div class="actions">
       <v-row>
-        <v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
+        <v-btn class="button" title="Join the queue to play" @click="joinQueue" >Join Queue</v-btn>
       </v-row>
       <v-row>
         <v-btn class="button" title="Enter the id of the game you want to watch" @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
@@ -16,7 +16,7 @@
         <v-btn class="button" title="Accept challenge from user" @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
       </v-row>
 		</div>
-    <div align="center">
+    <div align="center" >
 		  <canvas ref="pong" width="640" height="480" style="width:80%; height:80%" id="pong" ></canvas>
 		  <canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
 		  <canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
@@ -138,7 +138,6 @@ export default defineComponent({
 		this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
 
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
-
 	},
 });
 </script>
@@ -146,7 +145,7 @@ export default defineComponent({
 <style scoped>
 #pong, #ball, #paddle, #background {
 	border: solid black 1px;
-	margin-top: 80px;
+	margin-top: 50px;
 	margin-left: 10px;
 }
 .page {

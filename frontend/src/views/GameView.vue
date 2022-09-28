@@ -1,7 +1,8 @@
 <template>
   <div>
       <img src="@/assets/images/king-pong.png" width="100" />
-      <h1 align="center" id="game">Will you be the King of Pong?</h1>
+      <h1 align="center" class="game">Will you be the King of Pong?</h1>
+      <p align="center" class="game">To play: click on Join Queue to reach a game. Then, click on the game and use ↕ arrows on your keyborad</p>
       <game-window :socket="socket"></game-window>
   </div>
 </template>
@@ -46,7 +47,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#game {
+.game {
   margin: 30px 0 0 100px;
 }
 img {
