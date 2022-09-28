@@ -17,6 +17,7 @@ class Pong {
   scoreP2: Score;
   player1: Paddle;
   player2: Paddle;
+  winner: number;
   requestID: number | undefined;
   socket: Socket;
   lastUpdate: number;
@@ -45,6 +46,7 @@ class Pong {
     this.scoreP1 = new Score(0, 130, 0, scoreCanvas);
     this.scoreP2 = new Score(0, 450, 0, scoreCanvas);
     this.requestID = undefined;
+    this.winner = -1;
     this.socket = socket;
     this.lastUpdate = -1;
   }
@@ -76,6 +78,10 @@ class Pong {
     this.scoreP2.score = newState.scoreP2.score;
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
+    this.winner = newState.winner;
+    if (this.winner > -1){
+    this.scoreP1.score = -1;
+    this.scoreP2.score = -1;}
   }
 
   spectate(gameId: number) {

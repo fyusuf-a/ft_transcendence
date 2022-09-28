@@ -8,4 +8,5 @@ export interface StateDto {
   player2: PlayerDto;
   scoreP1: ScoreDto;
   scoreP2: ScoreDto;
+  winner: number;
 }
