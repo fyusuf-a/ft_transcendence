@@ -3,22 +3,24 @@ import {
   Body,
   Controller,
   Get,
+  Query,
   Post,
   UseGuards,
   Req,
-  Res,
+  HttpStatus,
+  Redirect,
 } from '@nestjs/common';
 import { twoFACodeDto } from '@dtos/auth';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { Public } from './auth.public.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { RequestWithUser, JwtToken } from './types';
 import { ResponseUserDto } from '@dtos/users';
+import { IfAuthIsDisabled } from './if-auth-is-disabled.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -30,27 +32,53 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get('callback')
-  @Public()
-  @UseGuards(AuthGuard('marvin'))
-  marvinCallback(@Req() req: RequestWithUser, @Res() res) {
+  private getToken(id: number, isTwoFAAuthenticated: boolean): JwtToken {
+    return this.jwtService.sign({
+      id,
+      isTwoFAAuthenticated,
+    });
+  }
+
+  private redirect(id: number, isTwoFAAuthenticated: boolean) {
     const url = new URL(
       `${this.configService.get<string>('FRONTEND_URL')}/login`,
     );
-    const token = this.jwtService.sign({
-      id: req.user.id,
-      isTwoFAAuthenticated: false,
-    });
-    url.search = new URLSearchParams({
-      id: req.user.id,
-      token: token,
-    } as unknown as Record<string, string>).toString();
-    return res.redirect(url.toString());
+    const token = this.getToken(id, isTwoFAAuthenticated);
+    url.search = new URLSearchParams({ id, token } as unknown as Record<
+      string,
+      string
+    >).toString();
+    return { statusCode: HttpStatus.FOUND, url: url.toString() };
+  }
+
+  @Redirect()
+  @Get('callback')
+  @Public()
+  @UseGuards(AuthGuard('marvin'))
+  marvinCallback(@Req() req: RequestWithUser) {
+    return this.redirect(req.user.id, false);
+  }
+
+  @Redirect()
+  @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')
+  @Get('fake-callback')
+  @Public()
+  @IfAuthIsDisabled()
+  async fakeMarvinCallback(@Query('username') username: string) {
+    const user = await this.usersService.findByName(username);
+    return this.redirect(user.id, true);
+  }
+
+  @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')
+  @Get('fake-token')
+  @Public()
+  @IfAuthIsDisabled()
+  async fakeToken(@Query('username') username: string) {
+    const user = await this.usersService.findByName(username);
+    return this.getToken(user.id, true);
   }
 
   @ApiBearerAuth()
-  @Public()
-  @UseGuards(JwtAuthGuard)
   @Post('2fa/generate')
   async generate(@Req() req: RequestWithUser) {
     const user: ResponseUserDto = await this.usersService.findOne(req.user.id);
@@ -64,7 +92,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('2fa/authenticate')
   async authenticate(
     @Req() req: RequestWithUser,

@@ -8,10 +8,10 @@
             <v-col :cols="4">
               <v-card class="mr-10" max-width="400"  >
                 <v-img
-                :src="avatar"
+                  :src="avatar"
                 ></v-img>
               </v-card>
-              <v-card-actions v-if="!user" class="pt-10">
+              <v-card-actions class="pt-10">
                 <v-row>
                   <avatar-button />
                   <username-button />
@@ -25,8 +25,8 @@
         </v-container>
       </v-card>
       <my-friends :user="user" />
-      <my-matches/>
-      <my-achievements />
+      <my-matches :user="user" />
+      <my-achievements :user="user" />
       <activate-two-fa v-if="!user" />
     </v-row>
   </div>
@@ -49,8 +49,6 @@ interface Users {
   users: Map<number, UserDto>;
   username: string,
   avatar: string,
-  idUserLogin: number,
-  idOther: number,
 }
 
 export default defineComponent({
@@ -59,8 +57,6 @@ export default defineComponent({
       users: new Map(),
       username: '',
       avatar: '',
-      idUserLogin: 0,
-      idOther: 0,
     };
   },
   props: ['user'],
@@ -76,45 +72,22 @@ export default defineComponent({
   methods: {
     ...mapGetters(['id']),
     async fetchUserById(userId: number) {
-      console.log(`Vue: Grabbing user #${userId}`);
       const response = await axios.get(`/users/${userId}`);
-      console.log(response.data);
       if (response.data) {
         return response.data;
       } else {
         return { id: -1, username: 'Unknown User' };
       }
     },
-    async getUserInfo(id: number) {
-      const newUser: UserDto = await this.fetchUserById(id);
-        this.users.set(id, newUser);
-        this.username = newUser.username;
-        this.idUserLogin = id;
-        this.avatar = await this.$store.dispatch(
-          'getAvatarById',
-          this.idUserLogin.toString(),
-          );
-    },
   },
   async created() {
-    console.log(this.user);
-    if (this.user) {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        if (this.user === response.data.data[i].username) {
-          this.idOther = response.data.data[i].id
-        }
-      };
-      if (this.idOther == this.id()) {
-        this.getUserInfo(this.id());
-      }
-      else {
-        this.getUserInfo(this.idOther);
-      }
-    }
-    else {
-      this.getUserInfo(this.id());
-    }
+    const newUser: UserDto = await this.fetchUserById(this.id());
+    this.users.set(this.id(), newUser);
+    this.username = newUser.username;
+    this.avatar = await this.$store.dispatch(
+      'getAvatarById',
+      this.id().toString(),
+    );
   }
 });
 </script>

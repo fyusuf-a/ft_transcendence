@@ -11,25 +11,41 @@
     <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="friends">
-          <li v-for="friend in friends" :key="friend.username">
-            {{ friend.username }}
-            <v-img :src="friend.avatar" ></v-img>
+          <li class="listFriends" v-for="friend in friends" :key="friend.username">
+            <v-row>
+              <v-col>
+                <div class="listElement">
+                  <v-img class="avatar" :src="friend.avatar"></v-img>
+                  <v-badge overlap class="" :color="statusColors[friend.status]"></v-badge>
+                  <p class="userName">{{ friend.username }}</p>
+                  <br />
+                </div>
+              </v-col>
+            </v-row>
           </li>
 
           <add-friend v-if="!user" class="mb-5 mt-5"/>
 
           <div v-if="!user">
             <v-divider></v-divider>
-
             <h3 class="mt-5">Pending friend requests</h3><br />
               <li v-for="requester in requesters" :key="requester.username">
-                <div>{{ requester.username }}</div>
-                <v-btn color="success" variant="outlined" class="text--primary ml-15" @click="accept(requester.frienshipId)">accept</v-btn>
-                <v-btn color="error" variant="outlined" class="text--primary ml-10" @click="decline(requester.frienshipId)">decline</v-btn>
-                <v-img :src="requester.avatar" ></v-img>
-                <br />
+                <v-row>
+                  <v-col>
+                    <div class="listPending">
+                      <v-img class="avatar" :src="requester.avatar" ></v-img>
+                      <p class="userName">{{ requester.username }}</p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <div class="pb-3">
+                    <v-btn color="success" variant="outlined" class="text--primary ml-15" title="accept" @click="accept(requester.frienshipId)">✔</v-btn>
+                    <v-btn color="error" variant="outlined" class="text--primary ml-10" title="decline" @click="decline(requester.frienshipId)">✘</v-btn>
+                  </div>
+                </v-row>
               </li>
-              <p v-if="!requesters.length" class="text--primary">
+              <p v-if="!requesters.length" class="text--primary noRequest">
                 No request to accept.
               </p>
             </div>
@@ -53,12 +69,18 @@ import axios from 'axios';
 import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import AddFriend from '@/components/Profile/AddFriend.vue';
+import { fetchAvatar } from '@/utils/avatar';
+import { Socket } from 'socket.io-client';
+import { StatusUpdateDto } from '@dtos/users'
+
 import BlockUser from '@/components/Profile/BlockUser.vue'
 interface MyFriendsData {
   loading: boolean;
-  friends: { username: string ; avatar: string }[];
+  friends: { id: number, username: string ; avatar: string ; status: number, friendLink: string }[];
   requesters: { username: string ; avatar: string, frienshipId: number }[];
   tab: any,
+  statusColors : string[],
+  socket : Socket,
   blocked: { username: string ; blockedId: number }[],
   idOther: number,
 }
@@ -69,6 +91,12 @@ export default defineComponent({
       friends: [],
       requesters: [],
       tab: null,
+      statusColors : [
+      'red',
+      'green',
+      'light-blue accent-3'
+      ],
+      socket: this.$store.getters.socket,
       blocked: [],
       idOther: 0,
     };
@@ -104,12 +132,24 @@ export default defineComponent({
           console.log(error.response.status);
         });
     },
+    handleStatusUpdate(statusUpdate: StatusUpdateDto) {
+      this.friends.forEach(friend => {
+        if (friend.id == statusUpdate.id) {
+          friend.status = statusUpdate.status;
+        }
+          
+      })
+      console.log(statusUpdate);
+    }, 
     async listOfFriends(id: number) {
       let response = await axios.get('/users/' + id + '/friendships/');
       for (let i: number = 0; i < response.data.length; i++) {
         this.friends.push({
+          id: response.data[i].user.id,
           username: response.data[i].user.username,
-          avatar: response.data[i].avatar,
+          avatar: await fetchAvatar(response.data[i].user.id),
+          status: response.data[i].user.status,
+          friendLink: '/profile/' + response.data[i].user.username,
         });
       };
     },
@@ -122,19 +162,9 @@ export default defineComponent({
   async created() {
     // get list of friends
     if (this.user) {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        if (this.user === response.data.data[i].username) {
-          this.idOther = response.data.data[i].id
-        }
-      };
-      if (this.idOther == this.id()) {
-        this.listOfFriends(this.id());
-      }
-      else {
-        this.listOfFriends(this.idOther);
-      }
-      }
+      let response = await axios.get(`/users/name/${this.user}`);
+      this.listOfFriends(response.data.id);
+    }
     else {
       this.listOfFriends(this.id());
     }
@@ -144,7 +174,7 @@ export default defineComponent({
     for (let i: number = 0; i < response2.data.length; i++) {
       this.requesters.push({
         username: response2.data[i].user.username,
-        avatar: response2.data[i].avatar,
+        avatar: await fetchAvatar(response2.data[i].user.id),
         frienshipId: response2.data[i].id,
       });
     };
@@ -157,6 +187,8 @@ export default defineComponent({
       });
     };
     this.loading = false;
+
+    this.socket.on('status-update', this.handleStatusUpdate);
   },
 });
 </script>
@@ -165,7 +197,36 @@ export default defineComponent({
 li {
   list-style: none;
 }
-p {
+.listFriends {
+  background-color: beige;
+}
+.listElement {
+  height: 50;
+  width: 100%;
+  background-color: beige;
+  display: flex;
+  padding: 15px 0 5px 5px;
+}
+.listPending {
+  height: 50;
+  width: 100%;
+  display: flex;
+  padding: 15px 0 5px 5px;
+}
+.avatar {
+  display: flex;
+  border-radius: 50%;
+  max-height: 50px;
+  max-width: 50px;
+}
+.userName {
+  display: flex;
+  float: left;
+  padding-top: 10px;
+  padding-left: 2em;
+  font-weight: bold;
+}
+.noRequest {
   color: #03dac6;
 }
 </style>

@@ -63,4 +63,9 @@ export class UserDto {
   })
   @IsNotEmpty()
   twoFASecret!: string;
+
+  @ApiProperty({
+    description: 'The activity status of the user',
+  })
+  status!: number;
 }

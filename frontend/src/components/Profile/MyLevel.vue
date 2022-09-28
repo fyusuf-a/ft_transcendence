@@ -33,20 +33,9 @@ export default defineComponent({
   props: ['user'],
   async created() {
     if (this.user) {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        if (this.user === response.data.data[i].username) {
-          this.idOther = response.data.data[i].id
-        }
-      };
-      if (this.idOther == this.id()) {
-        let response2 = await axios.get('/users/' + this.id());
-        this.rating = response2.data.rating;
-      }
-      else {
-        let response2 = await axios.get('/users/' + this.idOther);
-        this.rating = response2.data.rating;
-      }
+      let response = await axios.get(`/users/name/${this.user}`);
+      console.log(response.data);
+      this.rating = response.data.rating;
     }
     else {
       let response = await axios.get('/users/' + this.id());

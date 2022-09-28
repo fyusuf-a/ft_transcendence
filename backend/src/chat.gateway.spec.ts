@@ -6,6 +6,7 @@ import { AchievementsLog } from './achievements-log/entities/achievements-log.en
 import { ChannelsService } from './channels/channels.service';
 import { Channel } from './channels/entities/channel.entity';
 import { ChatGateway } from './chat.gateway';
+import { Match } from './matches/entities/match.entity';
 import { Membership } from './memberships/entities/membership.entity';
 import { MembershipsService } from './memberships/memberships.service';
 import { Message } from './messages/entities/message.entity';
@@ -54,6 +55,10 @@ describe('ChatGateway', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Match),
           useValue: jest.fn(),
         },
       ],
