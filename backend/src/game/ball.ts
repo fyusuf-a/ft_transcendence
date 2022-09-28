@@ -24,6 +24,16 @@ export class Ball {
     this.#grid = grid;
   }
 
+  new_trajectory(py, bs) {
+    var interY = py + 50 - this.y;
+    var normalInterY = (interY / (100 / 2));
+    var bounceAngle = normalInterY * 1.309; // 1.309rad  = 75deg
+    //this.dx = SPEED * Math.cos(bounceAngle);
+    this.vy = bs * -Math.sin(bounceAngle);
+
+    this.invert_dx();
+  }
+
   get size() {
     return this.#size;
   }
@@ -60,8 +70,14 @@ export class Ball {
   get vx() {
     return this.#vx;
   }
+  set vx(vx: number) {
+    this.#vx = vx;
+  }
   get vy() {
     return this.#vy;
+  }
+  set vy(vy: number) {
+    this.#vy = vy;
   }
 
   invert_dy() {
