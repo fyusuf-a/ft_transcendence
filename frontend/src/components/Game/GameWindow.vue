@@ -20,8 +20,8 @@
 		  <canvas ref="pong" width="640" height="480" style="width:80%; height:80%" id="pong" ></canvas>
 		  <canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
 		  <canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
-		  <canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
 		  <canvas id="score" width="70" height="70" style="visibility: hidden"></canvas>
+		  <canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
     </div>
 	</div>
 </template>
@@ -132,9 +132,9 @@ export default defineComponent({
 		this.backgroundCanvas = document.getElementById(
 			'background',
 		) as HTMLCanvasElement;
-		this.ballCanvas = document.getElementById('ball') as HTMLCanvasElement;
 		this.paddleCanvas = document.getElementById('paddle') as HTMLCanvasElement;
 		this.scoreCanvas = document.getElementById('score') as HTMLCanvasElement;
+		this.ballCanvas = document.getElementById('ball') as HTMLCanvasElement;
 		this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
 
 		this.socket.on('game-starting', (e: number) => this.startGame(e));

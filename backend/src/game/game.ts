@@ -33,8 +33,9 @@ export class Game {
       ball: { x: this.state.ball.x, y: this.state.ball.y },
       player1: { x: this.state.players[0].x, y: this.state.players[0].y },
       player2: { x: this.state.players[1].x, y: this.state.players[1].y },
+      scoreP1: { score: this.state.score[0] },
+      scoreP2: { score: this.state.score[1] },
     };
-    
     // if (0) {
     //   this.end();
     // }

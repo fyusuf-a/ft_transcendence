@@ -20,8 +20,9 @@ const score9 = new Image();
 score9.src = 'src/assets/images/nine.png';
 
 class Score {
-    score_1: number;
-    score_2: number;
+    x: number;
+    y: number;
+    score: number;
     img_data0: ImageData;
     img_data1: ImageData;
     img_data2: ImageData;
@@ -34,8 +35,9 @@ class Score {
     img_data9: ImageData;
 
   constructor(
-    sc_1: number, 
-    sc_2: number,
+    sc: number,
+    x: number,
+    y: number,
     scoreCanvas: HTMLCanvasElement | null,
   ) {
     const canvas0 = scoreCanvas;
@@ -87,79 +89,46 @@ class Score {
     const ctx9 = canvas9?.getContext('2d') as CanvasRenderingContext2D;
     ctx9?.drawImage(score9, 0, 0);
     this.img_data9 = ctx9?.getImageData(0, 0, 70, 70);
-    
 
-    this.score_1 = sc_1;
-    this.score_2 = sc_2;
-
+    this.score = sc;
+    this.x = x;
+    this.y = y;
   }
 
-  update(sc_1: number, sc_2: number) {
-    this.score_1 = sc_1;
-    this.score_2 = sc_2;
+  update(sc: number) {
+    this.score = sc;
   }
 
   render(ctx: CanvasRenderingContext2D) {
-    if (this.score_1 === 0) {
-      ctx.putImageData(this.img_data0, 130, 0);
+    if (this.score === 0) {
+      ctx.putImageData(this.img_data0, this.x, this.y);
     } 
-    else if (this.score_1 === 1) {
-      ctx.putImageData(this.img_data1, 130, 0);
+    else if (this.score === 1) {
+      ctx.putImageData(this.img_data1, this.x, this.y);
     }
-    else if (this.score_1 === 2) {
-      ctx.putImageData(this.img_data2, 130, 0);
+    else if (this.score === 2) {
+      ctx.putImageData(this.img_data2, this.x, this.y);
     }
-    else if (this.score_1 === 3) {
-      ctx.putImageData(this.img_data3, 130, 0);
+    else if (this.score === 3) {
+      ctx.putImageData(this.img_data3, this.x, this.y);
     }
-    else if (this.score_1 === 4) {
-      ctx.putImageData(this.img_data4, 130, 0);
+    else if (this.score === 4) {
+      ctx.putImageData(this.img_data4, this.x, this.y);
     }
-    else if (this.score_1 === 5) {
-      ctx.putImageData(this.img_data5, 130, 0);
+    else if (this.score === 5) {
+      ctx.putImageData(this.img_data5, this.x, this.y);
     }
-    else if (this.score_1 === 6) {
-      ctx.putImageData(this.img_data6, 130, 0);
+    else if (this.score === 6) {
+      ctx.putImageData(this.img_data6, this.x, this.y);
     }
-    else if (this.score_1 === 7) {
-      ctx.putImageData(this.img_data7, 130, 0);
+    else if (this.score === 7) {
+      ctx.putImageData(this.img_data7, this.x, this.y);
     }
-    else if (this.score_1 === 8) {
-      ctx.putImageData(this.img_data8, 130, 0);
+    else if (this.score === 8) {
+      ctx.putImageData(this.img_data8, this.x, this.y);
     }
-    else if (this.score_1 === 9) {
-      ctx.putImageData(this.img_data9, 130, 0);
-    }
-
-    if (this.score_2 === 0) {
-      ctx.putImageData(this.img_data0, 450, 0);
-    } 
-    else if (this.score_2 === 1) {
-      ctx.putImageData(this.img_data1, 450, 0);
-    }
-    else if (this.score_2 === 2) {
-      ctx.putImageData(this.img_data2, 450, 0);
-    }
-    else if (this.score_2 === 3) {
-      ctx.putImageData(this.img_data3, 450, 0);
-    }
-    else if (this.score_2 === 4) {
-      ctx.putImageData(this.img_data4, 450, 0);
-    }
-    else if (this.score_2 === 5) {
-      ctx.putImageData(this.img_data5, 450, 0);
-    }
-    else if (this.score_2 === 6) {
-      ctx.putImageData(this.img_data6, 450, 0);
-    }
-    else if (this.score_2 === 7) {
-      ctx.putImageData(this.img_data7, 450, 0);
-    }
-    else if (this.score_2 === 8) {
-      ctx.putImageData(this.img_data8, 450, 0);
-    }
-    else if (this.score_2 === 9) {
-      ctx.putImageData(this.img_data9, 450, 0);
+    else if (this.score === 9) {
+      ctx.putImageData(this.img_data9, this.x, this.y);
     }
   }
 }

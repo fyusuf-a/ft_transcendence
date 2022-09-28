@@ -4,7 +4,6 @@ import { Background } from './background';
 import { Ball } from './ball';
 import { Score } from './score';
 import { Paddle } from './paddle';
-// import { Score } from './score';
 
 const FRAMERATE = 30;
 
@@ -14,7 +13,8 @@ class Pong {
   ctx: CanvasRenderingContext2D;
   background: Background;
   ball: Ball;
-  score: Score;
+  scoreP1: Score;
+  scoreP2: Score;
   player1: Paddle;
   player2: Paddle;
   requestID: number | undefined;
@@ -42,7 +42,8 @@ class Pong {
       'ArrowDown',
       paddleCanvas,
       );
-    this.score = new Score(this.player1.get_score(), this.player2.get_score(), scoreCanvas);
+    this.scoreP1 = new Score(0, 130, 0, scoreCanvas);
+    this.scoreP2 = new Score(0, 450, 0, scoreCanvas);
     this.requestID = undefined;
     this.socket = socket;
     this.lastUpdate = -1;
@@ -50,10 +51,11 @@ class Pong {
 
   render() {
     this.background.render(this.ctx);
+    this.scoreP1.render(this.ctx);
+    this.scoreP2.render(this.ctx);
     this.ball.render(this.ctx);
     this.player1.render(this.ctx);
     this.player2.render(this.ctx);
-    this.score.render(this.ctx);
   }
 
   execSpectateFrame(timestamp: number) {
@@ -70,6 +72,8 @@ class Pong {
     this.player1.y = newState.player1.y;
     this.player2.x = newState.player2.x;
     this.player2.y = newState.player2.y;
+    this.scoreP1.score = newState.scoreP1.score;
+    this.scoreP2.score = newState.scoreP2.score;
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
   }

@@ -40,10 +40,6 @@ class Paddle {
     );
   }
 
-  get_score() {
-    return this.score;
-}
-
   update() {
     if (isKeyPressed(this.up) && this.y > 0.0) this.y -= SPEED;
     if (isKeyPressed(this.down) && this.y < 380.0) this.y += SPEED;
