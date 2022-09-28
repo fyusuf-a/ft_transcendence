@@ -1,9 +1,9 @@
 import { BlockDto } from './block.dto';
 import { ResponseBlockDto } from './response-block.dto';
-import { UpdateUserDto } from '../users/update-user.dto';
+import { DisplayUserDto } from '../users/display-user.dto';
 
 export class ListBlockDto extends BlockDto {
-  constructor(base: ResponseBlockDto, user: UpdateUserDto) {
+  constructor(base: ResponseBlockDto, user: DisplayUserDto) {
     super();
     this.id = base.id;
     this.sourceId = base.sourceId;
@@ -11,5 +11,5 @@ export class ListBlockDto extends BlockDto {
     this.status = base.status;
     this.user = user;
   }
-  user!: UpdateUserDto;
+  user!: DisplayUserDto;
 }

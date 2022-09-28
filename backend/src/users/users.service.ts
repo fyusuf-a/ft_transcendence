@@ -1,7 +1,7 @@
 import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
+import { CreateUserDto, QueryUserDto, UpdateUserDto, DisplayUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
 import {
@@ -155,7 +155,7 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       for (let j = 0; j < friends.length; j++) {
         if (ids[i] == friends[j].id) {
-          const uUd: UpdateUserDto = {
+          const uUd: DisplayUserDto = {
             username: friends[j].username,
             avatar: friends[j].avatar,
           };
@@ -192,7 +192,7 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       for (let j = 0; j < blocks.length; j++) {
         if (ids[i] == blocks[j].id) {
-          const uUd: UpdateUserDto = {
+          const uUd: DisplayUserDto = {
             username: blocks[j].username,
           };
           ret[i] = new ListBlockDto(tmp[i], uUd);

@@ -1,9 +1,9 @@
 import { FriendshipDto } from './friendship.dto';
 import { ResponseFriendshipDto } from './response-friendship.dto';
-import { UpdateUserDto } from '../users/update-user.dto';
+import { DisplayUserDto } from '../users/display-user.dto';
 
 export class ListFriendshipDto extends FriendshipDto {
-  constructor(base: ResponseFriendshipDto, user: UpdateUserDto) {
+  constructor(base: ResponseFriendshipDto, user: DisplayUserDto) {
     super();
     this.id = base.id;
     this.sourceId = base.sourceId;
@@ -11,5 +11,5 @@ export class ListFriendshipDto extends FriendshipDto {
     this.status = base.status;
     this.user = user;
   }
-  user!: UpdateUserDto;
+  user!: DisplayUserDto;
 }

@@ -38,6 +38,7 @@ import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
+import { ListBlockDto } from 'src/dtos/blocks';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -54,6 +55,7 @@ interface DataReturnType {
   newUnread: number;
   users: Map<number, UserDto>;
   memberships: Array<MembershipDto>;
+  blocks: Array<number | undefined>;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -73,6 +75,7 @@ export default defineComponent({
       newUnread: 0,
       users: new Map(),
       memberships: [],
+      blocks: [],
     };
   },
   components: {
@@ -289,6 +292,15 @@ export default defineComponent({
         }
       }
     },
+    async fetchBlocks() {
+      const response = await axios.get(
+        `/users/${this.$store.getters.id}/blocks`
+      );
+      response.data.forEach((block : ListBlockDto)=> {
+        this.blocks.push(block.user.id);
+      });
+
+    },
     async getAllChannels() {
       console.log('Vue: Grabbing channels');
       const response = await axios.get('/channels/');
@@ -322,6 +334,7 @@ export default defineComponent({
     });
     await this.getAllChannels();
     await this.fetchMemberships();
+    await this.fetchBlocks();
     console.log('Trying to match membership to channel');
     for (let membership of this.memberships) {
       console.log('Checking membership' + membership);
