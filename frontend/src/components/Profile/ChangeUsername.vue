@@ -1,6 +1,7 @@
 <template>
   <v-btn
-    color="primary"
+    color="error"
+    variant="outlined"
   >
     Change username
     <v-dialog
