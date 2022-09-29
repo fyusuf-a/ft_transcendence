@@ -18,7 +18,9 @@
           @channel-select-event="handleChannelSelection"
           @channel-join-event="handleChannelJoin"
           @channel-create-event="handleChannelCreation"
+          @request-user-event="addUserToMap"
           :channels="subscribedChannels"
+          :users="users"
           :unreadChannels="unreadChannels"
           :allChannels="allChannels"
           :key="newUnread"
@@ -205,15 +207,19 @@ export default defineComponent({
         }
       }
     },
+    async addUserToMap(userId: number) {
+      const newUser: UserDto = await this.fetchUserById(userId);
+      if (newUser) {
+        console.log(
+          `Adding User #${newUser.id} (${newUser.username}) to users`,
+        );
+        this.users.set(userId, newUser);
+      }
+      return newUser;
+    },
     async addMessageToMap(message: MessageDto) {
       if (!this.users.has(message.senderId)) {
-        const newUser: UserDto = await this.fetchUserById(message.senderId);
-        if (newUser) {
-          console.log(
-            `Adding User #${newUser.id} (${newUser.username}) to users`,
-          );
-          this.users.set(message.senderId, newUser);
-        }
+        const newUser: UserDto = await this.addUserToMap(message.senderId);
       }
       if (this.messages.has(message.channelId)) {
         this.insertMessageSorted(this.messages.get(message.channelId), message);

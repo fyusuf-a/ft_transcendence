@@ -34,10 +34,12 @@
                         >{{ unreadMarker }}</v-icon
                       >
                     <v-list-item-title v-bind="tooltip">
-                      <v-list-item-title> {{ item.name }}</v-list-item-title>
+                      <v-list-item-title>
+                        {{ getChannelDisplay(item) }}
+                      </v-list-item-title>
                     </v-list-item-title>
                   </template>
-                  <span>{{ item.name }}</span>
+                  <span>{{ getChannelDisplay(item) }}</span>
                 </v-tooltip>
               </v-list-item>
           </v-list>
@@ -51,6 +53,7 @@
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { defineComponent, PropType } from 'vue';
 import ChannelJoinDialog from './ChannelJoinDialog.vue';
+import { UserDto } from '@/common/dto/user.dto';
 
 interface DataReturnType {
   title: string;
@@ -61,6 +64,10 @@ export default defineComponent({
   props: {
     channels: {
       type: Array as () => Array<ChannelDto>,
+      required: true,
+    },
+    users: {
+      type: Map,
       required: true,
     },
     allChannels: {
@@ -89,11 +96,26 @@ export default defineComponent({
     },
     handleChannelCreate(dto: CreateChannelDto) {
       this.$emit('channel-create-event', dto);
-    }
+    },
+    getUsername(userId: number): string {
+      const user = this.users.get(userId) as UserDto;
+      if (user) {
+        return user.username;
+      }
+      console.log("sending fetch request");
+      this.$emit('request-user-event', userId);
+      return '...';
+    },
+    getChannelDisplay(channel: ChannelDto): string {
+      if (channel.type !== 'direct') return channel.name;
+      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userOneId) return this.getUsername(channel.userOneId as number);
+      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userTwoId) return this.getUsername(channel.userTwoId as number);
+      return "UNKNOWN CHANNEL";
+    },
   },
   computed: {
     getJoinableChannels(): ChannelDto[] {
-      return Array.from(this.allChannels.values()).filter(
+      return Array.from(this.allChannels.values()).filter((chan) => chan.type === 'public' || chan.type === 'protected').filter(
         (chan) => !this.channels.includes(chan),
       ) as ChannelDto[];
     },
