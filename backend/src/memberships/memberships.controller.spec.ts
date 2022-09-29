@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -120,7 +120,7 @@ describe('MembershipsController', () => {
       jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
       expect(
         controller.create(createMembershipDto, mockRequest),
-      ).rejects.toThrow(EntityNotFoundError);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if service throws', async () => {

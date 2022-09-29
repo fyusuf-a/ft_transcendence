@@ -136,10 +136,14 @@ export class ChatGateway extends SecureGateway {
     messageDto.senderId = this.getAuthenticatedUser(client)?.id;
 
     // TODO: Check if User has permission to send message here
-    const messageResponse = await this.messagesService.create(messageDto);
-    const messageResponseDto: ResponseMessageDto =
-      instanceToInstance(messageResponse);
-    this.server.to(target).emit('chat-message', messageResponseDto);
-    return 'Message Confirmed';
+    try {
+      const messageResponse = await this.messagesService.create(messageDto);
+      const messageResponseDto: ResponseMessageDto =
+        instanceToInstance(messageResponse);
+      this.server.to(target).emit('chat-message', messageResponseDto);
+      return 'Message Confirmed';
+    } catch (error) {
+      throw new WsException(error.message);
+    }
   }
 }

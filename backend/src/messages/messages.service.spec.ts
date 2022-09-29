@@ -8,10 +8,12 @@ import { MockRepository } from 'src/common/mocks/repository.mock';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { PageDto } from '@dtos/pages';
 import { Message } from './entities/message.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 const messageNumber = 2;
 const userNumber = 2;
 const channelNumber = 2;
+const membershipNumber = 2;
 
 describe('MessagesService', () => {
   let service: MessagesService;
@@ -34,6 +36,13 @@ describe('MessagesService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: new MockRepository(() => new User(), userNumber),
+        },
+        {
+          provide: getRepositoryToken(Membership),
+          useValue: new MockRepository(
+            () => new Membership(),
+            membershipNumber,
+          ),
         },
       ],
     }).compile();

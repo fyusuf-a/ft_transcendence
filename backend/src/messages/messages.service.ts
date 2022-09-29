@@ -11,6 +11,7 @@ import { Message } from './entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { paginate } from 'src/common/paginate';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 @Injectable()
 export class MessagesService {
@@ -21,6 +22,8 @@ export class MessagesService {
     private usersRepository: Repository<User>,
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
+    @InjectRepository(Membership)
+    private membershipsRepository: Repository<Membership>,
   ) {}
 
   async findAll(
@@ -55,6 +58,12 @@ export class MessagesService {
     message.sender = await this.usersRepository.findOneByOrFail({
       id: message.senderId,
     });
+
+    await this.membershipsRepository.findOneByOrFail({
+      userId: message.senderId,
+      channelId: message.channelId,
+    });
+
     return await this.messagesRepository.save(message);
   }
 

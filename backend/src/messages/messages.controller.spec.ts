@@ -10,6 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -38,6 +39,10 @@ describe('MessagesController', () => {
         },
         {
           provide: Block,
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
       ],
