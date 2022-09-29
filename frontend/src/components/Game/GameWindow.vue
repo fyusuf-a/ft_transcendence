@@ -31,11 +31,13 @@ import { Socket } from 'socket.io-client';
 import { defineComponent } from 'vue';
 import { Pong } from './src/pong';
 import { GameOptionsDto } from '@dtos/game/game-options.dto'
+import axios from 'axios';
 
 interface DataReturnTypes {
 	ctx: CanvasRenderingContext2D | null;
 	x: number;
 	y: number;
+	playerId: number,
 	pong: Pong | null;
 	pongCanvas: HTMLCanvasElement | null;
 	backgroundCanvas: HTMLCanvasElement | null;
@@ -68,12 +70,14 @@ export default defineComponent({
 			scoreCanvas: null,
 			spectateGameId: "1",
       userIdField: "1",
+	  playerId: 0,
 		};
 	},
 	methods: {
 		joinQueue() {
 			const gameOptions: GameOptionsDto = {  };
 			this.socket.emit('game-queue', gameOptions);
+			console.log("eeeeeeee "+  gameOptions.homeId);
 		},
     challengeUser(userId: number) {
       const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
@@ -96,7 +100,7 @@ export default defineComponent({
 			}
 			this.pong.spectate(gameId);
 		},
-		startGame(gameId: number) {
+		async startGame(gameId: number) {
 			console.log("Starting game #" + gameId);
 			this.gameId = gameId;
 
@@ -139,6 +143,9 @@ export default defineComponent({
 
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
 	},
+	created() {
+		console.log();
+	}
 });
 </script>
 

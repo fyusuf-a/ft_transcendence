@@ -52,12 +52,18 @@ class Pong {
   }
 
   render() {
+    if (this.winner < 0) {
     this.background.render(this.ctx);
     this.scoreP1.render(this.ctx);
     this.scoreP2.render(this.ctx);
     this.ball.render(this.ctx);
     this.player1.render(this.ctx);
     this.player2.render(this.ctx);
+  }
+  else {
+     this.background.render(this.ctx);
+     console.log("winner value won: " + this.winner);
+   }
   }
 
   execSpectateFrame(timestamp: number) {
@@ -79,9 +85,6 @@ class Pong {
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
     this.winner = newState.winner;
-    if (this.winner > -1){
-    this.scoreP1.score = -1;
-    this.scoreP2.score = -1;}
   }
 
   spectate(gameId: number) {
