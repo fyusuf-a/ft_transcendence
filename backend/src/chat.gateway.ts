@@ -13,7 +13,7 @@ import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
 import { MembershipsService } from './memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
-import { CreateMembershipDto } from '@dtos/memberships';
+import { CreateMembershipDto, QueryMembershipDto } from '@dtos/memberships';
 import { ChannelsService } from './channels/channels.service';
 import { SecureGateway, CheckAuth } from './auth/auth.websocket';
 import { User } from './users/entities/user.entity';
@@ -41,6 +41,24 @@ export class ChatGateway extends SecureGateway {
   }
 
   @WebSocketServer() server: Server;
+
+  @SubscribeMessage('chat-listen')
+  @CheckAuth
+  async handleListen(client: Socket) {
+    this.logger.log(`${client.id} wants to listen to their channels`);
+    const query: QueryMembershipDto = {
+      user: `${this.getAuthenticatedUser(client)?.id}`,
+    };
+    const memberships = await this.membershipsService.findAll(query);
+    for (const membership of memberships) {
+      if (!membership.bannedUntil) {
+        this.logger.log(
+          `Subscribing ${client.id} to channel: [${membership.channelId}]`,
+        );
+        await client.join(membership.channelId as unknown as string);
+      }
+    }
+  }
 
   @SubscribeMessage('chat-join')
   @CheckAuth

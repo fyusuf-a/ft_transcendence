@@ -338,6 +338,12 @@ export default defineComponent({
       id: this.$store.getters.id,
       token: this.$store.getters.token,
     });
+    this.socket.emit(
+        'chat-listen',
+        (response: string) => {
+          this.printResponse(response);
+        },
+      );
     await this.getAllChannels();
     await this.fetchMemberships();
     console.log('Trying to match membership to channel');
@@ -346,7 +352,7 @@ export default defineComponent({
       const channel = this.allChannels.get(membership.channelId);
       if (channel) {
         console.log('Matched membership to channel');
-        this.joinChannelById(channel.id);
+        this.subscribedChannels.push(channel);
       } else {
         console.log("Couldn't match membership to channel");
         // try to get channel and try again?

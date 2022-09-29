@@ -32,7 +32,7 @@ export class MembershipsController {
   constructor(
     private readonly membershipsService: MembershipsService,
     private readonly channelsService: ChannelsService,
-    ) {}
+  ) {}
 
   @Post()
   async create(

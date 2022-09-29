@@ -7,7 +7,7 @@ import {
   UpdateMembershipDto,
   MembershipRoleType,
 } from '@dtos/memberships';
-import { Membership, MembershipRoleType } from './entities/membership.entity';
+import { Membership } from './entities/membership.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import * as bcrypt from 'bcrypt';
