@@ -40,7 +40,7 @@ import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
-import { ChannelType } from '@dtos/channels';
+import { ChannelType, JoinChannelDto } from '@dtos/channels';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -131,23 +131,22 @@ export default defineComponent({
         this.getMessagesForChannel(newChannel.id);
       }
     },
-    async handleChannelJoin(channelStr: string) {
-      const channelId = parseInt(channelStr);
-      console.log('Vue: joining channel ' + channelId);
-      const channel = this.allChannels.get(channelId);
+    async handleChannelJoin(channelDto: JoinChannelDto) {
+      console.log('Vue: joining channel ' + channelDto.id);
+      const channel = this.allChannels.get(channelDto.id);
       if (channel) {
         if (channel.type === ChannelType.PROTECTED) {
           console.log('trying to join protected');
-          this.joinChannelById(channelId, 'string'); // check if it succeeds
+          this.joinChannelById(channelDto.id, channelDto.password); // check if it succeeds
         } else {
-          this.joinChannelById(channelId); // check if it succeeds
+          this.joinChannelById(channelDto.id); // check if it succeeds
         }
         this.handleChannelSelection(channel);
       } else {
         // Try to fetch channel ?
         await this.getAllChannels(); // should just get the one channel instead
-        if (this.allChannels.has(channelId)) {
-          this.handleChannelJoin(channelStr);
+        if (this.allChannels.has(channelDto.id)) {
+          this.handleChannelJoin(channelDto);
         } else {
           console.log("Still can't find the channel :(");
         }
