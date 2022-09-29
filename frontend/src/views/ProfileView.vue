@@ -13,8 +13,8 @@
               </v-card>
               <v-card-actions class="pt-10">
                 <v-row>
-                  <avatar-button />
                   <username-button />
+                  <avatar-button />
                 </v-row>
               </v-card-actions>
             </v-col>
