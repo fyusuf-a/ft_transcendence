@@ -98,8 +98,7 @@ export default defineComponent({
 		  let height: string | number;
       
 		  if (windowRatio < canvasRatio ) {
-		  	height = window.innerHeight;
-		  	console.log("HERE: " + window.innerHeight)
+		  	height = window.innerHeight - 64;
 		  	width = height / canvasRatio;
 		  }
       else {
