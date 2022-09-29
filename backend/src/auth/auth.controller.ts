@@ -7,7 +7,8 @@ import {
   Post,
   UseGuards,
   Req,
-  Res,
+  HttpStatus,
+  Redirect,
 } from '@nestjs/common';
 import { twoFACodeDto } from '@dtos/auth';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
@@ -18,7 +19,6 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { RequestWithUser, JwtToken } from './types';
-import { Response } from 'express';
 import { ResponseUserDto } from '@dtos/users';
 import { IfAuthIsDisabled } from './if-auth-is-disabled.decorator';
 
@@ -32,43 +32,50 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  private redirect(res: Response, id: number, isTwoFAAuthenticated: boolean) {
-    const url = new URL(
-      `${this.configService.get<string>('FRONTEND_URL')}/login`,
-    );
-    const token = this.jwtService.sign({
+  private getToken(id: number, isTwoFAAuthenticated: boolean): JwtToken {
+    return this.jwtService.sign({
       id,
       isTwoFAAuthenticated,
     });
+  }
+
+  private redirect(id: number, isTwoFAAuthenticated: boolean) {
+    const url = new URL(
+      `${this.configService.get<string>('FRONTEND_URL')}/login`,
+    );
+    const token = this.getToken(id, isTwoFAAuthenticated);
     url.search = new URLSearchParams({ id, token } as unknown as Record<
       string,
       string
     >).toString();
-    return res.redirect(url.toString());
+    return { statusCode: HttpStatus.FOUND, url: url.toString() };
   }
 
+  @Redirect()
   @Get('callback')
   @Public()
   @UseGuards(AuthGuard('marvin'))
-  marvinCallback(@Req() req: RequestWithUser, @Res() res: Response): void {
-    return this.redirect(res, req.user.id, false);
+  marvinCallback(@Req() req: RequestWithUser) {
+    return this.redirect(req.user.id, false);
   }
 
+  @Redirect()
   @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')
   @Get('fake-callback')
   @Public()
   @IfAuthIsDisabled()
-  async fakeMarvinCallback(
-    @Res() res: Response,
-    @Query('username') username: string,
-  ) {
-    let user: ResponseUserDto;
-    try {
-      user = await this.usersService.findByName(username);
-    } catch {
-      throw new BadRequestException('User not found');
-    }
-    this.redirect(res, user.id, true);
+  async fakeMarvinCallback(@Query('username') username: string) {
+    const user = await this.usersService.findByName(username);
+    return this.redirect(user.id, true);
+  }
+
+  @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')
+  @Get('fake-token')
+  @Public()
+  @IfAuthIsDisabled()
+  async fakeToken(@Query('username') username: string) {
+    const user = await this.usersService.findByName(username);
+    return this.getToken(user.id, true);
   }
 
   @ApiBearerAuth()
