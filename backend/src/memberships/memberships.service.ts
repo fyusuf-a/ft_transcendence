@@ -62,7 +62,7 @@ export class MembershipsService {
     });
     if (
       membership.role === MembershipRoleType.OWNER ||
-      channel.type === ChannelType.DIRECT
+      (channel && channel?.type === ChannelType.DIRECT)
     ) {
       this.channelsRepository.delete(channel.id);
     }
