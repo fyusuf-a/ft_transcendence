@@ -17,7 +17,10 @@
         <channel-list
           @channel-select-event="handleChannelSelection"
           @channel-join-event="handleChannelJoin"
+          @channel-create-event="handleChannelCreation"
+          @request-user-event="addUserToMap"
           :channels="subscribedChannels"
+          :users="users"
           :unreadChannels="unreadChannels"
           :allChannels="allChannels"
           :key="newUnread"
@@ -35,7 +38,7 @@ import ChannelList from '@/components/Chat/ChannelList.vue';
 import ChatWindow from '@/components/Chat/ChatWindow.vue';
 import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
-import { ChannelDto } from '@/common/dto/channel.dto';
+import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
 interface MenuSelectionEvent {
   option: string;
@@ -79,6 +82,32 @@ export default defineComponent({
     'chat-window': ChatWindow,
   },
   methods: {
+    async createChannel(channelObject: CreateChannelDto): Promise<number> {
+      let response = await axios.post('/channels/', {
+        name: channelObject.name,
+        type: channelObject.type,
+        password: channelObject.password,
+        userId: this.$store.getters.id,
+        userOneId: channelObject.userOneId,
+        userTwoId: channelObject.userTwoId,
+      });
+      if (response.status === 201) {
+        console.log(response.data);
+        return response.data.id;
+      }
+      return -1;
+    },
+    async handleChannelCreation(dto: CreateChannelDto) {
+      if (!dto.name || !dto.type) {
+        console.log('Invalid channel dto');
+      } else {
+        const createdChannelId: number = await this.createChannel(dto);
+        if (createdChannelId > 0) {
+          console.log('Joining new channel');
+          this.handleChannelJoin(createdChannelId.toString());
+        }
+      }
+    },
     getMessages(channelId: number): MessageDto[] {
       const found = this.messages.get(channelId);
       if (found) return found;
@@ -120,6 +149,22 @@ export default defineComponent({
     },
     handleChatMessageMenuSelection(event: MenuSelectionEvent) {
       console.log(`Request to ${event.option} ${event.target}`);
+      let username = this.users.get(+event.target)?.username;
+      if (event.option === 'chat-profile-user') {
+        if (username) {
+          this.$router.push('/profile/' + username);
+        }
+      } else if (event.option === 'chat-message-user') {
+        console.log('messaging user ' + username);
+        let dto = new CreateChannelDto(
+          'direct' + event.target,
+          'direct',
+          undefined,
+          +this.$store.getters.id,
+          +event.target,
+        );
+        this.handleChannelCreation(dto);
+      }
     },
     handleMessage(messageDto: MessageDto) {
       console.log('Vue: incoming...');
@@ -158,15 +203,19 @@ export default defineComponent({
         }
       }
     },
+    async addUserToMap(userId: number) {
+      const newUser: UserDto = await this.fetchUserById(userId);
+      if (newUser) {
+        console.log(
+          `Adding User #${newUser.id} (${newUser.username}) to users`,
+        );
+        this.users.set(userId, newUser);
+      }
+      return newUser;
+    },
     async addMessageToMap(message: MessageDto) {
       if (!this.users.has(message.senderId)) {
-        const newUser: UserDto = await this.fetchUserById(message.senderId);
-        if (newUser) {
-          console.log(
-            `Adding User #${newUser.id} (${newUser.username}) to users`,
-          );
-          this.users.set(message.senderId, newUser);
-        }
+        const newUser: UserDto = await this.addUserToMap(message.senderId);
       }
       if (this.messages.has(message.channelId)) {
         this.insertMessageSorted(this.messages.get(message.channelId), message);
