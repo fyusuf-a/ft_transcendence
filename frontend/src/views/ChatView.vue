@@ -177,7 +177,8 @@ export default defineComponent({
         messageDto &&
         messageDto.senderId &&
         messageDto.content &&
-        messageDto.channelId
+        messageDto.channelId &&
+        !(this.blocks.includes(messageDto.senderId))
       ) {
         this.addMessageToMap(messageDto);
       }
@@ -245,7 +246,7 @@ export default defineComponent({
     async getMessagesForChannel(channelId: number) {
       console.log(`Vue: Grabbing messages on channel ${channelId}`);
       const response = await axios.get(
-        `/messages?channel=${channelId}&order=DESC&page=1&take=10`,
+        `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=1&take=10`,
       );
       console.log(response.data.data);
       let newMessages = response.data.data; // data update to axios standard
@@ -296,10 +297,11 @@ export default defineComponent({
       const response = await axios.get(
         `/users/${this.$store.getters.id}/blocks`
       );
+      console.log(response);
       response.data.forEach((block : ListBlockDto)=> {
         this.blocks.push(block.user.id);
       });
-
+      console.log("blocks: " + this.blocks);
     },
     async getAllChannels() {
       console.log('Vue: Grabbing channels');
@@ -327,6 +329,7 @@ export default defineComponent({
       return [];
     },
   },
+  
   async created() {
     this.socket.emit('auth', {
       id: this.$store.getters.id,

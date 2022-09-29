@@ -205,6 +205,7 @@ export class UsersService {
         if (ids[i] == blocks[j].id) {
           const uUd: DisplayUserDto = {
             username: blocks[j].username,
+            id: blocks[j].id,
           };
           ret[i] = new ListBlockDto(tmp[i], uUd);
           break;
