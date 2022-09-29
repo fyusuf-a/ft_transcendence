@@ -105,7 +105,13 @@ export default defineComponent({
         const createdChannelId: number = await this.createChannel(dto);
         if (createdChannelId > 0) {
           console.log('Joining new channel');
-          this.handleChannelJoin(createdChannelId.toString());
+          this.socket.emit(
+        'chat-listen',
+        (response: string) => {
+          this.printResponse(response);
+          this.refreshChannels();
+        },
+      );
         }
       }
     },
@@ -320,6 +326,23 @@ export default defineComponent({
       }
       this.newUnread += 1;
     },
+    async refreshChannels() {
+      this.subscribedChannels = new Array();
+      await this.getAllChannels();
+      await this.fetchMemberships();
+      console.log('Trying to match membership to channel');
+      for (let membership of this.memberships) {
+        console.log('Checking membership' + membership);
+        const channel = this.allChannels.get(membership.channelId);
+        if (channel) {
+          console.log('Matched membership to channel');
+          this.subscribedChannels.push(channel);
+        } else {
+          console.log("Couldn't match membership to channel");
+          // try to get channel and try again?
+        }
+      }
+    }
   },
   computed: {
     messageInSelectedChannel(): MessageDto[] {
@@ -344,20 +367,7 @@ export default defineComponent({
           this.printResponse(response);
         },
       );
-    await this.getAllChannels();
-    await this.fetchMemberships();
-    console.log('Trying to match membership to channel');
-    for (let membership of this.memberships) {
-      console.log('Checking membership' + membership);
-      const channel = this.allChannels.get(membership.channelId);
-      if (channel) {
-        console.log('Matched membership to channel');
-        this.subscribedChannels.push(channel);
-      } else {
-        console.log("Couldn't match membership to channel");
-        // try to get channel and try again?
-      }
-    }
+      this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
   },
   beforeDestroy() {

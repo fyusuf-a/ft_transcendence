@@ -58,6 +58,7 @@ export class ChatGateway extends SecureGateway {
         await client.join(membership.channelId as unknown as string);
       }
     }
+    return 'SUCCESS';
   }
 
   @SubscribeMessage('chat-join')
