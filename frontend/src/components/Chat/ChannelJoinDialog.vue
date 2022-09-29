@@ -2,7 +2,7 @@
   <v-row justify="center">
     <v-dialog v-model="dialogOpen" scrollable max-width="300px">
       <template v-slot:activator="{ props: open }">
-        <v-btn icon color="primary" dark v-bind="open"> + </v-btn>
+        <span icon color="primary" dark v-bind="open" class="button"> + </span>
       </template>
       <v-card>
         <v-card-title
@@ -16,7 +16,7 @@
             @click="action = 'Create'"
           >
             +
-          </v-btn></v-card-title
+      </v-btn></v-card-title
         >
 
         <v-divider></v-divider>

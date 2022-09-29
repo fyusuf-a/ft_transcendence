@@ -19,6 +19,7 @@
           @channel-join-event="handleChannelJoin"
           @channel-create-event="handleChannelCreation"
           @request-user-event="addUserToMap"
+          @refresh-channels-event="refreshChannels"
           :channels="subscribedChannels"
           :users="users"
           :unreadChannels="unreadChannels"
@@ -104,7 +105,6 @@ export default defineComponent({
       } else {
         const createdChannelId: number = await this.createChannel(dto);
         if (createdChannelId > 0) {
-          console.log('Joining new channel');
           this.socket.emit(
         'chat-listen',
         (response: string) => {
@@ -326,6 +326,7 @@ export default defineComponent({
       this.newUnread += 1;
     },
     async refreshChannels() {
+      this.allChannels.clear();
       this.subscribedChannels = new Array();
       await this.getAllChannels();
       await this.fetchMemberships();
@@ -374,3 +375,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+  .button {
+    cursor: pointer;
+  }
+</style>
