@@ -1,7 +1,8 @@
 <template>
   <div>
-    <h1>Game</h1>
-    <game-window :socket="socket"></game-window>
+      <img src="@/assets/images/king-pong.png" width="100" />
+      <h1 align="center" id="game">Will you be the King of Pong?</h1>
+      <game-window :socket="socket"></game-window>
   </div>
 </template>
 
@@ -43,3 +44,14 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+#game {
+  margin: 30px 0 0 100px;
+}
+img {
+  border-radius: 50%;
+  margin-left: 50%;
+  margin-top: 30px;
+}
+</style>
