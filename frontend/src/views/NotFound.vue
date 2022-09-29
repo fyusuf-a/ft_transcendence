@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import errorImg from '@/assets/images/error-404.jpg';
+import errorImg from '@/assets/images/40cat.png';
 
 export default defineComponent({
   data: () => ({
