@@ -77,7 +77,9 @@ describe('MessagesController', () => {
         [],
         new PageMetaDto(new PageOptionsDto(), takeDefault),
       );
-      jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
+      jest
+        .spyOn(service, 'findAllWithBlocks')
+        .mockImplementation(async () => expected);
       const result = await controller.findAll();
       expect(result).toEqual(expected);
     });
