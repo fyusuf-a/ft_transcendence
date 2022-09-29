@@ -25,13 +25,22 @@ import { mapGetters } from 'vuex';
 export default defineComponent({
   data: () => ({
     rating: 0,
+    idOther: 0,
   }),
   methods: {
     ...mapGetters(['id']),
   },
+  props: ['user'],
   async created() {
-    const response = await axios.get('/users/' + this.id());
-    this.rating = response.data.rating;
+    if (this.user) {
+      let response = await axios.get(`/users/name/${this.user}`);
+      console.log(response.data);
+      this.rating = response.data.rating;
+    }
+    else {
+      let response = await axios.get('/users/' + this.id());
+      this.rating = response.data.rating;
+    }
   },
 });
 </script>

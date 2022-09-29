@@ -1,7 +1,12 @@
 import { Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import { CreateUserDto, QueryUserDto, UpdateUserDto } from '@dtos/users';
+import {
+  CreateUserDto,
+  ListUserDto,
+  QueryUserDto,
+  UpdateUserDto,
+} from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
 import {
@@ -24,6 +29,8 @@ import {
 } from 'typeorm';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { plainToInstance } from 'class-transformer';
+import { Match } from 'src/matches/entities/match.entity';
+import { MatchStatusType, ResponseMatchDto } from 'src/dtos/matches';
 
 enum hexSignature {
   GIF = '47494638',
@@ -43,6 +50,8 @@ export class UsersService {
     private blockRepository: Repository<Block>,
     @InjectRepository(AchievementsLog)
     private achievementsLogRepository: Repository<AchievementsLog>,
+    @InjectRepository(Match)
+    private matchRepository: Repository<Match>,
   ) {
     this.logger = new Logger('remove_avatar');
   }
@@ -100,7 +109,6 @@ export class UsersService {
   }
 
   async updateAvatar(userId: number, filepath: string) {
-    console.log('filepath update: ' + filepath);
     const user: User = await this.usersRepository.findOneByOrFail({
       id: userId,
     });
@@ -156,9 +164,10 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       for (let j = 0; j < friends.length; j++) {
         if (ids[i] == friends[j].id) {
-          const uUd: UpdateUserDto = {
+          const uUd: ListUserDto = {
             username: friends[j].username,
-            avatar: friends[j].avatar,
+            id: friends[j].id,
+            status: friends[j].status,
           };
           ret[i] = new ListFriendshipDto(tmp[i], uUd);
           break;
@@ -183,6 +192,7 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       ids.push(tmp[i].targetId == id ? tmp[i].sourceId : tmp[i].targetId);
     }
+
     const blocks: User[] = await this.usersRepository.find({
       where: {
         id: In(ids),
@@ -192,12 +202,10 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       for (let j = 0; j < blocks.length; j++) {
         if (ids[i] == blocks[j].id) {
-          ret[i] = {
-            username: blocks[i].username,
-            avatar: blocks[i].avatar,
-            id: tmp[i].id,
+          const uUd: UpdateUserDto = {
+            username: blocks[j].username,
           };
-          blocks.splice(j);
+          ret[i] = new ListBlockDto(tmp[i], uUd);
           break;
         }
       }
@@ -241,5 +249,16 @@ export class UsersService {
       isTwoFAEnabled: bool,
     });
     return this.update(userId, updateDto);
+  }
+
+  async findMatches(id: number): Promise<ResponseMatchDto[]> {
+    return this.matchRepository.findBy([
+      { status: MatchStatusType.HOME, awayId: id },
+      { status: MatchStatusType.AWAY, awayId: id },
+      { status: MatchStatusType.DRAW, awayId: id },
+      { status: MatchStatusType.HOME, homeId: id },
+      { status: MatchStatusType.AWAY, homeId: id },
+      { status: MatchStatusType.DRAW, homeId: id },
+    ]);
   }
 }

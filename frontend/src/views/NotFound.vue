@@ -52,9 +52,6 @@ a {
   color: black;
 }
 
-a:visited {
-}
-
 a:hover {
   background: #03dac6;
   color: white;

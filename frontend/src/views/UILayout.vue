@@ -18,9 +18,13 @@ export default defineComponent({
     TheNavigationDrawer,
   },
   data: () => ({
+    
     navigationDrawerVisible: true,
     authentificated: true,
     viewedComponent: 'profile',
   }),
+    beforeCreate() {
+      this.$store.commit('setSocket');
+  }
 });
 </script>

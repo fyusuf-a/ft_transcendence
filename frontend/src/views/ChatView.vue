@@ -285,7 +285,10 @@ export default defineComponent({
     },
   },
   async created() {
-    this.socket.emit('chat-auth', { authorization: this.$store.getters.token });
+    this.socket.emit('auth', {
+      id: this.$store.getters.id,
+      token: this.$store.getters.token,
+    });
     await this.getAllChannels();
     await this.fetchMemberships();
     console.log('Trying to match membership to channel');

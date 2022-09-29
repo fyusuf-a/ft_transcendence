@@ -13,6 +13,12 @@ import {
 } from '@dtos/matches';
 import { User } from 'src/users/entities/user.entity';
 import { Match } from './entities/match.entity';
+import { NotificationsGateway } from 'src/notifications.gateway';
+import { UsersService } from 'src/users/users.service';
+import { ConfigService } from '@nestjs/config';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 
 describe('MatchesController', () => {
   let controller: MatchesController;
@@ -23,12 +29,27 @@ describe('MatchesController', () => {
       controllers: [MatchesController],
       providers: [
         MatchesService,
+        NotificationsGateway,
+        UsersService,
+        ConfigService,
         {
           provide: getRepositoryToken(Match),
           useValue: jest.fn(),
         },
         {
           provide: getRepositoryToken(User),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Friendship),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Block),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(AchievementsLog),
           useValue: jest.fn(),
         },
       ],

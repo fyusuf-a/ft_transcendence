@@ -35,6 +35,7 @@ import {
 } from '@dtos/users';
 import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { Public } from 'src/auth/auth.public.decorator';
+import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AvatarUploadDto } from '@dtos/avatars';
@@ -43,7 +44,7 @@ import { ListFriendshipDto } from '@dtos/friendships';
 import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
 import { RequestWithUser } from 'src/auth/types';
-import { JwtAuthGuard } from 'src/auth/auth.jwt-auth.guard';
+import { ResponseMatchDto } from 'src/dtos/matches';
 
 @ApiTags('users')
 @Controller('users')
@@ -55,10 +56,19 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Public()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Get('me')
   async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
-    return this.usersService.findOne(req.user.id);
+    if (!req.user) {
+      throw new BadRequestException();
+    }
+    let user: ResponseUserDto;
+    try {
+      user = await this.usersService.findOne(req.user.id);
+    } catch (error) {
+      throw new BadRequestException();
+    }
+    return user;
   }
 
   @ApiBearerAuth()
@@ -92,6 +102,21 @@ export class UsersController {
   async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
     try {
       return await this.usersService.findOne(+id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new NotFoundException('Not Found');
+      }
+    }
+  }
+
+  @ApiBearerAuth()
+  @Get('/name/:username')
+  @ApiResponse({ status: 404, description: 'Record not found' })
+  async findOneByUsername(
+    @Param('username') username: string,
+  ): Promise<ResponseUserDto> {
+    try {
+      return await this.usersService.findByName(username);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException('Not Found');
@@ -170,8 +195,8 @@ export class UsersController {
 
   @ApiBearerAuth()
   @Get('/:id/blocks')
-  findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
-    return this.usersService.findBlocks(+id);
+  async findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
+    return await this.usersService.findBlocks(+id);
   }
 
   @ApiBearerAuth()
@@ -180,5 +205,11 @@ export class UsersController {
     @Param('id') id: string,
   ): Promise<ResponseAchievementsLogDto[]> {
     return this.usersService.findUnlockedAchievements(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:id/matches')
+  findPlayedMatches(@Param('id') id: string): Promise<ResponseMatchDto[]> {
+    return this.usersService.findMatches(+id);
   }
 }

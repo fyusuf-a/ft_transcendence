@@ -13,6 +13,7 @@ const routes = [
       {
         path: 'profile',
         component: () => import('../views/ProfileView.vue'),
+        props: true,
       },
       {
         path: 'game',
@@ -27,8 +28,18 @@ const routes = [
         component: () => import('../views/AboutView.vue'),
       },
       {
+        path: 'leaderboard',
+        component: () => import('../views/Leaderboard.vue'),
+      },
+      {
+        path: 'profile/:user',
+        component: () => import('../components/Profile/OtherUsersProfile.vue'),
+        props: true,
+      },
+      {
         path: '/:pathMatch(.*)*',
         component: () => import('../views/NotFound.vue'),
+        name: '404',
       },
     ],
   },
@@ -44,19 +55,16 @@ const router = createRouter({
   routes,
 });
 
-const disableAuthentification = import.meta.env.VITE_DISABLE_AUTHENTIFICATION;
-
-router.beforeEach((to, _, next) => {
+router.beforeEach(async (to, _, next) => {
   if (
     to.name === 'Login' ||
     to.name === 'Login callback' ||
-    to.name === 'Create account' ||
-    disableAuthentification
+    to.name === 'Create account'
   ) {
     next();
   } else {
     try {
-      axios.get('/users/me');
+      await axios.get('/users/me');
       next();
     } catch {
       next({ name: 'Login' });

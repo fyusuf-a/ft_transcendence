@@ -3,9 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from './auth.public.decorator';
+import { IF_AUTH_IS_DISABLED } from './if-auth-is-disabled.decorator';
 
 @Injectable()
-export class JwtTwoAuthGuard extends AuthGuard('two-auth') {
+export class GlobalAuthGuard extends AuthGuard('two-auth') {
   constructor(
     private reflector: Reflector,
     private configService: ConfigService,
@@ -14,14 +15,21 @@ export class JwtTwoAuthGuard extends AuthGuard('two-auth') {
   }
 
   canActivate(context: ExecutionContext) {
+    const authenticationDisabled =
+      this.configService.get<string>('DISABLE_AUTHENTICATION') === 'true';
+    const activateIfAuthIsDisabled = this.reflector.get<boolean>(
+      IF_AUTH_IS_DISABLED,
+      context.getHandler(),
+    );
+    if (activateIfAuthIsDisabled && !authenticationDisabled) return false;
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (this.configService.get<string>('DISABLE_AUTHENTICATION') === 'true') {
+    if (isPublic) {
       return true;
     }
-    if (isPublic) {
+    if (this.configService.get<string>('DISABLE_AUTHENTICATION') === 'true') {
       return true;
     }
     return super.canActivate(context);

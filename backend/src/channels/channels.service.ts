@@ -33,11 +33,9 @@ export class ChannelsService {
     private membershipsService: MembershipsService,
   ) {}
 
-  async create(
-    createChannelDto: CreateChannelDto,
-  ): Promise<ResponseChannelDto> {
+  async create(createChannelDto: CreateChannelDto): Promise<Channel> {
     const channel: Channel = new Channel();
-    let ret: ResponseChannelDto;
+    let ret: Channel;
     let role: MembershipRoleType = MembershipRoleType.PARTICIPANT;
     const userId: number = +createChannelDto.userId;
 
@@ -70,7 +68,7 @@ export class ChannelsService {
   async createDirectChannel(
     createChannelDto: CreateChannelDto,
     channel: Channel,
-  ) {
+  ): Promise<Channel> {
     if (!createChannelDto.userOneId || !createChannelDto.userTwoId)
       throw 'User 1 or user 2 is not defined.';
     if (createChannelDto.userOneId > createChannelDto.userTwoId)
@@ -88,7 +86,7 @@ export class ChannelsService {
       id: createChannelDto.userTwoId,
     });
 
-    const ret: ResponseChannelDto = await this.channelsRepository.save(channel);
+    const ret: Channel = await this.channelsRepository.save(channel);
     this.membershipsService.create({
       userId: +createChannelDto.userOneId,
       role: MembershipRoleType.PARTICIPANT,

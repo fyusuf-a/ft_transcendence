@@ -1,8 +1,4 @@
-import { Logger } from '@nestjs/common';
 import {
-  OnGatewayConnection,
-  OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -10,10 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { MessagesService } from './messages/messages.service';
-import * as jwt from 'jsonwebtoken';
 import { UsersService } from './users/users.service';
-import { User } from './users/entities/user.entity';
-import { TokenUserDto } from '@dtos/auth';
 import { instanceToInstance } from 'class-transformer';
 import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
 
@@ -22,6 +15,8 @@ import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
 import { CreateMembershipDto } from '@dtos/memberships';
 import { ChannelsService } from './channels/channels.service';
+import { SecureGateway, CheckAuth } from './auth/auth.websocket';
+import { User } from './users/entities/user.entity';
 
 export class ChatJoinDto {
   channel: string;
@@ -34,40 +29,28 @@ export class ChatSendDto {
 }
 
 @WebSocketGateway({ cors: true, namespace: 'chat' })
-export class ChatGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class ChatGateway extends SecureGateway {
   constructor(
+    protected readonly usersService: UsersService,
+    protected readonly configService: ConfigService,
     private readonly messagesService: MessagesService,
-    private readonly usersService: UsersService,
     private readonly membershipsService: MembershipsService,
     private readonly channelsService: ChannelsService,
-    private configService: ConfigService,
-  ) {}
-
-  @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('ChatGateway');
-  private authenticatedSockets: Map<string, User> = new Map();
-
-  private checkAuth(client: Socket): boolean {
-    if (
-      this.configService.get<string>('DISABLE_AUTHENTICATION') == 'true' ||
-      this.authenticatedSockets.has(client.id)
-    ) {
-      return true;
-    }
-    throw new WsException('Not Authorized');
+  ) {
+    super('ChatGateway', usersService, configService);
   }
 
+  @WebSocketServer() server: Server;
+
   @SubscribeMessage('chat-join')
+  @CheckAuth
   async handleJoin(client: Socket, payload: ChatJoinDto) {
     this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
-    this.checkAuth(client);
     // TODO: Check if User has permission to join channel here
     const userId = this.authenticatedSockets.get(client.id)?.id;
     const membershipDto: CreateMembershipDto = {
       channelId: +payload.channel,
-      userId: userId,
+      userId: this.getAuthenticatedUser(client)?.id,
       role: MembershipRoleType.PARTICIPANT,
       password: payload.password,
     };
@@ -93,22 +76,22 @@ export class ChatGateway
   }
 
   @SubscribeMessage('chat-leave')
+  @CheckAuth
   async handleLeave(client: Socket, payload: ChatJoinDto) {
     if (!payload?.channel) return 'FAILURE';
     this.logger.log(`${client.id} wants to leave channel [${payload.channel}]`);
-    this.checkAuth(client);
     // TODO: Check if User leaving affects ownership
     client.leave(payload.channel);
     const membershipArray = await this.membershipsService.findAll({
       channel: payload.channel,
-      user: this.authenticatedSockets.get(client.id).id.toString(),
+      user: this.getAuthenticatedUser(client)?.id.toString(),
     });
     if (membershipArray && membershipArray.length === 1) {
       const membership = membershipArray[0];
       if (
         membership &&
         membership.id &&
-        membership.userId === this.authenticatedSockets.get(client.id).id &&
+        membership.userId === this.getAuthenticatedUser(client)?.id &&
         membership.channelId === parseInt(payload.channel)
       ) {
         await this.membershipsService.remove(membership.id);
@@ -117,31 +100,9 @@ export class ChatGateway
     }
   }
 
-  @SubscribeMessage('chat-auth')
-  async handleAuth(client: Socket, payload: any) {
-    this.logger.log(
-      `Client ${client.id} is trying to auth socket with token: ${payload.authorization}`,
-    );
-    try {
-      const token = payload.authorization;
-      const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      const user = await this.usersService.findOne(
-        +(decode as TokenUserDto).id,
-      );
-      if (!user) {
-        throw new WsException('Invalid Token');
-      }
-      this.authenticatedSockets.set(client.id, user);
-      return 'SUCCESS';
-    } catch (err) {
-      this.authenticatedSockets.delete(client.id);
-      throw new WsException('Not Authorized');
-    }
-  }
-
   @SubscribeMessage('chat-send')
+  @CheckAuth
   async handleSend(client: Socket, payload: ChatSendDto): Promise<string> {
-    this.checkAuth(client);
     const target = payload.channel;
     const message = payload.message;
     if (!target || !message) {
@@ -153,7 +114,7 @@ export class ChatGateway
     const messageDto = new CreateMessageDto();
     messageDto.channelId = parseInt(payload.channel);
     messageDto.content = message;
-    messageDto.senderId = this.authenticatedSockets.get(client.id).id;
+    messageDto.senderId = this.getAuthenticatedUser(client)?.id;
 
     // TODO: Check if User has permission to send message here
     const messageResponse = await this.messagesService.create(messageDto);
@@ -161,18 +122,5 @@ export class ChatGateway
       instanceToInstance(messageResponse);
     this.server.to(target).emit('chat-message', messageResponseDto);
     return 'Message Confirmed';
-  }
-
-  afterInit() {
-    this.logger.log('Initialized');
-  }
-
-  handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
-    this.authenticatedSockets.delete(client.id);
-  }
-
-  async handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
   }
 }

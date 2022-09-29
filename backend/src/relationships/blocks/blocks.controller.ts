@@ -31,6 +31,17 @@ export class BlocksController {
     return await this.blocksService.create(createblockDto);
   }
 
+  @Post(':username')
+  async createFromUsername(
+    @Param('username') username: string,
+    @Body() createfriendshipDto: CreateBlockDto,
+  ): Promise<ResponseBlockDto> {
+    return await this.blocksService.createFromUsername(
+      username,
+      createfriendshipDto,
+    );
+  }
+
   @Get()
   findAll(@Query() query?: QueryBlockDto): Promise<ResponseBlockDto[]> {
     return this.blocksService.findAll(query);
