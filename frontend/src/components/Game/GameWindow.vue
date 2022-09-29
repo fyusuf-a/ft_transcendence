@@ -1,28 +1,29 @@
 <template>
 	<div class="page">
 		<div class="actions">
-      <v-row>
-        <v-btn class="button" title="Join the queue to play" @click="joinQueue" >Join Queue</v-btn>
-      </v-row>
-      <v-row>
-        <v-btn class="button" title="Enter the id of the game you want to watch" @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
-        <input v-model="spectateGameId">
-      </v-row>
-      <v-row>
-        <v-btn class="button" title="Enter the name of the user you want to challenge" @click="() => challengeUser(+userIdField)">Issue Challenge To User</v-btn>
-        <input id="userInput" v-model="userIdField">
-      </v-row>
-      <v-row>
-        <v-btn class="button" title="Accept challenge from user" @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
-      </v-row>
+			<v-row>
+				<v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
+			</v-row>
+			<v-row>
+				<v-btn class="button" title="Enter the id of the game you want to watch" @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
+				<input v-model="spectateGameId">
+			</v-row>
+			<v-row>
+				<v-btn class="button" title="Enter the name of the user you want to challenge" @click="() => challengeUser(+userIdField)">Issue Challenge To User</v-btn>
+				<input id="userInput" v-model="userIdField">
+			</v-row>
+			<v-row>
+				<v-btn class="button" title="Accept challenge from user" @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
+			</v-row>
 		</div>
-    <div align="center" >
-		  <canvas ref="pong" width="640" height="480" style="width:80%; height:80%" id="pong" ></canvas>
-		  <canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
-		  <canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
-		  <canvas id="score" width="70" height="70" style="visibility: hidden"></canvas>
-		  <canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
-    </div>
+		<br />
+		<div>
+			<canvas ref="pong" width="640" height="480" style="" id="responsive-canvas" ></canvas>
+			<canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
+			<canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
+      <canvas id="score" width="70" height="70" style="visibility: hidden"></canvas>
+			<canvas id="ball" width="13" height="13" style="visibility: hidden"></canvas>
+		</div>
 	</div>
 </template>
 
@@ -77,16 +78,37 @@ export default defineComponent({
 		joinQueue() {
 			const gameOptions: GameOptionsDto = {  };
 			this.socket.emit('game-queue', gameOptions);
-			console.log("eeeeeeee "+  gameOptions.homeId);
+      this.resize();
 		},
     challengeUser(userId: number) {
       const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
 			this.socket.emit('game-queue', gameOptions);
+      this.resize();
     },
     acceptChallengeFromUser(userId: number) {
       const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
+      this.resize();
     },
+	  resize() {
+		  const canvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
+		  const canvasRatio = canvas.height / canvas.width;
+		  const windowRatio = window.innerHeight / window.innerWidth;
+		  let width: string | number;
+		  let height: string | number;
+      
+		  if (windowRatio < canvasRatio ) {
+		  	height = window.innerHeight;
+		  	console.log("HERE: " + window.innerHeight)
+		  	width = height / canvasRatio;
+		  }
+      else {
+		  	width = window.innerWidth;
+		  	height = width * canvasRatio;
+		  }
+		  canvas.style.width = width + 'px';
+		  canvas.style.height = height + 'px';
+		},
 		spectateGame(gameId: number) {
 			if (!this.pong) {
 				this.pong = new Pong(
@@ -105,7 +127,7 @@ export default defineComponent({
 			this.gameId = gameId;
 
 			this.spectateGame(this.gameId);
-
+			
 			window.addEventListener("keydown", (event) => {
 				console.log("key down detected!!");
 				console.log("key: " + event.code);
@@ -128,11 +150,12 @@ export default defineComponent({
 					this.socket.emit('game-move', { gameId: this.gameId, dy: 0 });
 				}
 			});
+			
 		}
 	},
 	mounted() {
 		console.log('mounted');
-		this.pongCanvas = document.getElementById('pong') as HTMLCanvasElement;
+		this.pongCanvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
 		this.backgroundCanvas = document.getElementById(
 			'background',
 		) as HTMLCanvasElement;
@@ -140,7 +163,7 @@ export default defineComponent({
 		this.scoreCanvas = document.getElementById('score') as HTMLCanvasElement;
 		this.ballCanvas = document.getElementById('ball') as HTMLCanvasElement;
 		this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
-
+    window.addEventListener('resize', this.resize);
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
 	},
 	created() {
@@ -175,5 +198,12 @@ input {
   background: white;
   margin-top: 15px;
   margin-right: 20px;
+}
+canvas#responsive-canvas {
+	width: 65%;
+	position: relative;
+	display: block;
+	margin-left: auto;
+	margin-right: auto 
 }
 </style>
