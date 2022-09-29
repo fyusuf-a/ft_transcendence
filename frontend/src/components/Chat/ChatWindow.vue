@@ -3,7 +3,7 @@
     <v-container fill-height>
       <v-row dense max-height="10px">
         <v-col cols="11">
-          {{ channel.name }}
+          <span>{{ getChannelDisplay(channel) }}</span>
         </v-col>
         <v-col cols="1">
           <chat-window-menu
@@ -111,6 +111,12 @@ export default defineComponent({
     },
     handleLeaveChannelEvent() {
       this.$emit('chat-leave-channel');
+    },
+    getChannelDisplay(channel: ChannelDto): string {
+      if (channel.type !== 'direct') return channel.name;
+      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userOneId) return this.getUsername(channel.userOneId as number);
+      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userTwoId) return this.getUsername(channel.userTwoId as number);
+      return "...";
     },
   },
   computed: {},

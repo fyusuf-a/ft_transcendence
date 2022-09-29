@@ -5,6 +5,7 @@ import {
   QueryMembershipDto,
   CreateMembershipDto,
   UpdateMembershipDto,
+  MembershipRoleType,
 } from '@dtos/memberships';
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -54,7 +55,17 @@ export class MembershipsService {
     return this.membershipRepository.update(id, updateMembershipDto);
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const membership = await this.findOne(id);
+    const channel = await this.channelsRepository.findOneByOrFail({
+      id: membership.channelId,
+    });
+    if (
+      membership.role === MembershipRoleType.OWNER ||
+      (channel && channel?.type === ChannelType.DIRECT)
+    ) {
+      this.channelsRepository.delete(channel.id);
+    }
     return this.membershipRepository.delete(id);
   }
 
