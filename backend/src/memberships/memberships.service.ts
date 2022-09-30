@@ -11,10 +11,12 @@ import { Membership } from './entities/membership.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import * as bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MembershipsService {
   constructor(
+    protected readonly configService: ConfigService,
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
     @InjectRepository(User)
@@ -103,6 +105,8 @@ export class MembershipsService {
     user: User,
     channel: Channel,
   ) {
+    if (this.configService.get('DISABLE_AUTHENTICATION') === 'true')
+      return true;
     let isAuthorized = false;
     if (createMembershipDto.role === MembershipRoleType.OWNER) {
       throw new UnauthorizedException();
