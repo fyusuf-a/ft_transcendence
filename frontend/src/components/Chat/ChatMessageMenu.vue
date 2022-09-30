@@ -45,7 +45,6 @@ export default defineComponent({
         { label: 'View Profile', event: 'chat-profile-user' },
         { label: 'Challenge', event: 'chat-challenge-user' },
         { label: 'Message', event: 'chat-message-user' },
-        { label: 'Friend', event: 'chat-friend-user' },
         { label: 'Block', event: 'chat-block-user' },
       ],
       adminOptions: [
