@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { CreateGameDto, StateDto } from '@dtos/game';
-import { GameState } from './game-state';
+import { GameState, SCORE_TO_WIN } from './game-state';
 const FRAMERATE = 30;
 
 export class Game {
@@ -22,6 +22,7 @@ export class Game {
 
   end() {
     clearInterval(this.updateInterval);
+
   }
 
   updateServer() {
@@ -34,10 +35,8 @@ export class Game {
       scoreP2: { score: this.state.score[1] },
       winner: this.state.winner,
     };
-    // console.log(this.state.score[0])
-    // console.log(this.state.score[1])
     
-    if ((this.state.score[0] || this.state.score[1]) > 4) {
+    if (this.state.score[0] == SCORE_TO_WIN || this.state.score[1] == SCORE_TO_WIN) {
       this.end();
     }
     this.server.to(this.room).emit('game-state', state);

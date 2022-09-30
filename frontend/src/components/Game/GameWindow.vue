@@ -117,6 +117,7 @@ export default defineComponent({
 					this.paddleCanvas,
 					this.scoreCanvas,
 					this.socket as Socket,
+					gameId as number,
 				);
 			}
 			this.pong.spectate(gameId);

@@ -12,6 +12,10 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
+import { MatchDto, MatchStatusType } from 'src/dtos/matches';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Match } from 'src/matches/entities/match.entity';
+import { Repository } from 'typeorm';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway extends SecureGateway {
@@ -19,6 +23,8 @@ export class GameGateway extends SecureGateway {
     protected readonly usersService: UsersService,
     protected readonly configService: ConfigService,
     private readonly matchService: MatchesService,
+    @InjectRepository(Match)
+    private readonly matchRepository : Repository<Match>
   ) {
     super('GameGateway', usersService, configService);
   }
@@ -103,6 +109,20 @@ export class GameGateway extends SecureGateway {
       `${client.id} joining queue with options ${JSON.stringify(gameOptions)}`,
     );
     return 'Success: joined queue';
+  }
+
+  @SubscribeMessage('endGame')
+  @CheckAuth
+  async terminate_game(client: Socket, gameId: number)
+  {
+    const match : MatchDto = await this.matchService.findOne(gameId);
+    if (match.status == MatchStatusType.IN_PROGRESS)
+    {
+      match.status = (this.games[gameId].winner) ? MatchStatusType.AWAY : MatchStatusType.HOME;
+      await this.matchRepository.save(match);
+    }
+    this.logger.log(match);
+    console.log("received endgame event");
   }
 
   @SubscribeMessage('game-spectate')

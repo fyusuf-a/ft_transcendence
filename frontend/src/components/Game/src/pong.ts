@@ -21,6 +21,7 @@ class Pong {
   requestID: number | undefined;
   socket: Socket;
   lastUpdate: number;
+  gameId : number | undefined;
 
   constructor(
     pongCanvas: HTMLCanvasElement | null,
@@ -29,6 +30,7 @@ class Pong {
     paddleCanvas: HTMLCanvasElement | null,
     scoreCanvas: HTMLCanvasElement | null,
     socket: Socket,
+    gameId : number,
   ) {
     this.ballCanvas = ballCanvas;
     this.canvas = pongCanvas;
@@ -63,6 +65,11 @@ class Pong {
   else {
      this.background.render(this.ctx);
      console.log("winner value won: " + this.winner);
+     console.log(this.gameId);
+     this.socket.emit("endGame", this.gameId);
+     // do request for matchDto (? or not ?)
+     //can we call the router or emit event to display post match ?????
+     
    }
   }
 
