@@ -34,7 +34,9 @@ export class MessagesController {
     @Query() query?: QueryMessageDto,
     @Query() pageOptions?: PageOptionsDto,
   ): Promise<PageDto<ResponseMessageDto>> {
-    return this.messagesService.findAll(query, pageOptions);
+    if (query && query.sender)
+      return this.messagesService.findAll(query, pageOptions);
+    else return this.messagesService.findAllWithBlocks(query, pageOptions);
   }
 
   @Post()

@@ -15,4 +15,10 @@ export class QueryMessageDto {
   @IsOptional()
   @IsNumberString()
   sender?: string;
+
+  @ApiPropertyOptional({
+    description: 'Id of the user asking for the messages',
+  })
+  @IsOptional()
+  userId?: string;
 }
