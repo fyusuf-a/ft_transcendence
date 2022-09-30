@@ -64,6 +64,9 @@ export default defineComponent({
   },
   computed: {
     options: function (): OptionType[] {
+      if (this.targetId === this.$store.getters.id) {
+        return [this.regularOptions[0]];
+      }
       if (this.clientIsAdmin) {
         return this.regularOptions.concat(this.adminOptions);
       }
