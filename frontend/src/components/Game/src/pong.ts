@@ -54,23 +54,42 @@ class Pong {
   }
 
   render() {
-    if (this.winner < 0) {
-    this.background.render(this.ctx);
-    this.scoreP1.render(this.ctx);
-    this.scoreP2.render(this.ctx);
-    this.ball.render(this.ctx);
-    this.player1.render(this.ctx);
-    this.player2.render(this.ctx);
-  }
-  else {
-     this.background.render(this.ctx);
-     console.log("winner value won: " + this.winner);
-     console.log(this.gameId);
-     this.socket.emit("endGame", this.gameId);
-     // do request for matchDto (? or not ?)
-     //can we call the router or emit event to display post match ?????
-     
-   }
+    if (this.winner === -1) {
+      this.background.render(this.ctx);
+      this.scoreP1.render(this.ctx);
+      this.scoreP2.render(this.ctx);
+      this.ball.render(this.ctx);
+      this.player1.render(this.ctx);
+      this.player2.render(this.ctx);
+    }
+    // do something when the game abort
+    else if (this.winner === 2) {
+      this.ctx.fillStyle = "#000000";
+      this.ctx.rect(0, 0, 640, 480);
+      this.ctx.fill();
+      const x = 640 / 2;
+      const y = 480 / 2;
+      this.ctx.font = 'small-caps 30px Roboto';
+      this.ctx.textAlign = 'center';
+      this.ctx.fillStyle = "#FFFFFF";
+      this.ctx.fillText('The game has stopped :(', x, y);
+    }
+    else {
+      this.ctx.fillStyle = "#000000";
+      this.ctx.rect(0, 0, 640, 480);
+      this.ctx.fill();
+      const x = 640 / 2;
+      const y = 480 / 2;
+      this.ctx.font = 'small-caps 30px Roboto';
+      this.ctx.fillStyle = "#03dac6";
+      this.ctx.textAlign = 'center';
+      this.ctx.fillText('{{username}} wins the game!', x, y);
+      this.ctx.fillStyle = "#FFFFFF";
+      this.ctx.fillText('{{username}} wins the game!', x - 1, y - 1);
+      console.log("winner value won: " + this.winner);
+      console.log(this.gameId);
+      this.socket.emit("endGame", this.gameId);
+    }
   }
 
   execSpectateFrame(timestamp: number) {
