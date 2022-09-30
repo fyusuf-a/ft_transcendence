@@ -2,7 +2,11 @@
     <div>
       <v-row>
         <v-card class="pa-2 ml-15 mr-15 mt-5" width="84%" >
-          <v-card-title>{{ username }}</v-card-title>
+          <br />
+          <v-row class="ml-1">
+            <v-card-title>{{ username }}</v-card-title>
+            <add-as-friend v-if="user != userId" :user="user" />
+          </v-row>
           <v-container fluid>
             <v-row dense>
               <v-col :cols="4">
@@ -27,6 +31,7 @@
   
   <script lang="ts">
   import MyFriends from '@/components/Profile/MyFriends.vue';
+  import AddAsFriend from '@/components/Profile/AddAsFriend.vue';
   import MyAchievements from '@/components/Profile/MyAchievements.vue';
   import MyMatchHistory from '@/components/Profile/MyMatchHistory.vue';
   import MyStatistics from '@/components/Profile/MyStatistics.vue';
@@ -40,6 +45,7 @@
     username: string,
     avatar: string,
     idOther: number,
+    userId: string,
   }
   
   export default defineComponent({
@@ -49,11 +55,13 @@
         username: '',
         avatar: '',
         idOther: 0,
+        userId: '',
       };
     },
     props: ['user'],
     components: {
       "my-friends": MyFriends,
+      'add-as-friend': AddAsFriend,
       "my-achievements": MyAchievements,
       "my-matches": MyMatchHistory,
       "my-statistics": MyStatistics,
@@ -62,6 +70,8 @@
       ...mapGetters(['id']),
     },
     async created() {
+      let responseUs = await axios.get('/users/' + this.id());
+      this.userId = (responseUs.data.username);
       let response;
         try { 
           response = await axios.get(`/users/name/${this.user}`);
