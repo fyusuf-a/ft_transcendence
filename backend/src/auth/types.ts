@@ -1,8 +1,4 @@
-import { UserDto } from '@dtos/users';
-
-export type RequestWithUser = {
-  user: UserDto;
-};
+import { User } from '../users/entities/user.entity';
 
 export type JwtToken = string;
 

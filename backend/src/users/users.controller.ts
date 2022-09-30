@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   Response,
   StreamableFile,
   UploadedFile,
@@ -42,8 +41,9 @@ import { ConfigService } from '@nestjs/config';
 import { ListFriendshipDto } from '@dtos/friendships';
 import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
-import { RequestWithUser } from 'src/auth/types';
 import { ResponseMatchDto } from 'src/dtos/matches';
+import { AuthUser } from 'src/auth/user.decorator';
+import { User } from './entities/user.entity';
 
 @ApiTags('users')
 @Controller('users')
@@ -57,17 +57,8 @@ export class UsersController {
   @Public()
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
-    if (!req.user) {
-      throw new BadRequestException();
-    }
-    let user: ResponseUserDto;
-    try {
-      user = await this.usersService.findOne(req.user.id);
-    } catch (error) {
-      throw new BadRequestException();
-    }
-    return user;
+  whoAmI(@AuthUser() authenticatedUser: User): ResponseUserDto {
+    return authenticatedUser;
   }
 
   @ApiBearerAuth()

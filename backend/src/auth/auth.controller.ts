@@ -6,7 +6,6 @@ import {
   Query,
   Post,
   UseGuards,
-  Req,
   HttpStatus,
   Redirect,
 } from '@nestjs/common';
@@ -18,9 +17,11 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
-import { RequestWithUser, JwtToken } from './types';
+import { JwtToken } from './types';
 import { ResponseUserDto } from '@dtos/users';
 import { IfAuthIsDisabled } from './if-auth-is-disabled.decorator';
+import { User } from '../users/entities/user.entity';
+import { AuthUser } from './user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -55,8 +56,8 @@ export class AuthController {
   @Get('callback')
   @Public()
   @UseGuards(AuthGuard('marvin'))
-  marvinCallback(@Req() req: RequestWithUser) {
-    return this.redirect(req.user.id, false);
+  marvinCallback(@AuthUser() user: User) {
+    return this.redirect(user.id, false);
   }
 
   @Redirect()
@@ -80,14 +81,13 @@ export class AuthController {
 
   @ApiBearerAuth()
   @Post('2fa/generate')
-  async generate(@Req() req: RequestWithUser) {
-    const user: ResponseUserDto = await this.usersService.findOne(req.user.id);
+  async generate(@AuthUser() user: User) {
     if (user.isTwoFAEnabled) {
       throw new BadRequestException(
         'Two factor authentication already enabled',
       );
     }
-    return await this.authService.generateTwoFASecret(req.user.id);
+    return await this.authService.generateTwoFASecret(user.id);
   }
 
   @ApiBearerAuth()
@@ -95,27 +95,27 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post('2fa/authenticate')
   async authenticate(
-    @Req() req: RequestWithUser,
+    @AuthUser() user: User,
     @Body() body: twoFACodeDto,
   ): Promise<JwtToken> {
     const isCodeValid =
       await this.authService.verifyTwoFactorAuthenticationCode(
         body.twoFACode,
-        req.user.id,
+        user.id,
       );
     if (!isCodeValid) {
       throw new BadRequestException('Invalid two factor authentication code');
     }
-    await this.usersService.setTwoFA(true, req.user.id);
+    await this.usersService.setTwoFA(true, user.id);
     return this.jwtService.sign({
-      id: req.user.id,
+      id: user.id,
       isTwoFAAuthenticated: true,
     });
   }
 
   @ApiBearerAuth()
   @Get('2fa/deactivate')
-  async deactivate(@Req() req: RequestWithUser) {
-    await this.usersService.setTwoFA(false, req.user.id);
+  async deactivate(@AuthUser() user: User) {
+    await this.usersService.setTwoFA(false, user.id);
   }
 }

@@ -9,7 +9,6 @@ import {
   BadRequestException,
   Query,
   UnauthorizedException,
-  Req,
 } from '@nestjs/common';
 import { MembershipsService } from './memberships.service';
 import {
@@ -21,10 +20,11 @@ import {
 } from '@dtos/memberships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundError } from 'typeorm';
-import { Request } from 'express';
 import { User } from 'src/users/entities/user.entity';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
+import { AuthUser } from 'src/auth/user.decorator';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')
@@ -38,13 +38,13 @@ export class MembershipsController {
 
   @Post()
   async create(
+    @AuthUser() user: User,
     @Body() createMembershipDto: CreateMembershipDto,
-    @Req() req: Request,
   ): Promise<ResponseMembershipDto> {
     try {
       await this.membershipsService.isAuthorized(
         createMembershipDto,
-        req.user as User,
+        user as User,
         await this.channelsService.findOne(createMembershipDto.channelId),
       );
       return await this.membershipsService.create(createMembershipDto);
@@ -72,9 +72,9 @@ export class MembershipsController {
 
   @Patch(':id')
   async update(
+    @AuthUser() user: User,
     @Param('id') id: string,
     @Body() updateMembershipDto: UpdateMembershipDto,
-    @Req() req: Request,
   ) {
     if (updateMembershipDto.role === MembershipRoleType.ADMIN) {
       if (this.configService.get('DISABLE_AUTHENTICATION') === 'true') {
@@ -82,7 +82,7 @@ export class MembershipsController {
       }
       if (
         !(await this.membershipsService.userIsAdmin(
-          (req.user as User).id,
+          user.id,
           (
             await this.membershipsService.findOne(+id)
           ).channelId,
