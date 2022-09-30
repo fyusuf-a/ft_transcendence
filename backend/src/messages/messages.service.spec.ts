@@ -9,6 +9,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { PageDto } from '@dtos/pages';
 import { Message } from './entities/message.entity';
 import { Membership } from 'src/memberships/entities/membership.entity';
+import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Block } from 'src/relationships/entities/block.entity';
+import { UsersService } from 'src/users/users.service';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Match } from 'src/matches/entities/match.entity';
 
 const messageNumber = 2;
 const userNumber = 2;
@@ -22,6 +27,7 @@ describe('MessagesService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MessagesService,
+        UsersService,
         {
           provide: getRepositoryToken(Message),
           useValue: new MockRepository<MockMessageEntity>(
@@ -43,6 +49,22 @@ describe('MessagesService', () => {
             () => new Membership(),
             membershipNumber,
           ),
+        },
+        {
+          provide: getRepositoryToken(Friendship),
+          useValue: new MockRepository(() => new Friendship(), userNumber),
+        },
+        {
+          provide: getRepositoryToken(Block),
+          useValue: new MockRepository(() => new Block(), userNumber),
+        },
+        {
+          provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Match),
+          useValue: jest.fn(),
         },
       ],
     }).compile();
