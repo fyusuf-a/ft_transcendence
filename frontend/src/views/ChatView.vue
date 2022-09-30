@@ -5,6 +5,7 @@
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
+          :membership="activeMembership"
           :messages="getMessages(selectedChannel.id)"
           :users="users"
           :socket="socket"
@@ -54,6 +55,7 @@ interface DataReturnType {
   subscribedChannels: Array<ChannelDto>;
   unreadChannels: Set<number>;
   selectedChannel?: ChannelDto;
+  activeMembership?: MembershipDto;
   messages: Map<number, Array<MessageDto>>;
   newMessage: number;
   newUnread: number;
@@ -74,6 +76,7 @@ export default defineComponent({
       subscribedChannels: [],
       unreadChannels: new Set(),
       selectedChannel: undefined,
+      activeMembership: undefined,
       messages: new Map(),
       newMessage: 0,
       newUnread: 0,
@@ -132,6 +135,7 @@ export default defineComponent({
         console.log(`parent says: ${this.selectedChannel.name}`);
         this.unreadChannels.delete(this.selectedChannel.id);
         this.getMessagesForChannel(newChannel.id);
+        this.fetchMembership(newChannel.id);
       }
     },
     async handleChannelJoin(channelDto: JoinChannelDto) {
@@ -300,6 +304,16 @@ export default defineComponent({
         }
       }
       this.selectedChannel = undefined;
+    },
+    async fetchMembership(channelId: number) {
+      console.log(
+        `Vue: Fetching membership for user ${this.$store.getters.id} on channel ${channelId}`,
+      );
+      const response = await axios.get(
+        `/memberships?channel=${channelId}&user=${this.$store.getters.id}`,
+      );
+      console.log(response.data);
+      this.activeMembership = response.data[0];
     },
     async fetchMemberships() {
       console.log(
