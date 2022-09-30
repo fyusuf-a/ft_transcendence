@@ -341,7 +341,8 @@ export default defineComponent({
     },
     async refreshChannels() {
       this.allChannels.clear();
-      this.subscribedChannels = new Array();
+      this.subscribedChannels = [];
+      this.blocks = [];
       await this.getAllChannels();
       await this.fetchMemberships();
       await this.fetchBlocks();
