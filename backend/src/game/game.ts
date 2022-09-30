@@ -22,7 +22,6 @@ export class Game {
 
   end() {
     clearInterval(this.updateInterval);
-
   }
 
   updateServer() {
@@ -35,15 +34,17 @@ export class Game {
       scoreP2: { score: this.state.score[1] },
       winner: this.state.winner,
     };
-    
-    if (this.state.score[0] == SCORE_TO_WIN || this.state.score[1] == SCORE_TO_WIN) {
+
+    if (
+      this.state.score[0] == SCORE_TO_WIN ||
+      this.state.score[1] == SCORE_TO_WIN
+    ) {
       this.end();
     }
     this.server.to(this.room).emit('game-state', state);
   }
 
   startServer() {
-    console.log('starting server');
     this.updateInterval = setInterval(
       () => this.updateServer(),
       1000 / FRAMERATE,

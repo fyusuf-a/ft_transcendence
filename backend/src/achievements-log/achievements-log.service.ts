@@ -38,10 +38,50 @@ export class AchievementsLogService {
     newLog.achievement = await this.achievementRepository.findOneByOrFail({
       id: achievementsLogdto.achievementId,
     });
-    return this.achievementsLogRepository.save(newLog);
+    try {
+      return this.achievementsLogRepository.save(newLog);
+    } catch {
+      return null;
+    }
   }
 
   remove(id: number): Promise<DeleteResult> {
     return this.achievementsLogRepository.delete(id);
+  }
+
+  async unlockAchievements(user: User) {
+    switch (user.wins) {
+      case 50: {
+        this.create({ userId: user.id, achievementId: 6 });
+      }
+      case 10: {
+        this.create({ userId: user.id, achievementId: 5 });
+      }
+      case 1: {
+        this.create({ userId: user.id, achievementId: 4 });
+      }
+    }
+    const played: number = user.wins + user.losses;
+    console.log(user.id + " played  " + played)
+    switch (played) {
+      case 50: {
+        this.create({ userId: user.id, achievementId: 3 });
+      }
+      case 10: {
+        this.create({ userId: user.id, achievementId: 2 });
+      }
+      case 1: {
+        this.create({ userId: user.id, achievementId: 1 });
+      }
+    }
+    if (
+      (await this.achievementsLogRepository.countBy({ userId: user.id })) == 6
+    )
+      this.create({ userId: user.id, achievementId: 7 });
+  }
+
+  async handlePostMatch(users: Array<User>) {
+    if (users[0]) this.unlockAchievements(users[0]);
+    if (users[1]) this.unlockAchievements(users[1]);
   }
 }

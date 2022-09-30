@@ -4,6 +4,7 @@ import { Background } from './background';
 import { Ball } from './ball';
 import { Score } from './score';
 import { Paddle } from './paddle';
+import { withScopeId } from 'vue';
 
 const FRAMERATE = 30;
 
@@ -73,6 +74,7 @@ class Pong {
       this.ctx.textAlign = 'center';
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillText('The game has stopped :(', x, y);
+      //disconnect game ?
     }
     else {
       this.ctx.fillStyle = "#000000";
@@ -87,15 +89,19 @@ class Pong {
       this.ctx.fillStyle = "#FFFFFF";
       this.ctx.fillText('{{username}} wins the game!', x - 1, y - 1);
       console.log("winner value won: " + this.winner);
-      console.log(this.gameId);
-      this.socket.emit("endGame", this.gameId);
+      
     }
   }
 
-  execSpectateFrame(timestamp: number) {
+  execSpectateFrame(timestamp: number){
     if (timestamp > this.lastUpdate + 1000 / FRAMERATE) {
       this.lastUpdate = timestamp;
       this.render();
+      if (this.winner == 0 || this.winner == 1)
+      {
+        console.log(this.gameId);
+        this.socket.emit("endGame", this.gameId);
+      }
     }
     this.requestID = requestAnimationFrame(this.execSpectateFrame.bind(this));
   }
@@ -114,6 +120,7 @@ class Pong {
   }
 
   spectate(gameId: number) {
+    this.gameId = gameId;
     this.socket.on('game-state', (e) => this.updateState(e));
     this.socket.emit('game-spectate', gameId);
     this.execSpectateFrame(-1);

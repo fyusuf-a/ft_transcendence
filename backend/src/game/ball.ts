@@ -25,9 +25,9 @@ export class Ball {
   }
 
   new_trajectory(py, bs) {
-    var interY = py + 50 - this.y;
-    var normalInterY = (interY / (100 / 2));
-    var bounceAngle = normalInterY * 1.309; // 1.309rad  = 75deg
+    const interY = py + 50 - this.y;
+    const normalInterY = interY / (100 / 2);
+    const bounceAngle = normalInterY * 1.309; // 1.309rad  = 75deg
     //this.dx = SPEED * Math.cos(bounceAngle);
     this.vy = bs * -Math.sin(bounceAngle);
 

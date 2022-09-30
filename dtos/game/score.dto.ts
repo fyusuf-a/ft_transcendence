@@ -1,4 +1,3 @@
 export interface ScoreDto {
-    score: number;
+  score: number;
 }
-  

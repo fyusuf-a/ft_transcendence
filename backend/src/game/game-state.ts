@@ -97,7 +97,6 @@ export class GameState {
     this.players[player].move(dy);
   }
 
-
   collision_update(): boolean {
     const next_ball = this.ball;
     next_ball.x = this.ball.x + this.ball.vx;
