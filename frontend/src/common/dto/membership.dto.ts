@@ -1,4 +1,4 @@
-import { MembershipRoleType } from "@dtos/memberships";
+import { MembershipRoleType } from '@dtos/memberships';
 
 export class MembershipDto {
   id: number;
@@ -6,7 +6,7 @@ export class MembershipDto {
   userId: number;
   mutedUntil?: Date;
   bannedUntil?: Date;
-  role: MembershipRoleType
+  role: MembershipRoleType;
 
   constructor(
     id: number,

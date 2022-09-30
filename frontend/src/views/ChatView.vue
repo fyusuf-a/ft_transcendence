@@ -2,6 +2,13 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="10">
+        <channel-invite-dialog
+          v-model="inviting"
+          :selectedChannel="selectedChannel"
+          @chat-invite-user="handleUserInvite"
+        >
+
+        </channel-invite-dialog>
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
@@ -12,6 +19,7 @@
           :key="newMessage"
           @chat-leave-channel="handleLeaveChannelEvent"
           @chat-message-menu-selection="handleChatMessageMenuSelection"
+          @chat-invite-channel="inviting = true"
         ></chat-window>
       </v-col>
       <v-col cols="12" md="2">
@@ -38,6 +46,7 @@ import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 import ChannelList from '@/components/Chat/ChannelList.vue';
 import ChatWindow from '@/components/Chat/ChatWindow.vue';
+import ChannelInviteDialog from '@/components/Chat/ChannelInviteDialog.vue';
 import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
@@ -62,6 +71,7 @@ interface DataReturnType {
   users: Map<number, UserDto>;
   memberships: Array<MembershipDto>;
   blocks: Array<number | undefined>;
+  inviting: boolean;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -83,11 +93,13 @@ export default defineComponent({
       users: new Map(),
       memberships: [],
       blocks: [],
+      inviting: false,
     };
   },
   components: {
     'channel-list': ChannelList,
     'chat-window': ChatWindow,
+    'channel-invite-dialog': ChannelInviteDialog,
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
@@ -120,6 +132,10 @@ export default defineComponent({
       );
         }
       }
+    },
+    handleUserInvite() {
+      this.inviting = false;
+      console.log(`Inviting a user to ${this.selectedChannel}`);
     },
     getMessages(channelId: number): MessageDto[] {
       const found = this.messages.get(channelId);
