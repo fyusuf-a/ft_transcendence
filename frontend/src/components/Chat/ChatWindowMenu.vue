@@ -50,6 +50,15 @@ export default defineComponent({
   computed: {
     allowedOptions(): OptionType[] {
       let options = [];
+      
+      if (this.channel.type === ChannelType.PRIVATE && (this.membership?.role === MembershipRoleType.OWNER || this.membership?.role === MembershipRoleType.ADMIN)) {
+        options.push({ label: 'Add user', event: 'chat-invite-channel' });
+      }
+
+      if (this.membership?.role === MembershipRoleType.OWNER) {
+        options.push({ label: 'Set or Change password', event: 'chat-change-password' });
+      }
+
       let optionLabel = 'Leave Channel';
       if (this.channel.type === ChannelType.DIRECT || this.membership?.role === MembershipRoleType.OWNER) {
         optionLabel = 'Delete Channel';
