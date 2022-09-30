@@ -52,7 +52,8 @@ import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
 import { ChannelType, JoinChannelDto } from '@dtos/channels';
-import { ListBlockDto } from 'src/dtos/blocks';
+import { ListBlockDto } from '@dtos/blocks';
+import { MembershipRoleType } from '@dtos/memberships';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -133,9 +134,23 @@ export default defineComponent({
         }
       }
     },
-    handleUserInvite(userId: number) {
+    async handleUserInvite(userId: number) {
       this.inviting = false;
+      if (!this.selectedChannel?.id) {
+        return -1;
+      }
       console.log(`Inviting user "${userId}" to ${this.selectedChannel?.id}`);
+      let response = await axios.post('/memberships/', {
+        userId: userId,
+        channelId: this.selectedChannel.id,
+        role: MembershipRoleType.PARTICIPANT
+      });
+      if (response.status === 201) {
+        console.log("Successfully created membership!");
+        return response.data.id;
+      }
+      console.log("Error creating membership!");
+      return -1;
     },
     getMessages(channelId: number): MessageDto[] {
       const found = this.messages.get(channelId);
