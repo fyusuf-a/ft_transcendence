@@ -133,9 +133,9 @@ export default defineComponent({
         }
       }
     },
-    handleUserInvite() {
+    handleUserInvite(userId: number) {
       this.inviting = false;
-      console.log(`Inviting a user to ${this.selectedChannel}`);
+      console.log(`Inviting user "${userId}" to ${this.selectedChannel?.id}`);
     },
     getMessages(channelId: number): MessageDto[] {
       const found = this.messages.get(channelId);
