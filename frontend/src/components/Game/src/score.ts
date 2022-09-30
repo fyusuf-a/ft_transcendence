@@ -18,6 +18,10 @@ const score8 = new Image();
 score8.src = 'src/assets/images/eight.png';
 const score9 = new Image();
 score9.src = 'src/assets/images/nine.png';
+const score10 = new Image();
+score10.src = 'src/assets/images/ten.png';
+const score11 = new Image();
+score11.src = 'src/assets/images/eleven.png';
 
 class Score {
     x: number;
@@ -33,6 +37,8 @@ class Score {
     img_data7: ImageData;
     img_data8: ImageData;
     img_data9: ImageData;
+    img_data10: ImageData;
+    img_data11: ImageData;
 
   constructor(
     sc: number,
@@ -89,6 +95,16 @@ class Score {
     const ctx9 = canvas9?.getContext('2d') as CanvasRenderingContext2D;
     ctx9?.drawImage(score9, 0, 0);
     this.img_data9 = ctx9?.getImageData(0, 0, 70, 70);
+    
+    const canvas10 = scoreCanvas;
+    const ctx10 = canvas10?.getContext('2d') as CanvasRenderingContext2D;
+    ctx10?.drawImage(score10, 0, 0);
+    this.img_data10 = ctx10?.getImageData(0, 0, 70, 70);
+    
+    const canvas11 = scoreCanvas;
+    const ctx11 = canvas11?.getContext('2d') as CanvasRenderingContext2D;
+    ctx11?.drawImage(score11, 0, 0);
+    this.img_data11 = ctx11?.getImageData(0, 0, 70, 70);
 
     this.score = sc;
     this.x = x;
@@ -129,6 +145,12 @@ class Score {
     }
     else if (this.score === 9) {
       ctx.putImageData(this.img_data9, this.x, this.y);
+    }
+    else if (this.score === 10) {
+      ctx.putImageData(this.img_data10, this.x, this.y);
+    }
+    else if (this.score === 11) {
+      ctx.putImageData(this.img_data11, this.x, this.y);
     }
   }
 }
