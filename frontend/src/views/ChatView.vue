@@ -40,6 +40,7 @@ import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
+import { ListBlockDto } from 'src/dtos/blocks';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -56,6 +57,7 @@ interface DataReturnType {
   newUnread: number;
   users: Map<number, UserDto>;
   memberships: Array<MembershipDto>;
+  blocks: Array<number | undefined>;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -75,6 +77,7 @@ export default defineComponent({
       newUnread: 0,
       users: new Map(),
       memberships: [],
+      blocks: [],
     };
   },
   components: {
@@ -176,7 +179,8 @@ export default defineComponent({
         messageDto &&
         messageDto.senderId &&
         messageDto.content &&
-        messageDto.channelId
+        messageDto.channelId &&
+        !(this.blocks.includes(messageDto.senderId))
       ) {
         this.addMessageToMap(messageDto);
       }
@@ -248,7 +252,7 @@ export default defineComponent({
     async getMessagesForChannel(channelId: number) {
       console.log(`Vue: Grabbing messages on channel ${channelId}`);
       const response = await axios.get(
-        `/messages?channel=${channelId}&order=DESC&page=1&take=10`,
+        `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=1&take=10`,
       );
       console.log(response.data.data);
       let newMessages = response.data.data; // data update to axios standard
@@ -295,6 +299,16 @@ export default defineComponent({
         }
       }
     },
+    async fetchBlocks() {
+      const response = await axios.get(
+        `/users/${this.$store.getters.id}/blocks`
+      );
+      console.log(response);
+      response.data.forEach((block : ListBlockDto)=> {
+        this.blocks.push(block.user.id);
+      });
+      console.log("blocks: " + this.blocks);
+    },
     async getAllChannels() {
       console.log('Vue: Grabbing channels');
       const response = await axios.get('/channels/');
@@ -321,6 +335,7 @@ export default defineComponent({
       return [];
     },
   },
+  
   async created() {
     this.socket.emit('auth', {
       id: this.$store.getters.id,
@@ -328,6 +343,7 @@ export default defineComponent({
     });
     await this.getAllChannels();
     await this.fetchMemberships();
+    await this.fetchBlocks();
     console.log('Trying to match membership to channel');
     for (let membership of this.memberships) {
       console.log('Checking membership' + membership);

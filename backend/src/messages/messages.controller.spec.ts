@@ -10,6 +10,9 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { UsersService } from 'src/users/users.service';
+import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Match } from 'src/matches/entities/match.entity';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -20,6 +23,7 @@ describe('MessagesController', () => {
       controllers: [MessagesController],
       providers: [
         MessagesService,
+        UsersService,
         {
           provide: getRepositoryToken(Message),
           useValue: jest.fn(),
@@ -40,6 +44,22 @@ describe('MessagesController', () => {
           provide: Block,
           useValue: jest.fn(),
         },
+        {
+          provide: getRepositoryToken(Friendship),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Block),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Match),
+          useValue: jest.fn(),
+        },
       ],
     }).compile();
 
@@ -57,7 +77,9 @@ describe('MessagesController', () => {
         [],
         new PageMetaDto(new PageOptionsDto(), takeDefault),
       );
-      jest.spyOn(service, 'findAll').mockImplementation(async () => expected);
+      jest
+        .spyOn(service, 'findAllWithBlocks')
+        .mockImplementation(async () => expected);
       const result = await controller.findAll();
       expect(result).toEqual(expected);
     });

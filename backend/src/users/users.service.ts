@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
   CreateUserDto,
-  ListUserDto,
   QueryUserDto,
   UpdateUserDto,
+  DisplayUserDto,
+  ListUserDto,
 } from '@dtos/users';
 import { User } from './entities/user.entity';
 import * as fs from 'fs';
@@ -202,8 +203,9 @@ export class UsersService {
     for (let i = 0; i < tmp.length; i++) {
       for (let j = 0; j < blocks.length; j++) {
         if (ids[i] == blocks[j].id) {
-          const uUd: UpdateUserDto = {
+          const uUd: DisplayUserDto = {
             username: blocks[j].username,
+            id: blocks[j].id,
           };
           ret[i] = new ListBlockDto(tmp[i], uUd);
           break;
