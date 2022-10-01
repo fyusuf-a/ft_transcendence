@@ -4,7 +4,6 @@ import { Background } from './background';
 import { Ball } from './ball';
 import { Score } from './score';
 import { Paddle } from './paddle';
-import { withScopeId } from 'vue';
 
 const FRAMERATE = 30;
 
@@ -22,7 +21,7 @@ class Pong {
   requestID: number | undefined;
   socket: Socket;
   lastUpdate: number;
-  gameId : number | undefined;
+  running = true;
 
   constructor(
     pongCanvas: HTMLCanvasElement | null,
@@ -31,7 +30,6 @@ class Pong {
     paddleCanvas: HTMLCanvasElement | null,
     scoreCanvas: HTMLCanvasElement | null,
     socket: Socket,
-    gameId : number,
   ) {
     this.ballCanvas = ballCanvas;
     this.canvas = pongCanvas;
@@ -45,7 +43,7 @@ class Pong {
       'ArrowUp',
       'ArrowDown',
       paddleCanvas,
-      );
+    );
     this.scoreP1 = new Score(0, 130, 0, scoreCanvas);
     this.scoreP2 = new Score(0, 450, 0, scoreCanvas);
     this.requestID = undefined;
@@ -65,43 +63,37 @@ class Pong {
     }
     // do something when the game abort
     else if (this.winner === 2) {
-      this.ctx.fillStyle = "#000000";
+      this.ctx.fillStyle = '#000000';
       this.ctx.rect(0, 0, 640, 480);
       this.ctx.fill();
       const x = 640 / 2;
       const y = 480 / 2;
       this.ctx.font = 'small-caps 30px Roboto';
       this.ctx.textAlign = 'center';
-      this.ctx.fillStyle = "#FFFFFF";
+      this.ctx.fillStyle = '#FFFFFF';
       this.ctx.fillText('The game has stopped :(', x, y);
       //disconnect game ?
-    }
-    else {
-      this.ctx.fillStyle = "#000000";
+    } else {
+      this.ctx.fillStyle = '#000000';
       this.ctx.rect(0, 0, 640, 480);
       this.ctx.fill();
       const x = 640 / 2;
       const y = 480 / 2;
       this.ctx.font = 'small-caps 30px Roboto';
-      this.ctx.fillStyle = "#03dac6";
+      this.ctx.fillStyle = '#03dac6';
       this.ctx.textAlign = 'center';
       this.ctx.fillText('{{username}} wins the game!', x, y);
-      this.ctx.fillStyle = "#FFFFFF";
+      this.ctx.fillStyle = '#FFFFFF';
       this.ctx.fillText('{{username}} wins the game!', x - 1, y - 1);
-      console.log("winner value won: " + this.winner);
-      
+      console.log('winner value won: ' + this.winner);
     }
   }
 
-  execSpectateFrame(timestamp: number){
+  execSpectateFrame(timestamp: number) {
+    if (!this.running) return;
     if (timestamp > this.lastUpdate + 1000 / FRAMERATE) {
       this.lastUpdate = timestamp;
       this.render();
-      if (this.winner == 0 || this.winner == 1)
-      {
-        console.log(this.gameId);
-        this.socket.emit("endGame", this.gameId);
-      }
     }
     this.requestID = requestAnimationFrame(this.execSpectateFrame.bind(this));
   }
@@ -120,8 +112,8 @@ class Pong {
   }
 
   spectate(gameId: number) {
-    this.gameId = gameId;
     this.socket.on('game-state', (e) => this.updateState(e));
+    this.socket.on('endGame', () => (this.running = false));
     this.socket.emit('game-spectate', gameId);
     this.execSpectateFrame(-1);
   }

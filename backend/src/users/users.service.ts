@@ -282,8 +282,8 @@ export class UsersService {
       away.wins++;
       home.losses++;
     }
-    home.status = (home.status) ? UserStatusEnum.online : UserStatusEnum.offline;
-    away.status = (away.status) ? UserStatusEnum.online : UserStatusEnum.offline;
+    home.status = home.status ? UserStatusEnum.online : UserStatusEnum.offline;
+    away.status = away.status ? UserStatusEnum.online : UserStatusEnum.offline;
     await this.usersRepository.save(away);
     await this.usersRepository.save(home);
     return [home, away];

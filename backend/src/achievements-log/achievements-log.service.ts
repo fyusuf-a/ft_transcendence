@@ -62,7 +62,7 @@ export class AchievementsLogService {
       }
     }
     const played: number = user.wins + user.losses;
-    console.log(user.id + " played  " + played)
+    console.log(user.id + ' played  ' + played);
     switch (played) {
       case 50: {
         this.create({ userId: user.id, achievementId: 3 });

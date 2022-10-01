@@ -92,7 +92,7 @@ export class GameGateway extends SecureGateway {
         });
         const gameId = match.id;
 
-        const newGame = new Game({ gameId: gameId }, this.server);
+        const newGame = new Game({ gameId: gameId }, this.server, this);
         newGame.players[0] = otherPlayer;
         newGame.players[1] = client;
         this.games.set(gameId, newGame);
@@ -113,10 +113,10 @@ export class GameGateway extends SecureGateway {
     return 'Success: joined queue';
   }
 
-  @SubscribeMessage('endGame')
-  @CheckAuth
-  async terminate_game(client: Socket, gameId: number) {
+  async terminate_game(gameId: number) {
+    console.log('event gameOver received');
     const match: MatchDto = await this.matchService.findOne(gameId);
+    match.end = new Date();
     if (match.status == MatchStatusType.IN_PROGRESS) {
       match.status = this.games.get(gameId).state.winner
         ? MatchStatusType.AWAY
@@ -129,7 +129,9 @@ export class GameGateway extends SecureGateway {
         ),
       );
     }
-    
+    this.server
+      .to(this.games.get(gameId).room)
+      .emit('endGame', match as MatchDto);
   }
 
   @SubscribeMessage('game-spectate')
