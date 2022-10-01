@@ -26,20 +26,45 @@ export default defineComponent({
   data: () => ({
     rating: 0,
     idOther: 0,
+    matchPlayed: 0,
   }),
   methods: {
     ...mapGetters(['id']),
+    async assingStats(id: number) {
+      const response = await axios.get('/users/' + id);
+      response.data.losses;
+      this.matchPlayed = response.data.wins +  response.data.losses;
+      this.rating = Math.trunc((response.data.wins / (response.data.wins +  response.data.losses)) * 100);
+      if (isNaN(this.rating)) {
+        this.rating = 0;
+      }
+      
+      const data = {
+        rating: this.rating,
+    	};
+      console.log(data.rating)
+      await axios.patch('/users/' + id, data)
+        .then(response => {
+          // console.log(response);
+          console.log(response)
+         // window.location.reload();
+        })
+        .catch( (error) => {
+          console.log(error.response);
+         
+        });
+    
+
+    },
   },
   props: ['user'],
   async created() {
     if (this.user) {
       let response = await axios.get(`/users/name/${this.user}`);
-      console.log(response.data);
-      this.rating = response.data.rating;
+      this.assingStats(response.data.id);
     }
     else {
-      let response = await axios.get('/users/' + this.id());
-      this.rating = response.data.rating;
+      this.assingStats(this.id());
     }
   },
 });
