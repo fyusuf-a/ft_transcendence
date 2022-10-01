@@ -33,6 +33,7 @@ import { defineComponent } from 'vue';
 import { Pong } from './src/pong';
 import { GameOptionsDto } from '@dtos/game/game-options.dto'
 import axios from 'axios';
+import { MatchDto } from 'src/dtos/matches';
 
 interface DataReturnTypes {
 	ctx: CanvasRenderingContext2D | null;
@@ -47,7 +48,7 @@ interface DataReturnTypes {
 	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
-  userIdField: string;
+  	userIdField: string;
 }
 
 export default defineComponent({
@@ -117,7 +118,6 @@ export default defineComponent({
 					this.paddleCanvas,
 					this.scoreCanvas,
 					this.socket as Socket,
-					gameId,
 				);
 			}
 			this.pong.spectate(gameId);
@@ -151,6 +151,9 @@ export default defineComponent({
 				}
 			});
 			
+		},
+		handleEndGame(match :MatchDto) {
+			console.log(match);
 		}
 	},
 	mounted() {
@@ -165,6 +168,7 @@ export default defineComponent({
 		this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
     window.addEventListener('resize', this.resize);
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
+		this.socket.on('endGame', (match: MatchDto) => this.handleEndGame(match));
 	},
 	created() {
 		console.log();
