@@ -10,10 +10,12 @@ import { FriendshipsService } from 'src/relationships/friendships/friendships.se
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AchievementsLog, Block, Friendship, Match, User]),
+    TypeOrmModule.forFeature([AchievementsLog, Block, Channel, Friendship, Match, Membership, User]),
   ],
   providers: [
     FriendshipsService,

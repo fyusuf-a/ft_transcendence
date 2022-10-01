@@ -10,6 +10,8 @@ import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from 'src/matches/entities/match.entity';
+import { NotificationsGateway } from 'src/notifications.gateway';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 @Module({
   imports: [
@@ -21,9 +23,10 @@ import { Match } from 'src/matches/entities/match.entity';
       Block,
       AchievementsLog,
       Match,
+      Membership,
     ]),
   ],
-  providers: [MessagesService, UsersService],
+  providers: [MessagesService, UsersService, NotificationsGateway],
   controllers: [MessagesController],
   exports: [MessagesService],
 })

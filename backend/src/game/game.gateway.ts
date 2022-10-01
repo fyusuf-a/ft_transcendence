@@ -12,6 +12,7 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
+import { NotificationsGateway } from 'src/notifications.gateway';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway extends SecureGateway {
@@ -19,6 +20,7 @@ export class GameGateway extends SecureGateway {
     protected readonly usersService: UsersService,
     protected readonly configService: ConfigService,
     private readonly matchService: MatchesService,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {
     super('GameGateway', usersService, configService);
   }
@@ -69,6 +71,7 @@ export class GameGateway extends SecureGateway {
     if (this.queues.has(gameOptionsString)) {
       selectedQueue = this.queues.get(gameOptionsString);
     } else {
+      this.notificationsGateway.handleNewChallenge(gameOptions.homeId, gameOptions.awayId); //does it work the second time around ??
       selectedQueue = new Array<Socket>();
       this.queues.set(gameOptionsString, selectedQueue);
     }

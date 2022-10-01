@@ -15,22 +15,27 @@ interface Cache {
   avatars: Map<number, string>;
 }
 
+interface Notification {
+  message: string;
+  userId: number;
+}
+
 interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
-  //socket: string,
   socket: Socket | undefined;
   cache: Cache | undefined;
+  notifications: Array<Notification>;
 }
 
 const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
-  //socket: 'i am okay',
-  socket: undefined, //new Socket(),//io(),
+  socket: undefined,
   cache: undefined,
+  notifications: [ ],
 };
 
 interface Mutation {
@@ -67,16 +72,21 @@ export default createStore({
     id: (state) => state.user.id,
     token: (state) => state.token,
     socket: (state) => state.socket,
+    notifications: (state) => state.notifications,
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
-      console.log('how are you');
       state.user.id = id;
       state.token = token;
-      console.log('very well!');
     },
     setSocket() {
       console.log('Connecting to notifications socket.');
+    },
+    pushNotification(state, notification : Notification) {
+      state.notifications.push(notification);
+    },
+    clearNotifications(state) {
+      state.notifications = [];
     },
     logout(state) {
       state.user = new UserDto();

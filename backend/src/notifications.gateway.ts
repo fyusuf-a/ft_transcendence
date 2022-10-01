@@ -9,6 +9,8 @@ import { MatchStatusType } from './dtos/matches';
 import { User, UserStatusEnum } from './users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { ListFriendshipDto } from './dtos/friendships';
+import { Channel } from './channels/entities/channel.entity';
+import { Membership } from './memberships/entities/membership.entity';
 
 @WebSocketGateway({ cors: true, namespace: 'notifications' })
 export class NotificationsGateway extends SecureGateway {
@@ -19,6 +21,10 @@ export class NotificationsGateway extends SecureGateway {
     protected readonly usersRepository: Repository<User>,
     @InjectRepository(Match)
     protected readonly matchRepository: Repository<Match>,
+    @InjectRepository(Channel)
+    protected readonly channelRepository: Repository<Channel>,
+    @InjectRepository(Membership)
+    protected readonly membershipRepository: Repository<Membership>,
   ) {
     super('NotificationsGateway', usersService, configService);
   }
@@ -99,6 +105,44 @@ export class NotificationsGateway extends SecureGateway {
     });
   }
 
+  async handleNewChallenge(challenger: number, challenged: number) {
+    console.log("handlenewchallenge");
+    const challengerUser: User = await this.usersRepository.findOneByOrFail({
+      id: challenger,
+    });
+    this.authenticatedSockets.forEach((value: User, key: string) => {
+      if (value.id == challenged)
+        this.server
+          .to(key)
+          .emit(
+            'alert-challenge',
+            `${challengerUser.username} challenged you to a game of Pong !`,
+            challenger,
+          );
+    });
+  }
+
+  async handleNewMessage(id: number, recipient: number, isPrivate: boolean) {
+    console.log("handlemessage")
+    let origin: string;
+    let recipients: number[];
+    if (isPrivate) {
+      origin = (await this.usersRepository.findOneByOrFail({ id: id }))
+        .username;
+      recipients.push(recipient);
+    } else {
+      origin = (await this.channelRepository.findOneByOrFail({ id: id })).name;
+      recipients = (
+        await this.membershipRepository.findBy({ channelId: id })
+      ).map((value: Membership) => value.userId);
+    }
+    this.authenticatedSockets.forEach((value: User, key: string) => {
+      if (value.id == recipient)
+        this.server
+          .to(key)
+          .emit('alert-message', `[ ${origin} ] : new message`);
+    });
+  }
   async handleMatchStatusUpdate(
     home: User,
     homeFriendList: ListFriendshipDto[],
@@ -113,7 +157,6 @@ export class NotificationsGateway extends SecureGateway {
     );
 
     this.authenticatedSockets.forEach((value: User, key: string) => {
-      console.log(value.id);
       if (homeFriendsIds.includes(value.id)) {
         this.server.to(key).emit('status-update', {
           id: home.id,

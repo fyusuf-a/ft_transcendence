@@ -9,9 +9,10 @@ import {
 import { DeleteResult, FindOptionsWhere, In, Not, Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Channel } from 'src/channels/entities/channel.entity';
+import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import { paginate } from 'src/common/paginate';
 import { UsersService } from 'src/users/users.service';
+import { NotificationsGateway } from 'src/notifications.gateway';
 
 @Injectable()
 export class MessagesService {
@@ -24,6 +25,7 @@ export class MessagesService {
     private channelsRepository: Repository<Channel>,
     @Inject(UsersService)
     private readonly usersService: UsersService,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async findAll(
@@ -84,6 +86,23 @@ export class MessagesService {
     message.sender = await this.usersRepository.findOneByOrFail({
       id: message.senderId,
     });
+    if (message.channel.type == ChannelType.DIRECT) {
+      const recipientId: number =
+        message.sender.id == message.channel.userOneId
+          ? message.channel.userTwoId
+          : message.channel.userOneId;
+      this.notificationsGateway.handleNewMessage(
+        message.sender.id,
+        recipientId,
+        true,
+      );
+    } else {
+      this.notificationsGateway.handleNewMessage(
+        message.channelId,
+        message.channelId,
+        false,
+      );
+    }
     return await this.messagesRepository.save(message);
   }
 
