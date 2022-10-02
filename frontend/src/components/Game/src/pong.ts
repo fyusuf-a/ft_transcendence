@@ -4,6 +4,7 @@ import { Background } from './background';
 import { Ball } from './ball';
 import { Score } from './score';
 import { Paddle } from './paddle';
+import { GameOptionsDto } from '@dtos/game/game-options.dto';
 
 const FRAMERATE = 30;
 
@@ -22,6 +23,7 @@ class Pong {
   socket: Socket;
   lastUpdate: number;
   running = true;
+  gameOptions: number;
 
   constructor(
     pongCanvas: HTMLCanvasElement | null,
@@ -50,6 +52,7 @@ class Pong {
     this.winner = -1;
     this.socket = socket;
     this.lastUpdate = -1;
+    this.gameOptions = 0;
   }
 
   render() {
@@ -81,9 +84,16 @@ class Pong {
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
     this.winner = newState.winner;
+    console.log(this.gameOptions);
+  }
+
+  coucou(gameMode: GameOptionsDto){
+    this.gameOptions = gameMode.gameMode;
   }
 
   spectate(gameId: number) {
+
+    this.socket.on('game-queue' , (e)=> this.coucou(e))
     this.socket.on('game-state', (e) => this.updateState(e));
     this.socket.on('endGame', () => (this.running = false));
     this.socket.emit('game-spectate', gameId);

@@ -94,24 +94,24 @@ export default defineComponent({
       end: false,
       endMessage: '',
       matchArr: [],
-      selected: ''
+      selected: '',
 		};
 	},
 	methods: {
     ...mapGetters(['id']),
 		joinQueue() {
-			const gameOptions: GameOptionsDto = {  };
+			const gameOptions: GameOptionsDto = { gameMode: 2 };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
       this.end = false;
 		},
     challengeUser(userId: number) {
-      const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
+      const gameOptions: GameOptionsDto = { gameMode: 0, homeId: this.$store.getters.id, awayId: userId };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
-      const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
+      const gameOptions: GameOptionsDto = { gameMode: 0, homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
     },

@@ -65,51 +65,53 @@ export class GameGateway extends SecureGateway {
   ): Promise<string> {
     const clientUser = this.getAuthenticatedUser(client);
     let selectedQueue;
+    let test = gameOptions.gameMode;
     const gameOptionsString = JSON.stringify(gameOptions);
     if (gameOptions.homeId || gameOptions.awayId) {
       if (
         clientUser.id !== gameOptions.homeId &&
         clientUser.id !== gameOptions.awayId
-      ) {
-        throw new WsException('Invalid Game Options');
+        ) {
+          throw new WsException('Invalid Game Options');
+        }
       }
-    }
-    if (this.queues.has(gameOptionsString)) {
-      selectedQueue = this.queues.get(gameOptionsString);
-    } else {
-      selectedQueue = new Array<Socket>();
-      this.queues.set(gameOptionsString, selectedQueue);
-    }
-    if (selectedQueue.length > 0) {
-      const otherPlayer = selectedQueue.shift();
-      if (otherPlayer && otherPlayer.id !== client.id) {
-        this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
-        const home = this.getAuthenticatedUser(otherPlayer);
-        const away = this.getAuthenticatedUser(client);
-        const match = await this.matchService.create({
-          homeId: home.id,
-          awayId: away.id,
-        });
-        const gameId = match.id;
-
-        const newGame = new Game({ gameId: gameId }, this.server, this);
-        newGame.players[0] = otherPlayer;
-        newGame.players[1] = client;
-        this.games.set(gameId, newGame);
-        client.join(newGame.room);
-        otherPlayer.join(newGame.room);
-        this.server.to(newGame.room).emit('game-starting', newGame.gameId);
-        newGame.startServer();
-        return 'Success: starting game';
+      if (this.queues.has(gameOptionsString)) {
+        selectedQueue = this.queues.get(gameOptionsString);
       } else {
-        selectedQueue.unshift(otherPlayer);
-        throw new WsException('Request already exists');
+        selectedQueue = new Array<Socket>();
+        this.queues.set(gameOptionsString, selectedQueue);
       }
-    }
-    selectedQueue.push(client);
-    this.logger.log(
-      `${client.id} joining queue with options ${JSON.stringify(gameOptions)}`,
-    );
+      if (selectedQueue.length > 0) {
+        const otherPlayer = selectedQueue.shift();
+        if (otherPlayer && otherPlayer.id !== client.id) {
+          this.logger.log(`${otherPlayer.id} vs ${client.id} is being created`);
+          const home = this.getAuthenticatedUser(otherPlayer);
+          const away = this.getAuthenticatedUser(client);
+          const match = await this.matchService.create({
+            homeId: home.id,
+            awayId: away.id,
+          });
+          const gameId = match.id;
+          
+          const newGame = new Game({ gameId: gameId }, this.server, this);
+          newGame.players[0] = otherPlayer;
+          newGame.players[1] = client;
+          this.games.set(gameId, newGame);
+          client.join(newGame.room);
+          otherPlayer.join(newGame.room);
+          this.server.to(newGame.room).emit('game-starting', newGame.gameId);
+          newGame.startServer();
+          return 'Success: starting game';
+        } else {
+          selectedQueue.unshift(otherPlayer);
+          throw new WsException('Request already exists');
+        }
+      }
+      selectedQueue.push(client);
+      this.logger.log(
+        `${client.id} joining queue with options ${JSON.stringify(gameOptions)}`,
+        );
+        console.log("heyeheye: " + test);
     return 'Success: joined queue';
   }
 
