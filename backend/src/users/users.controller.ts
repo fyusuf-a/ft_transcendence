@@ -42,8 +42,16 @@ import { ListFriendshipDto } from '@dtos/friendships';
 import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
 import { ResponseMatchDto } from 'src/dtos/matches';
-import { AuthUser } from 'src/auth/user.decorator';
-import { User } from './entities/user.entity';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import {
+  Action,
+  User,
+  Friendship,
+  Block,
+  Achievement,
+  Match,
+} from 'src/casl/casl-ability.factory';
+import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
 
 @ApiTags('users')
 @Controller('users')

@@ -15,6 +15,7 @@ import { Friendship } from './relationships/entities/friendship.entity';
 import { Block } from './relationships/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
 import { GlobalAuthGuard } from './auth/auth.global.guard';
+import { CaslAbilityFactory } from './casl/casl-ability.factory';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 import { AchievementsModule } from './achievements/achievements.module';
@@ -73,6 +74,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   ],
   controllers: [],
   providers: [
+    GlobalAuthGuard,
+    CaslAbilityFactory,
     Repository,
     ChatGateway,
     {

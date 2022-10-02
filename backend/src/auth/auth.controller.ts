@@ -18,10 +18,9 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { JwtToken } from './types';
-import { ResponseUserDto } from '@dtos/users';
 import { IfAuthIsDisabled } from './if-auth-is-disabled.decorator';
 import { User } from '../users/entities/user.entity';
-import { AuthUser } from './user.decorator';
+import { AuthUser } from './auth-user.decorator';
 
 @ApiTags('auth')
 @Controller('auth')

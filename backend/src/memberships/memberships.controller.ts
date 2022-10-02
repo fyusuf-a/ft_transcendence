@@ -24,7 +24,7 @@ import { User } from 'src/users/entities/user.entity';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { AuthUser } from 'src/auth/user.decorator';
+import { AuthUser } from 'src/auth/auth-user.decorator';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')
