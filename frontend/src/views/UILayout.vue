@@ -1,7 +1,7 @@
 <template>
   <div>
-    <the-app-bar v-model="navigationDrawerVisible" />
-    <the-navigation-drawer v-model="navigationDrawerVisible" temporary/>
+    <the-app-bar v-model:modelValue="navigationDrawerVisible" v-model:displayNotifications="notificationsVisible" />
+    <the-navigation-drawer v-model:modelValue="navigationDrawerVisible" temporary/>
     <router-view></router-view>
   </div>
 </template>
@@ -16,10 +16,10 @@ export default defineComponent({
   components: {
     TheAppBar,
     TheNavigationDrawer,
-  },
+},
   data: () => ({
-    
     navigationDrawerVisible: true,
+    notificationsVisible: false,
     authentificated: true,
     viewedComponent: 'profile',
   }),

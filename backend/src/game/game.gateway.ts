@@ -66,12 +66,16 @@ export class GameGateway extends SecureGateway {
         clientUser.id !== gameOptions.awayId
       ) {
         throw new WsException('Invalid Game Options');
+      } else if (clientUser.id === gameOptions.homeId) {
+        this.notificationsGateway.handleNewChallenge(
+          gameOptions.homeId,
+          gameOptions.awayId,
+        );
       }
     }
     if (this.queues.has(gameOptionsString)) {
       selectedQueue = this.queues.get(gameOptionsString);
     } else {
-      this.notificationsGateway.handleNewChallenge(gameOptions.homeId, gameOptions.awayId); //does it work the second time around ??
       selectedQueue = new Array<Socket>();
       this.queues.set(gameOptionsString, selectedQueue);
     }

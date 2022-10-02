@@ -106,7 +106,7 @@ export class NotificationsGateway extends SecureGateway {
   }
 
   async handleNewChallenge(challenger: number, challenged: number) {
-    console.log("handlenewchallenge");
+    console.log('handlenewchallenge');
     const challengerUser: User = await this.usersRepository.findOneByOrFail({
       id: challenger,
     });
@@ -122,22 +122,28 @@ export class NotificationsGateway extends SecureGateway {
     });
   }
 
-  async handleNewMessage(id: number, recipient: number, isPrivate: boolean) {
-    console.log("handlemessage")
+  async handleNewMessage(
+    sender: User,
+    channelId: number,
+    recipient: number,
+    isPrivate: boolean,
+  ) {
     let origin: string;
     let recipients: number[];
     if (isPrivate) {
-      origin = (await this.usersRepository.findOneByOrFail({ id: id }))
-        .username;
+      origin = sender.username;
       recipients.push(recipient);
     } else {
-      origin = (await this.channelRepository.findOneByOrFail({ id: id })).name;
+      origin = (await this.channelRepository.findOneByOrFail({ id: channelId }))
+        .name;
       recipients = (
-        await this.membershipRepository.findBy({ channelId: id })
+        await this.membershipRepository.findBy({ channelId: channelId })
       ).map((value: Membership) => value.userId);
+      recipients.splice(recipients.indexOf(sender.id), 1);
     }
+
     this.authenticatedSockets.forEach((value: User, key: string) => {
-      if (value.id == recipient)
+      if (recipients.includes(value.id))
         this.server
           .to(key)
           .emit('alert-message', `[ ${origin} ] : new message`);

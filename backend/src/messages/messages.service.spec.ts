@@ -13,6 +13,9 @@ import { Block } from 'src/relationships/entities/block.entity';
 import { UsersService } from 'src/users/users.service';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from 'src/matches/entities/match.entity';
+import { NotificationsGateway } from 'src/notifications.gateway';
+import { ConfigService } from '@nestjs/config';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 const messageNumber = 2;
 const userNumber = 2;
@@ -26,6 +29,8 @@ describe('MessagesService', () => {
       providers: [
         MessagesService,
         UsersService,
+        NotificationsGateway,
+        ConfigService,
         {
           provide: getRepositoryToken(Message),
           useValue: new MockRepository<MockMessageEntity>(
@@ -56,6 +61,10 @@ describe('MessagesService', () => {
         {
           provide: getRepositoryToken(Match),
           useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
+          useValue: new MockRepository(() => new Membership()),
         },
       ],
     }).compile();

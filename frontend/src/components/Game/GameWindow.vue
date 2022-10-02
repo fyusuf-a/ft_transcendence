@@ -65,7 +65,7 @@ export default defineComponent({
 			paddleCanvas: null,
 			gameId: null,
 			spectateGameId: "1",
-      userIdField: "1",
+      		userIdField: "1",
 		};
 	},
 	methods: {
@@ -80,6 +80,7 @@ export default defineComponent({
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
+		console.log(userId, this.$store.getters.id )
       const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
@@ -93,7 +94,6 @@ export default defineComponent({
       
 		  if (windowRatio < canvasRatio ) {
 		  	height = window.innerHeight;
-		  	console.log("HERE: " + window.innerHeight)
 		  	width = height / canvasRatio;
 		  }
       else {
@@ -147,7 +147,9 @@ export default defineComponent({
 		}
 	},
 	mounted() {
+
 		console.log('mounted');
+		this.socket.on('game-starting', (e: number) => this.startGame(e));
 		this.pongCanvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
 		this.backgroundCanvas = document.getElementById(
 			'background',
@@ -155,8 +157,16 @@ export default defineComponent({
 		this.ballCanvas = document.getElementById('ball') as HTMLCanvasElement;
 		this.paddleCanvas = document.getElementById('paddle') as HTMLCanvasElement;
 		this.ctx = this.pongCanvas.getContext('2d') as CanvasRenderingContext2D;
-    window.addEventListener('resize', this.resize);
-		this.socket.on('game-starting', (e: number) => this.startGame(e));
+    	window.addEventListener('resize', this.resize);
+		let id : number = 0;
+		try {
+			if (this.$route.params.id.toString()) {
+				 id = +this.$route.params.id.toString();
+			}
+		} catch {
+			console.log("Parameter id seems undefined, accessing default game route.");
+		}
+		this.acceptChallengeFromUser(id);
 	},
 });
 </script>

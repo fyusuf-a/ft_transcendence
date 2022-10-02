@@ -1,22 +1,41 @@
 <template>
-  <v-btn icon @click="toggleMenu">
+<v-menu
+  top="true"
+  right="true"
+  offset-x="true"
+  offset-overflow="true"
+  >
+  <template v-slot:activator="{ props }">
+  <v-btn icon
+        v-bind="props"
+        @click="toggle_alert"
+        >
     <v-icon v-if="alert" color="accent">mdi-bell</v-icon>
     <v-icon v-else>mdi-bell-outline</v-icon>
   </v-btn>
-  <notification-menu v-if="displayMenu"/>
+
+</template>
+<v-list>
+    <v-list-item  v-for="item in notifications"
+                  :key="item.key"
+                  :to="item.route"
+                  :title="item.message">
+    </v-list-item>
+  </v-list>
+</v-menu>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import NotificationMenu  from './NotificationMenu.vue';
 import { mapMutations } from 'vuex';
 
 export default defineComponent({
     data() {
         return {
             alert: false,
+            open: false,
             socket: this.$store.getters.socket,
-            displayMenu: false,
+            notifications: this.$store.getters.notifications,
         };
     },
     created() {
@@ -25,23 +44,20 @@ export default defineComponent({
     },
     methods: {
       ...mapMutations(['pushNotification']),
+        toggle_alert() {
+            this.alert = false;
+        },
         handleChallenge(message: string, userId: number) {
             this.alert = true;
-            this.$store.commit('pushNotification', {message: message, userId: userId});
-            console.log(message + " id: " + userId);
+            this.$store.dispatch('pushNotification', {message: message, userId: userId, route:`/game/`});
         },
         handleMessage(message: string) {
             this.alert = true;
-            this.$store.commit('pushNotification', {message: message, userId:0});
-            console.log(message);
-        },
-        toggleMenu() {
-            this.displayMenu = (this.displayMenu) ? false : true;
+            this.$store.dispatch('pushNotification', {message: message, userId:0, route:"/chat"});
         },
         reverseAlert() {
             this.alert = !this.alert;
         },
     },
-    components: { NotificationMenu }
 });
 </script>

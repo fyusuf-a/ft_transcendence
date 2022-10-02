@@ -14,7 +14,6 @@ import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
 import { CreateMembershipDto } from '@dtos/memberships';
 import { SecureGateway, CheckAuth } from './auth/auth.websocket';
-import { NotificationsGateway } from './notifications.gateway';
 
 export class ChatJoinDto {
   channel: string;

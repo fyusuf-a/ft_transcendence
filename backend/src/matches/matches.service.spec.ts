@@ -18,6 +18,8 @@ import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { ConfigService } from '@nestjs/config';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 const userNumber = 2;
 const matchNumber = 2;
@@ -55,6 +57,14 @@ describe('MatchesService', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Channel),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
       ],

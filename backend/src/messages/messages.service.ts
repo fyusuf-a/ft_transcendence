@@ -92,12 +92,14 @@ export class MessagesService {
           ? message.channel.userTwoId
           : message.channel.userOneId;
       this.notificationsGateway.handleNewMessage(
-        message.sender.id,
+        message.sender,
+        0,
         recipientId,
         true,
       );
     } else {
       this.notificationsGateway.handleNewMessage(
+        message.sender,
         message.channelId,
         message.channelId,
         false,

@@ -18,6 +18,8 @@ interface Cache {
 interface Notification {
   message: string;
   userId: number;
+  key: number;
+  route: string;
 }
 
 interface State {
@@ -35,7 +37,7 @@ const state: State = {
   token: undefined,
   socket: undefined,
   cache: undefined,
-  notifications: [ ],
+  notifications: [],
 };
 
 interface Mutation {
@@ -82,18 +84,19 @@ export default createStore({
     setSocket() {
       console.log('Connecting to notifications socket.');
     },
-    pushNotification(state, notification : Notification) {
-      state.notifications.push(notification);
-    },
-    clearNotifications(state) {
-      state.notifications = [];
-    },
     logout(state) {
       state.user = new UserDto();
       state.token = undefined;
     },
   },
   actions: {
+    pushNotification(context, notification: Notification) {
+      notification.key = context.state.notifications.length;
+      context.state.notifications.push(notification);
+    },
+    clearNotifications(context) {
+      context.state.notifications = [];
+    },
     async verifyLoginInfo(
       context,
       { id, token }: { id: number; token: string },
@@ -103,9 +106,7 @@ export default createStore({
         context.state.token = token;
         const response = await axios.get<ResponseUserDto>('/users/me');
         user = response.data;
-        console.log('yo');
         context.commit('login', { id, token });
-        console.log('bye');
         context.state.user = {
           ...response.data,
         };

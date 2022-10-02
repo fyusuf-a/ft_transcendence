@@ -12,6 +12,7 @@ import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.
 import { Match } from 'src/matches/entities/match.entity';
 import { NotificationsGateway } from 'src/notifications.gateway';
 import { Membership } from 'src/memberships/entities/membership.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -26,7 +27,12 @@ import { Membership } from 'src/memberships/entities/membership.entity';
       Membership,
     ]),
   ],
-  providers: [MessagesService, UsersService, NotificationsGateway],
+  providers: [
+    ConfigService,
+    MessagesService,
+    UsersService,
+    NotificationsGateway,
+  ],
   controllers: [MessagesController],
   exports: [MessagesService],
 })

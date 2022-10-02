@@ -15,7 +15,15 @@ import { Membership } from 'src/memberships/entities/membership.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AchievementsLog, Block, Channel, Friendship, Match, Membership, User]),
+    TypeOrmModule.forFeature([
+      AchievementsLog,
+      Block,
+      Channel,
+      Friendship,
+      Match,
+      Membership,
+      User,
+    ]),
   ],
   providers: [
     FriendshipsService,
