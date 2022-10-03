@@ -53,12 +53,12 @@ class Pong {
   }
 
   render() {
-      this.background.render(this.ctx);
-      this.scoreP1.render(this.ctx);
-      this.scoreP2.render(this.ctx);
-      this.ball.render(this.ctx);
-      this.player1.render(this.ctx);
-      this.player2.render(this.ctx);
+    this.background.render(this.ctx);
+    this.scoreP1.render(this.ctx);
+    this.scoreP2.render(this.ctx);
+    this.ball.render(this.ctx);
+    this.player1.render(this.ctx);
+    this.player2.render(this.ctx);
   }
 
   execSpectateFrame(timestamp: number) {

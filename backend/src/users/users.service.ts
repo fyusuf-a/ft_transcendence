@@ -284,6 +284,14 @@ export class UsersService {
     }
     home.status = home.status ? UserStatusEnum.online : UserStatusEnum.offline;
     away.status = away.status ? UserStatusEnum.online : UserStatusEnum.offline;
+    home.rating = Math.trunc((home.wins / (home.wins + home.losses)) * 100);
+    away.rating = Math.trunc((away.wins / (away.wins + away.losses)) * 100);
+    if (isNaN(home.rating)) {
+      home.rating = 0;
+    }
+    if (isNaN(away.rating)) {
+      away.rating = 0;
+    }
     await this.usersRepository.save(away);
     await this.usersRepository.save(home);
     return [home, away];
