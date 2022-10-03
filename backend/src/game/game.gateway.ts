@@ -114,7 +114,6 @@ export class GameGateway extends SecureGateway {
   }
 
   async terminate_game(gameId: number) {
-    console.log('event gameOver received');
     const match: MatchDto = await this.matchService.findOne(gameId);
     match.end = new Date();
     if (match.status == MatchStatusType.IN_PROGRESS) {
@@ -129,9 +128,12 @@ export class GameGateway extends SecureGateway {
         ),
       );
     }
-    this.server
-      .to(this.games.get(gameId).room)
-      .emit('endGame', match as MatchDto);
+    this.logger.log(`Terminating game ${gameId} with status ${match.status}`);
+    if (this.games.get(gameId) && this.games.get(gameId).room) {
+      this.server
+        .to(this.games.get(gameId).room)
+        .emit('endGame', match as MatchDto);
+    }
   }
 
   @SubscribeMessage('game-spectate')

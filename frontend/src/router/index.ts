@@ -9,6 +9,7 @@ const routes = [
       {
         path: '',
         component: () => import('../views/ProfileView.vue'),
+        name: 'home',
       },
       {
         path: 'profile',

@@ -1,23 +1,39 @@
 <template>
 	<div class="page">
-		<div class="actions">
-			<v-row>
-				<v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
+    <div class="actions">
+      <v-row>
+        <v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
 			</v-row>
 			<v-row>
-				<v-btn class="button" title="Enter the id of the game you want to watch" @click="() => spectateGame(+spectateGameId)">Spectate Server-side Game</v-btn>
-				<input v-model="spectateGameId">
-			</v-row>
-			<v-row>
-				<v-btn class="button" title="Enter the name of the user you want to challenge" @click="() => challengeUser(+userIdField)">Issue Challenge To User</v-btn>
-				<input id="userInput" v-model="userIdField">
-			</v-row>
-			<v-row>
-				<v-btn class="button" title="Accept challenge from user" @click="() => acceptChallengeFromUser(+userIdField)">Accept Challenge From User</v-btn>
+        <select v-model="spectateGameId">
+          <option value="">Choose a game to watch, and click on Spectate</option>
+          <option v-for="item in matchArr" :key="item.idMatch" :value="item.idMatch">
+            Match #{{item.idMatch}} -- {{item.player1}} versus {{item.player2}}
+          </option>  
+        </select>
+        <v-btn class="button" title="Chose a game to watch" @click="() => spectateGame(+spectateGameId)">Spectate</v-btn>
 			</v-row>
 		</div>
 		<br />
 		<div>
+      <v-dialog
+        v-model="end"
+        activator="parent"
+        v-if="end"
+      >
+        <v-card width="600" height="150">
+          <v-card-text>
+            <p align="center" class="winStatus">
+            {{ endMessage }} </p><br />
+          <p>  Do you want to play again?
+          </p>
+            <v-row class="mt-2 ml-8">
+            <v-btn class="button" title="Join the queue to play" @click="joinQueue">Yes, rejoin the queue</v-btn>
+            <v-btn class="button" title="Don't replay" @click="closeGame">No, go to your profile page</v-btn>
+          </v-row>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
 			<canvas ref="pong" width="640" height="480" style="" id="responsive-canvas" ></canvas>
 			<canvas id="background" width="640" height="480" style="visibility: hidden"></canvas>
 			<canvas id="paddle" width="10" height="100" style="visibility: hidden"></canvas>
@@ -33,13 +49,14 @@ import { defineComponent } from 'vue';
 import { Pong } from './src/pong';
 import { GameOptionsDto } from '@dtos/game/game-options.dto'
 import axios from 'axios';
-import { MatchDto } from 'src/dtos/matches';
+import { MatchDto } from '@dtos/matches';
+import { mapGetters } from 'vuex';
+import { MatchStatusType } from '@dtos/matches';
 
 interface DataReturnTypes {
 	ctx: CanvasRenderingContext2D | null;
 	x: number;
 	y: number;
-	playerId: number,
 	pong: Pong | null;
 	pongCanvas: HTMLCanvasElement | null;
 	backgroundCanvas: HTMLCanvasElement | null;
@@ -48,7 +65,10 @@ interface DataReturnTypes {
 	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
-  	userIdField: string;
+  	end: boolean;
+  	endMessage: string;
+  	matchArr: { idMatch: number, player1: string, player2: string }[]
+  	selected: string;
 }
 
 export default defineComponent({
@@ -70,16 +90,20 @@ export default defineComponent({
 			paddleCanvas: null,
 			gameId: null,
 			scoreCanvas: null,
-			spectateGameId: "1",
-      userIdField: "1",
-	  playerId: 0,
+			spectateGameId: "",
+      end: false,
+      endMessage: '',
+      matchArr: [],
+      selected: ''
 		};
 	},
 	methods: {
+    ...mapGetters(['id']),
 		joinQueue() {
 			const gameOptions: GameOptionsDto = {  };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
+      this.end = false;
 		},
     challengeUser(userId: number) {
       const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
@@ -90,6 +114,13 @@ export default defineComponent({
       const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
+    },
+    closeGame() {
+      this.end = false;
+      this.$router.push({
+        name: 'home',
+        params: { path: '/' },
+      });
     },
 	  resize() {
 		  const canvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
@@ -110,6 +141,7 @@ export default defineComponent({
 		  canvas.style.height = height + 'px';
 		},
 		spectateGame(gameId: number) {
+      console.log("gameId to spectate: " + gameId)
 			if (!this.pong) {
 				this.pong = new Pong(
 					this.pongCanvas,
@@ -150,14 +182,34 @@ export default defineComponent({
 					this.socket.emit('game-move', { gameId: this.gameId, dy: 0 });
 				}
 			});
-			
 		},
 		handleEndGame(match :MatchDto) {
-			console.log(match);
-		}
+      this.end = true;
+      this.pong = null;
+      if ((this.id() == match.homeId && match.status == "HOME")
+      || (this.id() == match.awayId && match.status == "AWAY")) {
+        this.endMessage = "Congrats! You win :)";
+      }
+      else {
+        this.endMessage = "Oh no! You lose :(";
+      }
+		},
+    async getMatchesToSepctacte() {
+      const response = await axios.get(`/matches?status=${MatchStatusType.IN_PROGRESS}&order=DESC&take=20`);
+      for (let i: number = 0 ; i < response.data.data.length ; i++) {
+        const responseHome = await axios.get('/users/' + response.data.data[i].homeId);
+        const responseAway = await axios.get('/users/' + response.data.data[i].awayId);
+        this.matchArr.push({
+          idMatch: response.data.data[i].id,
+          player1: responseHome.data.username,
+          player2: responseAway.data.username,
+        })
+      }
+    },
 	},
 	mounted() {
 		console.log('mounted');
+    this.getMatchesToSepctacte();
 		this.pongCanvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
 		this.backgroundCanvas = document.getElementById(
 			'background',
@@ -170,9 +222,6 @@ export default defineComponent({
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
 		this.socket.on('endGame', (match: MatchDto) => this.handleEndGame(match));
 	},
-	created() {
-		console.log();
-	}
 });
 </script>
 
@@ -194,7 +243,7 @@ export default defineComponent({
 #userInput {
   margin-left: 20px;
 }
-input {
+select {
   padding: 4px 12px;
   color: rgba(0,0,0,.70);
   border: 1px solid rgba(0,0,0,.12);
@@ -209,5 +258,8 @@ canvas#responsive-canvas {
 	display: block;
 	margin-left: auto;
 	margin-right: auto 
+}
+.winStatus {
+  font-weight: bold;
 }
 </style>
