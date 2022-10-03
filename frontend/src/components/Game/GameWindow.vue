@@ -15,6 +15,7 @@
 			</v-row>
 		</div>
 		<br />
+		<v-btn @click="test = 1"></v-btn>
 		<div>
       <v-dialog
         v-model="end"
@@ -69,6 +70,7 @@ interface DataReturnTypes {
   	endMessage: string;
   	matchArr: { idMatch: number, player1: string, player2: string }[]
   	selected: string;
+	test: number
 }
 
 export default defineComponent({
@@ -95,12 +97,13 @@ export default defineComponent({
       endMessage: '',
       matchArr: [],
       selected: '',
+	  test: 0
 		};
 	},
 	methods: {
     ...mapGetters(['id']),
 		joinQueue() {
-			const gameOptions: GameOptionsDto = { gameMode: 2 };
+			const gameOptions: GameOptionsDto = { gameMode: this.test };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
       this.end = false;
@@ -146,6 +149,7 @@ export default defineComponent({
 				this.pong = new Pong(
 					this.pongCanvas,
 					this.ballCanvas,
+					this.backgroundCanvas,
 					this.backgroundCanvas,
 					this.paddleCanvas,
 					this.scoreCanvas,

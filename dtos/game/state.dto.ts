@@ -9,4 +9,5 @@ export interface StateDto {
   scoreP1: ScoreDto;
   scoreP2: ScoreDto;
   winner: number;
+  gameMode: number;
 }

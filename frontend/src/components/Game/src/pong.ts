@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io-client';
 import { StateDto } from '@dtos/game/state.dto';
 import { Background } from './background';
+import { BackgroundBH } from './background-black-hole';
 import { Ball } from './ball';
 import { Score } from './score';
 import { Paddle } from './paddle';
@@ -13,6 +14,7 @@ class Pong {
   ballCanvas: HTMLCanvasElement | null;
   ctx: CanvasRenderingContext2D;
   background: Background;
+  backgroundLight: BackgroundBH;
   ball: Ball;
   scoreP1: Score;
   scoreP2: Score;
@@ -29,6 +31,7 @@ class Pong {
     pongCanvas: HTMLCanvasElement | null,
     ballCanvas: HTMLCanvasElement | null,
     backgroundCanvas: HTMLCanvasElement | null,
+    backgroundBH: HTMLCanvasElement | null,
     paddleCanvas: HTMLCanvasElement | null,
     scoreCanvas: HTMLCanvasElement | null,
     socket: Socket,
@@ -37,6 +40,7 @@ class Pong {
     this.canvas = pongCanvas;
     this.ctx = this?.canvas?.getContext('2d') as CanvasRenderingContext2D;
     this.background = new Background(backgroundCanvas);
+    this.backgroundLight = new BackgroundBH(backgroundBH);
     this.ball = new Ball(ballCanvas);
     this.player1 = new Paddle(10.0, 320.0, 'z', 's', paddleCanvas);
     this.player2 = new Paddle(
@@ -56,7 +60,12 @@ class Pong {
   }
 
   render() {
-    this.background.render(this.ctx);
+    if (this.gameOptions == 0) {
+      this.background.render(this.ctx);
+    }
+    else {
+      this.backgroundLight.render(this.ctx);
+    }
     this.scoreP1.render(this.ctx);
     this.scoreP2.render(this.ctx);
     this.ball.render(this.ctx);
@@ -84,16 +93,9 @@ class Pong {
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
     this.winner = newState.winner;
-    console.log(this.gameOptions);
+    this.gameOptions = newState.gameMode;
   }
-
-  coucou(gameMode: GameOptionsDto){
-    this.gameOptions = gameMode.gameMode;
-  }
-
   spectate(gameId: number) {
-
-    this.socket.on('game-queue' , (e)=> this.coucou(e))
     this.socket.on('game-state', (e) => this.updateState(e));
     this.socket.on('endGame', () => (this.running = false));
     this.socket.emit('game-spectate', gameId);

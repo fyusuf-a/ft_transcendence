@@ -3,7 +3,7 @@ import { isKeyPressed } from './input';
 const SPEED = 7.5;
 
 const paddle = new Image();
-paddle.src = 'src/assets/images/paddle.png';
+paddle.src = 'src/assets/images/game/paddle.png';
 
 class Paddle {
   x: number;

@@ -12,6 +12,7 @@ export class Game {
   room: string;
   state: GameState;
   updateInterval: NodeJS.Timer;
+  gameMode: number;
 
   constructor(
     init: CreateGameDto,
@@ -25,6 +26,7 @@ export class Game {
     this.server = server;
     this.room = init.gameId.toString();
     this.updateInterval = undefined;
+    this.gameMode = 0;
   }
 
   end() {
@@ -42,7 +44,9 @@ export class Game {
       scoreP1: { score: this.state.score[0] },
       scoreP2: { score: this.state.score[1] },
       winner: this.state.winner,
+      gameMode: this.gameMode,
     };
+    this.state.gameMode = this.gameMode;
 
     if (
       this.state.score[0] == SCORE_TO_WIN ||

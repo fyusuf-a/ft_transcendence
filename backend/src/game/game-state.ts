@@ -38,6 +38,7 @@ export class GameState {
   score: [number, number];
   winner: Winner;
   lastResult: CheckResult;
+  gameMode: number;
 
   constructor() {
     const paddle_width_offset = 10.0;

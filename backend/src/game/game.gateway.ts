@@ -65,7 +65,6 @@ export class GameGateway extends SecureGateway {
   ): Promise<string> {
     const clientUser = this.getAuthenticatedUser(client);
     let selectedQueue;
-    let test = gameOptions.gameMode;
     const gameOptionsString = JSON.stringify(gameOptions);
     if (gameOptions.homeId || gameOptions.awayId) {
       if (
@@ -96,6 +95,7 @@ export class GameGateway extends SecureGateway {
           const newGame = new Game({ gameId: gameId }, this.server, this);
           newGame.players[0] = otherPlayer;
           newGame.players[1] = client;
+          newGame.gameMode = gameOptions.gameMode;
           this.games.set(gameId, newGame);
           client.join(newGame.room);
           otherPlayer.join(newGame.room);
@@ -111,7 +111,6 @@ export class GameGateway extends SecureGateway {
       this.logger.log(
         `${client.id} joining queue with options ${JSON.stringify(gameOptions)}`,
         );
-        console.log("heyeheye: " + test);
     return 'Success: joined queue';
   }
 
