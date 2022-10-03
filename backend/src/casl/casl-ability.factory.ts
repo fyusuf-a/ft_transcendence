@@ -16,8 +16,17 @@ import { Block } from '../relationships/entities/block.entity';
 import { Achievement } from '../achievements/entities/achievements.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from '../matches/entities/match.entity';
+import { Message } from '../messages/entities/message.entity';
 
-export { User, Friendship, Block, Achievement, Match, AchievementsLog };
+export {
+  User,
+  Friendship,
+  Block,
+  Achievement,
+  Match,
+  Message,
+  AchievementsLog,
+};
 
 export enum Action {
   Manage = 'manage',
@@ -34,6 +43,7 @@ export type Subjects =
   | InferSubjects<typeof Achievement>
   | InferSubjects<typeof AchievementsLog>
   | InferSubjects<typeof Match>
+  | InferSubjects<typeof Message>
   | 'all';
 
 export type AppAbility = Ability<[Action, Subjects]>;
@@ -51,9 +61,11 @@ export class CaslAbilityFactory {
     @InjectRepository(Achievement)
     private readonly achievementsRepository: Repository<Achievement>,
     @InjectRepository(AchievementsLog)
-    private readonly achievementsLogRepository: Repository<Achievement>,
+    private readonly achievementsLogRepository: Repository<AchievementsLog>,
     @InjectRepository(Match)
-    private readonly matchesRepository: Repository<Achievement>,
+    private readonly matchesRepository: Repository<Match>,
+    @InjectRepository(Match)
+    private readonly messagesRepository: Repository<Message>,
   ) {}
 
   createForUser(user: User) {
@@ -110,6 +122,8 @@ export class CaslAbilityFactory {
         return this.achievementsLogRepository;
       case Match:
         return this.matchesRepository;
+      case Message:
+        return this.messagesRepository;
       default:
         console.error('No repository found for subject', subject);
     }
