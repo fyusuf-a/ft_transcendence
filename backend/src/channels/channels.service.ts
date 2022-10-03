@@ -56,12 +56,12 @@ export class ChannelsService {
       channel.name = createChannelDto.name;
       ret = await this.channelsRepository.save(channel);
       role = MembershipRoleType.OWNER;
+      await this.membershipsService.create({
+        userId: userId,
+        role: role,
+        channelId: channel.id,
+      });
     }
-    this.membershipsService.create({
-      userId: userId,
-      role: role,
-      channelId: channel.id,
-    });
     return ret;
   }
 

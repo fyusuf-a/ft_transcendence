@@ -136,7 +136,7 @@ describe('MessagesController (e2e)', () => {
       .post('/messages')
       .send({
         content: 'Test message2',
-        senderId: 2,
+        senderId: 1,
         channelId: 1,
       })
       .expect(201);
@@ -146,7 +146,7 @@ describe('MessagesController (e2e)', () => {
     const response = await request(app.getHttpServer()).get('/messages/2');
     expect(response.status).toBe(200);
     const responseMessage: ResponseMessageDto = response.body;
-    expect(responseMessage.senderId).toBe(2);
+    expect(responseMessage.senderId).toBe(1);
     expect(responseMessage.channelId).toBe(1);
     expect(responseMessage.content).toBe('Test message2');
   });
@@ -159,7 +159,7 @@ describe('MessagesController (e2e)', () => {
     expect(responseMessagePages.data[0].senderId).toBe(1);
     expect(responseMessagePages.data[0].channelId).toBe(1);
     expect(responseMessagePages.data[0].content).toBe('Test message');
-    expect(responseMessagePages.data[1].senderId).toBe(2);
+    expect(responseMessagePages.data[1].senderId).toBe(1);
     expect(responseMessagePages.data[1].channelId).toBe(1);
     expect(responseMessagePages.data[1].content).toBe('Test message2');
   });
@@ -169,7 +169,7 @@ describe('MessagesController (e2e)', () => {
       .post('/messages')
       .send({
         content: 'Test message2',
-        senderId: 2,
+        senderId: 1,
         channelId: 1,
       })
       .expect(201);

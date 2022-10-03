@@ -15,6 +15,7 @@ import { MockRepository } from 'src/common/mocks/repository.mock';
 import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { MockChannelEntity } from 'src/channels/mocks/channel.entity.mock';
 import { ChannelType } from 'src/dtos/channels';
+import { ConfigService } from '@nestjs/config';
 
 describe('MembershipsService', () => {
   let service: MembershipsService;
@@ -26,6 +27,7 @@ describe('MembershipsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MembershipsService,
+        ConfigService,
         {
           provide: getRepositoryToken(Membership),
           useValue: new MockRepository(() => new Membership()),
