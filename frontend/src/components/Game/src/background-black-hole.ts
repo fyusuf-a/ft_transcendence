@@ -1,5 +1,6 @@
 const backgroundLight = new Image();
-backgroundLight.src = 'src/assets/images/game/light-mode/background-black-hole.png';
+backgroundLight.src =
+  'src/assets/images/game/light-mode/background-black-hole.png';
 
 class BackgroundBH {
   img_data: ImageData;

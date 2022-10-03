@@ -4,6 +4,10 @@
       <v-row>
         <v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
 			</v-row>
+      <br/>
+      <v-row>
+        <v-btn @click="map = 1" v-if="map == 0">Active BlackHole map</v-btn><v-btn @click="map = 0" v-if="map == 1">Deactive BlackHole map</v-btn>
+      </v-row>
 			<v-row>
         <select v-model="spectateGameId">
           <option value="">Choose a game to watch, and click on Spectate</option>
@@ -15,7 +19,6 @@
 			</v-row>
 		</div>
 		<br />
-		<v-btn @click="test = 1"></v-btn>
 		<div>
       <v-dialog
         v-model="end"
@@ -66,11 +69,11 @@ interface DataReturnTypes {
 	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
-  	end: boolean;
-  	endMessage: string;
-  	matchArr: { idMatch: number, player1: string, player2: string }[]
-  	selected: string;
-	test: number
+  end: boolean;
+  endMessage: string;
+  matchArr: { idMatch: number, player1: string, player2: string }[]
+  selected: string;
+	map: number
 }
 
 export default defineComponent({
@@ -97,24 +100,24 @@ export default defineComponent({
       endMessage: '',
       matchArr: [],
       selected: '',
-	  test: 0
+	    map: 0
 		};
 	},
 	methods: {
     ...mapGetters(['id']),
 		joinQueue() {
-			const gameOptions: GameOptionsDto = { gameMode: this.test };
+			const gameOptions: GameOptionsDto = { gameMode: this.map };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
       this.end = false;
 		},
     challengeUser(userId: number) {
-      const gameOptions: GameOptionsDto = { gameMode: 0, homeId: this.$store.getters.id, awayId: userId };
+      const gameOptions: GameOptionsDto = { gameMode: this.map, homeId: this.$store.getters.id, awayId: userId };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
-      const gameOptions: GameOptionsDto = { gameMode: 0, homeId: userId, awayId: this.$store.getters.id };
+      const gameOptions: GameOptionsDto = { gameMode: this.map, homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
     },

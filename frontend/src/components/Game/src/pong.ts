@@ -5,7 +5,6 @@ import { BackgroundBH } from './background-black-hole';
 import { Ball } from './ball';
 import { Score } from './score';
 import { Paddle } from './paddle';
-import { GameOptionsDto } from '@dtos/game/game-options.dto';
 
 const FRAMERATE = 30;
 
@@ -62,8 +61,7 @@ class Pong {
   render() {
     if (this.gameOptions == 0) {
       this.background.render(this.ctx);
-    }
-    else {
+    } else {
       this.backgroundLight.render(this.ctx);
     }
     this.scoreP1.render(this.ctx);
