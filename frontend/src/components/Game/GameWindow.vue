@@ -65,10 +65,10 @@ interface DataReturnTypes {
 	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
-  end: boolean;
-  endMessage: string;
-  matchArr: { idMatch: number, player1: string, player2: string }[]
-  selected: string;
+  	end: boolean;
+  	endMessage: string;
+  	matchArr: { idMatch: number, player1: string, player2: string }[]
+  	selected: string;
 }
 
 export default defineComponent({

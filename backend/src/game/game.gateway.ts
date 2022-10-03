@@ -129,7 +129,7 @@ export class GameGateway extends SecureGateway {
           this.games.get(gameId).state,
         ),
       );
-    };
+    }
     this.logger.log(`Terminating game ${gameId} with status ${match.status}`);
     if (this.games.get(gameId) && this.games.get(gameId).room) {
       this.server
