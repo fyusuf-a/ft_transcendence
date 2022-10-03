@@ -202,6 +202,8 @@ export default defineComponent({
         if (username) {
           this.$router.push('/profile/' + username);
         }
+      } else if (event.option === 'chat-make-admin') {
+        console.log('creating an admin');
       } else if (event.option === 'chat-message-user') {
         console.log('messaging user ' + username);
         let dto = new CreateChannelDto(
