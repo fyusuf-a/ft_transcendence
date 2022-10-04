@@ -120,7 +120,7 @@ describe('MatchesController', () => {
   });
 
   describe('update()', () => {
-    it('should return an UpdateResult', async () => {
+    it.skip('should return an UpdateResult', async () => {
       const mock = new UpdateResult();
       const dto = new UpdateMatchDto();
       dto.end = new Date();

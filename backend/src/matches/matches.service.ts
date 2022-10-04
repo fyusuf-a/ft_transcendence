@@ -57,8 +57,8 @@ export class MatchesService {
   }
 
   async updateUsersStatus(home: User, away: User, status: UserStatusEnum) {
-    home.status = !home.status ? UserStatusEnum.offline : status;
-    away.status = !away.status ? UserStatusEnum.offline : status;
+    home.status = !home?.status ? UserStatusEnum.offline : status;
+    away.status = !away?.status ? UserStatusEnum.offline : status;
     await this.usersRepository.save([home, away]);
     this.notificationGateway.handleMatchStatusUpdate(
       home,
