@@ -29,11 +29,12 @@
           <v-card-text>
             <p align="center" class="winStatus">
             {{ endMessage }} </p><br />
-          <p>  Do you want to play again?
+          <p v-if="!spectateTrue" >Do you want to play again?
           </p>
             <v-row class="mt-2 ml-8">
-            <v-btn class="button" title="Join the queue to play" @click="joinQueue">Yes, rejoin the queue</v-btn>
-            <v-btn class="button" title="Don't replay" @click="closeGame">No, go to your profile page</v-btn>
+            <v-btn v-if="!spectateTrue" class="button" title="Join the queue to play" @click="joinQueue">Yes, rejoin the queue</v-btn>
+            <v-btn v-if="!spectateTrue" class="button" title="Don't replay" @click="closeGame">No, go to your profile page</v-btn>
+            <v-btn v-if="spectateTrue" class="button" title="Close" @click="closeGame">Close</v-btn>
           </v-row>
           </v-card-text>
         </v-card>
@@ -74,6 +75,7 @@ interface DataReturnTypes {
   matchArr: { idMatch: number, player1: string, player2: string }[]
   selected: string;
 	map: number
+  spectateTrue: boolean;
 }
 
 export default defineComponent({
@@ -100,7 +102,8 @@ export default defineComponent({
       endMessage: '',
       matchArr: [],
       selected: '',
-	    map: 0
+	    map: 0,
+      spectateTrue: false,
 		};
 	},
 	methods: {
@@ -123,10 +126,13 @@ export default defineComponent({
     },
     closeGame() {
       this.end = false;
-      this.$router.push({
-        name: 'home',
-        params: { path: '/' },
-      });
+      if(!this.spectateTrue) {
+        this.$router.push({
+          name: 'home',
+          params: { path: '/' },
+        });
+      }
+      this.spectateTrue = false;
     },
 	  resize() {
 		  const canvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
@@ -190,12 +196,26 @@ export default defineComponent({
 				}
 			});
 		},
-		handleEndGame(match :MatchDto) {
+		async handleEndGame(match :MatchDto) {
       this.end = true;
       this.pong = null;
       if ((this.id() == match.homeId && match.status == "HOME")
       || (this.id() == match.awayId && match.status == "AWAY")) {
         this.endMessage = "Congrats! You win :)";
+      }
+      else if (this.id() != match.homeId && this.id() != match.awayId) {
+        this.spectateTrue = true;
+        let winner: string;
+        if (match.status == "HOME") {
+          const responseWinner = await axios.get('/users/' + match.homeId);
+          winner = responseWinner.data.username
+          this.endMessage = `The game is over, ${winner} won!`;
+        }
+        else if (match.status == "AWAY") {
+          const responseWinner = await axios.get('/users/' + match.awayId);
+          winner = responseWinner.data.username
+          this.endMessage = `The game is over, ${winner} won!`;
+        }
       }
       else {
         this.endMessage = "Oh no! You lose :(";
