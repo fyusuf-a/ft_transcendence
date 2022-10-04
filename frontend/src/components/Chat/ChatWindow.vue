@@ -26,7 +26,7 @@
                 :senderId="item.senderId"
                 :createdAt="item.createdAt"
                 :content="item.content"
-                :client-is-admin="membership.role === 'owner' || membership.role === 'admin'"
+                :membership-role="membership.role"
                 @chat-message-menu-selection="
                   $emit('chat-message-menu-selection', $event)
                 "
