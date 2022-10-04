@@ -12,6 +12,11 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
+import { MatchDto, MatchStatusType } from 'src/dtos/matches';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Match } from 'src/matches/entities/match.entity';
+import { Repository } from 'typeorm';
+import { AchievementsLogService } from 'src/achievements-log/achievements-log.service';
 
 @WebSocketGateway({ cors: true, namespace: 'game' })
 export class GameGateway extends SecureGateway {
@@ -19,6 +24,9 @@ export class GameGateway extends SecureGateway {
     protected readonly usersService: UsersService,
     protected readonly configService: ConfigService,
     private readonly matchService: MatchesService,
+    @InjectRepository(Match)
+    private readonly matchRepository: Repository<Match>,
+    protected readonly achievementsLogService: AchievementsLogService,
   ) {
     super('GameGateway', usersService, configService);
   }
@@ -84,7 +92,7 @@ export class GameGateway extends SecureGateway {
         });
         const gameId = match.id;
 
-        const newGame = new Game({ gameId: gameId }, this.server);
+        const newGame = new Game({ gameId: gameId }, this.server, this);
         newGame.players[0] = otherPlayer;
         newGame.players[1] = client;
         this.games.set(gameId, newGame);
@@ -103,6 +111,29 @@ export class GameGateway extends SecureGateway {
       `${client.id} joining queue with options ${JSON.stringify(gameOptions)}`,
     );
     return 'Success: joined queue';
+  }
+
+  async terminate_game(gameId: number) {
+    const match: MatchDto = await this.matchService.findOne(gameId);
+    match.end = new Date();
+    if (match.status == MatchStatusType.IN_PROGRESS) {
+      match.status = this.games.get(gameId).state.winner
+        ? MatchStatusType.AWAY
+        : MatchStatusType.HOME;
+      await this.matchRepository.save(match);
+      this.achievementsLogService.handlePostMatch(
+        await this.usersService.handlePostMatch(
+          match,
+          this.games.get(gameId).state,
+        ),
+      );
+    }
+    this.logger.log(`Terminating game ${gameId} with status ${match.status}`);
+    if (this.games.get(gameId) && this.games.get(gameId).room) {
+      this.server
+        .to(this.games.get(gameId).room)
+        .emit('endGame', match as MatchDto);
+    }
   }
 
   @SubscribeMessage('game-spectate')
