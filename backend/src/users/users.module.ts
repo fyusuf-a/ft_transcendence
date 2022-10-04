@@ -10,19 +10,11 @@ import { diskStorage } from 'multer';
 import { User } from './entities/user.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from 'src/matches/entities/match.entity';
-import { Achievement } from 'src/achievements/entities/achievements.entity';
 import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User,
-      Friendship,
-      Block,
-      Achievement, // TODO: understand why this is needed
-      AchievementsLog,
-      Match,
-    ]),
+    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog, Match]),
     CaslModule,
     ConfigModule,
     MulterModule.registerAsync({
@@ -59,9 +51,6 @@ import { CaslModule } from 'src/casl/casl.module';
   ],
   providers: [UsersService],
   controllers: [UsersController],
-  exports: [
-    UsersService,
-    TypeOrmModule.forFeature([User, Friendship, Block, AchievementsLog, Match]),
-  ],
+  exports: [UsersService, TypeOrmModule.forFeature([User])],
 })
 export class UsersModule {}

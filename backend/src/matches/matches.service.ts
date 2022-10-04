@@ -17,7 +17,7 @@ import {
 import { Match } from './entities/match.entity';
 import { User, UserStatusEnum } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()

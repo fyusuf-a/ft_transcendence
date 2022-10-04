@@ -5,19 +5,19 @@ import {
   WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { MessagesService } from './messages/messages.service';
-import { UsersService } from './users/users.service';
+import { MessagesService } from 'src/messages/messages.service';
+import { UsersService } from 'src/users/users.service';
 import { instanceToInstance } from 'class-transformer';
 import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
 
-import { MembershipsService } from './memberships/memberships.service';
+import { MembershipsService } from 'src/memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
-import { MembershipRoleType } from './memberships/entities/membership.entity';
 import { CreateMembershipDto, QueryMembershipDto } from '@dtos/memberships';
-import { ChannelsService } from './channels/channels.service';
-import { SecureGateway, CheckAuth } from './auth/auth.websocket';
-import { User } from './users/entities/user.entity';
 import { OnEvent } from '@nestjs/event-emitter';
+import { ChannelsService } from 'src/channels/channels.service';
+import { User } from 'src/users/entities/user.entity';
+import { MembershipRoleType } from 'src/memberships/entities/membership.entity';
+import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
 
 export class ChatJoinDto {
   channel: string;
