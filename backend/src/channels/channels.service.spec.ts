@@ -10,6 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { PageDto } from '@dtos/pages';
 import { Membership } from 'src/memberships/entities/membership.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { ConfigService } from '@nestjs/config';
 
 const channelNumber = 2;
 
@@ -21,6 +22,7 @@ describe('ChannelsService', () => {
       providers: [
         ChannelsService,
         MembershipsService,
+        ConfigService,
         {
           provide: getRepositoryToken(Channel),
           useValue: new MockRepository<MockChannelEntity>(

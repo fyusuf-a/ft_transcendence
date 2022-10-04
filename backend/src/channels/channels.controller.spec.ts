@@ -14,6 +14,7 @@ import {
 import { Channel, ChannelType } from './entities/channel.entity';
 import { Membership } from 'src/memberships/entities/membership.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('ChannelsController', () => {
   let controller: ChannelsController;
@@ -25,6 +26,7 @@ describe('ChannelsController', () => {
       providers: [
         ChannelsService,
         MembershipsService,
+        ConfigService,
         {
           provide: getRepositoryToken(Channel),
           useValue: jest.fn(),
