@@ -2,6 +2,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
 import { MessagesService } from './messages/messages.service';
@@ -12,11 +13,14 @@ import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
 import { MembershipsService } from './memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
 import { MembershipRoleType } from './memberships/entities/membership.entity';
-import { CreateMembershipDto } from '@dtos/memberships';
+import { CreateMembershipDto, QueryMembershipDto } from '@dtos/memberships';
+import { ChannelsService } from './channels/channels.service';
 import { SecureGateway, CheckAuth } from './auth/auth.websocket';
+import { User } from './users/entities/user.entity';
 
 export class ChatJoinDto {
   channel: string;
+  password?: string;
 }
 
 export class ChatSendDto {
@@ -31,23 +35,50 @@ export class ChatGateway extends SecureGateway {
     protected readonly configService: ConfigService,
     private readonly messagesService: MessagesService,
     private readonly membershipsService: MembershipsService,
+    private readonly channelsService: ChannelsService,
   ) {
     super('ChatGateway', usersService, configService);
   }
 
   @WebSocketServer() server: Server;
 
+  @SubscribeMessage('chat-listen')
+  @CheckAuth
+  async handleListen(client: Socket) {
+    this.logger.log(`${client.id} wants to listen to their channels`);
+    const query: QueryMembershipDto = {
+      user: `${this.getAuthenticatedUser(client)?.id}`,
+    };
+    const memberships = await this.membershipsService.findAll(query);
+    for (const membership of memberships) {
+      if (!membership.bannedUntil) {
+        this.logger.log(
+          `Subscribing ${client.id} to channel: [${membership.channelId}]`,
+        );
+        await client.join(membership.channelId as unknown as string);
+      }
+    }
+    return 'SUCCESS';
+  }
+
   @SubscribeMessage('chat-join')
   @CheckAuth
   async handleJoin(client: Socket, payload: ChatJoinDto) {
     this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
     // TODO: Check if User has permission to join channel here
+    const userId = this.authenticatedSockets.get(client.id)?.id;
     const membershipDto: CreateMembershipDto = {
       channelId: +payload.channel,
       userId: this.getAuthenticatedUser(client)?.id,
       role: MembershipRoleType.PARTICIPANT,
+      password: payload.password,
     };
     try {
+      await this.membershipsService.isAuthorized(
+        membershipDto,
+        { id: userId } as User,
+        await this.channelsService.findOne(membershipDto.channelId),
+      );
       await this.membershipsService.create(membershipDto);
     } catch (error) {
       if (error.code == 23505) {
@@ -56,7 +87,7 @@ export class ChatGateway extends SecureGateway {
           `User ${membershipDto.userId} is already a member of channel ${payload.channel}`,
         );
       } else {
-        throw error;
+        throw new WsException(error.message);
       }
     }
     client.join(payload.channel);
@@ -105,10 +136,14 @@ export class ChatGateway extends SecureGateway {
     messageDto.senderId = this.getAuthenticatedUser(client)?.id;
 
     // TODO: Check if User has permission to send message here
-    const messageResponse = await this.messagesService.create(messageDto);
-    const messageResponseDto: ResponseMessageDto =
-      instanceToInstance(messageResponse);
-    this.server.to(target).emit('chat-message', messageResponseDto);
-    return 'Message Confirmed';
+    try {
+      const messageResponse = await this.messagesService.create(messageDto);
+      const messageResponseDto: ResponseMessageDto =
+        instanceToInstance(messageResponse);
+      this.server.to(target).emit('chat-message', messageResponseDto);
+      return 'Message Confirmed';
+    } catch (error) {
+      throw new WsException(error.message);
+    }
   }
 }

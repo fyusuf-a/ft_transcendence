@@ -33,14 +33,19 @@ export class AchievementsLogService {
     await this.userRepository.findOneByOrFail({
       id: achievementsLogdto.userId,
     });
-    newLog.userId = achievementsLogdto.userId;
-
-    newLog.achievement = await this.achievementRepository.findOneByOrFail({
-      id: achievementsLogdto.achievementId,
-    });
     try {
-      return this.achievementsLogRepository.save(newLog);
+      newLog.userId = achievementsLogdto.userId;
+
+      newLog.achievement = await this.achievementRepository.findOneByOrFail({
+        id: achievementsLogdto.achievementId,
+      });
+
+      const ret = await this.achievementsLogRepository.save(newLog);
+      return ret;
     } catch {
+      console.log(
+        `user ${achievementsLogdto.userId} has already unlocked achievement ${achievementsLogdto.achievementId}`,
+      );
       return null;
     }
   }
@@ -62,7 +67,6 @@ export class AchievementsLogService {
       }
     }
     const played: number = user.wins + user.losses;
-    console.log(user.id + ' played  ' + played);
     switch (played) {
       case 50: {
         this.create({ userId: user.id, achievementId: 3 });

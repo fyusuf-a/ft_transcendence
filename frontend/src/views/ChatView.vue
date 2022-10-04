@@ -2,15 +2,24 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="10">
+        <channel-invite-dialog
+          v-model="inviting"
+          :selectedChannel="selectedChannel"
+          @chat-invite-user="handleUserInvite"
+        >
+
+        </channel-invite-dialog>
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
+          :membership="activeMembership"
           :messages="getMessages(selectedChannel.id)"
           :users="users"
           :socket="socket"
           :key="newMessage"
           @chat-leave-channel="handleLeaveChannelEvent"
           @chat-message-menu-selection="handleChatMessageMenuSelection"
+          @chat-invite-channel="inviting = true"
         ></chat-window>
       </v-col>
       <v-col cols="12" md="2">
@@ -19,6 +28,7 @@
           @channel-join-event="handleChannelJoin"
           @channel-create-event="handleChannelCreation"
           @request-user-event="addUserToMap"
+          @refresh-channels-event="refreshChannels"
           :channels="subscribedChannels"
           :users="users"
           :unreadChannels="unreadChannels"
@@ -36,11 +46,14 @@ import axios from 'axios';
 import { io, Socket } from 'socket.io-client';
 import ChannelList from '@/components/Chat/ChannelList.vue';
 import ChatWindow from '@/components/Chat/ChatWindow.vue';
+import ChannelInviteDialog from '@/components/Chat/ChannelInviteDialog.vue';
 import { MessageDto } from '@/common/dto/message.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { UserDto } from '@/common/dto/user.dto';
-import { ListBlockDto } from 'src/dtos/blocks';
+import { ChannelType, JoinChannelDto } from '@dtos/channels';
+import { ListBlockDto } from '@dtos/blocks';
+import { MembershipRoleType } from '@dtos/memberships';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -52,12 +65,14 @@ interface DataReturnType {
   subscribedChannels: Array<ChannelDto>;
   unreadChannels: Set<number>;
   selectedChannel?: ChannelDto;
+  activeMembership?: MembershipDto;
   messages: Map<number, Array<MessageDto>>;
   newMessage: number;
   newUnread: number;
   users: Map<number, UserDto>;
   memberships: Array<MembershipDto>;
   blocks: Array<number | undefined>;
+  inviting: boolean;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -72,17 +87,20 @@ export default defineComponent({
       subscribedChannels: [],
       unreadChannels: new Set(),
       selectedChannel: undefined,
+      activeMembership: undefined,
       messages: new Map(),
       newMessage: 0,
       newUnread: 0,
       users: new Map(),
       memberships: [],
       blocks: [],
+      inviting: false,
     };
   },
   components: {
     'channel-list': ChannelList,
     'chat-window': ChatWindow,
+    'channel-invite-dialog': ChannelInviteDialog,
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
@@ -106,10 +124,33 @@ export default defineComponent({
       } else {
         const createdChannelId: number = await this.createChannel(dto);
         if (createdChannelId > 0) {
-          console.log('Joining new channel');
-          this.handleChannelJoin(createdChannelId.toString());
+          this.socket.emit(
+        'chat-listen',
+        (response: string) => {
+          this.printResponse(response);
+          this.refreshChannels();
+        },
+      );
         }
       }
+    },
+    async handleUserInvite(userId: number) {
+      this.inviting = false;
+      if (!this.selectedChannel?.id) {
+        return -1;
+      }
+      console.log(`Inviting user "${userId}" to ${this.selectedChannel?.id}`);
+      let response = await axios.post('/memberships/', {
+        userId: userId,
+        channelId: this.selectedChannel.id,
+        role: MembershipRoleType.PARTICIPANT
+      });
+      if (response.status === 201) {
+        console.log("Successfully created membership!");
+        return response.data.id;
+      }
+      console.log("Error creating membership!");
+      return -1;
     },
     getMessages(channelId: number): MessageDto[] {
       const found = this.messages.get(channelId);
@@ -125,21 +166,25 @@ export default defineComponent({
         console.log(`parent says: ${this.selectedChannel.name}`);
         this.unreadChannels.delete(this.selectedChannel.id);
         this.getMessagesForChannel(newChannel.id);
+        this.fetchMembership(newChannel.id);
       }
     },
-    async handleChannelJoin(channelStr: string) {
-      const channelId = parseInt(channelStr);
-      console.log('Vue: joining channel ' + channelId);
-      const channel = this.allChannels.get(channelId);
+    async handleChannelJoin(channelDto: JoinChannelDto) {
+      console.log('Vue: joining channel ' + channelDto.id);
+      const channel = this.allChannels.get(channelDto.id);
       if (channel) {
-        this.joinChannelById(channelId); // check if it succeeds
-        this.subscribedChannels.push(channel);
+        if (channel.type === ChannelType.PROTECTED) {
+          console.log('trying to join protected');
+          this.joinChannelById(channelDto.id, channelDto.password); // check if it succeeds
+        } else {
+          this.joinChannelById(channelDto.id); // check if it succeeds
+        }
         this.handleChannelSelection(channel);
       } else {
         // Try to fetch channel ?
         await this.getAllChannels(); // should just get the one channel instead
-        if (this.allChannels.has(channelId)) {
-          this.handleChannelJoin(channelStr);
+        if (this.allChannels.has(channelDto.id)) {
+          this.handleChannelJoin(channelDto);
         } else {
           console.log("Still can't find the channel :(");
         }
@@ -262,11 +307,18 @@ export default defineComponent({
         }
       }
     },
-    joinChannelById(id: number) {
+    joinChannelById(id: number, password?: string) {
       console.log(`Vue: Asking to join channel #${id}`);
-      this.socket.emit('chat-join', { channel: id }, (response: string) => {
-        this.printResponse(response);
-      });
+      const channel = this.allChannels.get(id);
+      if (!channel) return;
+      this.socket.emit(
+        'chat-join',
+        { channel: id, password: password },
+        (response: string) => {
+          this.printResponse(response);
+          this.subscribedChannels.push(channel);
+        },
+      );
     },
     leaveChannelById(id: number) {
       console.log(`Vue: Asking to leave channel #${id}`);
@@ -283,6 +335,16 @@ export default defineComponent({
         }
       }
       this.selectedChannel = undefined;
+    },
+    async fetchMembership(channelId: number) {
+      console.log(
+        `Vue: Fetching membership for user ${this.$store.getters.id} on channel ${channelId}`,
+      );
+      const response = await axios.get(
+        `/memberships?channel=${channelId}&user=${this.$store.getters.id}`,
+      );
+      console.log(response.data);
+      this.activeMembership = response.data[0];
     },
     async fetchMemberships() {
       console.log(
@@ -322,6 +384,26 @@ export default defineComponent({
       }
       this.newUnread += 1;
     },
+    async refreshChannels() {
+      this.allChannels.clear();
+      this.subscribedChannels = [];
+      this.blocks = [];
+      await this.getAllChannels();
+      await this.fetchMemberships();
+      await this.fetchBlocks();
+      console.log('Trying to match membership to channel');
+      for (let membership of this.memberships) {
+        console.log('Checking membership' + membership);
+        const channel = this.allChannels.get(membership.channelId);
+        if (channel) {
+          console.log('Matched membership to channel');
+          this.subscribedChannels.push(channel);
+        } else {
+          console.log("Couldn't match membership to channel");
+          // try to get channel and try again?
+        }
+      }
+    }
   },
   computed: {
     messageInSelectedChannel(): MessageDto[] {
@@ -341,22 +423,13 @@ export default defineComponent({
       id: this.$store.getters.id,
       token: this.$store.getters.token,
     });
-    await this.getAllChannels();
-    await this.fetchMemberships();
-    await this.fetchBlocks();
-    console.log('Trying to match membership to channel');
-    for (let membership of this.memberships) {
-      console.log('Checking membership' + membership);
-      const channel = this.allChannels.get(membership.channelId);
-      if (channel) {
-        console.log('Matched membership to channel');
-        this.subscribedChannels.push(channel);
-        this.joinChannelById(channel.id);
-      } else {
-        console.log("Couldn't match membership to channel");
-        // try to get channel and try again?
-      }
-    }
+    this.socket.emit(
+        'chat-listen',
+        (response: string) => {
+          this.printResponse(response);
+        },
+      );
+      this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
   },
   beforeDestroy() {
@@ -364,3 +437,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+  .button {
+    cursor: pointer;
+  }
+</style>
