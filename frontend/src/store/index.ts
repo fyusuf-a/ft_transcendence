@@ -22,6 +22,7 @@ interface State {
   //socket: string,
   socket: Socket | undefined;
   cache: Cache | undefined;
+  challengedUserId: number;
 }
 
 const state: State = {
@@ -31,6 +32,7 @@ const state: State = {
   //socket: 'i am okay',
   socket: undefined, //new Socket(),//io(),
   cache: undefined,
+  challengedUserId: 0,
 };
 
 interface Mutation {
@@ -67,6 +69,10 @@ export default createStore({
     id: (state) => state.user.id,
     token: (state) => state.token,
     socket: (state) => state.socket,
+    challengeUserId: (state) => {
+      if (!state.challengedUserId) return 0;
+      else return state.challengedUserId;
+    },
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
@@ -129,6 +135,12 @@ export default createStore({
           context.state.avatar = await fetchAvatar(+context.state.user.id);
         }
       }
+    },
+    challengeUser(context, userId: number) {
+      context.state.challengedUserId = userId;
+    },
+    removeChallenge(context) {
+      context.state.challengedUserId = 0;
     },
   },
   modules: {},
