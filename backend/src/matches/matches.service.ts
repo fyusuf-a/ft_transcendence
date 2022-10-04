@@ -82,6 +82,7 @@ export class MatchesService {
       match.away,
       await this.usersService.findFriendships(match.awayId, 1),
     );
+    match.start = new Date();
     return this.matchRepository.save(match);
   }
 

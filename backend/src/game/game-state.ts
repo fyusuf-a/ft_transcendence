@@ -107,9 +107,9 @@ export class GameState {
       next_ball.top >= this.player0.bottom &&
       next_ball.bottom <= this.player0.top
     ) {
-      this.ball.x = 2 * this.player0.edge - next_ball.left;
+      this.ball.new_trajectory(this.player0.y, BALL_SPEED);
+      this.ball.x += this.ball.vx;
       this.ball.y += this.ball.vy;
-      this.ball.invert_dx();
       return true;
     }
     if (
@@ -118,9 +118,9 @@ export class GameState {
       next_ball.top >= this.player1.bottom &&
       next_ball.bottom <= this.player1.top
     ) {
-      this.ball.x = 2 * this.player1.edge - next_ball.right - this.ball.size;
+      this.ball.new_trajectory(this.player1.y, BALL_SPEED);
+      this.ball.x += this.ball.vx;
       this.ball.y += this.ball.vy;
-      this.ball.invert_dx();
       return true;
     }
     return false;

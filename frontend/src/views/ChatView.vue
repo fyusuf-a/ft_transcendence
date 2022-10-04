@@ -211,7 +211,27 @@ export default defineComponent({
           +event.target,
         );
         this.handleChannelCreation(dto);
-      }
+      } else if (event.option === 'chat-block-user') {
+        this.handleBlockUser(+event.target);
+      };
+    },
+    async handleBlockUser(userId: number) {
+      const data = {
+        sourceId: this.$store.getters.id,
+        targetId: userId,
+      };
+      await axios.post('/blocks', data).then(async () => {
+        let response2 = await axios.get(
+          '/users/' + this.$store.getters.id + '/friendships/',
+        );
+        for (let i = 0; i < response2.data.length; i++) {
+          if (response2.data[i].user.id === userId) {
+            await axios.delete('/friendships/' + response2.data[i].id);
+          }
+        }
+        window.alert('The user is blocked');
+        window.location.reload();
+      });
     },
     async handleMakeAdmin(userId: number) {
       if (!this.selectedChannel?.id) {
