@@ -45,7 +45,6 @@ export default defineComponent({
         { label: 'View Profile', event: 'chat-profile-user' },
         { label: 'Challenge', event: 'chat-challenge-user' },
         { label: 'Message', event: 'chat-message-user' },
-        { label: 'Friend', event: 'chat-friend-user' },
         { label: 'Block', event: 'chat-block-user' },
       ],
       adminOptions: [
@@ -64,6 +63,9 @@ export default defineComponent({
   },
   computed: {
     options: function (): OptionType[] {
+      if (this.targetId === this.$store.getters.id) {
+        return [this.regularOptions[0]];
+      }
       if (this.clientIsAdmin) {
         return this.regularOptions.concat(this.adminOptions);
       }

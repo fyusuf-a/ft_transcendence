@@ -20,49 +20,10 @@ import {
   MembershipRoleType,
 } from '@dtos/memberships';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ChannelsService } from 'src/channels/channels.service';
-import { ChannelType } from 'src/channels/entities/channel.entity';
 import { EntityNotFoundError } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { Request } from 'express';
 import { User } from 'src/users/entities/user.entity';
-
-async function userIsAdmin(
-  userId: number,
-  channelId: number,
-  membershipsService: MembershipsService,
-): Promise<boolean> {
-  const creatorMembership = await membershipsService.findAll({
-    user: userId.toString(),
-    channel: channelId.toString(),
-  });
-  if (
-    creatorMembership.length === 1 &&
-    (creatorMembership[0].role === MembershipRoleType.ADMIN ||
-      creatorMembership[0].role === MembershipRoleType.OWNER)
-  ) {
-    return true;
-  }
-  return false;
-}
-
-async function userIsOwner(
-  userId: number,
-  channelId: number,
-  membershipsService: MembershipsService,
-): Promise<boolean> {
-  const creatorMembership = await membershipsService.findAll({
-    user: userId.toString(),
-    channel: channelId.toString(),
-  });
-  if (
-    creatorMembership.length === 1 &&
-    creatorMembership[0].role === MembershipRoleType.OWNER
-  ) {
-    return true;
-  }
-  return false;
-}
+import { ChannelsService } from 'src/channels/channels.service';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')
@@ -79,50 +40,18 @@ export class MembershipsController {
     @Req() req: Request,
   ): Promise<ResponseMembershipDto> {
     try {
-      let isAuthorized = false;
-      const channel = await this.channelsService.findOne(
-        createMembershipDto.channelId,
+      await this.membershipsService.isAuthorized(
+        createMembershipDto,
+        req.user as User,
+        await this.channelsService.findOne(createMembershipDto.channelId),
       );
-      if (createMembershipDto.role === MembershipRoleType.OWNER) {
-        throw new UnauthorizedException();
-      }
-      if (createMembershipDto.role === MembershipRoleType.ADMIN) {
-        if (
-          !(await userIsOwner(
-            (req.user as User).id,
-            channel.id,
-            this.membershipsService,
-          ))
-        ) {
-          throw new UnauthorizedException();
-        }
-      }
-      if (channel.type === ChannelType.PRIVATE) {
-        isAuthorized = await userIsAdmin(
-          (req.user as User).id,
-          createMembershipDto.channelId,
-          this.membershipsService,
-        );
-      } else if (channel.type === ChannelType.PROTECTED) {
-        isAuthorized =
-          createMembershipDto.password &&
-          (await bcrypt.compare(
-            createMembershipDto.password,
-            channel.password,
-          ));
-      } else {
-        isAuthorized = true;
-      }
-      if (!isAuthorized) {
-        throw new UnauthorizedException();
-      }
+      return await this.membershipsService.create(createMembershipDto);
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
-        throw new BadRequestException('Cannot find channel');
+        throw new BadRequestException(error.message);
       }
       throw error;
     }
-    return await this.membershipsService.create(createMembershipDto);
   }
 
   @Get()
@@ -147,12 +76,11 @@ export class MembershipsController {
   ) {
     if (updateMembershipDto.role === MembershipRoleType.ADMIN) {
       if (
-        !(await userIsAdmin(
+        !(await this.membershipsService.userIsAdmin(
           (req.user as User).id,
           (
             await this.membershipsService.findOne(+id)
           ).channelId,
-          this.membershipsService,
         ))
       ) {
         throw new UnauthorizedException();

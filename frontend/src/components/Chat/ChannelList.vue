@@ -2,8 +2,8 @@
   <v-card>
     <v-container>
       <v-row no-gutters align="center" class="header-row">
-        <v-col cols="11">{{ title }}</v-col>
-        <v-col cols="1">
+        <v-col cols="6">{{ title }}</v-col>
+        <v-col cols="3">
           <channel-join-dialog
             @channel-join-event="handleChannelJoin"
             @channel-create-event="handleChannelCreate"
@@ -11,7 +11,15 @@
           >
           </channel-join-dialog>
         </v-col>
-        <v-spacer></v-spacer>
+        <v-col cols="3">
+          <span
+            icon
+            color="primary"
+            dark
+            class="button"
+            @click="$emit('refresh-channels-event');">&#8635;
+        </span>
+        </v-col>
       </v-row>
       <v-row>
         <v-divider></v-divider>
@@ -54,6 +62,7 @@ import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 import { defineComponent, PropType } from 'vue';
 import ChannelJoinDialog from './ChannelJoinDialog.vue';
 import { UserDto } from '@/common/dto/user.dto';
+import { JoinChannelDto } from '@dtos/channels/join-channel.dto';
 
 interface DataReturnType {
   title: string;
@@ -91,8 +100,8 @@ export default defineComponent({
       console.log(`Handling a channel selection: ${channel.id}`);
       this.$emit('channel-select-event', channel);
     },
-    handleChannelJoin(channelId: number) {
-      this.$emit('channel-join-event', channelId);
+    handleChannelJoin(channel: JoinChannelDto) {
+      this.$emit('channel-join-event', channel);
     },
     handleChannelCreate(dto: CreateChannelDto) {
       this.$emit('channel-create-event', dto);
