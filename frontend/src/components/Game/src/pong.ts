@@ -2,6 +2,7 @@ import { Socket } from 'socket.io-client';
 import { StateDto } from '@dtos/game/state.dto';
 import { Background } from './background';
 import { Ball } from './ball';
+import { Score } from './score';
 import { Paddle } from './paddle';
 
 const FRAMERATE = 30;
@@ -12,17 +13,22 @@ class Pong {
   ctx: CanvasRenderingContext2D;
   background: Background;
   ball: Ball;
+  scoreP1: Score;
+  scoreP2: Score;
   player1: Paddle;
   player2: Paddle;
+  winner: number;
   requestID: number | undefined;
   socket: Socket;
   lastUpdate: number;
+  running = true;
 
   constructor(
     pongCanvas: HTMLCanvasElement | null,
     ballCanvas: HTMLCanvasElement | null,
     backgroundCanvas: HTMLCanvasElement | null,
     paddleCanvas: HTMLCanvasElement | null,
+    scoreCanvas: HTMLCanvasElement | null,
     socket: Socket,
   ) {
     this.ballCanvas = ballCanvas;
@@ -38,19 +44,25 @@ class Pong {
       'ArrowDown',
       paddleCanvas,
     );
+    this.scoreP1 = new Score(0, 130, 0, scoreCanvas);
+    this.scoreP2 = new Score(0, 450, 0, scoreCanvas);
     this.requestID = undefined;
+    this.winner = -1;
     this.socket = socket;
     this.lastUpdate = -1;
   }
 
   render() {
     this.background.render(this.ctx);
+    this.scoreP1.render(this.ctx);
+    this.scoreP2.render(this.ctx);
     this.ball.render(this.ctx);
     this.player1.render(this.ctx);
     this.player2.render(this.ctx);
   }
 
   execSpectateFrame(timestamp: number) {
+    if (!this.running) return;
     if (timestamp > this.lastUpdate + 1000 / FRAMERATE) {
       this.lastUpdate = timestamp;
       this.render();
@@ -64,12 +76,16 @@ class Pong {
     this.player1.y = newState.player1.y;
     this.player2.x = newState.player2.x;
     this.player2.y = newState.player2.y;
+    this.scoreP1.score = newState.scoreP1.score;
+    this.scoreP2.score = newState.scoreP2.score;
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
+    this.winner = newState.winner;
   }
 
   spectate(gameId: number) {
     this.socket.on('game-state', (e) => this.updateState(e));
+    this.socket.on('endGame', () => (this.running = false));
     this.socket.emit('game-spectate', gameId);
     this.execSpectateFrame(-1);
   }

@@ -1,6 +1,8 @@
 import { Server, Socket } from 'socket.io';
 import { CreateGameDto, StateDto } from '@dtos/game';
-import { GameState } from './game-state';
+import { GameState, SCORE_TO_WIN } from './game-state';
+import { Inject } from '@nestjs/common';
+import { GameGateway } from './game.gateway';
 const FRAMERATE = 30;
 
 export class Game {
@@ -11,7 +13,12 @@ export class Game {
   state: GameState;
   updateInterval: NodeJS.Timer;
 
-  constructor(init: CreateGameDto, server: Server) {
+  constructor(
+    init: CreateGameDto,
+    server: Server,
+    @Inject(GameGateway)
+    private readonly gameGateway: GameGateway,
+  ) {
     this.gameId = init.gameId;
     this.state = new GameState();
     this.players = [undefined, undefined];
@@ -22,6 +29,8 @@ export class Game {
 
   end() {
     clearInterval(this.updateInterval);
+    //this.server.to(this.room).emit('gameOver');
+    this.gameGateway.terminate_game(this.gameId);
   }
 
   updateServer() {
@@ -30,12 +39,21 @@ export class Game {
       ball: { x: this.state.ball.x, y: this.state.ball.y },
       player1: { x: this.state.players[0].x, y: this.state.players[0].y },
       player2: { x: this.state.players[1].x, y: this.state.players[1].y },
+      scoreP1: { score: this.state.score[0] },
+      scoreP2: { score: this.state.score[1] },
+      winner: this.state.winner,
     };
+
+    if (
+      this.state.score[0] == SCORE_TO_WIN ||
+      this.state.score[1] == SCORE_TO_WIN
+    ) {
+      this.end();
+    }
     this.server.to(this.room).emit('game-state', state);
   }
 
   startServer() {
-    console.log('starting server');
     this.updateInterval = setInterval(
       () => this.updateServer(),
       1000 / FRAMERATE,
