@@ -10,6 +10,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 import { UsersService } from 'src/users/users.service';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from 'src/matches/entities/match.entity';
@@ -42,6 +43,10 @@ describe('MessagesController', () => {
         },
         {
           provide: Block,
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
         {

@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -17,6 +17,7 @@ import { Block } from 'src/relationships/entities/block.entity';
 import { ChannelsService } from 'src/channels/channels.service';
 import { ChannelType } from 'src/dtos/channels';
 import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -30,6 +31,7 @@ describe('MembershipsController', () => {
       providers: [
         MembershipsService,
         ChannelsService,
+        ConfigService,
         {
           provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
@@ -120,7 +122,7 @@ describe('MembershipsController', () => {
       jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
       expect(
         controller.create(createMembershipDto, mockRequest),
-      ).rejects.toThrow(EntityNotFoundError);
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('should throw if service throws', async () => {
