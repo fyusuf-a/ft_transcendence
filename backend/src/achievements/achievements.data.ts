@@ -33,7 +33,7 @@ export const achievementsData: CreateAchievementDto[] = [
   },
   {
     name: 'King Pong',
-    description: 'Reach the first rank of the ladder.',
+    description: 'Unlock every other achievements.',
     icon: 'src/assets/achievements/default.png',
   },
 ];

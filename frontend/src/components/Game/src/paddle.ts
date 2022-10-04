@@ -12,6 +12,7 @@ class Paddle {
   height: number;
   up: string;
   down: string;
+  score: number;
   img_data: ImageData;
 
   constructor(
@@ -28,6 +29,7 @@ class Paddle {
     this.y = y;
     this.width = 10;
     this.height = 100;
+    this.score = 0;
     this.up = key_up;
     this.down = key_down;
     this.img_data = ctx.getImageData(

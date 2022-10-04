@@ -7,7 +7,6 @@
     <v-card-text class="text-h6">
       <div class="mb-2">Matches played: {{ matchPlayed }}</div>
       <div class="mb-2">Wins: {{ wins}} </div>
-      <div class="">Winrate: {{ winrate }}%</div>
     </v-card-text>
     <v-col>
       <my-level :user="user" />
@@ -26,11 +25,9 @@ export default defineComponent({
     'my-level': MyLevel,
   },
   data: () => ({
-    winrate: 0,
     wins: 0,
     losses: 0,
     matchPlayed: 0,
-    idOther: 0,
   }),
   methods: {
     ...mapGetters(['id']),
@@ -39,10 +36,6 @@ export default defineComponent({
       this.wins = response.data.wins;
       this.losses = response.data.losses;
       this.matchPlayed = this.wins + this.losses;
-      this.winrate = Math.trunc((this.wins / (this.wins + this.losses)) * 100);
-      if (isNaN(this.winrate)) {
-        this.winrate = 0;
-      }
     },
   },
   props: ['user'],
