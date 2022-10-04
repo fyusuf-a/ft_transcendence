@@ -192,23 +192,32 @@ export default defineComponent({
 		async handleEndGame(match :MatchDto) {
       this.end = true;
       this.pong = null;
-      if ((this.id() == match.homeId && match.status == "HOME")
+
+			if ((this.id() != match.homeId && this.id() != match.awayId)) {
+				this.spectateTrue = true;
+				if (match.status == "ABORTED") {
+					this.endMessage = "The game is over, a player has unfortunately been disconnected";
+				}
+				else {
+        	let winner: string;
+        	if (match.status == "HOME") {
+          	const responseWinner = await axios.get('/users/' + match.homeId);
+          	winner = responseWinner.data.username
+         	 this.endMessage = `The game is over, ${winner} won!`;
+      		}
+      		else if (match.status == "AWAY") {
+      	  	const responseWinner = await axios.get('/users/' + match.awayId);
+      	  	winner = responseWinner.data.username
+      	  	this.endMessage = `The game is over, ${winner} won!`;
+      		}
+				}
+			}
+			else if (match.status == "ABORTED") {
+				this.endMessage = "Oh no! Your opponent has been disconnected :(";
+			}
+      else if ((this.id() == match.homeId && match.status == "HOME")
       || (this.id() == match.awayId && match.status == "AWAY")) {
         this.endMessage = "Congrats! You win :)";
-      }
-      else if (this.id() != match.homeId && this.id() != match.awayId) {
-        this.spectateTrue = true;
-        let winner: string;
-        if (match.status == "HOME") {
-          const responseWinner = await axios.get('/users/' + match.homeId);
-          winner = responseWinner.data.username
-          this.endMessage = `The game is over, ${winner} won!`;
-        }
-        else if (match.status == "AWAY") {
-          const responseWinner = await axios.get('/users/' + match.awayId);
-          winner = responseWinner.data.username
-          this.endMessage = `The game is over, ${winner} won!`;
-        }
       }
       else {
         this.endMessage = "Oh no! You lose :(";

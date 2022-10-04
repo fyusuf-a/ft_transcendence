@@ -27,10 +27,10 @@ export class Game {
     this.updateInterval = undefined;
   }
 
-  end() {
+  end(abort: number) {
     clearInterval(this.updateInterval);
     //this.server.to(this.room).emit('gameOver');
-    this.gameGateway.terminate_game(this.gameId);
+    this.gameGateway.terminate_game(this.gameId, abort);
   }
 
   updateServer() {
@@ -48,7 +48,7 @@ export class Game {
       this.state.score[0] == SCORE_TO_WIN ||
       this.state.score[1] == SCORE_TO_WIN
     ) {
-      this.end();
+      this.end(0);
     }
     this.server.to(this.room).emit('game-state', state);
   }
