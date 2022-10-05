@@ -7,7 +7,6 @@
           <channel-join-dialog
             @channel-join-event="handleChannelJoin"
             @channel-create-event="handleChannelCreate"
-            @chat-dm-user="$emit('chat-dm-user')"
             :joinableChannels="getJoinableChannels"
           >
           </channel-join-dialog>

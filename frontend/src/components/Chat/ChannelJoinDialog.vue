@@ -16,7 +16,7 @@
             @click="action = 'Create'"
           >
             +
-      </v-btn>      <v-btn @click="dmUser">DM</v-btn></v-card-title
+      </v-btn></v-card-title
         >
 
         <v-divider></v-divider>
@@ -136,10 +136,6 @@ export default defineComponent({
         type: 'public',
         password: '',
       };
-    },
-    dmUser() {
-      this.$emit('chat-dm-user');
-      this.dialogOpen = false;
     },
   },
 });
