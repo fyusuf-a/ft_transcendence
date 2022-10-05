@@ -131,6 +131,9 @@ export class GameGateway extends SecureGateway {
         ),
       );
     }
+    const dto: GameOptionsDto = { homeId: match.homeId, awayId: match.awayId };
+    this.queues.delete(JSON.stringify(dto));
+    this.logger.log(`Terminating game ${gameId} with status ${match.status}`);
 
     const update: UpdateMatchDto = { end: new Date(), status: status };
     await this.matchService.update(match, update);
@@ -172,5 +175,27 @@ export class GameGateway extends SecureGateway {
   async handleConnection(client: Socket) {
     // register client
     this.server.to(client.id).emit('game-connect', 'CONNECTED!');
+  }
+
+  @SubscribeMessage('require-challenges')
+  @CheckAuth
+  async getChallenges(client: Socket) {
+    const clientUser = this.getAuthenticatedUser(client);
+    const array: Array<{
+      opponentString: string;
+      opponentId: number;
+      id: number;
+    }> = [];
+    let i = 0;
+    for (const key of this.queues.keys()) {
+      if (JSON.parse(key).awayId == clientUser.id) {
+        const opponentId: number = JSON.parse(key).homeId;
+        const username: string = (await this.usersService.findOne(opponentId))
+          .username;
+        array.push({ opponentString: username, opponentId: opponentId, id: i });
+        i++;
+      }
+    }
+    client.emit('get-challenges', array);
   }
 }

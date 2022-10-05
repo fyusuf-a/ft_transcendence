@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Query,
@@ -16,7 +18,9 @@ import { ResponseMatchDto, CreateMatchDto, QueryMatchDto } from '@dtos/matches';
 @ApiTags('matches')
 @Controller('matches')
 export class MatchesController {
-  constructor(private readonly matchesService: MatchesService) {}
+  constructor(
+    private readonly matchesService: MatchesService, //@Inject(GameGateway) //private readonly gameGateway: GameGateway)
+  ) {}
 
   @ApiBearerAuth()
   @Get()
@@ -49,5 +53,18 @@ export class MatchesController {
   @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.matchesService.remove(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/spectate/:id')
+  async findSpectate(@Param('id') id: string): Promise<number> {
+    let ret: number;
+    console.log(id);
+    try {
+      ret = await this.matchesService.findSpectate(+id);
+    } catch {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
+    return ret;
   }
 }
