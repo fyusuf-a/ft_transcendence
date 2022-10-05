@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="changingLocal">
-    <v-card v-if="selectedChannel !== undefined">
+    <v-card v-if="selectedChannel !== undefined" class="v-dialog-pos">
       <v-card-title>
         Change/Set password for <u>{{ selectedChannel.name }}</u
         ><br />

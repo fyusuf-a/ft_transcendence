@@ -2,7 +2,7 @@
     <v-dialog
         v-model="invitingLocal"
     >
-        <v-card v-if="selectedChannel !== undefined">
+        <v-card v-if="selectedChannel !== undefined" class="v-dialog-pos">
             <v-card-title> Add User to <u>{{ selectedChannel.name }}</u></v-card-title>
 
           <v-card-text>
