@@ -76,10 +76,7 @@
         try { 
           response = await axios.get(`/users/name/${this.user}`);
         } catch {
-          this.$router.push({
-            name: '404',
-            params: { path: '/404' },
-          });
+          this.$router.push('/404');
           return;
       }
         this.idOther = response.data.id;

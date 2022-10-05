@@ -68,6 +68,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
   * possible values: `0` or `1`
 - `BACKEND_HOST`: the hostname throught with the frontend can contact the backend
 - `BACKEND_JWT_SECRET_KEY`: the secret key is used to encrypt your JWT. For production purposes, please generate a secret 32 characters minimum and secure
+- `BACKEND_SALT_ROUNDS`: the number of rounds used in password hasing. Default: 10
 - `BACKEND_PORT`: the port that NestJS will run on.
 - `DB_HOST`: name of the Postgres host
 - `DB_NAME`: name of the Postgres database
