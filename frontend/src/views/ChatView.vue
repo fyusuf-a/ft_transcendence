@@ -7,8 +7,13 @@
           :selectedChannel="selectedChannel"
           @chat-invite-user="handleUserInvite"
         >
-
         </channel-invite-dialog>
+        <channel-password-dialog
+          v-model="changePass"
+          :selectedChannel="selectedChannel"
+          @chat-invite-user="handleUserInvite"
+        >
+        </channel-password-dialog>
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
@@ -20,6 +25,7 @@
           @chat-leave-channel="handleLeaveChannelEvent"
           @chat-message-menu-selection="handleChatMessageMenuSelection"
           @chat-invite-channel="inviting = true"
+          @chat-change-password="changePass = true"
         ></chat-window>
       </v-col>
       <v-col cols="12" md="2">
@@ -54,6 +60,7 @@ import { UserDto } from '@/common/dto/user.dto';
 import { ChannelType, JoinChannelDto } from '@dtos/channels';
 import { ListBlockDto } from '@dtos/blocks';
 import { MembershipRoleType } from '@dtos/memberships';
+import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -73,6 +80,7 @@ interface DataReturnType {
   memberships: Array<MembershipDto>;
   blocks: Array<number | undefined>;
   inviting: boolean;
+  changePass: boolean;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -95,12 +103,14 @@ export default defineComponent({
       memberships: [],
       blocks: [],
       inviting: false,
+      changePass: false,
     };
   },
   components: {
     'channel-list': ChannelList,
     'chat-window': ChatWindow,
     'channel-invite-dialog': ChannelInviteDialog,
+    'channel-password-dialog': ChannelPasswordDialogVue,
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
@@ -124,13 +134,10 @@ export default defineComponent({
       } else {
         const createdChannelId: number = await this.createChannel(dto);
         if (createdChannelId > 0) {
-          this.socket.emit(
-        'chat-listen',
-        (response: string) => {
-          this.printResponse(response);
-          this.refreshChannels();
-        },
-      );
+          this.socket.emit('chat-listen', (response: string) => {
+            this.printResponse(response);
+            this.refreshChannels();
+          });
         }
       }
     },
@@ -143,13 +150,13 @@ export default defineComponent({
       let response = await axios.post('/memberships/', {
         userId: userId,
         channelId: this.selectedChannel.id,
-        role: MembershipRoleType.PARTICIPANT
+        role: MembershipRoleType.PARTICIPANT,
       });
       if (response.status === 201) {
-        console.log("Successfully created membership!");
+        console.log('Successfully created membership!');
         return response.data.id;
       }
-      console.log("Error creating membership!");
+      console.log('Error creating membership!');
       return -1;
     },
     getMessages(channelId: number): MessageDto[] {
@@ -195,13 +202,19 @@ export default defineComponent({
         this.leaveChannelById(this.selectedChannel.id);
       }
     },
-    handleChatMessageMenuSelection(event: MenuSelectionEvent) {
+    async handleChatMessageMenuSelection(event: MenuSelectionEvent) {
       console.log(`Request to ${event.option} ${event.target}`);
+      if (!event.target) return;
       let username = this.users.get(+event.target)?.username;
       if (event.option === 'chat-profile-user') {
         if (username) {
           this.$router.push('/profile/' + username);
         }
+      } else if (event.option === 'chat-challenge-user') {
+        await this.$store.dispatch('challengeUser', +event.target);
+        this.$router.push('/game');
+      } else if (event.option === 'chat-make-admin') {
+        this.handleMakeAdmin(+event.target);
       } else if (event.option === 'chat-message-user') {
         console.log('messaging user ' + username);
         let dto = new CreateChannelDto(
@@ -212,7 +225,51 @@ export default defineComponent({
           +event.target,
         );
         this.handleChannelCreation(dto);
+      } else if (event.option === 'chat-block-user') {
+        this.handleBlockUser(+event.target);
+      };
+    },
+    async handleBlockUser(userId: number) {
+      const data = {
+        sourceId: this.$store.getters.id,
+        targetId: userId,
+      };
+      await axios.post('/blocks', data).then(async () => {
+        let response2 = await axios.get(
+          '/users/' + this.$store.getters.id + '/friendships/',
+        );
+        for (let i = 0; i < response2.data.length; i++) {
+          if (response2.data[i].user.id === userId) {
+            await axios.delete('/friendships/' + response2.data[i].id);
+          }
+        }
+        window.alert('The user is blocked');
+        window.location.reload();
+      });
+    },
+    async handleMakeAdmin(userId: number) {
+      if (!this.selectedChannel?.id) {
+        return -1;
       }
+      console.log(
+        `Making user "${userId}" an admin of ${this.selectedChannel?.id}`,
+      );
+      let membership = await axios.get(
+        `/memberships?channel=${this.selectedChannel.id}&user=${userId}`,
+      );
+      if (!membership || membership.data.length !== 1 || membership.data[0].userId != userId) {
+        console.log('Could not make user an admin');
+        return -1;
+      }
+      let response = await axios.patch(`/memberships/${membership.data[0].id}`, {
+        role: MembershipRoleType.ADMIN,
+      });
+      if (response.status === 200) {
+        console.log('Successfully updated membership!');
+        return response.data.id;
+      }
+      console.log('Error updating membership!');
+      return -1;
     },
     handleMessage(messageDto: MessageDto) {
       console.log('Vue: incoming...');
@@ -225,7 +282,7 @@ export default defineComponent({
         messageDto.senderId &&
         messageDto.content &&
         messageDto.channelId &&
-        !(this.blocks.includes(messageDto.senderId))
+        !this.blocks.includes(messageDto.senderId)
       ) {
         this.addMessageToMap(messageDto);
       }
@@ -363,13 +420,13 @@ export default defineComponent({
     },
     async fetchBlocks() {
       const response = await axios.get(
-        `/users/${this.$store.getters.id}/blocks`
+        `/users/${this.$store.getters.id}/blocks`,
       );
       console.log(response);
-      response.data.forEach((block : ListBlockDto)=> {
+      response.data.forEach((block: ListBlockDto) => {
         this.blocks.push(block.user.id);
       });
-      console.log("blocks: " + this.blocks);
+      console.log('blocks: ' + this.blocks);
     },
     async getAllChannels() {
       console.log('Vue: Grabbing channels');
@@ -403,7 +460,7 @@ export default defineComponent({
           // try to get channel and try again?
         }
       }
-    }
+    },
   },
   computed: {
     messageInSelectedChannel(): MessageDto[] {
@@ -417,19 +474,16 @@ export default defineComponent({
       return [];
     },
   },
-  
+
   async created() {
     this.socket.emit('auth', {
       id: this.$store.getters.id,
       token: this.$store.getters.token,
     });
-    this.socket.emit(
-        'chat-listen',
-        (response: string) => {
-          this.printResponse(response);
-        },
-      );
-      this.refreshChannels();
+    this.socket.emit('chat-listen', (response: string) => {
+      this.printResponse(response);
+    });
+    this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
   },
   beforeDestroy() {
@@ -439,7 +493,7 @@ export default defineComponent({
 </script>
 
 <style>
-  .button {
-    cursor: pointer;
-  }
+.button {
+  cursor: pointer;
+}
 </style>

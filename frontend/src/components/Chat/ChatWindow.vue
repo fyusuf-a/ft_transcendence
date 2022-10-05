@@ -11,6 +11,7 @@
             :membership="membership"
             @chat-leave-channel="handleLeaveChannelEvent"
             @chat-invite-channel="$emit('chat-invite-channel')"
+            @chat-change-password="$emit('chat-change-password')"
           ></chat-window-menu>
         </v-col>
       </v-row>
@@ -26,7 +27,7 @@
                 :senderId="item.senderId"
                 :createdAt="item.createdAt"
                 :content="item.content"
-                :client-is-admin="membership.role === 'owner' || membership.role === 'admin'"
+                :membership-role="membership.role"
                 @chat-message-menu-selection="
                   $emit('chat-message-menu-selection', $event)
                 "
