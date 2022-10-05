@@ -146,4 +146,54 @@ export class ChatGateway extends SecureGateway {
       throw new WsException(error.message);
     }
   }
+
+  @SubscribeMessage('chat-karma-user')
+  @CheckAuth
+  async handleKarma(
+    client: Socket,
+    payload: {
+      userId: number;
+      channelId: number;
+      duration: number;
+      type: string;
+    },
+  ): Promise<string> {
+    this.logger.log('trying karma');
+    const userId = payload.userId;
+    const channelId = payload.channelId;
+    const duration = payload.duration;
+    if (
+      !userId ||
+      !channelId ||
+      !duration ||
+      (payload.type !== 'mute' && payload.type !== 'ban')
+    ) {
+      return `ERROR: Invalid payload: ${JSON.stringify(payload)}`;
+    }
+    this.logger.log(`${client.id} wants to ${payload.type} user ${userId}!`);
+
+    const memberships = await this.membershipsService.findAll({
+      user: userId.toString(),
+      channel: channelId.toString(),
+    });
+    if (memberships.length !== 1)
+      throw new WsException('Could not locate membership');
+    const endDate = new Date(Date.now() + duration);
+    try {
+      let data = undefined;
+      if (payload.type === 'mute') {
+        data = {
+          mutedUntil: endDate,
+        };
+      } else {
+        data = {
+          bannedUntil: endDate,
+        };
+      }
+      this.membershipsService.update(memberships[0].id, data);
+      return 'Karma Delivered!';
+    } catch (error) {
+      return 'Karma could not be delivered, try again later.';
+    }
+  }
 }
