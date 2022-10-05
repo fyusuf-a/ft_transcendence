@@ -187,8 +187,7 @@ export class GameGateway extends SecureGateway {
       id: number;
     }> = [];
     let i = 0;
-    for (const [key, queue] of this.queues) {
-      console.log(`found challenger: ${queue[1].id}`);
+    for (const key of this.queues.keys()) {
       if (JSON.parse(key).awayId == clientUser.id) {
         const opponentId: number = JSON.parse(key).homeId;
         const username: string = (await this.usersService.findOne(opponentId))

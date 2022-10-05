@@ -125,7 +125,7 @@ export default defineComponent({
       this.resize();
       this.end = false;
 		},
-	navigationHandler() {
+	async navigationHandler() {
 		if (!this.auth)
 			return ;
 		const challengerId : number = this.$store.getters.challengeUserId;
@@ -141,9 +141,9 @@ export default defineComponent({
 		else if (spectateId)
 		{
 			this.$store.dispatch("removeSpectate");
-			this.spectateGame(spectateId);
+			const matchId : number = (await axios.get(`/matches/spectate/${spectateId}`)).data;
+			this.spectateGame(matchId);
 		}
-
       this.resize();
     },
     challengeUser(userId: number) {

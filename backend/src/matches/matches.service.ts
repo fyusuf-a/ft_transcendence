@@ -105,4 +105,16 @@ export class MatchesService {
   remove(id: number): Promise<DeleteResult> {
     return this.matchRepository.delete(id);
   }
+
+  async findSpectate(id: number): Promise<number> {
+    console.log(id);
+    const ret: number = (
+      await this.matchRepository.findOneBy([
+        { status: MatchStatusType.IN_PROGRESS, homeId: id },
+        { status: MatchStatusType.IN_PROGRESS, awayId: id },
+      ])
+    ).id;
+    console.log(ret);
+    return ret;
+  }
 }

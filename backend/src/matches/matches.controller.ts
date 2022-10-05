@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Query,
@@ -53,9 +55,16 @@ export class MatchesController {
     return this.matchesService.remove(+id);
   }
 
-  //@ApiBearerAuth()
-  //@Get('/challenges/:id')
-  //getChallenges(@Param('id') id : string): Promise<Array<{ opponentString: string, opponentId: number, id: number }>> {
-  //  return this.gameGateway.getChallenges(+id);
-  //}
+  @ApiBearerAuth()
+  @Get('/spectate/:id')
+  async findSpectate(@Param('id') id: string): Promise<number> {
+    let ret: number;
+    console.log(id);
+    try {
+      ret = await this.matchesService.findSpectate(+id);
+    } catch {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
+    return ret;
+  }
 }

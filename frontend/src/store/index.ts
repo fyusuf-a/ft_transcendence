@@ -83,10 +83,8 @@ export default createStore({
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
-      console.log('how are you');
       state.user.id = id;
       state.token = token;
-      console.log('very well!');
     },
     setSocket() {
       console.log('Connecting to notifications socket.');
@@ -106,9 +104,7 @@ export default createStore({
         context.state.token = token;
         const response = await axios.get<ResponseUserDto>('/users/me');
         user = response.data;
-        console.log('yo');
         context.commit('login', { id, token });
-        console.log('bye');
         context.state.user = {
           ...response.data,
         };
