@@ -24,6 +24,7 @@ interface State {
   socket: Socket | undefined;
   cache: Cache | undefined;
   challengedUserId: number;
+  spectatedUserId: number;
 }
 
 const state: State = {
@@ -34,6 +35,7 @@ const state: State = {
   socket: undefined, //new Socket(),//io(),
   cache: undefined,
   challengedUserId: 0,
+  spectatedUserId: 0,
 };
 
 interface Mutation {
@@ -74,13 +76,15 @@ export default createStore({
       if (!state.challengedUserId) return 0;
       else return state.challengedUserId;
     },
+    spectateUserId: (state) => {
+      if (!state.spectatedUserId) return 0;
+      else return state.spectatedUserId;
+    },
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
-      console.log('how are you');
       state.user.id = id;
       state.token = token;
-      console.log('very well!');
     },
     setSocket() {
       console.log('Connecting to notifications socket.');
@@ -100,9 +104,7 @@ export default createStore({
         context.state.token = token;
         const response = await axios.get<ResponseUserDto>('/users/me');
         user = response.data;
-        console.log('yo');
         context.commit('login', { id, token });
-        console.log('bye');
         context.state.user = {
           ...response.data,
         };
@@ -142,6 +144,12 @@ export default createStore({
     },
     removeChallenge(context) {
       context.state.challengedUserId = 0;
+    },
+    spectateUser(context, userId: number) {
+      context.state.spectatedUserId = userId;
+    },
+    removeSpectate(context) {
+      context.state.spectatedUserId = 0;
     },
   },
   modules: {},
