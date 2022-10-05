@@ -8,6 +8,7 @@ import { LoginUserDto } from '@dtos/auth';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
+  statesToPersist: ['user', 'token'],
   overwrite: true,
 });
 
