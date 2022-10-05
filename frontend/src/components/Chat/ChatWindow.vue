@@ -11,6 +11,7 @@
             :membership="membership"
             @chat-leave-channel="handleLeaveChannelEvent"
             @chat-invite-channel="$emit('chat-invite-channel')"
+            @chat-change-password="$emit('chat-change-password')"
           ></chat-window-menu>
         </v-col>
       </v-row>

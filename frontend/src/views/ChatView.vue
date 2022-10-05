@@ -8,6 +8,12 @@
           @chat-invite-user="handleUserInvite"
         >
         </channel-invite-dialog>
+        <channel-password-dialog
+          v-model="changePass"
+          :selectedChannel="selectedChannel"
+          @chat-invite-user="handleUserInvite"
+        >
+        </channel-password-dialog>
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
@@ -19,6 +25,7 @@
           @chat-leave-channel="handleLeaveChannelEvent"
           @chat-message-menu-selection="handleChatMessageMenuSelection"
           @chat-invite-channel="inviting = true"
+          @chat-change-password="changePass = true"
         ></chat-window>
       </v-col>
       <v-col cols="12" md="2">
@@ -53,6 +60,7 @@ import { UserDto } from '@/common/dto/user.dto';
 import { ChannelType, JoinChannelDto } from '@dtos/channels';
 import { ListBlockDto } from '@dtos/blocks';
 import { MembershipRoleType } from '@dtos/memberships';
+import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -72,6 +80,7 @@ interface DataReturnType {
   memberships: Array<MembershipDto>;
   blocks: Array<number | undefined>;
   inviting: boolean;
+  changePass: boolean;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -94,12 +103,14 @@ export default defineComponent({
       memberships: [],
       blocks: [],
       inviting: false,
+      changePass: false,
     };
   },
   components: {
     'channel-list': ChannelList,
     'chat-window': ChatWindow,
     'channel-invite-dialog': ChannelInviteDialog,
+    'channel-password-dialog': ChannelPasswordDialogVue,
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
