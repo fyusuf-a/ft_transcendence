@@ -4,20 +4,14 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { MatchesService } from './matches.service';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import {
-  ResponseMatchDto,
-  CreateMatchDto,
-  UpdateMatchDto,
-  QueryMatchDto,
-} from '@dtos/matches';
+import { ResponseMatchDto, CreateMatchDto, QueryMatchDto } from '@dtos/matches';
 
 @ApiTags('matches')
 @Controller('matches')
@@ -49,15 +43,6 @@ export class MatchesController {
     @Body() createUserDto: CreateMatchDto,
   ): Promise<ResponseMatchDto> {
     return await this.matchesService.create(createUserDto);
-  }
-
-  @ApiBearerAuth()
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateMatchDto: UpdateMatchDto,
-  ): Promise<UpdateResult> {
-    return this.matchesService.update(+id, updateMatchDto);
   }
 
   @ApiBearerAuth()
