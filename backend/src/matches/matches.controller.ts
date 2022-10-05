@@ -22,7 +22,9 @@ import {
 @ApiTags('matches')
 @Controller('matches')
 export class MatchesController {
-  constructor(private readonly matchesService: MatchesService) {}
+  constructor(
+    private readonly matchesService: MatchesService, //@Inject(GameGateway) //private readonly gameGateway: GameGateway)
+  ) {}
 
   @ApiBearerAuth()
   @Get()
@@ -65,4 +67,10 @@ export class MatchesController {
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.matchesService.remove(+id);
   }
+
+  //@ApiBearerAuth()
+  //@Get('/challenges/:id')
+  //getChallenges(@Param('id') id : string): Promise<Array<{ opponentString: string, opponentId: number, id: number }>> {
+  //  return this.gameGateway.getChallenges(+id);
+  //}
 }

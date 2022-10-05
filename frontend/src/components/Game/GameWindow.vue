@@ -13,6 +13,15 @@
         </select>
         <v-btn class="button" title="Chose a game to watch" @click="() => spectateGame(+spectateGameId)">Spectate</v-btn>
 			</v-row>
+			<v-row>
+-                       <select v-model="acceptChallengeUserId">
+-          <option value="">Choose a challenge to accept, and click on Play</option>
+-          <option v-for="item in challengeArr" :key="item.id" :value="item.opponentId">
+-            {{item.opponentString}}
+-          </option>  
+-        </select>
+-        <v-btn class="button" title="Choose a challenge to accept" @click="() => acceptChallengeFromUser(+acceptChallengeUserId)">Play</v-btn>
+-                       </v-row>	
 		</div>
 		<br />
 		<div>
@@ -66,11 +75,15 @@ interface DataReturnTypes {
 	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
+	acceptChallengeUserId: string;
   end: boolean;
   endMessage: string;
-  matchArr: { idMatch: number, player1: string, player2: string }[]
+  matchArr: Array<{ idMatch: number, player1: string, player2: string }>;
+  challengeArr: { opponentString: string, opponentId: number, id: number }[];
   selected: string;
   spectateTrue: boolean;
+  auth: boolean;
+  interval: number;
 }
 
 export default defineComponent({
@@ -93,11 +106,15 @@ export default defineComponent({
 			gameId: null,
 			scoreCanvas: null,
 			spectateGameId: "",
+			acceptChallengeUserId: "",
       end: false,
       endMessage: '',
       matchArr: [],
+	  challengeArr: [],
       selected: '',
       spectateTrue: false,
+	  auth:false,
+	  interval: 0,
 		};
 	},
 	methods: {
@@ -108,7 +125,31 @@ export default defineComponent({
       this.resize();
       this.end = false;
 		},
+	navigationHandler() {
+		if (!this.auth)
+			return ;
+		const challengerId : number = this.$store.getters.challengeUserId;
+		const spectateId : number = this.$store.getters.spectateUserId;
+		this.socket.off("auth-success");
+		clearInterval(this.interval);
+		if (challengerId)
+		{
+			this.$store.dispatch("removeChallenge");
+      		const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: challengerId};
+			this.socket.emit('game-queue', gameOptions);
+		}
+		else if (spectateId)
+		{
+			this.$store.dispatch("removeSpectate");
+			this.spectateGame(spectateId);
+		}
+
+      this.resize();
+    },
     challengeUser(userId: number) {
+		if (userId == 0)
+			return;
+		this.$store.dispatch("removeChallenge");
       const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
@@ -226,6 +267,14 @@ export default defineComponent({
         })
       }
     },
+	async getChallenges() {
+		this.challengeArr = await axios.get(`/matches/challenges/${this.$store.getters.id}`)
+	},
+	},
+	beforeUnmount() {
+		this.socket.off('game-starting');
+		this.socket.off('endGame');
+		this.socket.off("auth-success");
 	},
 	mounted() {
 		console.log('mounted');
@@ -241,7 +290,17 @@ export default defineComponent({
     window.addEventListener('resize', this.resize);
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
 		this.socket.on('endGame', (match: MatchDto) => this.handleEndGame(match));
-	},
+		this.socket.on("auth-success", () =>  {
+			this.socket.off("auth-success");
+			this.auth = true;
+			this.socket.emit('require-challenges');
+		});
+		this.socket.on("get-challenges", (arr : Array<{ opponentString: string, opponentId: number, id:number }>) => {
+			this.challengeArr = arr;
+			console.log(arr);
+		});
+		this.interval = window.setInterval(this.navigationHandler, 1000);
+	}
 });
 </script>
 
