@@ -132,14 +132,12 @@ export default defineComponent({
 		const spectateId : number = this.$store.getters.spectateUserId;
 		this.socket.off("auth-success");
 		clearInterval(this.interval);
-		if (challengerId)
-		{
+		if (challengerId) {
 			this.$store.dispatch("removeChallenge");
       		const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: challengerId};
 			this.socket.emit('game-queue', gameOptions);
 		}
-		else if (spectateId)
-		{
+		else if (spectateId) {
 			this.$store.dispatch("removeSpectate");
 			const matchId : number = (await axios.get(`/matches/spectate/${spectateId}`)).data;
 			this.spectateGame(matchId);
