@@ -3,7 +3,7 @@
     
       <chat-message-menu
         :targetId="senderId"
-        :client-is-admin="clientIsAdmin"
+        :membership-role="membershipRole"
         @chat-message-menu-selection="
           $emit('chat-message-menu-selection', $event)
         "
@@ -44,10 +44,10 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    clientIsAdmin: {
-      type: Boolean,
-      default: false,
-    }
+    membershipRole: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {

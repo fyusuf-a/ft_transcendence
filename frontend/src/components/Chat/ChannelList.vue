@@ -94,7 +94,7 @@ export default defineComponent({
       unreadMarker: 'mdi-new-box',
     };
   },
-  components: { 'channel-join-dialog': defineComponent(ChannelJoinDialog) },
+  components: { 'channel-join-dialog': ChannelJoinDialog },
   methods: {
     async handleChannelSelection(channel: ChannelDto) {
       console.log(`Handling a channel selection: ${channel.id}`);

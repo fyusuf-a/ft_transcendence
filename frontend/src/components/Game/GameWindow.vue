@@ -129,7 +129,6 @@ export default defineComponent({
       if(!this.spectateTrue) {
         this.$router.push({
           name: 'home',
-          params: { path: '/' },
         });
       }
       this.spectateTrue = false;

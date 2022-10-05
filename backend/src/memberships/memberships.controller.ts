@@ -24,6 +24,7 @@ import { EntityNotFoundError } from 'typeorm';
 import { Request } from 'express';
 import { User } from 'src/users/entities/user.entity';
 import { ChannelsService } from 'src/channels/channels.service';
+import { ConfigService } from '@nestjs/config';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')
@@ -32,6 +33,7 @@ export class MembershipsController {
   constructor(
     private readonly membershipsService: MembershipsService,
     private readonly channelsService: ChannelsService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Post()
@@ -75,6 +77,9 @@ export class MembershipsController {
     @Req() req: Request,
   ) {
     if (updateMembershipDto.role === MembershipRoleType.ADMIN) {
+      if (this.configService.get('DISABLE_AUTHENTICATION') === 'true') {
+        return await this.membershipsService.update(+id, updateMembershipDto);
+      }
       if (
         !(await this.membershipsService.userIsAdmin(
           (req.user as User).id,
