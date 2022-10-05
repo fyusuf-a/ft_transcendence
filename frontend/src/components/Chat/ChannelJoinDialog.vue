@@ -4,7 +4,7 @@
       <template v-slot:activator="{ props: open }">
         <span icon color="primary" dark v-bind="open" class="button"> + </span>
       </template>
-      <v-card>
+      <v-card class="v-dialog-pos">
         <v-card-title
           >{{ action }} Channel
           <v-spacer></v-spacer>

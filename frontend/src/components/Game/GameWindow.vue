@@ -21,7 +21,7 @@
         activator="parent"
         v-if="end"
       >
-        <v-card width="600" height="150">
+        <v-card width="600" height="150" class="v-dialog-pos">
           <v-card-text>
             <p align="center" class="winStatus">
             {{ endMessage }} </p><br />
