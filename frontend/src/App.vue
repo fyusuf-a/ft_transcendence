@@ -19,3 +19,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.v-dialog-pos {
+  display: block;
+  margin-left: auto;
+  margin-right: auto
+}
+</style>
