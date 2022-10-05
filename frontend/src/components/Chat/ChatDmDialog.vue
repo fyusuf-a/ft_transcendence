@@ -2,8 +2,8 @@
     <v-dialog
         v-model="invitingLocal"
     >
-        <v-card v-if="selectedChannel !== undefined" class="v-dialog-pos">
-            <v-card-title> Add User to <u>{{ selectedChannel.name }}</u></v-card-title>
+        <v-card>
+            <v-card-title> DM User</v-card-title>
 
           <v-card-text>
               <v-text-field
@@ -57,7 +57,7 @@
     },
     methods: {
       async handleInvite(userId: number) {
-        this.$emit('chat-invite-user', userId);
+        this.$emit('chat-dm-user', userId);
         this.resetDialog();
       },
       resetDialog() {

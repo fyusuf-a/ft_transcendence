@@ -5,8 +5,8 @@
       v-model="dialog"
       activator="parent"
     >
-      <v-card width="360">
-        <v-card-text v-if="nameDoesNotExist === 500">
+      <v-card width="360" class="v-dialog-pos">
+        <v-card-text v-if="nameDoesNotExist === 400">
           This user cannot be found.<br />
           Isn't the user already blocked?
         </v-card-text>

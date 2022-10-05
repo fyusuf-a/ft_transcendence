@@ -2,6 +2,11 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="10">
+        <chat-dm-dialog
+          v-model="dming"
+          @chat-dm-user="handleDmUser"
+        >
+        </chat-dm-dialog>
         <channel-invite-dialog
           v-model="inviting"
           :selectedChannel="selectedChannel"
@@ -41,6 +46,7 @@
           @channel-create-event="handleChannelCreation"
           @request-user-event="addUserToMap"
           @refresh-channels-event="refreshChannels"
+          @chat-dm-user="dming = true"
           :channels="subscribedChannels"
           :users="users"
           :unreadChannels="unreadChannels"
@@ -68,6 +74,7 @@ import { ListBlockDto } from '@dtos/blocks';
 import { MembershipRoleType } from '@dtos/memberships';
 import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 import ChannelKarmaDialogVue from '@/components/Chat/ChannelKarmaDialog.vue';
+import ChatDmDialogVue from '@/components/Chat/ChatDmDialog.vue';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -90,6 +97,7 @@ interface DataReturnType {
   inviting: boolean;
   changePass: boolean;
   karma: string;
+  dming: boolean;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -115,6 +123,7 @@ export default defineComponent({
       inviting: false,
       changePass: false,
       karma: '',
+      dming: false,
     };
   },
   components: {
@@ -123,6 +132,7 @@ export default defineComponent({
     'channel-invite-dialog': ChannelInviteDialog,
     'channel-password-dialog': ChannelPasswordDialogVue,
     'channel-karma-dialog': ChannelKarmaDialogVue,
+    'chat-dm-dialog': ChatDmDialogVue,
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
@@ -150,6 +160,7 @@ export default defineComponent({
             this.printResponse(response);
             this.refreshChannels();
           });
+          axios.get('/channels/' + createdChannelId).then((response) => this.handleChannelSelection(response.data)).catch(() => console.log('Could not find channel'));
         }
       }
     },
@@ -229,14 +240,7 @@ export default defineComponent({
         this.handleMakeAdmin(+event.target);
       } else if (event.option === 'chat-message-user') {
         console.log('messaging user ' + username);
-        let dto = new CreateChannelDto(
-          'direct' + event.target,
-          'direct',
-          undefined,
-          +this.$store.getters.id,
-          +event.target,
-        );
-        this.handleChannelCreation(dto);
+        this.handleDmUser(+event.target);
       } else if (event.option === 'chat-block-user') {
         this.handleBlockUser(+event.target);
       } else if (event.option === 'chat-mute-user') {
@@ -479,6 +483,18 @@ export default defineComponent({
         }
       }
     },
+    handleDmUser(userId: number) {
+      console.log("DMing " + userId);
+      const id = this.$store.getters.id;
+      let dto = new CreateChannelDto(
+          'direct' + userId,
+          'direct',
+          undefined,
+          +id,
+          userId,
+        );
+      this.handleChannelCreation(dto);
+    }
   },
   computed: {
     messageInSelectedChannel(): MessageDto[] {
@@ -492,7 +508,6 @@ export default defineComponent({
       return [];
     },
   },
-
   async created() {
     this.socket.emit('auth', {
       id: this.$store.getters.id,

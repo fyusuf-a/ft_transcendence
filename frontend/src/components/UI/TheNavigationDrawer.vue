@@ -72,6 +72,11 @@ export default defineComponent({
           icon: 'mdi-information-outline',
           route: '/about',
         },
+        {
+          title: 'Logout',
+          icon: 'mdi-logout',
+          route: '/logout',
+        },
       ],
     };
   },

@@ -1,5 +1,6 @@
 <template>
   <div>
+    Please enter your 6-digit code to complete the login process
     <v-text-field
       label="6-digit code"
       placeholder="420042"

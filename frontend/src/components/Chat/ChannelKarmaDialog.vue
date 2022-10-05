@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="karmaLocal">
-    <v-card v-if="selectedChannel !== undefined">
+    <v-card v-if="selectedChannel !== undefined" class="v-dialog-pos">
       <v-card-title> {{ modelValue }} for </v-card-title>
 
       <v-card-text>
