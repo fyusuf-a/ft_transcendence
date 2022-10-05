@@ -18,6 +18,9 @@
                   <v-img class="avatar" :src="friend.avatar"></v-img>
                   <v-badge overlap class="" :color="statusColors[friend.status]"></v-badge>
                   <p class="userName">{{ friend.username }}</p>
+                  <v-spacer></v-spacer>
+                  <v-btn v-if="friend.status === 2" @click="handleSpectate(friend.id)">Spectate</v-btn>
+                  <v-spacer></v-spacer>
                   <br />
                 </div>
               </v-col>
@@ -157,6 +160,11 @@ export default defineComponent({
       await axios.delete('/blocks/' + blockedId);
       window.alert('The user has been unblock.');
       window.location.reload();
+    },
+    async handleSpectate(userId: number) {
+      console.log("spectating user " + userId);
+      await this.$store.dispatch('spectateUser', userId);
+      this.$router.push('/game');
     },
   },
   async created() {
