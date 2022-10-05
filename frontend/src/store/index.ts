@@ -24,6 +24,7 @@ interface State {
   socket: Socket | undefined;
   cache: Cache | undefined;
   challengedUserId: number;
+  spectatedUserId: number;
 }
 
 const state: State = {
@@ -34,6 +35,7 @@ const state: State = {
   socket: undefined, //new Socket(),//io(),
   cache: undefined,
   challengedUserId: 0,
+  spectatedUserId: 0,
 };
 
 interface Mutation {
@@ -73,6 +75,10 @@ export default createStore({
     challengeUserId: (state) => {
       if (!state.challengedUserId) return 0;
       else return state.challengedUserId;
+    },
+    spectateUserId: (state) => {
+      if (!state.spectatedUserId) return 0;
+      else return state.spectatedUserId;
     },
   },
   mutations: {
@@ -142,6 +148,12 @@ export default createStore({
     },
     removeChallenge(context) {
       context.state.challengedUserId = 0;
+    },
+    spectateUser(context, userId: number) {
+      context.state.spectatedUserId = userId;
+    },
+    removeSpectate(context) {
+      context.state.spectatedUserId = 0;
     },
   },
   modules: {},
