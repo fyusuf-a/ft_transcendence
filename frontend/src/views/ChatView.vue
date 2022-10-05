@@ -160,6 +160,7 @@ export default defineComponent({
             this.printResponse(response);
             this.refreshChannels();
           });
+          axios.get('/channels/' + createdChannelId).then((response) => this.handleChannelSelection(response.data)).catch(() => console.log('Could not find channel'));
         }
       }
     },
