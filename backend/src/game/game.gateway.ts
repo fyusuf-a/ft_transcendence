@@ -12,7 +12,7 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
-import { MatchDto, MatchStatusType } from 'src/dtos/matches';
+import { MatchDto, MatchStatusType, UpdateMatchDto } from 'src/dtos/matches';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/matches/entities/match.entity';
 import { Repository } from 'typeorm';
@@ -113,14 +113,17 @@ export class GameGateway extends SecureGateway {
     return 'Success: joined queue';
   }
 
-  async terminate_game(gameId: number) {
-    const match: MatchDto = await this.matchService.findOne(gameId);
-    match.end = new Date();
-    if (match.status == MatchStatusType.IN_PROGRESS) {
-      match.status = this.games.get(gameId).state.winner
+  async terminate_game(gameId: number, abort: number) {
+    let status: MatchStatusType;
+    let match: Match = await this.matchRepository.findOneBy({ id: gameId });
+
+    if (abort) {
+      status = MatchStatusType.ABORTED;
+    } else {
+      status = this.games.get(gameId).state.winner
         ? MatchStatusType.AWAY
         : MatchStatusType.HOME;
-      await this.matchRepository.save(match);
+
       this.achievementsLogService.handlePostMatch(
         await this.usersService.handlePostMatch(
           match,
@@ -128,11 +131,16 @@ export class GameGateway extends SecureGateway {
         ),
       );
     }
-    this.logger.log(`Terminating game ${gameId} with status ${match.status}`);
+
+    const update: UpdateMatchDto = { end: new Date(), status: status };
+    await this.matchService.update(match, update);
+    match = await this.matchRepository.findOneBy({ id: gameId });
+    this.logger.log(`Terminating game ${gameId} with status ${status}`);
     if (this.games.get(gameId) && this.games.get(gameId).room) {
       this.server
         .to(this.games.get(gameId).room)
         .emit('endGame', match as MatchDto);
+      this.games.delete(gameId);
     }
   }
 
@@ -154,8 +162,7 @@ export class GameGateway extends SecureGateway {
     for (const gameMap of this.games) {
       for (const player of gameMap[1].players) {
         if (player && !player.connected) {
-          gameMap[1].end();
-          this.games.delete(gameMap[0]);
+          gameMap[1].end(1);
         }
       }
     }
