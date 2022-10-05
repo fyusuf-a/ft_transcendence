@@ -56,10 +56,16 @@ export class MatchesService {
     return this.matchRepository.findOneByOrFail({ id: id });
   }
 
-  async updateUsersStatus(match: Match, status: UserStatusEnum) {
-    match.home.status = !match.home.status ? UserStatusEnum.offline : status;
-    match.away.status = !match.away.status ? UserStatusEnum.offline : status;
-    await this.usersRepository.save([match.home, match.away]);
+  async updateUsersStatus(home: User, away: User, status: UserStatusEnum) {
+    home.status = !home?.status ? UserStatusEnum.offline : status;
+    away.status = !away?.status ? UserStatusEnum.offline : status;
+    await this.usersRepository.save([home, away]);
+    this.notificationGateway.handleMatchStatusUpdate(
+      home,
+      await this.usersService.findFriendships(home.id, 1),
+      away,
+      await this.usersService.findFriendships(away.id, 1),
+    );
   }
   async create(matchDto: CreateMatchDto): Promise<ResponseMatchDto> {
     const match: Match = new Match();
@@ -75,7 +81,7 @@ export class MatchesService {
     if (match.homeId === match.awayId) {
       throw new RangeError('Home and away cannot be the same');
     }
-    this.updateUsersStatus(match, UserStatusEnum.ingame);
+    this.updateUsersStatus(match.home, match.away, UserStatusEnum.ingame);
     this.notificationGateway.handleMatchStatusUpdate(
       match.home,
       await this.usersService.findFriendships(match.homeId, 1),
@@ -86,25 +92,29 @@ export class MatchesService {
     return this.matchRepository.save(match);
   }
 
-  async update(id: number, matchDto: UpdateMatchDto): Promise<UpdateResult> {
-    const match: Match = await this.matchRepository.findOneByOrFail({ id: id });
-    if (
-      match.status == MatchStatusType.IN_PROGRESS &&
-      matchDto.status != MatchStatusType.IN_PROGRESS
-    ) {
-      this.updateUsersStatus(match, UserStatusEnum.online);
-      await this.usersRepository.save([match.home, match.away]);
-      this.notificationGateway.handleMatchStatusUpdate(
-        match.home,
-        await this.usersService.findFriendships(match.homeId, 1),
-        match.away,
-        await this.usersService.findFriendships(match.awayId, 1),
-      );
-    }
-    return this.matchRepository.update(id, matchDto);
+  async update(
+    match: Match,
+    updateMatchDto: UpdateMatchDto,
+  ): Promise<UpdateResult> {
+    const home: User = await this.usersService.findOne(match.homeId);
+    const away: User = await this.usersService.findOne(match.awayId);
+    this.updateUsersStatus(home, away, UserStatusEnum.online);
+    return await this.matchRepository.update(match.id, updateMatchDto);
   }
 
   remove(id: number): Promise<DeleteResult> {
     return this.matchRepository.delete(id);
+  }
+
+  async findSpectate(id: number): Promise<number> {
+    console.log(id);
+    const ret: number = (
+      await this.matchRepository.findOneBy([
+        { status: MatchStatusType.IN_PROGRESS, homeId: id },
+        { status: MatchStatusType.IN_PROGRESS, awayId: id },
+      ])
+    ).id;
+    console.log(ret);
+    return ret;
   }
 }
