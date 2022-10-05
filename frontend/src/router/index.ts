@@ -29,6 +29,10 @@ const routes = [
         component: () => import('../views/AboutView.vue'),
       },
       {
+        path: 'logout',
+        component: () => import('../views/LogoutView.vue'),
+      },
+      {
         path: 'leaderboard',
         component: () => import('../views/Leaderboard.vue'),
       },
