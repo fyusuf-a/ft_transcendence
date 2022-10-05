@@ -8,7 +8,7 @@ import {
   DisplayUserDto,
   ListUserDto,
 } from '@dtos/users';
-import { User, UserStatusEnum } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import * as fs from 'fs';
 import {
   ResponseFriendshipDto,
@@ -282,8 +282,6 @@ export class UsersService {
       away.wins++;
       home.losses++;
     }
-    home.status = home.status ? UserStatusEnum.online : UserStatusEnum.offline;
-    away.status = away.status ? UserStatusEnum.online : UserStatusEnum.offline;
     home.rating = Math.trunc((home.wins / (home.wins + home.losses)) * 100);
     away.rating = Math.trunc((away.wins / (away.wins + away.losses)) * 100);
     if (isNaN(home.rating)) {

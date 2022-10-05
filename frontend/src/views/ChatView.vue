@@ -11,9 +11,15 @@
         <channel-password-dialog
           v-model="changePass"
           :selectedChannel="selectedChannel"
-          @chat-invite-user="handleUserInvite"
         >
         </channel-password-dialog>
+        <channel-karma-dialog
+          v-model="karma"
+          :selected-channel="selectedChannel"
+          :selected-user="selectedUserId"
+          :socket="socket"
+        >
+        </channel-karma-dialog>
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
@@ -61,6 +67,7 @@ import { ChannelType, JoinChannelDto } from '@dtos/channels';
 import { ListBlockDto } from '@dtos/blocks';
 import { MembershipRoleType } from '@dtos/memberships';
 import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
+import ChannelKarmaDialogVue from '@/components/Chat/ChannelKarmaDialog.vue';
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -72,6 +79,7 @@ interface DataReturnType {
   subscribedChannels: Array<ChannelDto>;
   unreadChannels: Set<number>;
   selectedChannel?: ChannelDto;
+  selectedUserId?: number;
   activeMembership?: MembershipDto;
   messages: Map<number, Array<MessageDto>>;
   newMessage: number;
@@ -81,6 +89,7 @@ interface DataReturnType {
   blocks: Array<number | undefined>;
   inviting: boolean;
   changePass: boolean;
+  karma: string;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -95,6 +104,7 @@ export default defineComponent({
       subscribedChannels: [],
       unreadChannels: new Set(),
       selectedChannel: undefined,
+      selectedUserId: -1,
       activeMembership: undefined,
       messages: new Map(),
       newMessage: 0,
@@ -104,6 +114,7 @@ export default defineComponent({
       blocks: [],
       inviting: false,
       changePass: false,
+      karma: '',
     };
   },
   components: {
@@ -111,6 +122,7 @@ export default defineComponent({
     'chat-window': ChatWindow,
     'channel-invite-dialog': ChannelInviteDialog,
     'channel-password-dialog': ChannelPasswordDialogVue,
+    'channel-karma-dialog': ChannelKarmaDialogVue,
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
@@ -227,7 +239,13 @@ export default defineComponent({
         this.handleChannelCreation(dto);
       } else if (event.option === 'chat-block-user') {
         this.handleBlockUser(+event.target);
-      };
+      } else if (event.option === 'chat-mute-user') {
+        this.selectedUserId = +event.target;
+        this.karma = 'mute';
+      } else if (event.option === 'chat-ban-user') {
+        this.selectedUserId = +event.target;
+        this.karma = 'ban';
+      }
     },
     async handleBlockUser(userId: number) {
       const data = {

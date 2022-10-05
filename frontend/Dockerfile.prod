@@ -4,7 +4,8 @@ ARG NGINX_IMAGE=stable-alpine
 FROM node:$NODE_IMAGE as pre-production
 WORKDIR /app
 COPY ./frontend/package*.json ./
-RUN npm install
+RUN npm install && \
+	npm upgrade
 COPY ./frontend/ ./
 
 RUN rm -f ./dtos

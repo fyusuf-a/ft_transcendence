@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { DeleteResult, EntityNotFoundError } from 'typeorm';
 import { MatchesController } from './matches.controller';
 import { MatchesService } from './matches.service';
 import { PageDto, PageMetaDto, PageOptionsDto, takeDefault } from '@dtos/pages';
 import {
   CreateMatchDto,
-  UpdateMatchDto,
   ResponseMatchDto,
   MatchDto,
   MatchStatusType,
@@ -116,17 +115,6 @@ describe('MatchesController', () => {
         );
       const result = controller.create(createMatchDto);
       expect(result).rejects.toThrow(EntityNotFoundError);
-    });
-  });
-
-  describe('update()', () => {
-    it('should return an UpdateResult', async () => {
-      const mock = new UpdateResult();
-      const dto = new UpdateMatchDto();
-      dto.end = new Date();
-      jest.spyOn(service, 'update').mockImplementation(async () => mock);
-      const result = await controller.update('1', dto);
-      expect(result).toEqual(mock);
     });
   });
 
