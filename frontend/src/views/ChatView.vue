@@ -214,7 +214,7 @@ export default defineComponent({
         this.leaveChannelById(this.selectedChannel.id);
       }
     },
-    handleChatMessageMenuSelection(event: MenuSelectionEvent) {
+    async handleChatMessageMenuSelection(event: MenuSelectionEvent) {
       console.log(`Request to ${event.option} ${event.target}`);
       if (!event.target) return;
       let username = this.users.get(+event.target)?.username;
@@ -222,6 +222,9 @@ export default defineComponent({
         if (username) {
           this.$router.push('/profile/' + username);
         }
+      } else if (event.option === 'chat-challenge-user') {
+        await this.$store.dispatch('challengeUser', +event.target);
+        this.$router.push('/game');
       } else if (event.option === 'chat-make-admin') {
         this.handleMakeAdmin(+event.target);
       } else if (event.option === 'chat-message-user') {
