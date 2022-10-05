@@ -508,7 +508,6 @@ export default defineComponent({
       return [];
     },
   },
-
   async created() {
     this.socket.emit('auth', {
       id: this.$store.getters.id,
