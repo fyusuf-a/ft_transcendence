@@ -28,11 +28,6 @@ import { MessagesService } from './messages.service';
 import { AuthUser, User } from 'src/auth/auth-user.decorator';
 import { MembershipsService } from 'src/memberships/memberships.service';
 
-type Inability = {
-  muted: boolean | undefined;
-  banned: boolean | undefined;
-};
-
 @ApiBearerAuth()
 @ApiTags('messages')
 @Controller('messages')
@@ -42,33 +37,13 @@ export class MessagesController {
     private readonly membershipsService: MembershipsService,
   ) {}
 
-  async #isUserCapableInChannel(
-    user: User,
-    channelId: string,
-    inability: Inability,
-  ) {
-    const memberships = await this.membershipsService.findAll({
-      channel: channelId,
-      user: user.id.toString(),
-    });
-    if (memberships.length === 0) throw new ForbiddenException();
-    const membership = memberships[0];
-    const date = new Date();
-    if (inability.banned === false && date < membership.bannedUntil) {
-      throw new ForbiddenException();
-    }
-    if (inability.muted === false && date < membership.mutedUntil) {
-      throw new ForbiddenException();
-    }
-  }
-
   @Get()
   async findAll(
     @AuthUser() user: User,
     @Query() query: QueryMessageDto,
     @Query() pageOptions?: PageOptionsDto,
   ): Promise<PageDto<ResponseMessageDto>> {
-    await this.#isUserCapableInChannel(user, query.channel, {
+    await this.membershipsService.isUserCapableInChannel(user, query.channel, {
       banned: false,
       muted: undefined,
     });
@@ -86,7 +61,7 @@ export class MessagesController {
     @Body() createMessageDto: CreateMessageDto,
   ): Promise<ResponseMessageDto> {
     if (user.id !== createMessageDto.senderId) throw new ForbiddenException();
-    await this.#isUserCapableInChannel(
+    await this.membershipsService.isUserCapableInChannel(
       user,
       createMessageDto.channelId.toString(),
       {
@@ -104,10 +79,14 @@ export class MessagesController {
     @Param('id') id: string,
   ): Promise<ResponseMessageDto> {
     const message = await this.messagesService.findOne(+id);
-    await this.#isUserCapableInChannel(user, message.channelId.toString(), {
-      banned: false,
-      muted: undefined,
-    });
+    await this.membershipsService.isUserCapableInChannel(
+      user,
+      message.channelId.toString(),
+      {
+        banned: false,
+        muted: undefined,
+      },
+    );
     return message;
   }
 
@@ -118,10 +97,14 @@ export class MessagesController {
   ): Promise<DeleteResult> {
     const message = await this.messagesService.findOne(+id);
     if (user.id !== message.senderId) throw new ForbiddenException();
-    await this.#isUserCapableInChannel(user, message.channelId.toString(), {
-      banned: false,
-      muted: undefined,
-    });
+    await this.membershipsService.isUserCapableInChannel(
+      user,
+      message.channelId.toString(),
+      {
+        banned: false,
+        muted: undefined,
+      },
+    );
     return this.messagesService.remove(+id);
   }
 }

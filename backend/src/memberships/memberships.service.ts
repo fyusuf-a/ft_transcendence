@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import {
@@ -13,6 +17,11 @@ import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+
+type Inability = {
+  muted: boolean | undefined;
+  banned: boolean | undefined;
+};
 
 @Injectable()
 export class MembershipsService {
@@ -156,6 +165,26 @@ export class MembershipsService {
     }
     if (!isAuthorized) {
       throw new UnauthorizedException();
+    }
+  }
+
+  async isUserCapableInChannel(
+    user: User,
+    channelId: string,
+    inability: Inability,
+  ) {
+    const memberships = await this.findAll({
+      channel: channelId,
+      user: user.id.toString(),
+    });
+    if (memberships.length === 0) throw new ForbiddenException();
+    const membership = memberships[0];
+    const date = new Date();
+    if (inability.banned === false && date < membership.bannedUntil) {
+      throw new ForbiddenException();
+    }
+    if (inability.muted === false && date < membership.mutedUntil) {
+      throw new ForbiddenException();
     }
   }
 }
