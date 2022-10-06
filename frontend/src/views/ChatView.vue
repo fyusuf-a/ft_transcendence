@@ -539,10 +539,11 @@ export default defineComponent({
     this.socket.on('chat-unauthorized', (message : string)=> {this.alert(message)});
     this.socket.on('chat-banned', (message : string)=> {this.alert(message); window.location.reload();});
     this.socket.on('chat-muted', (message : string)=> {this.alert(message)});
+    this.socket.on('refresh-channels', this.refreshChannels);
   },
   beforeDestroy() {
     this.socket.off('chat-message', this.handleMessage);
-    this.socket.off('membership-created', this.refreshChannels);
+    this.socket.off('refresh-channels', this.refreshChannels);
   },
 });
 </script>
