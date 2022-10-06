@@ -1,4 +1,5 @@
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -29,6 +30,10 @@ describe('ChatGateway', () => {
         UsersService,
         MembershipsService,
         ChannelsService,
+        {
+          provide: EventEmitter2,
+          useValue: jest.fn(),
+        },
         {
           provide: getRepositoryToken(Message),
           useValue: jest.fn(),

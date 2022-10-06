@@ -11,6 +11,7 @@ import { PageDto } from '@dtos/pages';
 import { Membership } from 'src/memberships/entities/membership.entity';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 const channelNumber = 2;
 
@@ -39,6 +40,10 @@ describe('ChannelsService', () => {
           useValue: new MockRepository(() => new Membership()),
         },
       ],
+    }).useMocker((token) => {
+      if (token === EventEmitter2) {
+        return { emit: jest.fn() }
+      }
     }).compile();
     service = module.get<ChannelsService>(ChannelsService);
   });

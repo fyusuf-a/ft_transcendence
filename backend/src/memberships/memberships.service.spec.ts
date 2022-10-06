@@ -16,6 +16,7 @@ import { MockUserEntity } from 'src/users/mocks/user.entity.mock';
 import { MockChannelEntity } from 'src/channels/mocks/channel.entity.mock';
 import { ChannelType } from 'src/dtos/channels';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('MembershipsService', () => {
   let service: MembershipsService;
@@ -41,6 +42,10 @@ describe('MembershipsService', () => {
           useValue: new MockRepository(() => new MockChannelEntity()),
         },
       ],
+    }).useMocker((token) => {
+      if (token === EventEmitter2) {
+        return { emit: jest.fn() }
+      }
     }).compile();
 
     service = module.get<MembershipsService>(MembershipsService);
