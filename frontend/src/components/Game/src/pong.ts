@@ -94,7 +94,6 @@ class Pong {
     this.ball.x = newState.ball.x;
     this.ball.y = newState.ball.y;
     this.winner = newState.winner;
-    this.gameOptions = newState.gameMode;
   }
   spectate(gameId: number) {
     this.socket.on('game-state', (e) => this.updateState(e));
