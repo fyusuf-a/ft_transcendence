@@ -143,8 +143,28 @@ export class ChatGateway extends SecureGateway {
       this.server.to(target).emit('chat-message', messageResponseDto);
       return 'Message Confirmed';
     } catch (error) {
+      if (error == 'Unauthorized') {
+        client.emit(
+          'chat-unauthorized',
+          'You do not have the authorization to send messages on this channel.',
+        );
+      }
       throw new WsException(error.message);
     }
+  }
+
+  notifyUser(userId: number, type: string, channelName: string) {
+    for (const [key, user] of this.authenticatedSockets) {
+      if (user.id == userId) {
+        const event: string = type == 'mute' ? 'muted' : 'banned';
+        const firstHalf = 'You just got ';
+        const secondHalf = ` from ${channelName}. You probably know what you did; if not ask the admin !`;
+        this.server
+          .to(key)
+          .emit(`chat-${event}`, `${firstHalf}${event}${secondHalf}`);
+      }
+    }
+    this.authenticatedSockets;
   }
 
   @SubscribeMessage('chat-karma-user')
@@ -191,6 +211,10 @@ export class ChatGateway extends SecureGateway {
         };
       }
       this.membershipsService.update(memberships[0].id, data);
+      const channelName: string = (
+        await this.channelsService.findOne(payload.channelId)
+      ).name;
+      this.notifyUser(payload.userId, payload.type, channelName);
       return 'Karma Delivered!';
     } catch (error) {
       return 'Karma could not be delivered, try again later.';

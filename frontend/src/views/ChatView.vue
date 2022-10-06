@@ -501,6 +501,9 @@ export default defineComponent({
         );
       this.handleChannelCreation(dto);
     },
+    alert(message : string) {
+      window.alert(message);
+    }
   },
   computed: {
     messageInSelectedChannel(): MessageDto[] {
@@ -521,6 +524,9 @@ export default defineComponent({
     });
     this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
+    this.socket.on('chat-unauthorized', (message : string)=> {this.alert(message)});
+    this.socket.on('chat-banned', (message : string)=> {this.alert(message); window.location.reload();});
+    this.socket.on('chat-muted', (message : string)=> {this.alert(message)});
   },
   beforeDestroy() {
     this.socket.off('chat-message', this.handleMessage);
