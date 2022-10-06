@@ -4,6 +4,10 @@
       <v-row>
         <v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
 			</v-row>
+      <br/>
+      <v-row>
+        <v-btn @click="map = 1" v-if="map == 0">Active BlackHole map</v-btn><v-btn @click="map = 0" v-if="map == 1">Deactive BlackHole map</v-btn>
+      </v-row>
 			<v-row>
         <select v-model="spectateGameId">
           <option value="">Choose a game to watch, and click on Spectate</option>
@@ -81,6 +85,7 @@ interface DataReturnTypes {
   matchArr: Array<{ idMatch: number, player1: string, player2: string }>;
   challengeArr: { opponentString: string, opponentId: number, id: number }[];
   selected: string;
+	map: number
   spectateTrue: boolean;
   auth: boolean;
   interval: number;
@@ -112,6 +117,7 @@ export default defineComponent({
       matchArr: [],
 	  challengeArr: [],
       selected: '',
+	    map: 0,
       spectateTrue: false,
 	  auth:false,
 	  interval: 0,
@@ -144,7 +150,7 @@ export default defineComponent({
 		}
       this.resize();
     },
-    challengeUser(userId: number) {
+    challengeUser(userId: number) {      
 		if (userId == 0)
 			return;
 		this.$store.dispatch("removeChallenge");
@@ -191,9 +197,11 @@ export default defineComponent({
 					this.pongCanvas,
 					this.ballCanvas,
 					this.backgroundCanvas,
+					this.backgroundCanvas,
 					this.paddleCanvas,
 					this.scoreCanvas,
 					this.socket as Socket,
+					this.map,
 				);
 			}
 			this.pong.spectate(gameId);
