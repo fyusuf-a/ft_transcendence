@@ -10,7 +10,10 @@ import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOptionsWhere } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { Friendship } from '../relationships/entities/friendship.entity';
+import {
+  Friendship,
+  FriendshipTypeEnum,
+} from '../relationships/entities/friendship.entity';
 import { Block } from '../relationships/entities/block.entity';
 import { Channel } from '../channels/entities/channel.entity';
 import { Membership } from '../memberships/entities/membership.entity';
@@ -98,20 +101,26 @@ export class CaslAbilityFactory {
       );
     });
 
-    // Friendships and blocks
-    // TODO: if one is the target of the block, they cannot read it (see (see user.service)
-    [Friendship, Block].forEach((entity) => {
-      [Action.Read, Action.Delete].forEach((action) => {
-        can(action, entity, { sourceId: user.id });
-        can(action, entity, { targetId: user.id });
-      });
-      can(Action.Create, entity); // Complex condition left to the controller
+    // Friendships
+    can(Action.Create, Friendship, {
+      sourceId: user.id,
+      status: FriendshipTypeEnum.PENDING,
+    }); // For now left to the controller
+    [Action.Read, Action.Delete].forEach((action) => {
+      can(action, Friendship, { sourceId: user.id });
+      can(action, Friendship, { targetId: user.id });
     });
     can(Action.Update, Friendship, { targetId: user.id });
     cannot(Action.Update, Friendship, { targetId: { $ne: user.id } }).because(
       'You cannot update a friendship that is not destined to you',
     );
-    // TODO: see user.service for blocks
+
+    // Blocks
+    can(Action.Create, Block); // Condition left to the controller
+    can(Action.Read, Block, { sourceId: user.id });
+    can(Action.Read, Block, { targetId: user.id });
+    can(Action.Update, Block); // Complex condition left to the controller
+    can(Action.Delete, Block); // Complex condition left to the controller
 
     // Channels - TODO
 
