@@ -95,7 +95,6 @@ export class GameGateway extends SecureGateway {
         const newGame = new Game({ gameId: gameId }, this.server, this);
         newGame.players[0] = otherPlayer;
         newGame.players[1] = client;
-        newGame.gameMode = gameOptions.gameMode;
         this.games.set(gameId, newGame);
         client.join(newGame.room);
         otherPlayer.join(newGame.room);

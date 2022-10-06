@@ -25,6 +25,7 @@ class Pong {
   lastUpdate: number;
   running = true;
   gameOptions: number;
+  map: number;
 
   constructor(
     pongCanvas: HTMLCanvasElement | null,
@@ -34,6 +35,7 @@ class Pong {
     paddleCanvas: HTMLCanvasElement | null,
     scoreCanvas: HTMLCanvasElement | null,
     socket: Socket,
+    map: number,
   ) {
     this.ballCanvas = ballCanvas;
     this.canvas = pongCanvas;
@@ -56,13 +58,14 @@ class Pong {
     this.socket = socket;
     this.lastUpdate = -1;
     this.gameOptions = 0;
+    this.map = map;
   }
 
   render() {
-    if (this.gameOptions == 0) {
-      this.background.render(this.ctx);
-    } else {
+    if (this.map) {
       this.backgroundLight.render(this.ctx);
+    } else {
+      this.background.render(this.ctx);
     }
     this.scoreP1.render(this.ctx);
     this.scoreP2.render(this.ctx);

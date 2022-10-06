@@ -126,7 +126,7 @@ export default defineComponent({
 	methods: {
     ...mapGetters(['id']),
 		joinQueue() {
-			const gameOptions: GameOptionsDto = { gameMode: this.map };
+			const gameOptions: GameOptionsDto = {  };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
       this.end = false;
@@ -159,7 +159,7 @@ export default defineComponent({
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
-      const gameOptions: GameOptionsDto = { gameMode: this.map, homeId: userId, awayId: this.$store.getters.id };
+      const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
     },
@@ -201,6 +201,7 @@ export default defineComponent({
 					this.paddleCanvas,
 					this.scoreCanvas,
 					this.socket as Socket,
+					this.map,
 				);
 			}
 			this.pong.spectate(gameId);
