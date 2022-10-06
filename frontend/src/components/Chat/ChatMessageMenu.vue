@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts">
+import { MembershipRoleType } from '@dtos/memberships';
 import { defineComponent } from 'vue';
 
 declare interface OptionType {
@@ -26,6 +27,7 @@ declare interface OptionType {
 declare interface DataReturnType {
   regularOptions: OptionType[];
   adminOptions: OptionType[];
+  ownerOptions: OptionType[];
 }
 
 export default defineComponent({
@@ -34,9 +36,9 @@ export default defineComponent({
       type: Number,
       required: true,
     },
-    clientIsAdmin: {
-      type: Boolean,
-      default: false,
+    membershipRole: {
+      type: String,
+      required: true,
     },
   },
   data(): DataReturnType {
@@ -45,13 +47,13 @@ export default defineComponent({
         { label: 'View Profile', event: 'chat-profile-user' },
         { label: 'Challenge', event: 'chat-challenge-user' },
         { label: 'Message', event: 'chat-message-user' },
-        { label: 'Friend', event: 'chat-friend-user' },
         { label: 'Block', event: 'chat-block-user' },
       ],
       adminOptions: [
         { label: 'Mute', event: 'chat-mute-user' },
         { label: 'Ban', event: 'chat-ban-user' },
       ],
+      ownerOptions: [{ label: 'Promote to Admin', event: 'chat-make-admin' }],
     };
   },
   methods: {
@@ -64,8 +66,16 @@ export default defineComponent({
   },
   computed: {
     options: function (): OptionType[] {
-      if (this.clientIsAdmin) {
+      if (this.targetId === this.$store.getters.id) {
+        return [this.regularOptions[0]];
+      }
+      if (this.membershipRole === MembershipRoleType.ADMIN) {
         return this.regularOptions.concat(this.adminOptions);
+      }
+      if (this.membershipRole === MembershipRoleType.OWNER) {
+        return this.regularOptions
+          .concat(this.adminOptions)
+          .concat(this.ownerOptions);
       }
       return this.regularOptions;
     },

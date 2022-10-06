@@ -3,26 +3,24 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { MatchesService } from './matches.service';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
-import {
-  ResponseMatchDto,
-  CreateMatchDto,
-  UpdateMatchDto,
-  QueryMatchDto,
-} from '@dtos/matches';
+import { ResponseMatchDto, CreateMatchDto, QueryMatchDto } from '@dtos/matches';
 
 @ApiTags('matches')
 @Controller('matches')
 export class MatchesController {
-  constructor(private readonly matchesService: MatchesService) {}
+  constructor(
+    private readonly matchesService: MatchesService, //@Inject(GameGateway) //private readonly gameGateway: GameGateway)
+  ) {}
 
   @ApiBearerAuth()
   @Get()
@@ -52,17 +50,21 @@ export class MatchesController {
   }
 
   @ApiBearerAuth()
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateMatchDto: UpdateMatchDto,
-  ): Promise<UpdateResult> {
-    return this.matchesService.update(+id, updateMatchDto);
-  }
-
-  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.matchesService.remove(+id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/spectate/:id')
+  async findSpectate(@Param('id') id: string): Promise<number> {
+    let ret: number;
+    console.log(id);
+    try {
+      ret = await this.matchesService.findSpectate(+id);
+    } catch {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
+    return ret;
   }
 }

@@ -8,6 +8,7 @@ import { LoginUserDto } from '@dtos/auth';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
+  statesToPersist: ['user', 'token'],
   overwrite: true,
 });
 
@@ -29,6 +30,8 @@ interface State {
   socket: Socket | undefined;
   cache: Cache | undefined;
   notifications: Array<Notification>;
+  challengedUserId: number;
+  spectatedUserId: number;
 }
 
 const state: State = {
@@ -38,6 +41,8 @@ const state: State = {
   socket: undefined,
   cache: undefined,
   notifications: [],
+  challengedUserId: 0,
+  spectatedUserId: 0,
 };
 
 interface Mutation {
@@ -75,6 +80,14 @@ export default createStore({
     token: (state) => state.token,
     socket: (state) => state.socket,
     notifications: (state) => state.notifications,
+    challengeUserId: (state) => {
+      if (!state.challengedUserId) return 0;
+      else return state.challengedUserId;
+    },
+    spectateUserId: (state) => {
+      if (!state.spectatedUserId) return 0;
+      else return state.spectatedUserId;
+    },
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
@@ -140,6 +153,18 @@ export default createStore({
           context.state.avatar = await fetchAvatar(+context.state.user.id);
         }
       }
+    },
+    challengeUser(context, userId: number) {
+      context.state.challengedUserId = userId;
+    },
+    removeChallenge(context) {
+      context.state.challengedUserId = 0;
+    },
+    spectateUser(context, userId: number) {
+      context.state.spectatedUserId = userId;
+    },
+    removeSpectate(context) {
+      context.state.spectatedUserId = 0;
     },
   },
   modules: {},

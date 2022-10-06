@@ -8,8 +8,8 @@
       v-model="dialog"
       activator="parent"
     >
-      <v-card width="300">
-        <v-card-text v-if="nameAlreadyUsed === 500">
+      <v-card width="300" class="v-dialog-pos">
+        <v-card-text v-if="nameAlreadyUsed === 400">
             This username is already used
         </v-card-text>
         <v-form

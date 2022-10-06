@@ -12,10 +12,13 @@ import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Membership } from 'src/memberships/entities/membership.entity';
+import { AchievementsLogService } from 'src/achievements-log/achievements-log.service';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Achievement,
       AchievementsLog,
       Block,
       Channel,
@@ -26,6 +29,7 @@ import { Membership } from 'src/memberships/entities/membership.entity';
     ]),
   ],
   providers: [
+    AchievementsLogService,
     FriendshipsService,
     MatchesService,
     NotificationsGateway,

@@ -161,8 +161,21 @@ describe('MatchesService', () => {
   });
 
   describe('update()', () => {
+    const match = new Match();
+    const home = new User();
+    const away = { ...home };
+    const createMatchDto = new CreateMatchDto();
+    beforeAll(() => {
+      match.homeId = 1;
+      match.awayId = 2;
+      match.status = MatchStatusType.IN_PROGRESS;
+      createMatchDto.homeId = match.homeId;
+      createMatchDto.awayId = match.awayId;
+      home.id = match.homeId;
+      away.id = match.awayId;
+    });
     it('should return an UpdateResult', async () => {
-      expect(await service.update(1, new UpdateMatchDto())).toEqual(
+      expect(await service.update(match, new UpdateMatchDto())).toEqual(
         new UpdateResult(),
       );
     });

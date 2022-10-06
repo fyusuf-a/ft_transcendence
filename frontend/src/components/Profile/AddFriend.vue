@@ -5,8 +5,8 @@
       v-model="dialog"
       activator="parent"
     >
-      <v-card width="300">
-        <v-card-text v-if="nameDoesNotExist === 500">
+      <v-card width="300" class="v-dialog-pos">
+        <v-card-text v-if="nameDoesNotExist === 400">
           This user cannot be found.<br />
           Are they already your friend?<br />
           Or have they not accepted your request...? :(
@@ -59,7 +59,7 @@ export default defineComponent({
     nameDoesNotExist: 0,
   }),
   methods: {
-    ...mapGetters(['username', 'avatar', 'id']),
+    ...mapGetters(['id']),
     validate () {
       this.checkName(this.name);
       (this.$refs.form as any).validate();
@@ -76,6 +76,14 @@ export default defineComponent({
         sourceId: parseInt(this.id()),
         targetId: 0
       };
+      let responseBlocked = await axios.get('/users/' + this.id() + '/blocks/');
+        for (let i: number = 0; i < responseBlocked.data.length; i++) {
+          console.log(responseBlocked.data[i])
+          if (responseBlocked.data[i].user.username === name) {
+            window.alert('This user is blocked. Unblocked them first.');
+            return;
+          }
+        };
       await axios.post('/friendships/' + name, data)
         .then(async response => {
           console.log(response);

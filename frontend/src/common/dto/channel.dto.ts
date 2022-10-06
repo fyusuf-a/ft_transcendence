@@ -1,14 +1,17 @@
+import { ChannelType } from '@dtos/channels';
+
 export class ChannelDto {
   id: number;
   name: string;
-  type?: string;
+  type?: ChannelType;
   userOneId?: number;
   userTwoId?: number;
 
-  constructor(id: number, name: string, type?: string) {
+  constructor(id: number, name: string, type?: ChannelType) {
     this.id = id;
     this.type = type;
     this.name = name;
+    this.type = type;
   }
 }
 

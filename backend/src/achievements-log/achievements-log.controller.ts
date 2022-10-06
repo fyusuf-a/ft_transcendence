@@ -1,21 +1,16 @@
 import { AchievementsLogService } from './achievements-log.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
-  Body,
   Controller,
   Delete,
   Get,
   NotFoundException,
   Param,
-  Post,
 } from '@nestjs/common';
 import { Public } from 'src/auth/auth.public.decorator';
-import {
-  CreateAchievementLogDto,
-  ResponseAchievementsLogDto,
-} from '@/dtos/achievements-log';
-import { DeleteResult, QueryFailedError } from 'typeorm';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { ResponseAchievementsLogDto } from '@/dtos/achievements-log';
+import { DeleteResult } from 'typeorm';
+
 @ApiBearerAuth()
 @ApiTags('achievements log')
 @Controller('achievements-log')
@@ -38,23 +33,6 @@ export class AchievementsLogController {
       return await this.achievementsLogService.findById(+id);
     } catch (EntityNotFoundError) {
       throw new NotFoundException('Found no achievement log with matching id.');
-    }
-  }
-
-  @Post()
-  @ApiResponse({
-    status: 500,
-    description: 'Achievement log could not be created.',
-  })
-  async create(
-    @Body() dto: CreateAchievementLogDto,
-  ): Promise<ResponseAchievementsLogDto> {
-    try {
-      return await this.achievementsLogService.create(dto);
-    } catch (err) {
-      if (err instanceof QueryFailedError)
-        throw new HttpException(err.driverError.detail, HttpStatus.BAD_REQUEST);
-      else throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 

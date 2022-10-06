@@ -33,6 +33,14 @@
             return;
           }
         };
+        let responseBlocked = await axios.get('/users/' + this.id() + '/blocks/');
+        for (let i: number = 0; i < responseBlocked.data.length; i++) {
+          console.log(responseBlocked.data[i])
+          if (responseBlocked.data[i].user.username === name) {
+            window.alert('This user is blocked. Unblocked them first.');
+            return;
+          }
+        };
         let response3 = await axios.get('/users/' + this.id() + '/friendships/invites');
         for (let i: number = 0; i < response3.data.length; i++) {
           if (response3.data[i].user.username === name) {

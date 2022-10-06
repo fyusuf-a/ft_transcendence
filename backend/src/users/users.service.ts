@@ -31,7 +31,8 @@ import {
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { plainToInstance } from 'class-transformer';
 import { Match } from 'src/matches/entities/match.entity';
-import { MatchStatusType, ResponseMatchDto } from 'src/dtos/matches';
+import { MatchDto, MatchStatusType, ResponseMatchDto } from 'src/dtos/matches';
+import { GameState } from 'src/game/game-state';
 
 enum hexSignature {
   GIF = '47494638',
@@ -262,5 +263,35 @@ export class UsersService {
       { status: MatchStatusType.AWAY, homeId: id },
       { status: MatchStatusType.DRAW, homeId: id },
     ]);
+  }
+
+  async handlePostMatch(
+    match: MatchDto,
+    state: GameState,
+  ): Promise<Array<User>> {
+    const away: User = await this.usersRepository.findOneByOrFail({
+      id: match.awayId,
+    });
+    const home: User = await this.usersRepository.findOneByOrFail({
+      id: match.homeId,
+    });
+    if (state.winner == 0) {
+      home.wins++;
+      away.losses++;
+    } else if (state.winner == 1) {
+      away.wins++;
+      home.losses++;
+    }
+    home.rating = Math.trunc((home.wins / (home.wins + home.losses)) * 100);
+    away.rating = Math.trunc((away.wins / (away.wins + away.losses)) * 100);
+    if (isNaN(home.rating)) {
+      home.rating = 0;
+    }
+    if (isNaN(away.rating)) {
+      away.rating = 0;
+    }
+    await this.usersRepository.save(away);
+    await this.usersRepository.save(home);
+    return [home, away];
   }
 }

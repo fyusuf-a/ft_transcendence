@@ -16,13 +16,19 @@ import { paginate } from 'src/common/paginate';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { MembershipRoleType } from 'src/dtos/memberships';
 import { Membership } from 'src/memberships/entities/membership.entity';
+import { ConfigService } from '@nestjs/config';
 
-async function hashPassword(rawPassword: string): Promise<string> {
-  return await bcrypt.hash(rawPassword, 10);
+async function hashPassword(
+  rawPassword: string,
+  rounds: number,
+): Promise<string> {
+  return await bcrypt.hash(rawPassword, rounds);
 }
 
 @Injectable()
 export class ChannelsService {
+  saltRounds: number;
+
   constructor(
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
@@ -31,7 +37,10 @@ export class ChannelsService {
     @InjectRepository(Membership)
     private membershipsRepository: Repository<Membership>,
     private membershipsService: MembershipsService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    this.saltRounds = parseInt(this.configService.get('BACKEND_SALT_ROUNDS'));
+  }
 
   async create(createChannelDto: CreateChannelDto): Promise<Channel> {
     const channel: Channel = new Channel();
@@ -46,7 +55,10 @@ export class ChannelsService {
       if (createChannelDto.name[0] == '-')
         throw "Channel name cannot start with a '-'.";
       if (createChannelDto.password) {
-        channel.password = await hashPassword(createChannelDto.password);
+        channel.password = await hashPassword(
+          createChannelDto.password,
+          this.saltRounds,
+        );
       } else {
         channel.password = undefined;
       }
@@ -56,12 +68,12 @@ export class ChannelsService {
       channel.name = createChannelDto.name;
       ret = await this.channelsRepository.save(channel);
       role = MembershipRoleType.OWNER;
+      await this.membershipsService.create({
+        userId: userId,
+        role: role,
+        channelId: channel.id,
+      });
     }
-    this.membershipsService.create({
-      userId: userId,
-      role: role,
-      channelId: channel.id,
-    });
     return ret;
   }
 
@@ -117,7 +129,10 @@ export class ChannelsService {
     updateChannelDto: UpdateChannelDto,
   ): Promise<UpdateResult> {
     if (updateChannelDto.password) {
-      updateChannelDto.password = await hashPassword(updateChannelDto.password);
+      updateChannelDto.password = await hashPassword(
+        updateChannelDto.password,
+        this.saltRounds,
+      );
     }
     return this.channelsRepository.update(id, updateChannelDto);
   }

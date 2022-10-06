@@ -3,6 +3,7 @@
     
       <chat-message-menu
         :targetId="senderId"
+        :membership-role="membershipRole"
         @chat-message-menu-selection="
           $emit('chat-message-menu-selection', $event)
         "
@@ -40,6 +41,10 @@ export default defineComponent({
       required: true,
     },
     content: {
+      type: String,
+      required: true,
+    },
+    membershipRole: {
       type: String,
       required: true,
     },

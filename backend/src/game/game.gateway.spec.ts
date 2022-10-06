@@ -12,6 +12,8 @@ import { UsersService } from '../users/users.service';
 import { NotificationsGateway } from 'src/notifications.gateway';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Membership } from 'src/memberships/entities/membership.entity';
+import { AchievementsLogService } from 'src/achievements-log/achievements-log.service';
+import { Achievement } from 'src/achievements/entities/achievements.entity';
 
 describe('GameGateway', () => {
   let gateway: GameGateway;
@@ -24,6 +26,7 @@ describe('GameGateway', () => {
         MatchesService,
         UsersService,
         NotificationsGateway,
+        AchievementsLogService,
         {
           provide: getRepositoryToken(Match),
           useValue: jest.fn(),
@@ -38,6 +41,10 @@ describe('GameGateway', () => {
         },
         {
           provide: getRepositoryToken(Block),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Achievement),
           useValue: jest.fn(),
         },
         {

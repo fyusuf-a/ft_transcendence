@@ -56,6 +56,7 @@ export class SecureGateway
         throw new WsException('Invalid Token');
       }
       this.authenticatedSockets.set(client.id, user);
+      client.emit('auth-success');
       return 'SUCCESS';
     } catch (err) {
       this.authenticatedSockets.delete(client.id);

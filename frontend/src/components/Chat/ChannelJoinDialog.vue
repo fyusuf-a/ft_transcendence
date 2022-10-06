@@ -2,9 +2,9 @@
   <v-row justify="center">
     <v-dialog v-model="dialogOpen" scrollable max-width="300px">
       <template v-slot:activator="{ props: open }">
-        <v-btn icon color="primary" dark v-bind="open"> + </v-btn>
+        <span icon color="primary" dark v-bind="open" class="button"> + </span>
       </template>
-      <v-card>
+      <v-card class="v-dialog-pos">
         <v-card-title
           >{{ action }} Channel
           <v-spacer></v-spacer>
@@ -16,7 +16,7 @@
             @click="action = 'Create'"
           >
             +
-          </v-btn></v-card-title
+      </v-btn>      <v-btn @click="dmUser">DM</v-btn></v-card-title
         >
 
         <v-divider></v-divider>
@@ -46,6 +46,10 @@
               :key="channel.id"
             ></v-radio>
           </v-radio-group>
+          <v-text-field
+            v-model="password"
+            label="Password"
+          ></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -69,6 +73,7 @@ interface DataReturnType {
   action: string;
   createdChannel: CreateChannelDto;
   channelTypes: Array<string>;
+  password?: string;
 }
 
 export default defineComponent({
@@ -85,6 +90,7 @@ export default defineComponent({
       action: 'Join',
       createdChannel: { name: '', type: 'public', password: '' },
       channelTypes: ['public', 'protected', 'private'],
+      password: undefined,
     };
   },
   methods: {
@@ -103,7 +109,8 @@ export default defineComponent({
     },
     async handleJoinChannel() {
       if (this.action == 'Join') {
-        this.$emit('channel-join-event', this.selectedChannel);
+        this.$emit('channel-join-event', { id: this.selectedChannel, password: this.password });
+        this.password = undefined;
       } else {
         if (!this.createdChannel.name || !this.createdChannel.type) {
           console.log('Invalid channel dto');
@@ -129,6 +136,10 @@ export default defineComponent({
         type: 'public',
         password: '',
       };
+    },
+    dmUser() {
+      this.$emit('chat-dm-user');
+      this.dialogOpen = false;
     },
   },
 });

@@ -9,6 +9,7 @@ const routes = [
       {
         path: '',
         component: () => import('../views/ProfileView.vue'),
+        name: 'home',
       },
       {
         path: 'profile',
@@ -26,6 +27,10 @@ const routes = [
       {
         path: 'about',
         component: () => import('../views/AboutView.vue'),
+      },
+      {
+        path: 'logout',
+        component: () => import('../views/LogoutView.vue'),
       },
       {
         path: 'leaderboard',

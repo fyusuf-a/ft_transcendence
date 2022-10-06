@@ -5,7 +5,8 @@ EXPOSE 3000
 RUN apk update && apk upgrade
 
 COPY ./backend/package*.json ./
-RUN npm install
+RUN npm install && \
+	npm upgrade
 COPY ./backend/ .
 RUN npm install
 

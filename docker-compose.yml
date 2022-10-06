@@ -35,6 +35,7 @@ services:
       BACKEND_42_UID: ${BACKEND_42_UID}
       BACKEND_42_SECRET: ${BACKEND_42_SECRET}
       BACKEND_HOST: ${BACKEND_HOST}
+      BACKEND_SALT_ROUNDS: ${BACKEND_SALT_ROUNDS}
     build:
       context: .
       dockerfile: backend/${BACKEND_DOCKERFILE}

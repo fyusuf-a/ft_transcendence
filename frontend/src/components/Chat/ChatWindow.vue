@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="channel !== undefined">
+  <v-card v-if="channel !== undefined && membership !== undefined">
     <v-container fill-height>
       <v-row dense max-height="10px">
         <v-col cols="11">
@@ -7,7 +7,11 @@
         </v-col>
         <v-col cols="1">
           <chat-window-menu
+            :channel="channel"
+            :membership="membership"
             @chat-leave-channel="handleLeaveChannelEvent"
+            @chat-invite-channel="$emit('chat-invite-channel')"
+            @chat-change-password="$emit('chat-change-password')"
           ></chat-window-menu>
         </v-col>
       </v-row>
@@ -23,6 +27,7 @@
                 :senderId="item.senderId"
                 :createdAt="item.createdAt"
                 :content="item.content"
+                :membership-role="membership.role"
                 @chat-message-menu-selection="
                   $emit('chat-message-menu-selection', $event)
                 "
@@ -56,6 +61,8 @@ import ChatWindowMenu from '@/components/Chat/ChatWindowMenu.vue';
 import { ChannelDto } from '@/common/dto/channel.dto';
 import { MessageDto } from '@/common/dto/message.dto';
 import { UserDto } from '@/common/dto/user.dto';
+import { MembershipDto } from '@/common/dto/membership.dto';
+
 interface DataReturnType {
   messageContent: string;
   itemHeight: number;
@@ -66,6 +73,10 @@ export default defineComponent({
     channel: {
       type: Object as PropType<ChannelDto>,
       required: true,
+    },
+    membership: {
+      type: Object as PropType<MembershipDto>,
+      required: false,
     },
     messages: {
       type: Object as PropType<MessageDto[]>,
