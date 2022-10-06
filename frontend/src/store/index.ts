@@ -16,13 +16,6 @@ interface Cache {
   avatars: Map<number, string>;
 }
 
-interface Notification {
-  message: string;
-  userId: number;
-  key: number;
-  route: string;
-}
-
 interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
@@ -103,13 +96,6 @@ export default createStore({
     },
   },
   actions: {
-    pushNotification(context, notification: Notification) {
-      notification.key = context.state.notifications.length;
-      context.state.notifications.push(notification);
-    },
-    clearNotifications(context) {
-      context.state.notifications = [];
-    },
     async verifyLoginInfo(
       context,
       { id, token }: { id: number; token: string },
