@@ -12,6 +12,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MembershipsService {
@@ -23,6 +24,7 @@ export class MembershipsService {
     private usersRepository: Repository<User>,
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(createMembershipDto: CreateMembershipDto) {
@@ -35,7 +37,9 @@ export class MembershipsService {
     membership.user = await this.usersRepository.findOneByOrFail({
       id: createMembershipDto.userId,
     });
-    return this.membershipRepository.save(membership);
+    const result = await this.membershipRepository.save(membership);
+    this.eventEmitter.emit('membership.created', createMembershipDto);
+    return result;
   }
 
   findAll(query?: QueryMembershipDto) {
