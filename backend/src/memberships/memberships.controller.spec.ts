@@ -1,4 +1,3 @@
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -9,7 +8,7 @@ import {
 import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { MembershipsController } from './memberships.controller';
 import { MembershipsService } from './memberships.service';
-import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
@@ -19,7 +18,6 @@ import { ChannelType } from 'src/dtos/channels';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { doesNotMatch } from 'assert';
 
 describe('MembershipsController', () => {
   let controller: MembershipsController;
@@ -75,7 +73,9 @@ describe('MembershipsController', () => {
     it('should return a membership', async () => {
       const mockOut = new Membership();
       const expected = new ResponseMembershipDto();
-      jest.spyOn(service, 'findOne').mockImplementation(() => Promise.resolve(mockOut));
+      jest
+        .spyOn(service, 'findOne')
+        .mockImplementation(() => Promise.resolve(mockOut));
       expect(controller.findOne('1')).resolves.toEqual(expected);
     });
   });
@@ -125,20 +125,20 @@ describe('MembershipsController', () => {
     //   ).rejects.toThrow(BadRequestException);
     // });
 
-  //   it('should throw if service throws', async () => {
-  //     const createMembershipDto = new CreateMembershipDto();
-  //     createMembershipDto.channelId = 1;
-  //     createMembershipDto.userId = 0;
-  //     jest.spyOn(service, 'create').mockImplementation(async () => {
-  //       throw new Error('error');
-  //     });
-  //     const mockChannel = new Channel();
-  //     mockChannel.type = ChannelType.PUBLIC;
-  //     jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
-  //     expect(
-  //       controller.create(createMembershipDto, mockRequest),
-  //     ).rejects.toThrow(Error);
-  //   });
+    //   it('should throw if service throws', async () => {
+    //     const createMembershipDto = new CreateMembershipDto();
+    //     createMembershipDto.channelId = 1;
+    //     createMembershipDto.userId = 0;
+    //     jest.spyOn(service, 'create').mockImplementation(async () => {
+    //       throw new Error('error');
+    //     });
+    //     const mockChannel = new Channel();
+    //     mockChannel.type = ChannelType.PUBLIC;
+    //     jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
+    //     expect(
+    //       controller.create(createMembershipDto, mockRequest),
+    //     ).rejects.toThrow(Error);
+    //   });
   });
 
   describe('create() on PRIVATE channel', () => {
@@ -228,27 +228,27 @@ describe('MembershipsController', () => {
     // });
 
     describe('create elevated memberships', () => {
-    //   it('should throw if role is owner', () => {
-    //     const mockResult = new Membership();
-    //     jest.spyOn(service, 'create').mockResolvedValue(mockResult);
-    //     const dto = new CreateMembershipDto();
-    //     dto.role = MembershipRoleType.OWNER;
-    //     dto.channelId = 5;
-    //     const mockCreatorMembership = new Membership();
-    //     mockCreatorMembership.role = MembershipRoleType.OWNER;
-    //     mockCreatorMembership.channelId = 5;
-    //     jest
-    //       .spyOn(service, 'findAll')
-    //       .mockResolvedValue([mockCreatorMembership]);
-    //     jest.spyOn(service, 'findOne').mockResolvedValue(mockCreatorMembership);
-    //     const mockChannel = new Channel();
-    //     mockChannel.id = 5;
-    //     mockChannel.type = ChannelType.PUBLIC;
-    //     jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
-    //     expect(controller.create(dto, mockRequest)).rejects.toThrow(
-    //       UnauthorizedException,
-    //     );
-    //   });
+      //   it('should throw if role is owner', () => {
+      //     const mockResult = new Membership();
+      //     jest.spyOn(service, 'create').mockResolvedValue(mockResult);
+      //     const dto = new CreateMembershipDto();
+      //     dto.role = MembershipRoleType.OWNER;
+      //     dto.channelId = 5;
+      //     const mockCreatorMembership = new Membership();
+      //     mockCreatorMembership.role = MembershipRoleType.OWNER;
+      //     mockCreatorMembership.channelId = 5;
+      //     jest
+      //       .spyOn(service, 'findAll')
+      //       .mockResolvedValue([mockCreatorMembership]);
+      //     jest.spyOn(service, 'findOne').mockResolvedValue(mockCreatorMembership);
+      //     const mockChannel = new Channel();
+      //     mockChannel.id = 5;
+      //     mockChannel.type = ChannelType.PUBLIC;
+      //     jest.spyOn(channelsService, 'findOne').mockResolvedValue(mockChannel);
+      //     expect(controller.create(dto, mockRequest)).rejects.toThrow(
+      //       UnauthorizedException,
+      //     );
+      //   });
 
       // it('should throw if role is admin and creator is non-owner', () => {
       //   const mockResult = new Membership();

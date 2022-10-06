@@ -40,11 +40,13 @@ describe('ChannelsService', () => {
           useValue: new MockRepository(() => new Membership()),
         },
       ],
-    }).useMocker((token) => {
-      if (token === EventEmitter2) {
-        return { emit: jest.fn() }
-      }
-    }).compile();
+    })
+      .useMocker((token) => {
+        if (token === EventEmitter2) {
+          return { emit: jest.fn() };
+        }
+      })
+      .compile();
     service = module.get<ChannelsService>(ChannelsService);
   });
 

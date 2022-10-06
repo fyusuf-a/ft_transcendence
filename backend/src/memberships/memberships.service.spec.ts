@@ -42,11 +42,13 @@ describe('MembershipsService', () => {
           useValue: new MockRepository(() => new MockChannelEntity()),
         },
       ],
-    }).useMocker((token) => {
-      if (token === EventEmitter2) {
-        return { emit: jest.fn() }
-      }
-    }).compile();
+    })
+      .useMocker((token) => {
+        if (token === EventEmitter2) {
+          return { emit: jest.fn() };
+        }
+      })
+      .compile();
 
     service = module.get<MembershipsService>(MembershipsService);
     channelsRepository = module.get<Repository<Channel>>(
