@@ -1,7 +1,6 @@
 import { AchievementsService } from './achievements.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { Public } from 'src/auth/auth.public.decorator';
 import { ResponseAchievementDto, AchievementDto } from '@dtos/achievements';
 import { DeleteResult } from 'typeorm';
 import { AuthUser, User } from 'src/auth/auth-user.decorator';
@@ -20,14 +19,12 @@ export class AchievementsController {
     private readonly abilityFactory: CaslAbilityFactory,
   ) {}
 
-  @Public()
   @Get()
   async findAll(@AuthUser() user: User): Promise<ResponseAchievementDto[]> {
     await this.abilityFactory.checkAbility(user, Action.Read, Achievement);
     return await this.achievementsService.findAll();
   }
 
-  @Public()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findById(

@@ -1,7 +1,6 @@
 import { AchievementsLogService } from './achievements-log.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Controller, Delete, Get, Post, Param, Body } from '@nestjs/common';
-import { Public } from 'src/auth/auth.public.decorator';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
   CreateAchievementLogDto,
   ResponseAchievementsLogDto,
@@ -24,15 +23,12 @@ export class AchievementsLogController {
     private readonly abilityFactory: CaslAbilityFactory,
   ) {}
 
-  // TODO: remove unnecessary PUBLIC
-  @Public()
   @Get()
   async findAll(@AuthUser() user: User): Promise<ResponseAchievementsLogDto[]> {
     await this.abilityFactory.checkAbility(user, Action.Read, AchievementsLog);
     return await this.achievementsLogService.findAll();
   }
 
-  @Public()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
   async findById(
