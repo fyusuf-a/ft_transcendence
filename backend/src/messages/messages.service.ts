@@ -89,10 +89,12 @@ export class MessagesService {
     message.sender = await this.usersRepository.findOneByOrFail({
       id: message.senderId,
     });
-    await this.membershipsRepository.findOneByOrFail({
-      userId: message.senderId,
-      channelId: message.channelId,
-    });
+    const membership: Membership =
+      await this.membershipsRepository.findOneByOrFail({
+        userId: message.senderId,
+        channelId: message.channelId,
+      });
+
     if (message.channel.type == ChannelType.DIRECT) {
       const recipientId: number =
         message.sender.id == message.channel.userOneId
@@ -113,6 +115,13 @@ export class MessagesService {
       );
     }
 
+    const now: Date = new Date();
+    if (
+      (membership.bannedUntil != null && membership.bannedUntil > now) ||
+      (membership.mutedUntil != null && membership.mutedUntil > now)
+    ) {
+      throw 'Unauthorized';
+    }
     return await this.messagesRepository.save(message);
   }
 

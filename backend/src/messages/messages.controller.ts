@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -45,7 +47,17 @@ export class MessagesController {
   async create(
     @Body() createMessageDto: CreateMessageDto,
   ): Promise<ResponseMessageDto> {
-    return await this.messagesService.create(createMessageDto);
+    try {
+      const ret = await this.messagesService.create(createMessageDto);
+      return ret;
+    } catch (err) {
+      if (err == 'Unauthorized') {
+        throw new HttpException(
+          'You are banned or muted on this channel.',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+    }
   }
 
   @Get(':id')
