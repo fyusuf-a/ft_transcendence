@@ -1,7 +1,7 @@
 const SPEED = 3.5;
 
 const ball = new Image();
-ball.src = 'src/assets/images/ball.png';
+ball.src = 'src/assets/images/game/ball.png';
 
 function random(min: number, max: number) {
   return min + Math.random() * (max - min);
