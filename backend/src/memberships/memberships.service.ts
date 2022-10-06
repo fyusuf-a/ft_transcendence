@@ -42,7 +42,7 @@ export class MembershipsService {
     return result;
   }
 
-  findAll(query?: QueryMembershipDto) {
+  async findAll(query?: QueryMembershipDto) {
     const findOptionsWhere: FindOptionsWhere<Membership> = {
       channel: query?.channel ? { id: +query.channel } : {},
       user: query?.user ? { id: +query.user } : {},
@@ -50,7 +50,20 @@ export class MembershipsService {
       mutedUntil: query?.mutedUntil,
       bannedUntil: query?.bannedUntil,
     };
-    return this.membershipRepository.find({ where: findOptionsWhere });
+    const memberships: Membership[] = await this.membershipRepository.find({
+      where: findOptionsWhere,
+    });
+    //if (findOptionsWhere.user) {
+    for (const membership of memberships) {
+      if (
+        membership.bannedUntil != null &&
+        membership.bannedUntil > new Date()
+      ) {
+        memberships.splice(memberships.indexOf(membership), 1);
+      }
+      //  }
+    }
+    return memberships;
   }
 
   findOne(id: number) {
