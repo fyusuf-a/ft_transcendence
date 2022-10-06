@@ -13,5 +13,6 @@ import { Channel } from 'src/channels/entities/channel.entity';
     UsersModule,
   ],
   providers: [NotificationsGateway],
+  exports: [NotificationsGateway],
 })
 export class NotificationsModule {}

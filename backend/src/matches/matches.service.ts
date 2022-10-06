@@ -52,7 +52,7 @@ export class MatchesService {
     return response.convertData((x) => x);
   }
 
-  findOne(id: number): Promise<ResponseMatchDto> {
+  findOne(id: number): Promise<Match> {
     return this.matchRepository.findOneByOrFail({ id: id });
   }
 

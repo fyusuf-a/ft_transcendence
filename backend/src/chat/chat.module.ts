@@ -8,5 +8,6 @@ import { ChannelsModule } from 'src/channels/channels.module';
 @Module({
   imports: [MembershipsModule, UsersModule, MessagesModule, ChannelsModule],
   providers: [ChatGateway],
+  exports: [ChatGateway],
 })
 export class ChatModule {}
