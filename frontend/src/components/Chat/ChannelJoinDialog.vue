@@ -47,7 +47,7 @@
               :key="channel.id"
             ></v-radio>
           </v-radio-group>
-          <v-text-field v-model="password" label="Password"></v-text-field>
+          <v-text-field v-if="selectedChannel" v-model="password" label="Password"></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -111,6 +111,7 @@ export default defineComponent({
       this.resetDialog();
     },
     resetDialog() {
+      this.selectedChannel = '';
       this.dialogOpen = false;
       this.action = 'Join';
       this.createdChannel = {
