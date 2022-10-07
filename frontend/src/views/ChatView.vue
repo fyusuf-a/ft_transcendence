@@ -151,16 +151,19 @@ export default defineComponent({
       return -1;
     },
     async handleChannelCreation(dto: CreateChannelDto) {
+      this.selectedChannel = undefined;
       if (!dto.name || !dto.type) {
         console.log('Invalid channel dto');
       } else {
         const createdChannelId: number = await this.createChannel(dto);
         if (createdChannelId > 0) {
-          this.socket.emit('chat-listen', (response: string) => {
-            this.printResponse(response);
-            this.refreshChannels();
-          });
-          axios.get('/channels/' + createdChannelId).then((response) => this.handleChannelSelection(response.data)).catch(() => console.log('Could not find channel'));
+          axios
+            .get('/channels/' + createdChannelId)
+            .then((response) => {
+              this.refreshChannels();
+              this.handleChannelSelection(response.data);
+            })
+            .catch(() => console.log('Could not find channel'));
         }
       }
     },
@@ -482,6 +485,9 @@ export default defineComponent({
           // try to get channel and try again?
         }
       }
+      this.socket.emit('chat-listen', (response: string) => {
+        this.printResponse(response);
+      });
     },
     handleDmUser(userId: number) {
       console.log("DMing " + userId);
@@ -494,6 +500,9 @@ export default defineComponent({
           userId,
         );
       this.handleChannelCreation(dto);
+    },
+    alert(message : string) {
+      window.alert(message);
     }
   },
   computed: {
@@ -513,11 +522,11 @@ export default defineComponent({
       id: this.$store.getters.id,
       token: this.$store.getters.token,
     });
-    this.socket.emit('chat-listen', (response: string) => {
-      this.printResponse(response);
-    });
     this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
+    this.socket.on('chat-unauthorized', (message : string)=> {this.alert(message)});
+    this.socket.on('chat-banned', (message : string)=> {this.alert(message); window.location.reload();});
+    this.socket.on('chat-muted', (message : string)=> {this.alert(message)});
   },
   beforeDestroy() {
     this.socket.off('chat-message', this.handleMessage);
