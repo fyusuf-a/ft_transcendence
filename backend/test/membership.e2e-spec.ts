@@ -23,6 +23,7 @@ import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Achievement } from 'src/achievements/entities/achievements.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 describe('MembershipController (e2e)', () => {
   let app: INestApplication;
@@ -33,6 +34,7 @@ describe('MembershipController (e2e)', () => {
         MembershipsModule,
         ChannelsModule,
         UsersModule,
+        EventEmitterModule.forRoot(),
         ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',

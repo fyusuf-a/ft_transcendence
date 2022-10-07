@@ -2,10 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="10">
-        <chat-dm-dialog
-          v-model="dming"
-          @chat-dm-user="handleDmUser"
-        >
+        <chat-dm-dialog v-model="dming" @chat-dm-user="handleDmUser">
         </chat-dm-dialog>
         <channel-invite-dialog
           v-model="inviting"
@@ -136,19 +133,27 @@ export default defineComponent({
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
-      let response = await axios.post('/channels/', {
-        name: channelObject.name,
-        type: channelObject.type,
-        password: channelObject.password,
-        userId: this.$store.getters.id,
-        userOneId: channelObject.userOneId,
-        userTwoId: channelObject.userTwoId,
-      });
-      if (response.status === 201) {
-        console.log(response.data);
-        return response.data.id;
-      }
-      return -1;
+      let result = await axios
+        .post('/channels/', {
+          name: channelObject.name,
+          type: channelObject.type,
+          password: channelObject.password,
+          userId: this.$store.getters.id,
+          userOneId: channelObject.userOneId,
+          userTwoId: channelObject.userTwoId,
+        })
+        .then((response) => {
+          if (response.status === 201) {
+            console.log(response.data);
+            return response.data.id;
+          }
+        })
+        .catch(() => {
+          window.alert(`Could not create channel "${channelObject.name}"`);
+          return -1;
+        });
+
+      return result;
     },
     async handleChannelCreation(dto: CreateChannelDto) {
       this.selectedChannel = undefined;
@@ -160,7 +165,6 @@ export default defineComponent({
           axios
             .get('/channels/' + createdChannelId)
             .then((response) => {
-              this.refreshChannels();
               this.handleChannelSelection(response.data);
             })
             .catch(() => console.log('Could not find channel'));
@@ -282,13 +286,20 @@ export default defineComponent({
       let membership = await axios.get(
         `/memberships?channel=${this.selectedChannel.id}&user=${userId}`,
       );
-      if (!membership || membership.data.length !== 1 || membership.data[0].userId != userId) {
+      if (
+        !membership ||
+        membership.data.length !== 1 ||
+        membership.data[0].userId != userId
+      ) {
         console.log('Could not make user an admin');
         return -1;
       }
-      let response = await axios.patch(`/memberships/${membership.data[0].id}`, {
-        role: MembershipRoleType.ADMIN,
-      });
+      let response = await axios.patch(
+        `/memberships/${membership.data[0].id}`,
+        {
+          role: MembershipRoleType.ADMIN,
+        },
+      );
       if (response.status === 200) {
         console.log('Successfully updated membership!');
         return response.data.id;
@@ -490,15 +501,15 @@ export default defineComponent({
       });
     },
     handleDmUser(userId: number) {
-      console.log("DMing " + userId);
+      console.log('DMing ' + userId);
       const id = this.$store.getters.id;
       let dto = new CreateChannelDto(
-          'direct' + userId,
-          'direct',
-          undefined,
-          +id,
-          userId,
-        );
+        'direct' + userId,
+        'direct',
+        undefined,
+        +id,
+        userId,
+      );
       this.handleChannelCreation(dto);
     },
     alert(message : string) {
@@ -524,12 +535,15 @@ export default defineComponent({
     });
     this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
+    this.socket.on('membership-created', this.refreshChannels);
     this.socket.on('chat-unauthorized', (message : string)=> {this.alert(message)});
     this.socket.on('chat-banned', (message : string)=> {this.alert(message); window.location.reload();});
     this.socket.on('chat-muted', (message : string)=> {this.alert(message)});
+    this.socket.on('refresh-channels', this.refreshChannels);
   },
   beforeDestroy() {
     this.socket.off('chat-message', this.handleMessage);
+    this.socket.off('refresh-channels', this.refreshChannels);
   },
 });
 </script>

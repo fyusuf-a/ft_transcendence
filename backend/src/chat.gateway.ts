@@ -17,6 +17,7 @@ import { CreateMembershipDto, QueryMembershipDto } from '@dtos/memberships';
 import { ChannelsService } from './channels/channels.service';
 import { SecureGateway, CheckAuth } from './auth/auth.websocket';
 import { User } from './users/entities/user.entity';
+import { OnEvent } from '@nestjs/event-emitter';
 
 export class ChatJoinDto {
   channel: string;
@@ -219,5 +220,19 @@ export class ChatGateway extends SecureGateway {
     } catch (error) {
       return 'Karma could not be delivered, try again later.';
     }
+  }
+
+  @OnEvent('membership.*')
+  handleMembershipEvents(userId: number) {
+    this.authenticatedSockets.forEach((user, key) => {
+      if (user.id === userId) {
+        this.server.to(key).emit('refresh-channels');
+      }
+    });
+  }
+
+  @OnEvent('channel.*')
+  handleChannelEvents(channelId: number) {
+    this.server.to(channelId as unknown as string).emit('refresh-channels');
   }
 }
