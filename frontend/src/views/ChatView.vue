@@ -160,7 +160,6 @@ export default defineComponent({
           axios
             .get('/channels/' + createdChannelId)
             .then((response) => {
-              this.refreshChannels();
               this.handleChannelSelection(response.data);
             })
             .catch(() => console.log('Could not find channel'));
@@ -524,12 +523,14 @@ export default defineComponent({
     });
     this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
+    this.socket.on('membership-created', this.refreshChannels);
     this.socket.on('chat-unauthorized', (message : string)=> {this.alert(message)});
     this.socket.on('chat-banned', (message : string)=> {this.alert(message); window.location.reload();});
     this.socket.on('chat-muted', (message : string)=> {this.alert(message)});
   },
   beforeDestroy() {
     this.socket.off('chat-message', this.handleMessage);
+    this.socket.off('membership-created', this.refreshChannels);
   },
 });
 </script>

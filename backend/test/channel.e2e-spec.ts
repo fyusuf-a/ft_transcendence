@@ -21,6 +21,7 @@ import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Achievement } from 'src/achievements/entities/achievements.entity';
 import { UsersModule } from 'src/users/users.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 describe('ChannelController (e2e)', () => {
   let app: INestApplication;
@@ -29,6 +30,7 @@ describe('ChannelController (e2e)', () => {
       imports: [
         UsersModule,
         ChannelsModule,
+        EventEmitterModule.forRoot(),
         ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',

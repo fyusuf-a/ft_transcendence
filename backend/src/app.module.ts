@@ -27,6 +27,7 @@ import { ChatGateway } from './chat.gateway';
 import { GameGateway } from '@/game/game.gateway';
 import { NotificationsGateway } from './notifications.gateway';
 import { Repository } from 'typeorm';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { Repository } from 'typeorm';
     AchievementsModule,
     AchievementsLogModule,
     MatchesModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [],
   providers: [
