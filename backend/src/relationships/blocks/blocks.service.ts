@@ -44,7 +44,6 @@ export class BlocksService {
     const findOptionsWhere: FindOptionsWhere<Block> = {
       source: query?.sourceId ? { id: +query.sourceId } : {},
       target: query?.targetId ? { id: +query.targetId } : {},
-      status: query?.status,
     };
     return this.blockRepository.find({ where: findOptionsWhere });
   }

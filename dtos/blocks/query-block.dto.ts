@@ -17,9 +17,6 @@ export class QueryBlockDto {
   @IsNumberString()
   targetId?: string;
 
-  @ApiPropertyOptional({
-    description: 'Status',
-  })
   @IsOptional()
   @IsEnum(BlockTypeEnum)
   status?: BlockTypeEnum;

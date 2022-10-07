@@ -15,7 +15,7 @@ import {
   FriendshipTypeEnum,
   ListFriendshipDto,
 } from '@dtos/friendships';
-import { BlockTypeEnum, ListBlockDto } from '@dtos/blocks';
+import { ListBlockDto } from '@dtos/blocks';
 import { AchievementsLogDto } from '@dtos/achievements-log';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
@@ -181,12 +181,7 @@ export class UsersService {
 
   async findBlocks(id: number): Promise<ListBlockDto[]> {
     const tmp: Block[] = await this.blockRepository.find({
-      where: [
-        { sourceId: id, status: BlockTypeEnum.MUTUAL },
-        { targetId: id, status: BlockTypeEnum.MUTUAL },
-        { sourceId: id, status: BlockTypeEnum.S_BLOCKS_T },
-        { targetId: id, status: BlockTypeEnum.T_BLOCKS_S },
-      ],
+      where: [{ sourceId: id }],
     });
     const ids: number[] = [];
     const ret: ListBlockDto[] = [];
