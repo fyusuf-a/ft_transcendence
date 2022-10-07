@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="2">
+      <v-col cols="12" md="3">
         <channel-list
           @channel-select-event="handleChannelSelection"
           @channel-join-event="handleChannelJoin"
@@ -16,7 +16,7 @@
           :key="newUnread"
         ></channel-list>
       </v-col>
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="9">
         <chat-dm-dialog v-model="dming" @chat-dm-user="handleDmUser">
         </chat-dm-dialog>
         <channel-invite-dialog
