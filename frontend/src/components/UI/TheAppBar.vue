@@ -13,7 +13,7 @@
       height="100%"
     />
 
-    <notification-icon />
+    <notification-icon @click="toggleNotifications()" />
   </v-app-bar>
 </template>
 
@@ -23,7 +23,16 @@ import ProfileCard from '@/components/Profile/ProfileCard.vue';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  props: ['modelValue'],
+  props: {
+    displayNotifications: {
+      type: Boolean,
+      default: false,
+    },
+    modelValue: {
+      type: Boolean,
+      default: false,
+    }
+  },
   components: {
     'profile-card': ProfileCard,
     'notification-icon': NotificationIcon,
@@ -32,6 +41,9 @@ export default defineComponent({
     toggleNavigationDrawer() {
       this.$emit('update:modelValue', !this.modelValue);
     },
+    toggleNotifications() {
+      this.$emit('update:displayNotifications', !this.displayNotifications)
+    }
   },
 });
 </script>
