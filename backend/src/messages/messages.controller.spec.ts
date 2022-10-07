@@ -14,6 +14,8 @@ import { Membership } from 'src/memberships/entities/membership.entity';
 import { UsersService } from 'src/users/users.service';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from 'src/matches/entities/match.entity';
+import { NotificationsGateway } from 'src/notifications.gateway';
+import { ConfigService } from '@nestjs/config';
 
 describe('MessagesController', () => {
   let controller: MessagesController;
@@ -25,6 +27,8 @@ describe('MessagesController', () => {
       providers: [
         MessagesService,
         UsersService,
+        NotificationsGateway,
+        ConfigService,
         {
           provide: getRepositoryToken(Message),
           useValue: jest.fn(),
@@ -63,6 +67,10 @@ describe('MessagesController', () => {
         },
         {
           provide: getRepositoryToken(Match),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
       ],

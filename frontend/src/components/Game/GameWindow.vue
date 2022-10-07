@@ -159,6 +159,7 @@ export default defineComponent({
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
+		console.log(userId, this.$store.getters.id )
       const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
@@ -291,6 +292,7 @@ export default defineComponent({
 		this.socket.off("auth-success");
 	},
 	mounted() {
+
 		console.log('mounted');
     this.getMatchesToSepctacte();
 		this.pongCanvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
