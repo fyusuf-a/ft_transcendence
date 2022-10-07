@@ -12,6 +12,7 @@ import { Membership } from './memberships/entities/membership.entity';
 import { MembershipsService } from './memberships/memberships.service';
 import { Message } from './messages/entities/message.entity';
 import { MessagesService } from './messages/messages.service';
+import { NotificationsGateway } from './notifications.gateway';
 import { Block } from './relationships/entities/block.entity';
 import { Friendship } from './relationships/entities/friendship.entity';
 import { User } from './users/entities/user.entity';
@@ -30,6 +31,7 @@ describe('ChatGateway', () => {
         UsersService,
         MembershipsService,
         ChannelsService,
+        NotificationsGateway,
         {
           provide: EventEmitter2,
           useValue: jest.fn(),
