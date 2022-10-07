@@ -12,6 +12,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MembershipsService {
@@ -23,6 +24,7 @@ export class MembershipsService {
     private usersRepository: Repository<User>,
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(createMembershipDto: CreateMembershipDto) {
@@ -35,7 +37,9 @@ export class MembershipsService {
     membership.user = await this.usersRepository.findOneByOrFail({
       id: createMembershipDto.userId,
     });
-    return this.membershipRepository.save(membership);
+    const result = await this.membershipRepository.save(membership);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
   async findAll(query?: QueryMembershipDto) {
@@ -66,8 +70,14 @@ export class MembershipsService {
     return this.membershipRepository.findOneByOrFail({ id: id });
   }
 
-  update(id: number, updateMembershipDto: UpdateMembershipDto) {
-    return this.membershipRepository.update(id, updateMembershipDto);
+  async update(id: number, updateMembershipDto: UpdateMembershipDto) {
+    const result = await this.membershipRepository.update(
+      id,
+      updateMembershipDto,
+    );
+    const membership = await this.findOne(id);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
   async remove(id: number) {
@@ -80,8 +90,11 @@ export class MembershipsService {
       (channel && channel?.type === ChannelType.DIRECT)
     ) {
       this.channelsRepository.delete(channel.id);
+      this.eventEmitter.emit('channel.deleted', channel.id);
     }
-    return this.membershipRepository.delete(id);
+    const result = await this.membershipRepository.delete(id);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
   async userIsAdmin(userId: number, channelId: number): Promise<boolean> {

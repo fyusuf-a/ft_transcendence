@@ -20,9 +20,9 @@ interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
-  //socket: string,
   socket: Socket | undefined;
   cache: Cache | undefined;
+  notifications: Array<Notification>;
   challengedUserId: number;
   spectatedUserId: number;
 }
@@ -31,9 +31,9 @@ const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
-  //socket: 'i am okay',
-  socket: undefined, //new Socket(),//io(),
+  socket: undefined,
   cache: undefined,
+  notifications: [],
   challengedUserId: 0,
   spectatedUserId: 0,
 };
@@ -72,6 +72,7 @@ export default createStore({
     id: (state) => state.user.id,
     token: (state) => state.token,
     socket: (state) => state.socket,
+    notifications: (state) => state.notifications,
     challengeUserId: (state) => {
       if (!state.challengedUserId) return 0;
       else return state.challengedUserId;

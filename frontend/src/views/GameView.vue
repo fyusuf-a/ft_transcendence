@@ -45,6 +45,12 @@ export default defineComponent({
   created() {
     this.socket.on('game-connect', this.handleConnection);
   },
+  beforeRouteLeave() {
+    this.socket.disconnect();
+  },
+  beforeRouteEnter() {
+
+  },
   beforeDestroy() {
     this.socket.off('game-connect');
   },
