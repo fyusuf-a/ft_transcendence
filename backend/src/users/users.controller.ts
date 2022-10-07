@@ -47,10 +47,6 @@ import {
   CaslAbilityFactory,
   Action,
   User,
-  Friendship,
-  Block,
-  Achievement,
-  Match,
 } from 'src/casl/casl-ability.factory';
 
 @ApiBearerAuth()

@@ -6,12 +6,14 @@ import { User } from 'src/users/entities/user.entity';
 import { Channel } from './entities/channel.entity';
 import { ConfigModule } from '@nestjs/config';
 import { MembershipsModule } from 'src/memberships/memberships.module';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Channel, User]),
     MembershipsModule,
     ConfigModule,
+    CaslModule,
   ],
   controllers: [ChannelsController],
   providers: [ChannelsService],

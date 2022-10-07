@@ -15,7 +15,6 @@ import { User } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { MembershipRoleType } from 'src/dtos/memberships';
-import { Membership } from 'src/memberships/entities/membership.entity';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
