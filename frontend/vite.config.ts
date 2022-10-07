@@ -8,9 +8,7 @@ import vuetify from 'vite-plugin-vuetify';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    hmr: {
-      port: 4443,
-    },
+    hmr: false,
   },
   plugins: [
     vue(),
