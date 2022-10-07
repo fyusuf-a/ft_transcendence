@@ -10,12 +10,6 @@ import {
   Unique,
 } from 'typeorm';
 
-export enum BlockTypeEnum {
-  T_BLOCKS_S = 'target_blocks_source',
-  S_BLOCKS_T = 'source_blocks_target',
-  MUTUAL = 'mutual',
-}
-
 @Unique(['source', 'target'])
 @Entity()
 @Check(`"sourceId" != "targetId"`)
@@ -36,11 +30,4 @@ export class Block {
   @Column()
   @RelationId((block: Block) => block.target)
   targetId: number;
-
-  @Column({
-    type: 'enum',
-    enum: BlockTypeEnum,
-    default: BlockTypeEnum.S_BLOCKS_T,
-  })
-  status: BlockTypeEnum;
 }

@@ -8,7 +8,6 @@ export class ListBlockDto extends BlockDto {
     this.id = base.id;
     this.sourceId = base.sourceId;
     this.targetId = base.targetId;
-    this.status = base.status;
     this.user = user;
   }
   user!: DisplayUserDto;
