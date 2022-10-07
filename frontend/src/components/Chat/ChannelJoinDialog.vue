@@ -16,7 +16,8 @@
             @click="action = 'Create'"
           >
             +
-      </v-btn>      <v-btn @click="dmUser">DM</v-btn></v-card-title
+          </v-btn>
+          <v-btn @click="dmUser">DM</v-btn></v-card-title
         >
 
         <v-divider></v-divider>
@@ -46,10 +47,7 @@
               :key="channel.id"
             ></v-radio>
           </v-radio-group>
-          <v-text-field
-            v-model="password"
-            label="Password"
-          ></v-text-field>
+          <v-text-field v-model="password" label="Password"></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -94,22 +92,12 @@ export default defineComponent({
     };
   },
   methods: {
-    async createChannel(channelObject: CreateChannelDto): Promise<number> {
-      let response = await axios.post('/channels/', {
-        name: channelObject.name,
-        type: channelObject.type,
-        password: channelObject.password,
-        userId: this.$store.getters.id,
-      });
-      if (response.status === 201) {
-        console.log(response.data);
-        return response.data.id;
-      }
-      return -1;
-    },
     async handleJoinChannel() {
       if (this.action == 'Join') {
-        this.$emit('channel-join-event', { id: this.selectedChannel, password: this.password });
+        this.$emit('channel-join-event', {
+          id: this.selectedChannel,
+          password: this.password,
+        });
         this.password = undefined;
       } else {
         if (!this.createdChannel.name || !this.createdChannel.type) {

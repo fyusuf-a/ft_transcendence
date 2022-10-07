@@ -65,7 +65,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     AchievementsModule,
     AchievementsLogModule,
     MatchesModule,
-    EventEmitterModule.forRoot(),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+    }),
   ],
   controllers: [],
   providers: [

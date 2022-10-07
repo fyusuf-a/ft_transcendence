@@ -222,12 +222,17 @@ export class ChatGateway extends SecureGateway {
     }
   }
 
-  @OnEvent('membership.created')
-  handleMembershipCreatedEvent(payload: CreateMembershipDto) {
+  @OnEvent('membership.*')
+  handleMembershipEvents(userId: number) {
     this.authenticatedSockets.forEach((user, key) => {
-      if (user.id === payload.userId) {
-        this.server.to(key).emit('membership-created');
+      if (user.id === userId) {
+        this.server.to(key).emit('refresh-channels');
       }
     });
+  }
+
+  @OnEvent('channel.*')
+  handleChannelEvents(channelId: number) {
+    this.server.to(channelId as unknown as string).emit('refresh-channels');
   }
 }

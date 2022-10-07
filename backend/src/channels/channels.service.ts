@@ -17,6 +17,7 @@ import { MembershipsService } from 'src/memberships/memberships.service';
 import { MembershipRoleType } from 'src/dtos/memberships';
 import { Membership } from 'src/memberships/entities/membership.entity';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 async function hashPassword(
   rawPassword: string,
@@ -38,6 +39,7 @@ export class ChannelsService {
     private membershipsRepository: Repository<Membership>,
     private membershipsService: MembershipsService,
     private configService: ConfigService,
+    private eventEmitter: EventEmitter2,
   ) {
     this.saltRounds = parseInt(this.configService.get('BACKEND_SALT_ROUNDS'));
   }
@@ -134,10 +136,14 @@ export class ChannelsService {
         this.saltRounds,
       );
     }
-    return this.channelsRepository.update(id, updateChannelDto);
+    const result = await this.channelsRepository.update(id, updateChannelDto);
+    this.eventEmitter.emit('channel.updated', id);
+    return result;
   }
 
   async remove(id: number): Promise<DeleteResult> {
-    return this.channelsRepository.delete(id);
+    const result = await this.channelsRepository.delete(id);
+    this.eventEmitter.emit('channel.deleted', id);
+    return result;
   }
 }

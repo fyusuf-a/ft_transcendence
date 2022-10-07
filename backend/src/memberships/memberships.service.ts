@@ -38,7 +38,7 @@ export class MembershipsService {
       id: createMembershipDto.userId,
     });
     const result = await this.membershipRepository.save(membership);
-    this.eventEmitter.emit('membership.created', createMembershipDto);
+    this.eventEmitter.emit('membership.updated', membership.userId);
     return result;
   }
 
@@ -70,8 +70,14 @@ export class MembershipsService {
     return this.membershipRepository.findOneByOrFail({ id: id });
   }
 
-  update(id: number, updateMembershipDto: UpdateMembershipDto) {
-    return this.membershipRepository.update(id, updateMembershipDto);
+  async update(id: number, updateMembershipDto: UpdateMembershipDto) {
+    const result = await this.membershipRepository.update(
+      id,
+      updateMembershipDto,
+    );
+    const membership = await this.findOne(id);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
   async remove(id: number) {
@@ -84,8 +90,11 @@ export class MembershipsService {
       (channel && channel?.type === ChannelType.DIRECT)
     ) {
       this.channelsRepository.delete(channel.id);
+      this.eventEmitter.emit('channel.deleted', channel.id);
     }
-    return this.membershipRepository.delete(id);
+    const result = await this.membershipRepository.delete(id);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
   async userIsAdmin(userId: number, channelId: number): Promise<boolean> {
