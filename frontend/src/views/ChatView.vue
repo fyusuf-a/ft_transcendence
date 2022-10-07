@@ -168,7 +168,7 @@ export default defineComponent({
         }
       }
     },
-    handleUserInvite(userId: number): Promise<number> {
+    async handleUserInvite(userId: number): Promise<number> {
       this.inviting = false;
       if (!this.selectedChannel?.id) {
         return Promise.resolve(-1);
@@ -381,21 +381,24 @@ export default defineComponent({
           console.log('Could not find user');
         });
     },
-    async getMessagesForChannel(channelId: number) {
+    async getMessagesForChannel(channelId: number, pageNumber: number = 1) {
       axios
         .get(
-          `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=1&take=10`,
+          `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=${pageNumber}&take=10`,
         )
         .then(async (response) => {
-          let newMessages = response.data.data; // data update to axios standard
+          let newMessages = response.data.data;
           if (newMessages) {
             for (let message of newMessages) {
-              await this.addMessageToMap(message);
+              this.addMessageToMap(message);
             }
+          }
+          if (response.data.meta.hasNextPage === true) {
+            this.getMessagesForChannel(channelId, pageNumber + 1);
           }
         })
         .catch(() => {
-          console.log('Could not get messages for this channel');
+          this.alert('Could not get messages for this channel at this time');
         });
     },
     joinChannelById(id: number, password?: string) {
