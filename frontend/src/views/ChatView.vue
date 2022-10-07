@@ -269,7 +269,10 @@ export default defineComponent({
           }
         }
         window.alert('The user is blocked');
-        window.location.reload();
+        this.messages.clear();
+        this.refreshChannels();
+        if (this.selectedChannel?.id)
+          this.getMessagesForChannel(this.selectedChannel.id);
       });
     },
     async handleMakeAdmin(userId: number) {
@@ -403,7 +406,7 @@ export default defineComponent({
         { channel: id, password: password },
         (response: string) => {
           this.printResponse(response);
-          this.subscribedChannels.push(channel);
+          this.refreshChannels();
         },
       );
     },
@@ -519,7 +522,9 @@ export default defineComponent({
     });
     this.socket.on('chat-banned', (message: string) => {
       this.alert(message);
-      window.location.reload();
+      this.messages.clear();
+      this.refreshChannels();
+      this.selectedChannel = undefined;
     });
     this.socket.on('chat-muted', (message: string) => {
       this.alert(message);
