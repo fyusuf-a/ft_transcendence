@@ -18,6 +18,8 @@ import { ConfigService } from '@nestjs/config';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 describe('MatchesController', () => {
   let controller: MatchesController;
@@ -49,6 +51,14 @@ describe('MatchesController', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Channel),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
       ],

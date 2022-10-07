@@ -12,6 +12,7 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
+import { NotificationsGateway } from 'src/notifications.gateway';
 import { MatchDto, MatchStatusType, UpdateMatchDto } from 'src/dtos/matches';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/matches/entities/match.entity';
@@ -24,6 +25,7 @@ export class GameGateway extends SecureGateway {
     protected readonly usersService: UsersService,
     protected readonly configService: ConfigService,
     private readonly matchService: MatchesService,
+    private readonly notificationsGateway: NotificationsGateway,
     @InjectRepository(Match)
     private readonly matchRepository: Repository<Match>,
     protected readonly achievementsLogService: AchievementsLogService,
@@ -72,6 +74,11 @@ export class GameGateway extends SecureGateway {
         clientUser.id !== gameOptions.awayId
       ) {
         throw new WsException('Invalid Game Options');
+      } else if (clientUser.id === gameOptions.homeId) {
+        this.notificationsGateway.handleNewChallenge(
+          gameOptions.homeId,
+          gameOptions.awayId,
+        );
       }
     }
     if (this.queues.has(gameOptionsString)) {

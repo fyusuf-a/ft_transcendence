@@ -10,6 +10,8 @@ import { FriendshipsService } from 'src/relationships/friendships/friendships.se
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 import { AchievementsLogService } from 'src/achievements-log/achievements-log.service';
 import { Achievement } from 'src/achievements/entities/achievements.entity';
 
@@ -19,8 +21,10 @@ import { Achievement } from 'src/achievements/entities/achievements.entity';
       Achievement,
       AchievementsLog,
       Block,
+      Channel,
       Friendship,
       Match,
+      Membership,
       User,
     ]),
   ],
