@@ -35,8 +35,6 @@ export class ChannelsService {
     private channelsRepository: Repository<Channel>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @InjectRepository(Membership)
-    private membershipsRepository: Repository<Membership>,
     private membershipsService: MembershipsService,
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,

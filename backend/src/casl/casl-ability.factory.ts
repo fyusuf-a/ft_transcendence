@@ -15,7 +15,7 @@ import {
   FriendshipTypeEnum,
 } from '../relationships/entities/friendship.entity';
 import { Block } from '../relationships/entities/block.entity';
-import { Channel } from '../channels/entities/channel.entity';
+import { Channel, ChannelType } from '../channels/entities/channel.entity';
 import { Membership } from '../memberships/entities/membership.entity';
 import { Message } from '../messages/entities/message.entity';
 import { Achievement } from '../achievements/entities/achievements.entity';
@@ -23,10 +23,10 @@ import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.
 import { Match } from '../matches/entities/match.entity';
 
 export {
-  User,
+  User, // TODO
   Friendship,
-  Block,
-  Channel,
+  Block, // TODO
+  Channel, // TODO
   Membership,
   Message,
   Achievement,
@@ -122,12 +122,18 @@ export class CaslAbilityFactory {
     can(Action.Update, Block); // Complex condition left to the controller
     can(Action.Delete, Block); // Complex condition left to the controller
 
-    // Channels - TODO
+    // Channels
+    can(Action.Create, Channel);
+    can(Action.Read, Channel, { type: ChannelType.PUBLIC });
+    can(Action.Read, Channel, { type: ChannelType.PROTECTED });
+    [Action.Update, Action.Delete].forEach((action) => {
+      can(action, Channel); // Complex condition left to the controller
+    });
 
-    // Memberships - TODO
-
-    // Messages - complex conditions left to the controller
-    can(Action.Manage, Message);
+    // Messages and Memberships - complex conditions left to the controllers
+    [Membership, Message].forEach((entity) => {
+      can(Action.Manage, entity);
+    });
 
     // Achievement and AchievementsLog
     [Achievement, AchievementsLog].forEach((entity) => {

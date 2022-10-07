@@ -75,13 +75,17 @@ export class ChatGateway extends SecureGateway {
       password: payload.password,
     };
     try {
-      await this.membershipsService.isAuthorized(
-        membershipDto,
+      await this.membershipsService.isUserCapableInChannel(
         { id: userId } as User,
-        await this.channelsService.findOne(membershipDto.channelId),
+        membershipDto.channelId.toString(),
+        {
+          muted: undefined,
+          banned: false,
+        },
       );
       await this.membershipsService.create(membershipDto);
     } catch (error) {
+      // TODO: check if the error code is still the same
       if (error.code == 23505) {
         // Duplicate Key Error
         this.logger.log(
