@@ -1,7 +1,22 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="3">
+        <channel-list
+          @channel-select-event="handleChannelSelection"
+          @channel-join-event="handleChannelJoin"
+          @channel-create-event="handleChannelCreation"
+          @request-user-event="addUserToMap"
+          @refresh-channels-event="refreshChannels"
+          @chat-dm-user="dming = true"
+          :channels="subscribedChannels"
+          :users="users"
+          :unreadChannels="unreadChannels"
+          :allChannels="allChannels"
+          :key="newUnread"
+        ></channel-list>
+      </v-col>
+      <v-col cols="12" md="9">
         <chat-dm-dialog v-model="dming" @chat-dm-user="handleDmUser">
         </chat-dm-dialog>
         <channel-invite-dialog
@@ -35,21 +50,6 @@
           @chat-invite-channel="inviting = true"
           @chat-change-password="changePass = true"
         ></chat-window>
-      </v-col>
-      <v-col cols="12" md="2">
-        <channel-list
-          @channel-select-event="handleChannelSelection"
-          @channel-join-event="handleChannelJoin"
-          @channel-create-event="handleChannelCreation"
-          @request-user-event="addUserToMap"
-          @refresh-channels-event="refreshChannels"
-          @chat-dm-user="dming = true"
-          :channels="subscribedChannels"
-          :users="users"
-          :unreadChannels="unreadChannels"
-          :allChannels="allChannels"
-          :key="newUnread"
-        ></channel-list>
       </v-col>
     </v-row>
   </v-container>
