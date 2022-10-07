@@ -129,7 +129,7 @@ export class NotificationsGateway extends SecureGateway {
     isPrivate: boolean,
   ) {
     let origin: string;
-    let recipients: number[];
+    let recipients: number[] = new Array<number>();
     if (isPrivate) {
       origin = sender.username;
       recipients.push(recipient);
