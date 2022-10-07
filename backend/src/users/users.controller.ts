@@ -178,7 +178,7 @@ export class UsersController {
     @AuthUser() user: User,
     @Param('id') id: number,
   ): Promise<ListFriendshipDto[]> {
-    await this.abilityFactory.checkAbility(user, Action.Read, Friendship);
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return await this.usersService.findFriendships(+id, 1);
   }
 
@@ -187,7 +187,7 @@ export class UsersController {
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<ListFriendshipDto[]> {
-    await this.abilityFactory.checkAbility(user, Action.Read, Friendship);
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findFriendships(+id, 0);
   }
 
@@ -196,7 +196,7 @@ export class UsersController {
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<ListBlockDto[]> {
-    await this.abilityFactory.checkAbility(user, Action.Read, Block);
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findBlocks(+id);
   }
 
@@ -205,7 +205,7 @@ export class UsersController {
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<ResponseAchievementsLogDto[]> {
-    await this.abilityFactory.checkAbility(user, Action.Read, Achievement);
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findUnlockedAchievements(+id);
   }
 
@@ -214,7 +214,7 @@ export class UsersController {
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<ResponseMatchDto[]> {
-    await this.abilityFactory.checkAbility(user, Action.Read, Match);
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findMatches(+id);
   }
 }
