@@ -128,7 +128,13 @@ export class ChannelsService {
       );
     let i = 0;
     for (const dto of pageDto.data) {
-      pageDto.data[i] = { id: dto.id, type: dto.type, name: dto.name };
+      pageDto.data[i] = {
+        id: dto.id,
+        type: dto.type,
+        name: dto.name,
+        userOneId: dto.userOneId,
+        userTwoId: dto.userTwoId,
+      };
       i++;
     }
     return pageDto;
