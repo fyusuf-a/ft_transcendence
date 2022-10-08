@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateFriendshipDto,
@@ -25,6 +25,13 @@ export class FriendshipsService {
     username: string,
     createFriendshipDto: CreateFriendshipDto,
   ): Promise<Friendship> {
+    if (
+      await this.friendshipRepository.findOneBy({
+        sourceId: createFriendshipDto.targetId,
+        targetId: createFriendshipDto.sourceId,
+      })
+    )
+      throw new HttpException('Friendship already exist', HttpStatus.CONFLICT);
     const target: User = await this.userRepository.findOneByOrFail({
       username: username,
     });
@@ -33,6 +40,13 @@ export class FriendshipsService {
   }
 
   async create(createFriendshipDto: CreateFriendshipDto, target: User = null) {
+    if (
+      await this.friendshipRepository.findOneBy({
+        sourceId: createFriendshipDto.targetId,
+        targetId: createFriendshipDto.sourceId,
+      })
+    )
+      throw new HttpException('Friendship already exist', HttpStatus.CONFLICT);
     const friendship: Friendship = new Friendship();
     friendship.source = await this.userRepository.findOneByOrFail({
       id: createFriendshipDto.sourceId,
