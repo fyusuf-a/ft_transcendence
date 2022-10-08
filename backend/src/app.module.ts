@@ -15,7 +15,8 @@ import { Friendship } from './relationships/entities/friendship.entity';
 import { Block } from './relationships/entities/block.entity';
 import { AuthModule } from './auth/auth.module';
 import { GlobalAuthGuard } from './auth/auth.global.guard';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './all-exceptions.filter';
 import { AchievementsModule } from './achievements/achievements.module';
 import { Achievement } from './achievements/entities/achievements.entity';
 import { AchievementsLogModule } from './achievements-log/achievements-log.module';
@@ -23,11 +24,10 @@ import { AchievementsLog } from './achievements-log/entities/achievements-log.en
 import { MatchesModule } from './matches/matches.module';
 import { Match } from './matches/entities/match.entity';
 import configuration from './config/configuration';
-import { ChatGateway } from './chat.gateway';
-import { GameGateway } from '@/game/game.gateway';
-import { NotificationsGateway } from './notifications.gateway';
-import { Repository } from 'typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { GameModule } from './game/game.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -63,6 +63,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     BlocksModule,
     AuthModule,
     AchievementsModule,
+    GameModule,
+    NotificationsModule,
+    ChatModule,
     AchievementsLogModule,
     MatchesModule,
     EventEmitterModule.forRoot({
@@ -70,16 +73,16 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       delimiter: '.',
     }),
   ],
-  controllers: [],
   providers: [
-    Repository,
-    ChatGateway,
+    GlobalAuthGuard,
     {
       provide: APP_GUARD,
       useClass: GlobalAuthGuard,
     },
-    GameGateway,
-    NotificationsGateway,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
   ],
 })
 export class AppModule {}

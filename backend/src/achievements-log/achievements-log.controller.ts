@@ -1,15 +1,18 @@
 import { AchievementsLogService } from './achievements-log.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import {
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-} from '@nestjs/common';
-import { Public } from 'src/auth/auth.public.decorator';
-import { ResponseAchievementsLogDto } from '@/dtos/achievements-log';
-import { DeleteResult } from 'typeorm';
+  CreateAchievementLogDto,
+  ResponseAchievementsLogDto,
+} from '@/dtos/achievements-log';
+import { DeleteResult, QueryFailedError } from 'typeorm';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { AuthUser, User } from 'src/auth/auth-user.decorator';
+import {
+  CaslAbilityFactory,
+  Action,
+  AchievementsLog,
+} from 'src/casl/casl-ability.factory';
 
 @ApiBearerAuth()
 @ApiTags('achievements log')
@@ -17,27 +20,60 @@ import { DeleteResult } from 'typeorm';
 export class AchievementsLogController {
   constructor(
     private readonly achievementsLogService: AchievementsLogService,
+    private readonly abilityFactory: CaslAbilityFactory,
   ) {}
 
-  @Public()
   @Get()
-  async findAll(): Promise<ResponseAchievementsLogDto[]> {
+  async findAll(@AuthUser() user: User): Promise<ResponseAchievementsLogDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, AchievementsLog);
     return await this.achievementsLogService.findAll();
   }
 
-  @Public()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
-  async findById(@Param('id') id: string): Promise<ResponseAchievementsLogDto> {
+  async findById(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<ResponseAchievementsLogDto> {
+    await this.abilityFactory.checkAbility(user, Action.Read, AchievementsLog, {
+      id,
+    });
+    return await this.achievementsLogService.findById(+id);
+  }
+
+  @Post()
+  @ApiResponse({
+    status: 500,
+    description: 'Achievement log could not be created.',
+  })
+  async create(
+    @AuthUser() user: User,
+    @Body() dto: CreateAchievementLogDto,
+  ): Promise<ResponseAchievementsLogDto> {
+    await this.abilityFactory.checkAbility(
+      user,
+      Action.Create,
+      AchievementsLog,
+    );
     try {
-      return await this.achievementsLogService.findById(+id);
-    } catch (EntityNotFoundError) {
-      throw new NotFoundException('Found no achievement log with matching id.');
+      return await this.achievementsLogService.create(dto);
+    } catch (err) {
+      if (err instanceof QueryFailedError)
+        throw new HttpException(err.driverError.detail, HttpStatus.BAD_REQUEST);
+      else throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<DeleteResult> {
+  async remove(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<DeleteResult> {
+    await this.abilityFactory.checkAbility(
+      user,
+      Action.Delete,
+      AchievementsLog,
+    );
     return this.achievementsLogService.remove(+id);
   }
 }
