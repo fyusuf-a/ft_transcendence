@@ -57,12 +57,6 @@ export class BlocksService {
   }
 
   async remove(id: number) {
-    /*
-      Here we should probably check if the block is mutual,
-      in which case we should switch it T_BLOCKS_S or 
-      S_BLOCKS_T rather than deleting it, but it is meaningless
-      as long as we do not have a way to verify the user identity.
-      */
     return this.blockRepository.delete(id);
   }
 }
