@@ -1,16 +1,16 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Socket, Server } from 'socket.io';
-import { UsersService } from './users/users.service';
+import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
-import { SecureGateway } from './auth/auth.websocket';
-import { Match } from './matches/entities/match.entity';
-import { MatchStatusType } from './dtos/matches';
-import { User, UserStatusEnum } from './users/entities/user.entity';
+import { SecureGateway } from '../auth/auth.websocket';
+import { Match } from '../matches/entities/match.entity';
+import { MatchStatusType } from '../dtos/matches';
+import { User, UserStatusEnum } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { ListFriendshipDto } from './dtos/friendships';
-import { Channel } from './channels/entities/channel.entity';
-import { Membership } from './memberships/entities/membership.entity';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
+import { ListFriendshipDto } from '../dtos/friendships';
 
 @WebSocketGateway({ cors: true, namespace: 'notifications' })
 export class NotificationsGateway extends SecureGateway {
