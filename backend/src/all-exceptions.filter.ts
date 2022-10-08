@@ -26,9 +26,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof HttpException) {
       if (exception.getStatus() === HttpStatus.INTERNAL_SERVER_ERROR) {
         httpStatus = HttpStatus.BAD_REQUEST;
-      }
-      else
-        httpStatus = exception.getStatus();
+      } else httpStatus = exception.getStatus();
     } else {
       // TODO: remove this
       httpStatus = HttpStatus.BAD_REQUEST;
