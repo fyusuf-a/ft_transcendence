@@ -1,41 +1,40 @@
 import { AchievementsService } from './achievements.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-} from '@nestjs/common';
-import { Public } from 'src/auth/auth.public.decorator';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ResponseAchievementDto, AchievementDto } from '@dtos/achievements';
 import { DeleteResult } from 'typeorm';
+import { AuthUser, User } from 'src/auth/auth-user.decorator';
+import {
+  CaslAbilityFactory,
+  Action,
+  Achievement,
+} from 'src/casl/casl-ability.factory';
 
 @ApiBearerAuth()
 @ApiTags('achievements')
 @Controller('achievements')
 export class AchievementsController {
-  constructor(private readonly achivementsService: AchievementsService) {}
+  constructor(
+    private readonly achievementsService: AchievementsService,
+    private readonly abilityFactory: CaslAbilityFactory,
+  ) {}
 
-  @Public()
   @Get()
-  async findAll(): Promise<ResponseAchievementDto[]> {
-    return await this.achivementsService.findAll();
+  async findAll(@AuthUser() user: User): Promise<ResponseAchievementDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, Achievement);
+    return await this.achievementsService.findAll();
   }
 
-  @Public()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found.' })
-  async findById(@Param('id') id: string): Promise<AchievementDto> {
-    const num: number = +id;
-
-    try {
-      return await this.achivementsService.findById(num);
-    } catch (EntityNotFoundError) {
-      throw new NotFoundException('Found no achievement with matching id.');
-    }
+  async findById(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<AchievementDto> {
+    await this.abilityFactory.checkAbility(user, Action.Read, Achievement, {
+      id,
+    });
+    return await this.achievementsService.findById(+id);
   }
 
   @Post()
@@ -43,12 +42,22 @@ export class AchievementsController {
     status: 500,
     description: 'Achievement could not be created.',
   })
-  create(@Body() dto: AchievementDto): Promise<ResponseAchievementDto> {
-    return this.achivementsService.create(dto);
+  async create(
+    @AuthUser() user: User,
+    @Body() dto: AchievementDto,
+  ): Promise<ResponseAchievementDto> {
+    await this.abilityFactory.checkAbility(user, Action.Create, Achievement);
+    return this.achievementsService.create(dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<DeleteResult> {
-    return this.achivementsService.remove(+id);
+  async remove(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<DeleteResult> {
+    await this.abilityFactory.checkAbility(user, Action.Delete, Achievement, {
+      id,
+    });
+    return this.achievementsService.remove(+id);
   }
 }

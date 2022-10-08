@@ -14,7 +14,7 @@ import { Block } from 'src/relationships/entities/block.entity';
 import { UsersService } from 'src/users/users.service';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { Match } from 'src/matches/entities/match.entity';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { ConfigService } from '@nestjs/config';
 
 const messageNumber = 2;

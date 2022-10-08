@@ -12,7 +12,7 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { MatchDto, MatchStatusType, UpdateMatchDto } from 'src/dtos/matches';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/matches/entities/match.entity';
