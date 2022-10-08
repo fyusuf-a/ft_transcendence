@@ -24,9 +24,14 @@ export class AllExceptionsFilter implements ExceptionFilter {
     } else if (exception instanceof EntityNotFoundError) {
       httpStatus = HttpStatus.NOT_FOUND;
     } else if (exception instanceof HttpException) {
-      httpStatus = exception.getStatus();
+      if (exception.getStatus() === HttpStatus.INTERNAL_SERVER_ERROR) {
+        httpStatus = HttpStatus.BAD_REQUEST;
+      }
+      else
+        httpStatus = exception.getStatus();
     } else {
-      httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+      // TODO: remove this
+      httpStatus = HttpStatus.BAD_REQUEST;
     }
 
     const responseBody = {
