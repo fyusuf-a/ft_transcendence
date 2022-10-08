@@ -60,7 +60,6 @@ export class ChannelsController {
     return ret;
   }
 
-  // TODO: ignore the PRIVATE and DIRECT channels
   @Get()
   async findAll(
     @AuthUser() user: User,
