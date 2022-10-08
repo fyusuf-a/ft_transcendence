@@ -91,7 +91,12 @@ export class ChannelsController {
         throw new EntityNotFoundError(Channel, '');
       }
     }
-    return channel;
+    const ret: ResponseChannelDto = {
+      id: channel.id,
+      type: channel.type,
+      name: channel.name,
+    };
+    return ret;
   }
 
   @Patch(':id')

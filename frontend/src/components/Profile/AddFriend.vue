@@ -78,13 +78,21 @@ export default defineComponent({
       };
       let responseBlocked = await axios.get('/users/' + this.id() + '/blocks/');
         for (let i: number = 0; i < responseBlocked.data.length; i++) {
-          console.log(responseBlocked.data[i])
           if (responseBlocked.data[i].user.username === name) {
             window.alert('This user is blocked. Unblocked them first.');
             return;
           }
         };
-      await axios.post('/friendships/' + name, data)
+        let idBlockU = await axios.get('/users/name/' + name);
+        let me = await axios.get('/users/me')
+        let responseUBlocked = await axios.get('/users/' + idBlockU.data.id + '/blocks/');
+        for (let i: number = 0; i < responseUBlocked.data.length; i++) {
+          if (responseUBlocked.data[i].user.username === me.data.username) {
+            window.alert('You are blocked by this user.');
+            return;
+          }
+        };
+        await axios.post('/friendships/' + name, data)
         .then(async response => {
           console.log(response);
           let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
@@ -97,8 +105,8 @@ export default defineComponent({
           window.alert('Your friend request has been sent.');
         })
         .catch( (error) => {
-          console.log(error.response.status);
           this.nameDoesNotExist = error.response.status;
+          window.alert("This user is already your friend!");
         });
         if (this.nameDoesNotExist === 0) { this.dialog = false; };
     },
