@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
+import { IsNumberString, IsOptional } from 'class-validator';
 
 export class QueryBlockDto {
   @ApiPropertyOptional({

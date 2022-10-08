@@ -23,10 +23,10 @@ import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.
 import { Match } from '../matches/entities/match.entity';
 
 export {
-  User, // TODO
+  User,
   Friendship,
-  Block, // TODO
-  Channel, // TODO
+  Block,
+  Channel,
   Membership,
   Message,
   Achievement,
@@ -116,11 +116,10 @@ export class CaslAbilityFactory {
     );
 
     // Blocks
-    can(Action.Create, Block); // Condition left to the controller
-    can(Action.Read, Block, { sourceId: user.id });
-    can(Action.Read, Block, { targetId: user.id });
-    can(Action.Update, Block); // Complex condition left to the controller
-    can(Action.Delete, Block); // Complex condition left to the controller
+    [Action.Create, Action.Read, Action.Delete].forEach((action) => {
+      can(action, Block, { sourceId: user.id });
+      cannot(Action.Update, Block); // It does not make sense for current use cases
+    });
 
     // Channels
     can(Action.Create, Channel);
