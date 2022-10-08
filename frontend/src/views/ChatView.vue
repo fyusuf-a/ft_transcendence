@@ -213,9 +213,9 @@ export default defineComponent({
       const channel = this.allChannels.get(channelDto.id);
       if (channel) {
         if (channel.type === ChannelType.PROTECTED) {
-          this.joinChannelById(channelDto.id, channelDto.password);
+          await this.joinChannelById(channelDto.id, channelDto.password);
         } else {
-          this.joinChannelById(channelDto.id);
+          await this.joinChannelById(channelDto.id);
         }
         this.handleChannelSelection(channel);
       } else {
@@ -381,7 +381,7 @@ export default defineComponent({
           console.log('Could not find user');
         });
     },
-    async getMessagesForChannel(channelId: number, pageNumber: number = 1) {
+    async getMessagesForChannel(channelId: number, pageNumber = 1) {
       axios
         .get(
           `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=${pageNumber}&take=10`,
@@ -401,17 +401,18 @@ export default defineComponent({
           this.alert('Could not get messages for this channel at this time');
         });
     },
-    joinChannelById(id: number, password?: string) {
+    async joinChannelById(id: number, password?: string) {
       const channel = this.allChannels.get(id);
       if (!channel) return;
-      this.socket.emit(
-        'chat-join',
-        { channel: id, password: password },
-        (response: string) => {
-          this.printResponse(response);
-          this.refreshChannels();
-        },
-      );
+      const data = {
+        channelId: id,
+        userId: this.$store.getters.id,
+        role: MembershipRoleType.PARTICIPANT,
+        password: password,
+      };
+      await axios.post('/memberships', data).catch(() => {
+        this.alert('Could not join channel');
+      });
     },
     leaveChannelById(id: number) {
       this.socket.emit('chat-leave', { channel: id }, (response: string) => {
@@ -448,14 +449,13 @@ export default defineComponent({
         });
     },
     async fetchBlocks() {
-      await axios.get(
-        `/users/${this.$store.getters.id}/blocks`,
-      ).then((response) => {
-        response.data.forEach((block: ListBlockDto) => {
-          this.blocks.push(block.user.id);
+      await axios
+        .get(`/users/${this.$store.getters.id}/blocks`)
+        .then((response) => {
+          response.data.forEach((block: ListBlockDto) => {
+            this.blocks.push(block.user.id);
+          });
         });
-      });
-      
     },
     async getAllChannels() {
       await axios.get('/channels/').then((response) => {
