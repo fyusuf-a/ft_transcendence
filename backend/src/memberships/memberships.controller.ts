@@ -25,6 +25,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from './entities/membership.entity';
 
 @ApiBearerAuth()
 @ApiTags('channel memberships')
@@ -83,9 +84,16 @@ export class MembershipsController {
     @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<ResponseMembershipDto> {
-    const membership = await this.membershipsService.findOne(+id);
-    if (membership.userId !== user.id)
+    let membership: Membership;
+    try {
+      membership = await this.membershipsService.findOne(+id);
+      await this.membershipsService.findAll({
+        channel: membership.channelId.toString(),
+        user: user.id.toString(),
+      });
+    } catch {
       throw new EntityNotFoundError('Membership', '');
+    }
     return membership;
   }
 
@@ -97,25 +105,30 @@ export class MembershipsController {
   ) {
     if (updateMembershipDto.role === MembershipRoleType.OWNER)
       throw new ForbiddenException('Cannot create a new owner');
+    const membership = await this.membershipsService.findOne(+id);
     if (updateMembershipDto.role === MembershipRoleType.ADMIN) {
       await this.membershipsService.hasUserRoleInChannel(
         user,
         MembershipRoleType.OWNER,
-        id,
+        membership.channelId.toString(),
       );
     }
     if (updateMembershipDto.bannedUntil || updateMembershipDto.mutedUntil)
-      await this.membershipsService.isUserAtLeastAdmin(user, id);
+      await this.membershipsService.isUserAtLeastAdmin(
+        user,
+        membership.channelId.toString(),
+      );
     return await this.membershipsService.update(+id, updateMembershipDto);
   }
 
   @Delete(':id')
   async remove(@AuthUser() user: User, @Param('id') id: string) {
-    await this.membershipsService.hasUserRoleInChannel(
-      user,
-      MembershipRoleType.OWNER,
-      id,
-    );
+    const membership = await this.membershipsService.findOne(+id);
+    if (
+      membership.userId !== user.id &&
+      membership.role !== MembershipRoleType.OWNER
+    )
+      throw new ForbiddenException();
     return this.membershipsService.remove(+id);
   }
 }
