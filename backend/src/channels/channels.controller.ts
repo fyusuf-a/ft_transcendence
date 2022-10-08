@@ -94,6 +94,8 @@ export class ChannelsController {
       id: channel.id,
       type: channel.type,
       name: channel.name,
+      userOneId: channel.userOneId,
+      userTwoId: channel.userTwoId,
     };
     return ret;
   }
