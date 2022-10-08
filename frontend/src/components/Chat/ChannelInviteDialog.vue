@@ -82,15 +82,14 @@
       },
     },
     async created() {
-      let response = await axios.get('/users/');
-      for (let i: number = 0; i < response.data.data.length; i++) {
-        this.users.push({
-          id: response.data.data[i].id,
-          username: response.data.data[i].username,
-        });
-        console.log(response.data.data[i].username);
-      };
-      console.log('got users');
+      await axios.get('/users/').then((response) => {
+        for (let i: number = 0; i < response.data.data.length; i++) {
+          this.users.push({
+            id: response.data.data[i].id,
+            username: response.data.data[i].username,
+          });
+        };
+      });
     },
   });
   </script>

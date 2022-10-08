@@ -98,7 +98,6 @@ export default defineComponent({
   components: { 'channel-join-dialog': ChannelJoinDialog },
   methods: {
     async handleChannelSelection(channel: ChannelDto) {
-      console.log(`Handling a channel selection: ${channel.id}`);
       this.$emit('channel-select-event', channel);
     },
     handleChannelJoin(channel: JoinChannelDto) {
@@ -112,7 +111,6 @@ export default defineComponent({
       if (user) {
         return user.username;
       }
-      console.log("sending fetch request");
       this.$emit('request-user-event', userId);
       return '...';
     },
