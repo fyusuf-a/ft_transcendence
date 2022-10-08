@@ -89,6 +89,8 @@
             username: response.data.data[i].username,
           });
         };
+      }).catch(() => {
+        window.alert('Cannot load user list')
       });
     },
   });
