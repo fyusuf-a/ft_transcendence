@@ -105,8 +105,8 @@ export default defineComponent({
           window.alert('Your friend request has been sent.');
         })
         .catch( (error) => {
-          console.error(error.response.status);
           this.nameDoesNotExist = error.response.status;
+          window.alert("This user is already your friend!");
         });
         if (this.nameDoesNotExist === 0) { this.dialog = false; };
     },
