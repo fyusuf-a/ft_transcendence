@@ -5,34 +5,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Channel } from 'src/channels/entities/channel.entity';
 import { Message } from './entities/message.entity';
-import { UsersService } from 'src/users/users.service';
-import { Friendship } from 'src/relationships/entities/friendship.entity';
-import { Block } from 'src/relationships/entities/block.entity';
-import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
-import { Match } from 'src/matches/entities/match.entity';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 import { Membership } from 'src/memberships/entities/membership.entity';
-import { ConfigService } from '@nestjs/config';
+import { UsersModule } from 'src/users/users.module';
+import { MembershipsModule } from 'src/memberships/memberships.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Message,
-      Channel,
-      User,
-      Friendship,
-      Block,
-      AchievementsLog,
-      Match,
-      Membership,
-    ]),
+    TypeOrmModule.forFeature([Message, Channel, User, Membership]),
+    UsersModule,
+    NotificationsModule,
+    MembershipsModule,
   ],
-  providers: [
-    ConfigService,
-    MessagesService,
-    UsersService,
-    NotificationsGateway,
-  ],
+  providers: [MessagesService],
   controllers: [MessagesController],
   exports: [MessagesService],
 })
