@@ -47,7 +47,7 @@
               :key="channel.id"
             ></v-radio>
           </v-radio-group>
-          <v-text-field v-model="password" label="Password"></v-text-field>
+          <v-text-field v-if="selectedChannel" v-model="password" label="Password"></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -62,7 +62,6 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
 import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 interface DataReturnType {
@@ -99,24 +98,20 @@ export default defineComponent({
           password: this.password,
         });
         this.password = undefined;
-      } else {
-        if (!this.createdChannel.name || !this.createdChannel.type) {
-          console.log('Invalid channel dto');
-        } else {
-          let dto = new CreateChannelDto(
-            this.createdChannel.name,
-            this.createdChannel.type,
-          );
-          if (this.createdChannel.password) {
-            dto.password = this.createdChannel.password;
-          }
-          this.$emit('channel-create-event', dto);
+      } else if (this.createdChannel.name && this.createdChannel.type) {
+        let dto = new CreateChannelDto(
+          this.createdChannel.name,
+          this.createdChannel.type,
+        );
+        if (this.createdChannel.password) {
+          dto.password = this.createdChannel.password;
         }
+        this.$emit('channel-create-event', dto);
       }
-      this.dialogOpen = false;
-      this.action = 'Join';
+      this.resetDialog();
     },
     resetDialog() {
+      this.selectedChannel = '';
       this.dialogOpen = false;
       this.action = 'Join';
       this.createdChannel = {
