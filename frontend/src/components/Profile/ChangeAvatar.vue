@@ -59,7 +59,11 @@ export default defineComponent({
         }).then(() =>{
           window.location.reload();
         })
-        .catch(function(){
+        .catch(function(err){
+          if (err.response.status == 400)
+          {
+            window.alert("Upload failed ! Make sure your file is valid.");
+          }
         });
       },
       // Handles a change on the file upload
