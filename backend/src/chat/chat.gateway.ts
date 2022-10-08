@@ -12,11 +12,9 @@ import { ResponseMessageDto, CreateMessageDto } from '@dtos/messages';
 
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { ConfigService } from '@nestjs/config';
-import { CreateMembershipDto, QueryMembershipDto } from '@dtos/memberships';
+import { QueryMembershipDto } from '@dtos/memberships';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ChannelsService } from 'src/channels/channels.service';
-import { User } from 'src/users/entities/user.entity';
-import { MembershipRoleType } from 'src/memberships/entities/membership.entity';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
 
 export class ChatJoinDto {
@@ -60,43 +58,6 @@ export class ChatGateway extends SecureGateway {
       }
     }
     return 'SUCCESS';
-  }
-
-  @SubscribeMessage('chat-join')
-  @CheckAuth
-  async handleJoin(client: Socket, payload: ChatJoinDto) {
-    this.logger.log(`${client.id} wants to join room [${payload.channel}]`);
-    // TODO: Check if User has permission to join channel here
-    const userId = this.authenticatedSockets.get(client.id)?.id;
-    const membershipDto: CreateMembershipDto = {
-      channelId: +payload.channel,
-      userId: this.getAuthenticatedUser(client)?.id,
-      role: MembershipRoleType.PARTICIPANT,
-      password: payload.password,
-    };
-    try {
-      await this.membershipsService.isUserCapableInChannel(
-        { id: userId } as User,
-        membershipDto.channelId.toString(),
-        {
-          muted: undefined,
-          banned: false,
-        },
-      );
-      await this.membershipsService.create(membershipDto);
-    } catch (error) {
-      // TODO: check if the error code is still the same
-      if (error.code == 23505) {
-        // Duplicate Key Error
-        this.logger.log(
-          `User ${membershipDto.userId} is already a member of channel ${payload.channel}`,
-        );
-      } else {
-        throw new WsException(error.message);
-      }
-    }
-    client.join(payload.channel);
-    return `SUCCESS: joined room for channel ${payload.channel}`;
   }
 
   @SubscribeMessage('chat-leave')
