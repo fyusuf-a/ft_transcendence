@@ -473,17 +473,21 @@ export default defineComponent({
     },
     async refreshChannels() {
       this.allChannels.clear();
-      this.subscribedChannels = [];
       this.blocks = [];
+      let subscribedChannels = [];
       await this.getAllChannels();
       await this.fetchMemberships();
       await this.fetchBlocks();
+      let staySelected = false;
       for (let membership of this.memberships) {
         const channel = this.allChannels.get(membership.channelId);
         if (channel) {
-          this.subscribedChannels.push(channel);
+          subscribedChannels.push(channel);
+          if (channel.id === this.selectedChannel?.id) staySelected = true;
         }
       }
+      if (!staySelected) this.selectedChannel = undefined;
+      this.subscribedChannels = subscribedChannels;
       this.socket.emit('chat-listen', (response: string) => {
         this.printResponse(response);
       });
