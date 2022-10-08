@@ -175,21 +175,23 @@ export default defineComponent({
     },
 	  resize() {
 		  const canvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
-		  const canvasRatio = canvas.height / canvas.width;
-		  const windowRatio = window.innerHeight / window.innerWidth;
-		  let width: string | number;
-		  let height: string | number;
-      
-		  if (windowRatio < canvasRatio ) {
-		  	height = window.innerHeight - 64;
-		  	width = height / canvasRatio;
-		  }
-      else {
-		  	width = window.innerWidth;
-		  	height = width * canvasRatio;
-		  }
-		  canvas.style.width = width + 'px';
-		  canvas.style.height = height + 'px';
+      if (canvas != null) { 
+		    const canvasRatio = canvas.height / canvas.width;
+		    const windowRatio = window.innerHeight / window.innerWidth;
+		    let width: string | number;
+		    let height: string | number;
+
+		    if (windowRatio < canvasRatio ) {
+		    	height = window.innerHeight - 64;
+		    	width = height / canvasRatio;
+		    }
+        else {
+		    	width = window.innerWidth;
+		    	height = width * canvasRatio;
+		    }
+		    canvas.style.width = width + 'px';
+		    canvas.style.height = height + 'px';
+    }
 		},
 		spectateGame(gameId: number) {
       console.log("gameId to spectate: " + gameId)
