@@ -25,7 +25,7 @@ const PADDLE_HEIGHT = 100;
 const GRID_WIDTH = 640;
 const GRID_HEIGHT = 480;
 
-export const SCORE_TO_WIN = 5;
+export const SCORE_TO_WIN = 11;
 
 function random(min: number, max: number) {
   return min + Math.random() * (max - min);
