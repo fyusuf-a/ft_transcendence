@@ -60,31 +60,6 @@ export class ChatGateway extends SecureGateway {
     return 'SUCCESS';
   }
 
-  @SubscribeMessage('chat-leave')
-  @CheckAuth
-  async handleLeave(client: Socket, payload: ChatJoinDto) {
-    if (!payload?.channel) return 'FAILURE';
-    this.logger.log(`${client.id} wants to leave channel [${payload.channel}]`);
-    // TODO: Check if User leaving affects ownership
-    client.leave(payload.channel);
-    const membershipArray = await this.membershipsService.findAll({
-      channel: payload.channel,
-      user: this.getAuthenticatedUser(client)?.id.toString(),
-    });
-    if (membershipArray && membershipArray.length === 1) {
-      const membership = membershipArray[0];
-      if (
-        membership &&
-        membership.id &&
-        membership.userId === this.getAuthenticatedUser(client)?.id &&
-        membership.channelId === parseInt(payload.channel)
-      ) {
-        await this.membershipsService.remove(membership.id);
-        return `SUCCESS: left channel and room ${payload.channel}`;
-      }
-    }
-  }
-
   @SubscribeMessage('chat-send')
   @CheckAuth
   async handleSend(client: Socket, payload: ChatSendDto): Promise<string> {

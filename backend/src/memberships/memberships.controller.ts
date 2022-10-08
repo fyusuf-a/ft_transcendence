@@ -111,11 +111,16 @@ export class MembershipsController {
 
   @Delete(':id')
   async remove(@AuthUser() user: User, @Param('id') id: string) {
-    await this.membershipsService.hasUserRoleInChannel(
-      user,
-      MembershipRoleType.OWNER,
-      id,
-    );
+    const membership = await this.membershipsService.findOne(+id);
+    try {
+      await this.membershipsService.hasUserRoleInChannel(
+        user,
+        MembershipRoleType.OWNER,
+        membership.channelId.toString(),
+      );
+    } catch {
+      await this.membershipsService.isUserMembershipTarget(user, id);
+    }
     return this.membershipsService.remove(+id);
   }
 }
