@@ -6,12 +6,10 @@ import {
   Get,
   HttpException,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
   Query,
-  Req,
   Response,
   StreamableFile,
   UploadedFile,
@@ -43,96 +41,83 @@ import { ConfigService } from '@nestjs/config';
 import { ListFriendshipDto } from '@dtos/friendships';
 import { ListBlockDto } from '@dtos/blocks';
 import { ResponseAchievementsLogDto } from '@dtos/achievements-log';
-import { RequestWithUser } from 'src/auth/types';
 import { ResponseMatchDto } from 'src/dtos/matches';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import {
+  CaslAbilityFactory,
+  Action,
+  User,
+} from 'src/casl/casl-ability.factory';
 
+@ApiBearerAuth()
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    private readonly abilityFactory: CaslAbilityFactory,
   ) {}
 
-  @ApiBearerAuth()
   @Public()
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  async whoAmI(@Req() req: RequestWithUser): Promise<ResponseUserDto> {
-    if (!req.user) {
-      throw new BadRequestException();
-    }
-    let user: ResponseUserDto;
-    try {
-      user = await this.usersService.findOne(req.user.id);
-    } catch (error) {
-      throw new BadRequestException();
-    }
+  async whoAmI(@AuthUser() user: User): Promise<ResponseUserDto> {
+    await this.abilityFactory.checkAbility(user, Action.Read, user);
     return user;
   }
 
-  @ApiBearerAuth()
   @Get()
   async findAll(
+    @AuthUser() user: User,
     @Query() query?: QueryUserDto,
     @Query() pageOptions?: PageOptionsDto,
   ): Promise<PageDto<UserDto>> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User);
     return await this.usersService.findAll(query, pageOptions);
   }
 
-  @Public()
   @Post()
   @ApiResponse({ status: 500, description: 'Record could not be created' })
-  create(@Body() createUserDto: CreateUserDto): Promise<ResponseUserDto> {
+  async create(
+    @AuthUser() user: User,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ResponseUserDto> {
+    await this.abilityFactory.checkAbility(user, Action.Create, User);
     return this.usersService.create(createUserDto);
   }
 
-  @ApiBearerAuth()
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  async update(
+    @AuthUser() user: User,
+    @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
-    return this.usersService.update(+id, updateUserDto);
+    await this.abilityFactory.checkAbility(user, Action.Update, User, { id });
+    return this.usersService.update(id, updateUserDto);
   }
 
-  @ApiBearerAuth()
   @Get(':id')
   @ApiResponse({ status: 404, description: 'Record not found' })
-  async findOne(@Param('id') id: string): Promise<ResponseUserDto> {
-    try {
-      return await this.usersService.findOne(+id);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException('Not Found');
-      }
-    }
-  }
-
-  @ApiBearerAuth()
-  @Get('/name/:username')
-  @ApiResponse({ status: 404, description: 'Record not found' })
-  async findOneByUsername(
-    @Param('username') username: string,
+  async findOne(
+    @AuthUser() user: User,
+    @Param('id') id: number,
   ): Promise<ResponseUserDto> {
-    try {
-      return await this.usersService.findByName(username);
-    } catch (error) {
-      if (error instanceof EntityNotFoundError) {
-        throw new NotFoundException('Not Found');
-      }
-    }
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
+    return await this.usersService.findOne(+id);
   }
 
-  @ApiBearerAuth()
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<DeleteResult> {
+  async remove(
+    @AuthUser() user: User,
+    @Param('id') id: number,
+  ): Promise<DeleteResult> {
+    await this.abilityFactory.checkAbility(user, Action.Delete, User, { id });
     return this.usersService.remove(+id);
   }
 
   @Post(':id/avatar')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiBearerAuth()
   @ApiResponse({ status: 201, description: 'Success' })
   @ApiResponse({ status: 400, description: 'Missing or Invalid File' })
   @ApiConsumes('multipart/form-data')
@@ -140,10 +125,12 @@ export class UsersController {
     description: 'Avatar Photo',
     type: AvatarUploadDto,
   })
-  uploadAvatar(
-    @Param('id') id: string,
+  async uploadAvatar(
+    @AuthUser() user: User,
+    @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    await this.abilityFactory.checkAbility(user, Action.Update, User, { id });
     if (
       !file ||
       !file.filename ||
@@ -158,14 +145,15 @@ export class UsersController {
   }
 
   @Get(':id/avatar')
-  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Success' })
   @ApiResponse({ status: 204, description: 'No avatar found' })
   @ApiResponse({ status: 400, description: 'User does not exist' })
   async getAvatar(
-    @Param('id') id: string,
+    @AuthUser() user: User,
+    @Param('id') id: number,
     @Response({ passthrough: true }) res,
   ): Promise<StreamableFile> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     try {
       const file = await this.usersService.getAvatar(+id);
       res.set({
@@ -181,35 +169,48 @@ export class UsersController {
     }
   }
 
-  @ApiBearerAuth()
   @Get('/:id/friendships')
-  async findFriendships(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+  async findFriendships(
+    @AuthUser() user: User,
+    @Param('id') id: number,
+  ): Promise<ListFriendshipDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return await this.usersService.findFriendships(+id, 1);
   }
 
-  @ApiBearerAuth()
   @Get('/:id/friendships/invites')
-  findFriendRequests(@Param('id') id: string): Promise<ListFriendshipDto[]> {
+  async findFriendRequests(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<ListFriendshipDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findFriendships(+id, 0);
   }
 
-  @ApiBearerAuth()
   @Get('/:id/blocks')
-  async findBlocks(@Param('id') id: string): Promise<ListBlockDto[]> {
-    return await this.usersService.findBlocks(+id);
+  async findBlocks(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<ListBlockDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
+    return this.usersService.findBlocks(+id);
   }
 
-  @ApiBearerAuth()
   @Get('/:id/achievements')
-  findUnlockedAchievements(
+  async findUnlockedAchievements(
+    @AuthUser() user: User,
     @Param('id') id: string,
   ): Promise<ResponseAchievementsLogDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findUnlockedAchievements(+id);
   }
 
-  @ApiBearerAuth()
   @Get('/:id/matches')
-  findPlayedMatches(@Param('id') id: string): Promise<ResponseMatchDto[]> {
+  async findPlayedMatches(
+    @AuthUser() user: User,
+    @Param('id') id: string,
+  ): Promise<ResponseMatchDto[]> {
+    await this.abilityFactory.checkAbility(user, Action.Read, User, { id });
     return this.usersService.findMatches(+id);
   }
 }

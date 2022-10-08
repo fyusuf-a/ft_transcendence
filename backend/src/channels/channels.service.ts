@@ -15,7 +15,6 @@ import { User } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { MembershipRoleType } from 'src/dtos/memberships';
-import { Membership } from 'src/memberships/entities/membership.entity';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -35,8 +34,6 @@ export class ChannelsService {
     private channelsRepository: Repository<Channel>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @InjectRepository(Membership)
-    private membershipsRepository: Repository<Membership>,
     private membershipsService: MembershipsService,
     private configService: ConfigService,
     private eventEmitter: EventEmitter2,

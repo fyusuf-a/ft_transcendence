@@ -1,13 +1,12 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumberString, IsOptional } from 'class-validator';
 
 export class QueryMessageDto {
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: 'Channel Id',
   })
-  @IsOptional()
   @IsNumberString()
-  channel?: string;
+  channel!: string;
 
   @ApiPropertyOptional({
     description: 'Sender Id',
