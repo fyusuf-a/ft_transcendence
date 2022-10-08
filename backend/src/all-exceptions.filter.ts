@@ -28,7 +28,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         httpStatus = HttpStatus.BAD_REQUEST;
       } else httpStatus = exception.getStatus();
     } else {
-      // TODO: remove this
       httpStatus = HttpStatus.BAD_REQUEST;
     }
 
