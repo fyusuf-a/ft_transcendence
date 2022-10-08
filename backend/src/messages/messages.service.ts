@@ -13,7 +13,7 @@ import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
 import { paginate } from 'src/common/paginate';
 import { Membership } from 'src/memberships/entities/membership.entity';
 import { UsersService } from 'src/users/users.service';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class MessagesService {
