@@ -25,6 +25,7 @@ import {
 } from '@dtos/channels';
 import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { ChannelsService } from './channels.service';
+import { Channel } from './entities/channel.entity';
 
 @ApiBearerAuth()
 @ApiTags('channels')
@@ -60,7 +61,13 @@ export class ChannelsController {
   @ApiNotFoundResponse({ description: 'Channel Not Found' })
   async findOne(@Param('id') id: string): Promise<ResponseChannelDto> {
     try {
-      return await this.channelsService.findOne(+id);
+      const channel: Channel = await this.channelsService.findOne(+id);
+      const ret: ResponseChannelDto = {
+        id: channel.id,
+        type: channel.type,
+        name: channel.name,
+      };
+      return ret;
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
         throw new HttpException(error.message, HttpStatus.NOT_FOUND);

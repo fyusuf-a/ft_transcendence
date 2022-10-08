@@ -44,9 +44,11 @@ export class ChannelsService {
     this.saltRounds = parseInt(this.configService.get('BACKEND_SALT_ROUNDS'));
   }
 
-  async create(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const channel: Channel = new Channel();
-    let ret: Channel;
+  async create(
+    createChannelDto: CreateChannelDto,
+  ): Promise<ResponseChannelDto> {
+    let channel: Channel = new Channel();
+    let ret: ResponseChannelDto;
     let role: MembershipRoleType = MembershipRoleType.PARTICIPANT;
     const userId: number = +createChannelDto.userId;
 
@@ -68,7 +70,8 @@ export class ChannelsService {
         id: +createChannelDto.userId,
       });
       channel.name = createChannelDto.name;
-      ret = await this.channelsRepository.save(channel);
+      channel = await this.channelsRepository.save(channel);
+      ret = { id: channel.id, name: channel.name, type: channel.type };
       role = MembershipRoleType.OWNER;
       await this.membershipsService.create({
         userId: userId,
@@ -119,11 +122,25 @@ export class ChannelsService {
     pageOptions: PageOptionsDto = new PageOptionsDto(),
   ): Promise<PageDto<ResponseChannelDto>> {
     const orderOptions = { id: pageOptions.order };
-    return paginate(this.channelsRepository, query, orderOptions, pageOptions);
+    const pageDto: PageDto<ResponseChannelDto> =
+      await paginate<ResponseChannelDto>(
+        this.channelsRepository,
+        query,
+        orderOptions,
+        pageOptions,
+      );
+    let i = 0;
+    for (const dto of pageDto.data) {
+      pageDto.data[i] = { id: dto.id, type: dto.type, name: dto.name };
+      i++;
+    }
+    return pageDto;
   }
 
-  findOne(id: number): Promise<Channel> {
-    return this.channelsRepository.findOneByOrFail({ id: id });
+  async findOne(id: number): Promise<Channel> {
+    return await this.channelsRepository.findOneByOrFail({
+      id: id,
+    });
   }
 
   async update(
