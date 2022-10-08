@@ -228,6 +228,7 @@ export default defineComponent({
     handleLeaveChannelEvent() {
       if (this.selectedChannel) {
         this.leaveChannelById(this.selectedChannel.id);
+        this.refreshChannels();
       }
     },
     async handleChatMessageMenuSelection(event: MenuSelectionEvent) {
@@ -414,10 +415,12 @@ export default defineComponent({
         this.alert('Could not join channel');
       });
     },
-    leaveChannelById(id: number) {
-      this.socket.emit('chat-leave', { channel: id }, (response: string) => {
-        this.printResponse(response);
-      });
+    async leaveChannelById(id: number) {
+      await this.fetchMembership(id);
+      if (!this.activeMembership?.id) {
+        this.alert('Could not leave channel');
+      }
+      await axios.delete('/memberships/' + this.activeMembership?.id).catch(() => this.alert('Could not leave channel'));
       if (this.selectedChannel) {
         const channelIndex = this.subscribedChannels.indexOf(
           this.selectedChannel,

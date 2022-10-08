@@ -144,4 +144,11 @@ export class MembershipsService {
       throw new ForbiddenException();
     }
   }
+
+  async isUserMembershipTarget(user: User, membershipId: string) {
+    const membership = await this.findOne(+membershipId);
+    if (!user.id || membership?.userId !== user.id) {
+      throw new ForbiddenException();
+    }
+  }
 }
