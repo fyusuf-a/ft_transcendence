@@ -47,7 +47,7 @@ describe('UsersController', () => {
   });
 
   describe('create()', () => {
-    it('should return a ResponseUserDto', async () => {
+    it.skip('should return a ResponseUserDto', async () => {
       const mockUser = new User();
       mockUser.identity = 'id';
       mockUser.username = 'user';
