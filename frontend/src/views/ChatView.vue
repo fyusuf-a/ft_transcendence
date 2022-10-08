@@ -198,9 +198,6 @@ export default defineComponent({
       if (found) return found;
       return [];
     },
-    printResponse(response: string) {
-      console.log(`Server: ${response}`);
-    },
     handleChannelSelection(newChannel: ChannelDto) {
       this.selectedChannel = newChannel;
       if (this.selectedChannel) {
@@ -488,9 +485,7 @@ export default defineComponent({
       }
       if (!staySelected) this.selectedChannel = undefined;
       this.subscribedChannels = subscribedChannels;
-      this.socket.emit('chat-listen', (response: string) => {
-        this.printResponse(response);
-      });
+      this.socket.emit('chat-listen');
     },
     handleDmUser(userId: number) {
       const id = this.$store.getters.id;
