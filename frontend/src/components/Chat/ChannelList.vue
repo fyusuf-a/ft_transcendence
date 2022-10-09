@@ -18,8 +18,9 @@
             color="primary"
             dark
             class="button"
-            @click="$emit('refresh-channels-event');">&#8635;
-        </span>
+            @click="$emit('refresh-channels-event')"
+            >&#8635;
+          </span>
         </v-col>
       </v-row>
       <v-row>
@@ -28,29 +29,29 @@
       <v-row>
         <v-col>
           <v-list density="compact">
-              <v-list-item
-                v-for="(item, i) in channels"
-                :key="i"
-                active-color="primary"
-                @click="() => handleChannelSelection(item)"
-              >
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ props: tooltip }">
-                      <v-icon
-                        v-bind="tooltip"
-                        v-if="unreadChannels.has(item.id)"
-                        color="secondary"
-                        >{{ unreadMarker }}</v-icon
-                      >
-                    <v-list-item-title v-bind="tooltip">
-                      <v-list-item-title>
-                        {{ getChannelDisplay(item) }}
-                      </v-list-item-title>
+            <v-list-item
+              v-for="(item, i) in channels"
+              :key="i"
+              active-color="primary"
+              @click="() => handleChannelSelection(item)"
+            >
+              <v-tooltip bottom>
+                <template v-slot:activator="{ props: tooltip }">
+                  <v-icon
+                    v-bind="tooltip"
+                    v-if="unreadChannels.has(item.id)"
+                    color="secondary"
+                    >{{ unreadMarker }}</v-icon
+                  >
+                  <v-list-item-title v-bind="tooltip">
+                    <v-list-item-title>
+                      {{ getChannelDisplay(item) }}
                     </v-list-item-title>
-                  </template>
-                  <span>{{ getChannelDisplay(item) }}</span>
-                </v-tooltip>
-              </v-list-item>
+                  </v-list-item-title>
+                </template>
+                <span>{{ getChannelDisplay(item) }}</span>
+              </v-tooltip>
+            </v-list-item>
           </v-list>
         </v-col>
       </v-row>
@@ -116,23 +117,32 @@ export default defineComponent({
     },
     getChannelDisplay(channel: ChannelDto): string {
       if (channel.type !== 'direct') return channel.name;
-      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userOneId) return this.getUsername(channel.userOneId as number);
-      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userTwoId) return this.getUsername(channel.userTwoId as number);
-      return "UNKNOWN CHANNEL";
+      else if (
+        channel.type === 'direct' &&
+        this.$store.getters.id !== channel.userOneId
+      )
+        return this.getUsername(channel.userOneId as number);
+      else if (
+        channel.type === 'direct' &&
+        this.$store.getters.id !== channel.userTwoId
+      )
+        return this.getUsername(channel.userTwoId as number);
+      return 'UNKNOWN CHANNEL';
     },
   },
   computed: {
     getJoinableChannels(): ChannelDto[] {
-      return Array.from(this.allChannels.values()).filter((chan) => chan.type === 'public' || chan.type === 'protected').filter(
-        (chan) => !this.channels.includes(chan),
-      ) as ChannelDto[];
+      const allChannels = this.allChannels;
+      return Array.from(allChannels.values())
+        .filter((chan) => chan.type === 'public' || chan.type === 'protected')
+        .filter((chan) => !this.channels.includes(chan)) as ChannelDto[];
     },
   },
 });
 </script>
 
 <style>
-  .header-row {
-    height: 75px;
-  }
+.header-row {
+  height: 75px;
+}
 </style>

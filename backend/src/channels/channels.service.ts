@@ -44,6 +44,7 @@ export class ChannelsService {
   async create(
     createChannelDto: CreateChannelDto,
   ): Promise<ResponseChannelDto> {
+    this.eventEmitter.emit('channel.created');
     let channel: Channel = new Channel();
     let ret: ResponseChannelDto;
     let role: MembershipRoleType = MembershipRoleType.PARTICIPANT;

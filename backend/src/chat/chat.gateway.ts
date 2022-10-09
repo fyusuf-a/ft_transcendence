@@ -169,8 +169,8 @@ export class ChatGateway extends SecureGateway {
     });
   }
 
-  @OnEvent('channel.*')
-  handleChannelEvents(channelId: number) {
-    this.server.to(channelId as unknown as string).emit('refresh-channels');
+  @OnEvent('**')
+  handleChannelEvents() {
+    this.server.emit('refresh-channels');
   }
 }

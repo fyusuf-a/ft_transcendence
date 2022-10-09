@@ -31,6 +31,7 @@ import { CaslAbilityFactory, Action } from 'src/casl/casl-ability.factory';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { MembershipRoleType } from 'src/memberships/entities/membership.entity';
 import { EntityNotFoundError } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @ApiBearerAuth()
 @ApiTags('channels')
@@ -40,6 +41,7 @@ export class ChannelsController {
     private readonly channelsService: ChannelsService,
     private readonly membershipsService: MembershipsService,
     private readonly abilityFactory: CaslAbilityFactory,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   @ApiBody({ type: CreateChannelDto })
@@ -48,6 +50,7 @@ export class ChannelsController {
     @AuthUser() user: User,
     @Body() createChannelDto: CreateChannelDto,
   ): Promise<ResponseChannelDto> {
+    this.eventEmitter.emit('channel-created');
     await this.abilityFactory.checkAbility(user, Action.Create, Channel);
     let ret: ResponseChannelDto;
 
