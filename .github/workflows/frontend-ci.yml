@@ -37,6 +37,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 1
+          lfs: true
+          ssh-key:${{ secrets.git_ssh_key }}
       - name: Read environment file
         run: |
           cat .env.example | grep -v '^#' >> ${GITHUB_ENV}
