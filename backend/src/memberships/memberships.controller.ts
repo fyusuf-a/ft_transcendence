@@ -70,7 +70,6 @@ export class MembershipsController {
     return this.membershipsService.create(createMembershipDto);
   }
 
-  // TODO: determine if this route should be removed (authorization is hard)
   @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')
   @Get()
   findAll(

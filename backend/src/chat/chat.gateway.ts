@@ -75,8 +75,6 @@ export class ChatGateway extends SecureGateway {
     messageDto.channelId = parseInt(payload.channel);
     messageDto.content = message;
     messageDto.senderId = this.getAuthenticatedUser(client)?.id;
-
-    // TODO: Check if User has permission to send message here
     try {
       const messageResponse = await this.messagesService.create(messageDto);
       const messageResponseDto: ResponseMessageDto =
