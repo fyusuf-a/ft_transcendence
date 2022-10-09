@@ -94,7 +94,6 @@ export default defineComponent({
         };
         await axios.post('/friendships/' + name, data)
         .then(async response => {
-          console.log(response);
           let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
           for (let i: number = 0; i < response2.data.length; i++) {
             if (response2.data[i].user.username === name) {

@@ -159,7 +159,6 @@ export default defineComponent({
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
-		console.log(userId, this.$store.getters.id )
       const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
@@ -194,7 +193,6 @@ export default defineComponent({
     }
 		},
 		spectateGame(gameId: number) {
-      console.log("gameId to spectate: " + gameId)
 			if (!this.pong) {
 				this.pong = new Pong(
 					this.pongCanvas,
@@ -210,26 +208,18 @@ export default defineComponent({
 			this.pong.spectate(gameId);
 		},
 		async startGame(gameId: number) {
-			console.log("Starting game #" + gameId);
 			this.gameId = gameId;
-
 			this.spectateGame(this.gameId);
-			
 			window.addEventListener("keydown", (event) => {
-				console.log("key down detected!!");
-				console.log("key: " + event.code);
 				if (!this.gameId) return;
 				if (event.code === "ArrowUp") {
 					this.socket.emit('game-move', { gameId: this.gameId, dy: -1 });
 				} else if (event.code === "ArrowDown") {
 					this.socket.emit('game-move', { gameId: this.gameId, dy: 1 });
 				}
-				console.log("message sent");
 			});
 
 			window.addEventListener("keyup", (event) => {
-				console.log("key up detected!!");
-				console.log("key: " + event.code);
 				if (!this.gameId) return;
 				if (event.code === "ArrowUp") {
 					this.socket.emit('game-move', { gameId: this.gameId, dy: 0 });
@@ -294,8 +284,6 @@ export default defineComponent({
 		this.socket.off("auth-success");
 	},
 	mounted() {
-
-		console.log('mounted');
     this.getMatchesToSepctacte();
 		this.pongCanvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
 		this.backgroundCanvas = document.getElementById(
@@ -315,7 +303,6 @@ export default defineComponent({
 		});
 		this.socket.on("get-challenges", (arr : Array<{ opponentString: string, opponentId: number, id:number }>) => {
 			this.challengeArr = arr;
-			console.log(arr);
 		});
 		this.interval = window.setInterval(this.navigationHandler, 1000);
 	}

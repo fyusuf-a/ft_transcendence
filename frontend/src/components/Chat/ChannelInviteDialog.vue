@@ -75,7 +75,6 @@
         }
       },
       filteredList() {
-        console.log('checking filtered list');
         return this.users.filter((user) => {
           return user.username.toLowerCase().includes(this.query.toLowerCase());
         });
