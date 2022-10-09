@@ -3,6 +3,8 @@
     <v-container>
       <v-row>
         <v-col>
+          <v-btn @click="login()" color="success" v-if="!isTwoFAEnabled"
+            >Login or Create Account</v-btn>
           <v-progress-circular v-if="waiting" indeterminate color="primary" />
           <two-fa v-if="isTwoFAEnabled" @success="goToProfile" />
         </v-col>
@@ -33,6 +35,11 @@ export default defineComponent({
     goToProfile() {
       this.$router.push('/profile');
     },
+    async login() {
+      this.waiting = true;
+      this.authenticate();
+      this.waiting = false;
+    },
   },
   async created() {
     this.waiting = true;
@@ -52,9 +59,9 @@ export default defineComponent({
       }
       this.waiting = false;
       return;
+    } else {
+      this.waiting = false;
     }
-    this.authenticate();
-    this.waiting = false;
-  },
+  }
 });
 </script>

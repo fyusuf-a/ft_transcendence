@@ -46,6 +46,7 @@
     avatar: string,
     idOther: number,
     userId: string,
+    count: number,
   }
   
   export default defineComponent({
@@ -56,6 +57,7 @@
         avatar: '',
         idOther: 0,
         userId: '',
+        count: 0,
       };
     },
     props: ['user'],
@@ -69,19 +71,22 @@
     methods: {
       ...mapGetters(['id']),
     },
+    errorCaptured: function(err: any) {
+      console.error('Caught error:', err.message, 'the user doesn\'t exist');
+      ++this.count;
+      return false;
+    },
     async created() {
       let responseUs = await axios.get('/users/' + this.id());
       this.userId = (responseUs.data.username);
       let response;
-        try { 
-          response = await axios.get(`/users/name/${this.user}`);
-        } catch {
-          this.$router.push({
-            name: '404',
-            params: { path: '/404' },
-          });
+      try { 
+        response = await axios.get(`/users/name/${this.user}`);
+      } catch {
+          this.$router.push('/404');
           return;
       }
+      
         this.idOther = response.data.id;
         const newUser: UserDto = response.data;
         this.users.set(this.idOther, newUser);

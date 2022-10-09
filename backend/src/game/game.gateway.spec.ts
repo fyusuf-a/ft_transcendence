@@ -9,7 +9,9 @@ import { Match } from '../matches/entities/match.entity';
 import { MatchesService } from '../matches/matches.service';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 import { AchievementsLogService } from 'src/achievements-log/achievements-log.service';
 import { Achievement } from 'src/achievements/entities/achievements.entity';
 
@@ -47,6 +49,14 @@ describe('GameGateway', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Channel),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
       ],

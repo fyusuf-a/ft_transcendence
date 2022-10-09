@@ -1,5 +1,5 @@
 const background = new Image();
-background.src = 'src/assets/images/background.png';
+background.src = 'src/assets/images/game/background.png';
 
 class Background {
   img_data: ImageData;

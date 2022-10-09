@@ -15,27 +15,37 @@ import { User } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
 import { MembershipsService } from 'src/memberships/memberships.service';
 import { MembershipRoleType } from 'src/dtos/memberships';
-import { Membership } from 'src/memberships/entities/membership.entity';
+import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
-async function hashPassword(rawPassword: string): Promise<string> {
-  return await bcrypt.hash(rawPassword, 10);
+async function hashPassword(
+  rawPassword: string,
+  rounds: number,
+): Promise<string> {
+  return await bcrypt.hash(rawPassword, rounds);
 }
 
 @Injectable()
 export class ChannelsService {
+  saltRounds: number;
+
   constructor(
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @InjectRepository(Membership)
-    private membershipsRepository: Repository<Membership>,
     private membershipsService: MembershipsService,
-  ) {}
+    private configService: ConfigService,
+    private eventEmitter: EventEmitter2,
+  ) {
+    this.saltRounds = parseInt(this.configService.get('BACKEND_SALT_ROUNDS'));
+  }
 
-  async create(createChannelDto: CreateChannelDto): Promise<Channel> {
-    const channel: Channel = new Channel();
-    let ret: Channel;
+  async create(
+    createChannelDto: CreateChannelDto,
+  ): Promise<ResponseChannelDto> {
+    let channel: Channel = new Channel();
+    let ret: ResponseChannelDto;
     let role: MembershipRoleType = MembershipRoleType.PARTICIPANT;
     const userId: number = +createChannelDto.userId;
 
@@ -46,7 +56,10 @@ export class ChannelsService {
       if (createChannelDto.name[0] == '-')
         throw "Channel name cannot start with a '-'.";
       if (createChannelDto.password) {
-        channel.password = await hashPassword(createChannelDto.password);
+        channel.password = await hashPassword(
+          createChannelDto.password,
+          this.saltRounds,
+        );
       } else {
         channel.password = undefined;
       }
@@ -54,7 +67,8 @@ export class ChannelsService {
         id: +createChannelDto.userId,
       });
       channel.name = createChannelDto.name;
-      ret = await this.channelsRepository.save(channel);
+      channel = await this.channelsRepository.save(channel);
+      ret = { id: channel.id, name: channel.name, type: channel.type };
       role = MembershipRoleType.OWNER;
       await this.membershipsService.create({
         userId: userId,
@@ -105,11 +119,31 @@ export class ChannelsService {
     pageOptions: PageOptionsDto = new PageOptionsDto(),
   ): Promise<PageDto<ResponseChannelDto>> {
     const orderOptions = { id: pageOptions.order };
-    return paginate(this.channelsRepository, query, orderOptions, pageOptions);
+    const pageDto: PageDto<ResponseChannelDto> =
+      await paginate<ResponseChannelDto>(
+        this.channelsRepository,
+        query,
+        orderOptions,
+        pageOptions,
+      );
+    let i = 0;
+    for (const dto of pageDto.data) {
+      pageDto.data[i] = {
+        id: dto.id,
+        type: dto.type,
+        name: dto.name,
+        userOneId: dto.userOneId,
+        userTwoId: dto.userTwoId,
+      };
+      i++;
+    }
+    return pageDto;
   }
 
-  findOne(id: number): Promise<Channel> {
-    return this.channelsRepository.findOneByOrFail({ id: id });
+  async findOne(id: number): Promise<Channel> {
+    return await this.channelsRepository.findOneByOrFail({
+      id: id,
+    });
   }
 
   async update(
@@ -117,12 +151,19 @@ export class ChannelsService {
     updateChannelDto: UpdateChannelDto,
   ): Promise<UpdateResult> {
     if (updateChannelDto.password) {
-      updateChannelDto.password = await hashPassword(updateChannelDto.password);
+      updateChannelDto.password = await hashPassword(
+        updateChannelDto.password,
+        this.saltRounds,
+      );
     }
-    return this.channelsRepository.update(id, updateChannelDto);
+    const result = await this.channelsRepository.update(id, updateChannelDto);
+    this.eventEmitter.emit('channel.updated', id);
+    return result;
   }
 
   async remove(id: number): Promise<DeleteResult> {
-    return this.channelsRepository.delete(id);
+    const result = await this.channelsRepository.delete(id);
+    this.eventEmitter.emit('channel.deleted', id);
+    return result;
   }
 }

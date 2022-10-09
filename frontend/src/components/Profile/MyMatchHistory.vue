@@ -17,7 +17,7 @@
           model="dialog"
           activator="parent"
         >
-          <v-card>
+          <v-card class="v-dialog-pos">
             <v-card-text>
               <v-row v-for="tabMatch in tabMatchs" :key="tabMatch.matchId" >
                 <p class="versus">Match #{{ tabMatch.matchNum }} - {{ tabMatch.usernameOne }} versus {{ tabMatch.usernameTwo}} winner: </p><p class="winner">{{ tabMatch.usernameOne }} 🌟</p>   

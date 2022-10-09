@@ -58,17 +58,14 @@ export default defineComponent({
       this.errors.pop();
       if (this.login.length === 0) return;
       try {
-        let response = await axios.get('users', {
+        await axios.get('auth/fake-token', {
           params: {
             username: this.login,
           },
         });
-        if (response.data?.data.length === 0) {
-          throw new Error('Login not found');
-        }
         this.alertShown = true;
         setTimeout(() => {
-          this.authenticate({ username: response.data.data[0].username });
+          this.authenticate({ username: this.login });
           this.alertShown = false;
         }, 1500);
       } catch (e) {

@@ -5,8 +5,8 @@
       v-model="dialog"
       activator="parent"
     >
-      <v-card width="300">
-        <v-card-text v-if="nameDoesNotExist === 500">
+      <v-card width="300" class="v-dialog-pos">
+        <v-card-text v-if="nameDoesNotExist === 400">
           This user cannot be found.<br />
           Are they already your friend?<br />
           Or have they not accepted your request...? :(
@@ -59,7 +59,7 @@ export default defineComponent({
     nameDoesNotExist: 0,
   }),
   methods: {
-    ...mapGetters(['username', 'avatar', 'id']),
+    ...mapGetters(['id']),
     validate () {
       this.checkName(this.name);
       (this.$refs.form as any).validate();
@@ -76,7 +76,23 @@ export default defineComponent({
         sourceId: parseInt(this.id()),
         targetId: 0
       };
-      await axios.post('/friendships/' + name, data)
+      let responseBlocked = await axios.get('/users/' + this.id() + '/blocks/');
+        for (let i: number = 0; i < responseBlocked.data.length; i++) {
+          if (responseBlocked.data[i].user.username === name) {
+            window.alert('This user is blocked. Unblocked them first.');
+            return;
+          }
+        };
+        let idBlockU = await axios.get('/users/name/' + name);
+        let me = await axios.get('/users/me')
+        let responseUBlocked = await axios.get('/users/' + idBlockU.data.id + '/blocks/');
+        for (let i: number = 0; i < responseUBlocked.data.length; i++) {
+          if (responseUBlocked.data[i].user.username === me.data.username) {
+            window.alert('You are blocked by this user.');
+            return;
+          }
+        };
+        await axios.post('/friendships/' + name, data)
         .then(async response => {
           console.log(response);
           let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
@@ -89,8 +105,8 @@ export default defineComponent({
           window.alert('Your friend request has been sent.');
         })
         .catch( (error) => {
-          console.log(error.response.status);
           this.nameDoesNotExist = error.response.status;
+          window.alert("Oh, it seems this user is already your friend. Or maybe they already send you a friend request, check your pending requests :)");
         });
         if (this.nameDoesNotExist === 0) { this.dialog = false; };
     },

@@ -8,14 +8,14 @@ import {
   DisplayUserDto,
   ListUserDto,
 } from '@dtos/users';
-import { User, UserStatusEnum } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import * as fs from 'fs';
 import {
   ResponseFriendshipDto,
   FriendshipTypeEnum,
   ListFriendshipDto,
 } from '@dtos/friendships';
-import { BlockTypeEnum, ListBlockDto } from '@dtos/blocks';
+import { ListBlockDto } from '@dtos/blocks';
 import { AchievementsLogDto } from '@dtos/achievements-log';
 import { Block } from 'src/relationships/entities/block.entity';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
@@ -181,12 +181,7 @@ export class UsersService {
 
   async findBlocks(id: number): Promise<ListBlockDto[]> {
     const tmp: Block[] = await this.blockRepository.find({
-      where: [
-        { sourceId: id, status: BlockTypeEnum.MUTUAL },
-        { targetId: id, status: BlockTypeEnum.MUTUAL },
-        { sourceId: id, status: BlockTypeEnum.S_BLOCKS_T },
-        { targetId: id, status: BlockTypeEnum.T_BLOCKS_S },
-      ],
+      where: [{ sourceId: id }],
     });
     const ids: number[] = [];
     const ret: ListBlockDto[] = [];
@@ -282,8 +277,6 @@ export class UsersService {
       away.wins++;
       home.losses++;
     }
-    home.status = home.status ? UserStatusEnum.online : UserStatusEnum.offline;
-    away.status = away.status ? UserStatusEnum.online : UserStatusEnum.offline;
     home.rating = Math.trunc((home.wins / (home.wins + home.losses)) * 100);
     away.rating = Math.trunc((away.wins / (away.wins + away.losses)) * 100);
     if (isNaN(home.rating)) {

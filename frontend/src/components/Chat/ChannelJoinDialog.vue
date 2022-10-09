@@ -4,7 +4,7 @@
       <template v-slot:activator="{ props: open }">
         <span icon color="primary" dark v-bind="open" class="button"> + </span>
       </template>
-      <v-card>
+      <v-card class="v-dialog-pos">
         <v-card-title
           >{{ action }} Channel
           <v-spacer></v-spacer>
@@ -16,7 +16,8 @@
             @click="action = 'Create'"
           >
             +
-      </v-btn></v-card-title
+          </v-btn>
+          <v-btn @click="dmUser">DM</v-btn></v-card-title
         >
 
         <v-divider></v-divider>
@@ -46,10 +47,7 @@
               :key="channel.id"
             ></v-radio>
           </v-radio-group>
-          <v-text-field
-            v-model="password"
-            label="Password"
-          ></v-text-field>
+          <v-text-field v-if="selectedChannel" v-model="password" label="Password"></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -64,7 +62,6 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
 import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
 interface DataReturnType {
@@ -94,41 +91,27 @@ export default defineComponent({
     };
   },
   methods: {
-    async createChannel(channelObject: CreateChannelDto): Promise<number> {
-      let response = await axios.post('/channels/', {
-        name: channelObject.name,
-        type: channelObject.type,
-        password: channelObject.password,
-        userId: this.$store.getters.id,
-      });
-      if (response.status === 201) {
-        console.log(response.data);
-        return response.data.id;
-      }
-      return -1;
-    },
     async handleJoinChannel() {
       if (this.action == 'Join') {
-        this.$emit('channel-join-event', { id: this.selectedChannel, password: this.password });
+        this.$emit('channel-join-event', {
+          id: this.selectedChannel,
+          password: this.password,
+        });
         this.password = undefined;
-      } else {
-        if (!this.createdChannel.name || !this.createdChannel.type) {
-          console.log('Invalid channel dto');
-        } else {
-          let dto = new CreateChannelDto(
-            this.createdChannel.name,
-            this.createdChannel.type,
-          );
-          if (this.createdChannel.password) {
-            dto.password = this.createdChannel.password;
-          }
-          this.$emit('channel-create-event', dto);
+      } else if (this.createdChannel.name && this.createdChannel.type) {
+        let dto = new CreateChannelDto(
+          this.createdChannel.name,
+          this.createdChannel.type,
+        );
+        if (this.createdChannel.password) {
+          dto.password = this.createdChannel.password;
         }
+        this.$emit('channel-create-event', dto);
       }
-      this.dialogOpen = false;
-      this.action = 'Join';
+      this.resetDialog();
     },
     resetDialog() {
+      this.selectedChannel = '';
       this.dialogOpen = false;
       this.action = 'Join';
       this.createdChannel = {
@@ -136,6 +119,10 @@ export default defineComponent({
         type: 'public',
         password: '',
       };
+    },
+    dmUser() {
+      this.$emit('chat-dm-user');
+      this.dialogOpen = false;
     },
   },
 });

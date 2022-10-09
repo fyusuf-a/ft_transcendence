@@ -7,6 +7,7 @@
           <channel-join-dialog
             @channel-join-event="handleChannelJoin"
             @channel-create-event="handleChannelCreate"
+            @chat-dm-user="$emit('chat-dm-user')"
             :joinableChannels="getJoinableChannels"
           >
           </channel-join-dialog>
@@ -94,10 +95,9 @@ export default defineComponent({
       unreadMarker: 'mdi-new-box',
     };
   },
-  components: { 'channel-join-dialog': defineComponent(ChannelJoinDialog) },
+  components: { 'channel-join-dialog': ChannelJoinDialog },
   methods: {
     async handleChannelSelection(channel: ChannelDto) {
-      console.log(`Handling a channel selection: ${channel.id}`);
       this.$emit('channel-select-event', channel);
     },
     handleChannelJoin(channel: JoinChannelDto) {
@@ -111,7 +111,6 @@ export default defineComponent({
       if (user) {
         return user.username;
       }
-      console.log("sending fetch request");
       this.$emit('request-user-event', userId);
       return '...';
     },

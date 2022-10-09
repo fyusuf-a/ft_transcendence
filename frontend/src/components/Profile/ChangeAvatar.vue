@@ -8,8 +8,7 @@
       v-model="dialog"
       activator="parent"
     >
-      <v-card >
-        <v-card width="400">
+        <v-card width="400" class="v-dialog-pos">
           <v-card-title>
             <span class="text-h5">Select an avatar</span>
           </v-card-title>
@@ -32,8 +31,6 @@
           <v-btn color="primary" text @click="dialog = false">I changed my mind</v-btn>
           </v-card-actions>
         </v-card>
-
-      </v-card>
     </v-dialog>
   </v-btn>
 
@@ -62,7 +59,11 @@ export default defineComponent({
         }).then(() =>{
           window.location.reload();
         })
-        .catch(function(){
+        .catch(function(err){
+          if (err.response.status == 400)
+          {
+            window.alert("Upload failed ! Make sure your file is valid.");
+          }
         });
       },
       // Handles a change on the file upload

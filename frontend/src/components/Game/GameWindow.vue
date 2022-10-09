@@ -4,6 +4,10 @@
       <v-row>
         <v-btn class="button" title="Join the queue to play" @click="joinQueue">Join Queue</v-btn>
 			</v-row>
+      <br/>
+      <v-row>
+        <v-btn @click="map = 1" v-if="map == 0">Active BlackHole map</v-btn><v-btn @click="map = 0" v-if="map == 1">Deactive BlackHole map</v-btn>
+      </v-row>
 			<v-row>
         <select v-model="spectateGameId">
           <option value="">Choose a game to watch, and click on Spectate</option>
@@ -13,6 +17,15 @@
         </select>
         <v-btn class="button" title="Chose a game to watch" @click="() => spectateGame(+spectateGameId)">Spectate</v-btn>
 			</v-row>
+			<v-row>
+-                       <select v-model="acceptChallengeUserId">
+-          <option value="">Choose a challenge to accept, and click on Play</option>
+-          <option v-for="item in challengeArr" :key="item.id" :value="item.opponentId">
+-            {{item.opponentString}}
+-          </option>  
+-        </select>
+-        <v-btn class="button" title="Choose a challenge to accept" @click="() => acceptChallengeFromUser(+acceptChallengeUserId)">Play</v-btn>
+-                       </v-row>	
 		</div>
 		<br />
 		<div>
@@ -21,7 +34,7 @@
         activator="parent"
         v-if="end"
       >
-        <v-card width="600" height="150">
+        <v-card width="600" height="150" class="v-dialog-pos">
           <v-card-text>
             <p align="center" class="winStatus">
             {{ endMessage }} </p><br />
@@ -66,11 +79,16 @@ interface DataReturnTypes {
 	scoreCanvas: HTMLCanvasElement | null;
 	gameId: number | null;
 	spectateGameId: string;
+	acceptChallengeUserId: string;
   end: boolean;
   endMessage: string;
-  matchArr: { idMatch: number, player1: string, player2: string }[]
+  matchArr: Array<{ idMatch: number, player1: string, player2: string }>;
+  challengeArr: { opponentString: string, opponentId: number, id: number }[];
   selected: string;
+	map: number
   spectateTrue: boolean;
+  auth: boolean;
+  interval: number;
 }
 
 export default defineComponent({
@@ -93,11 +111,16 @@ export default defineComponent({
 			gameId: null,
 			scoreCanvas: null,
 			spectateGameId: "",
+			acceptChallengeUserId: "",
       end: false,
       endMessage: '',
       matchArr: [],
+	  challengeArr: [],
       selected: '',
+	    map: 0,
       spectateTrue: false,
+	  auth:false,
+	  interval: 0,
 		};
 	},
 	methods: {
@@ -108,12 +131,35 @@ export default defineComponent({
       this.resize();
       this.end = false;
 		},
-    challengeUser(userId: number) {
+	async navigationHandler() {
+		if (!this.auth)
+			return ;
+		const challengerId : number = this.$store.getters.challengeUserId;
+		const spectateId : number = this.$store.getters.spectateUserId;
+		this.socket.off("auth-success");
+		clearInterval(this.interval);
+		if (challengerId) {
+			this.$store.dispatch("removeChallenge");
+      		const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: challengerId};
+			this.socket.emit('game-queue', gameOptions);
+		}
+		else if (spectateId) {
+			this.$store.dispatch("removeSpectate");
+			const matchId : number = (await axios.get(`/matches/spectate/${spectateId}`)).data;
+			this.spectateGame(matchId);
+		}
+      this.resize();
+    },
+    challengeUser(userId: number) {      
+		if (userId == 0)
+			return;
+		this.$store.dispatch("removeChallenge");
       const gameOptions: GameOptionsDto = { homeId: this.$store.getters.id, awayId: userId };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
     },
     acceptChallengeFromUser(userId: number) {
+		console.log(userId, this.$store.getters.id )
       const gameOptions: GameOptionsDto = { homeId: userId, awayId: this.$store.getters.id };
 			this.socket.emit('game-queue', gameOptions);
       this.resize();
@@ -123,28 +169,29 @@ export default defineComponent({
       if(!this.spectateTrue) {
         this.$router.push({
           name: 'home',
-          params: { path: '/' },
         });
       }
       this.spectateTrue = false;
     },
 	  resize() {
 		  const canvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
-		  const canvasRatio = canvas.height / canvas.width;
-		  const windowRatio = window.innerHeight / window.innerWidth;
-		  let width: string | number;
-		  let height: string | number;
-      
-		  if (windowRatio < canvasRatio ) {
-		  	height = window.innerHeight - 64;
-		  	width = height / canvasRatio;
-		  }
-      else {
-		  	width = window.innerWidth;
-		  	height = width * canvasRatio;
-		  }
-		  canvas.style.width = width + 'px';
-		  canvas.style.height = height + 'px';
+      if (canvas != null) { 
+		    const canvasRatio = canvas.height / canvas.width;
+		    const windowRatio = window.innerHeight / window.innerWidth;
+		    let width: string | number;
+		    let height: string | number;
+
+		    if (windowRatio < canvasRatio ) {
+		    	height = window.innerHeight - 64;
+		    	width = height / canvasRatio;
+		    }
+        else {
+		    	width = window.innerWidth;
+		    	height = width * canvasRatio;
+		    }
+		    canvas.style.width = width + 'px';
+		    canvas.style.height = height + 'px';
+    }
 		},
 		spectateGame(gameId: number) {
       console.log("gameId to spectate: " + gameId)
@@ -153,9 +200,11 @@ export default defineComponent({
 					this.pongCanvas,
 					this.ballCanvas,
 					this.backgroundCanvas,
+					this.backgroundCanvas,
 					this.paddleCanvas,
 					this.scoreCanvas,
 					this.socket as Socket,
+					this.map,
 				);
 			}
 			this.pong.spectate(gameId);
@@ -192,23 +241,32 @@ export default defineComponent({
 		async handleEndGame(match :MatchDto) {
       this.end = true;
       this.pong = null;
-      if ((this.id() == match.homeId && match.status == "HOME")
+
+			if ((this.id() != match.homeId && this.id() != match.awayId)) {
+				this.spectateTrue = true;
+				if (match.status == "ABORTED") {
+					this.endMessage = "The game is over, a player has unfortunately been disconnected";
+				}
+				else {
+        	let winner: string;
+        	if (match.status == "HOME") {
+          	const responseWinner = await axios.get('/users/' + match.homeId);
+          	winner = responseWinner.data.username
+         	 this.endMessage = `The game is over, ${winner} won!`;
+      		}
+      		else if (match.status == "AWAY") {
+      	  	const responseWinner = await axios.get('/users/' + match.awayId);
+      	  	winner = responseWinner.data.username
+      	  	this.endMessage = `The game is over, ${winner} won!`;
+      		}
+				}
+			}
+			else if (match.status == "ABORTED") {
+				this.endMessage = "Oh no! Your opponent has been disconnected :(";
+			}
+      else if ((this.id() == match.homeId && match.status == "HOME")
       || (this.id() == match.awayId && match.status == "AWAY")) {
         this.endMessage = "Congrats! You win :)";
-      }
-      else if (this.id() != match.homeId && this.id() != match.awayId) {
-        this.spectateTrue = true;
-        let winner: string;
-        if (match.status == "HOME") {
-          const responseWinner = await axios.get('/users/' + match.homeId);
-          winner = responseWinner.data.username
-          this.endMessage = `The game is over, ${winner} won!`;
-        }
-        else if (match.status == "AWAY") {
-          const responseWinner = await axios.get('/users/' + match.awayId);
-          winner = responseWinner.data.username
-          this.endMessage = `The game is over, ${winner} won!`;
-        }
       }
       else {
         this.endMessage = "Oh no! You lose :(";
@@ -226,8 +284,17 @@ export default defineComponent({
         })
       }
     },
+	async getChallenges() {
+		this.challengeArr = await axios.get(`/matches/challenges/${this.$store.getters.id}`)
+	},
+	},
+	beforeUnmount() {
+		this.socket.off('game-starting');
+		this.socket.off('endGame');
+		this.socket.off("auth-success");
 	},
 	mounted() {
+
 		console.log('mounted');
     this.getMatchesToSepctacte();
 		this.pongCanvas = document.getElementById('responsive-canvas') as HTMLCanvasElement;
@@ -241,7 +308,17 @@ export default defineComponent({
     window.addEventListener('resize', this.resize);
 		this.socket.on('game-starting', (e: number) => this.startGame(e));
 		this.socket.on('endGame', (match: MatchDto) => this.handleEndGame(match));
-	},
+		this.socket.on("auth-success", () =>  {
+			this.socket.off("auth-success");
+			this.auth = true;
+			this.socket.emit('require-challenges');
+		});
+		this.socket.on("get-challenges", (arr : Array<{ opponentString: string, opponentId: number, id:number }>) => {
+			this.challengeArr = arr;
+			console.log(arr);
+		});
+		this.interval = window.setInterval(this.navigationHandler, 1000);
+	}
 });
 </script>
 

@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsPositive } from 'class-validator';
-
-export enum BlockTypeEnum {
-  T_BLOCKS_S = 'target_blocks_source',
-  S_BLOCKS_T = 'source_blocks_target',
-  MUTUAL = 'mutual',
-}
+import { IsInt, IsPositive } from 'class-validator';
 
 export class BlockDto {
   @ApiProperty({
@@ -27,15 +21,4 @@ export class BlockDto {
   })
   @IsInt()
   targetId!: number;
-
-  @ApiProperty({
-    description: 'The status of the Block',
-    type: BlockTypeEnum,
-    enum: BlockTypeEnum,
-    enumName: 'BlockTypeEnum',
-    isArray: false,
-    examples: [BlockTypeEnum.S_BLOCKS_T, BlockTypeEnum.MUTUAL],
-  })
-  @IsEnum(BlockTypeEnum, { each: true })
-  status!: BlockTypeEnum;
 }

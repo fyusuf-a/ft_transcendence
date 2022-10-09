@@ -12,7 +12,8 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
-import { MatchDto, MatchStatusType } from 'src/dtos/matches';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { MatchDto, MatchStatusType, UpdateMatchDto } from 'src/dtos/matches';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/matches/entities/match.entity';
 import { Repository } from 'typeorm';
@@ -24,6 +25,7 @@ export class GameGateway extends SecureGateway {
     protected readonly usersService: UsersService,
     protected readonly configService: ConfigService,
     private readonly matchService: MatchesService,
+    private readonly notificationsGateway: NotificationsGateway,
     @InjectRepository(Match)
     private readonly matchRepository: Repository<Match>,
     protected readonly achievementsLogService: AchievementsLogService,
@@ -33,7 +35,7 @@ export class GameGateway extends SecureGateway {
 
   @WebSocketServer() server: Server;
 
-  games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
+  games: Map<number, Game> = new Map();
   queues: Map<string, Array<Socket>> = new Map();
 
   @SubscribeMessage('game-move')
@@ -72,6 +74,11 @@ export class GameGateway extends SecureGateway {
         clientUser.id !== gameOptions.awayId
       ) {
         throw new WsException('Invalid Game Options');
+      } else if (clientUser.id === gameOptions.homeId) {
+        this.notificationsGateway.handleNewChallenge(
+          gameOptions.homeId,
+          gameOptions.awayId,
+        );
       }
     }
     if (this.queues.has(gameOptionsString)) {
@@ -113,14 +120,17 @@ export class GameGateway extends SecureGateway {
     return 'Success: joined queue';
   }
 
-  async terminate_game(gameId: number) {
-    const match: MatchDto = await this.matchService.findOne(gameId);
-    match.end = new Date();
-    if (match.status == MatchStatusType.IN_PROGRESS) {
-      match.status = this.games.get(gameId).state.winner
+  async terminate_game(gameId: number, abort: number) {
+    let status: MatchStatusType;
+    let match: Match = await this.matchRepository.findOneBy({ id: gameId });
+
+    if (abort) {
+      status = MatchStatusType.ABORTED;
+    } else {
+      status = this.games.get(gameId).state.winner
         ? MatchStatusType.AWAY
         : MatchStatusType.HOME;
-      await this.matchRepository.save(match);
+
       this.achievementsLogService.handlePostMatch(
         await this.usersService.handlePostMatch(
           match,
@@ -128,11 +138,19 @@ export class GameGateway extends SecureGateway {
         ),
       );
     }
+    const dto: GameOptionsDto = { homeId: match.homeId, awayId: match.awayId };
+    this.queues.delete(JSON.stringify(dto));
     this.logger.log(`Terminating game ${gameId} with status ${match.status}`);
+
+    const update: UpdateMatchDto = { end: new Date(), status: status };
+    await this.matchService.update(match, update);
+    match = await this.matchRepository.findOneBy({ id: gameId });
+    this.logger.log(`Terminating game ${gameId} with status ${status}`);
     if (this.games.get(gameId) && this.games.get(gameId).room) {
       this.server
         .to(this.games.get(gameId).room)
         .emit('endGame', match as MatchDto);
+      this.games.delete(gameId);
     }
   }
 
@@ -149,13 +167,11 @@ export class GameGateway extends SecureGateway {
   }
 
   handleDisconnect(client: Socket) {
-    // abandon active games, if applicable
     this.server.to(client.id).emit('game-disconnect', 'DISCONNECTED!');
     for (const gameMap of this.games) {
       for (const player of gameMap[1].players) {
         if (player && !player.connected) {
-          gameMap[1].end();
-          this.games.delete(gameMap[0]);
+          gameMap[1].end(1);
         }
       }
     }
@@ -163,7 +179,28 @@ export class GameGateway extends SecureGateway {
   }
 
   async handleConnection(client: Socket) {
-    // register client
     this.server.to(client.id).emit('game-connect', 'CONNECTED!');
+  }
+
+  @SubscribeMessage('require-challenges')
+  @CheckAuth
+  async getChallenges(client: Socket) {
+    const clientUser = this.getAuthenticatedUser(client);
+    const array: Array<{
+      opponentString: string;
+      opponentId: number;
+      id: number;
+    }> = [];
+    let i = 0;
+    for (const key of this.queues.keys()) {
+      if (JSON.parse(key).awayId == clientUser.id) {
+        const opponentId: number = JSON.parse(key).homeId;
+        const username: string = (await this.usersService.findOne(opponentId))
+          .username;
+        array.push({ opponentString: username, opponentId: opponentId, id: i });
+        i++;
+      }
+    }
+    client.emit('get-challenges', array);
   }
 }

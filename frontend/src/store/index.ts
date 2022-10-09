@@ -8,6 +8,7 @@ import { LoginUserDto } from '@dtos/auth';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
+  statesToPersist: ['user', 'token'],
   overwrite: true,
 });
 
@@ -19,20 +20,22 @@ interface State {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
-  //socket: string,
   socket: Socket | undefined;
   cache: Cache | undefined;
+  notifications: Array<Notification>;
   challengedUserId: number;
+  spectatedUserId: number;
 }
 
 const state: State = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
-  //socket: 'i am okay',
-  socket: undefined, //new Socket(),//io(),
+  socket: undefined,
   cache: undefined,
+  notifications: [],
   challengedUserId: 0,
+  spectatedUserId: 0,
 };
 
 interface Mutation {
@@ -69,17 +72,20 @@ export default createStore({
     id: (state) => state.user.id,
     token: (state) => state.token,
     socket: (state) => state.socket,
+    notifications: (state) => state.notifications,
     challengeUserId: (state) => {
       if (!state.challengedUserId) return 0;
       else return state.challengedUserId;
     },
+    spectateUserId: (state) => {
+      if (!state.spectatedUserId) return 0;
+      else return state.spectatedUserId;
+    },
   },
   mutations: {
     login(state, { id, token }: LoginUserDto) {
-      console.log('how are you');
       state.user.id = id;
       state.token = token;
-      console.log('very well!');
     },
     setSocket() {
       console.log('Connecting to notifications socket.');
@@ -99,9 +105,7 @@ export default createStore({
         context.state.token = token;
         const response = await axios.get<ResponseUserDto>('/users/me');
         user = response.data;
-        console.log('yo');
         context.commit('login', { id, token });
-        console.log('bye');
         context.state.user = {
           ...response.data,
         };
@@ -141,6 +145,12 @@ export default createStore({
     },
     removeChallenge(context) {
       context.state.challengedUserId = 0;
+    },
+    spectateUser(context, userId: number) {
+      context.state.spectatedUserId = userId;
+    },
+    removeSpectate(context) {
+      context.state.spectatedUserId = 0;
     },
   },
   modules: {},

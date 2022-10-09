@@ -1,17 +1,21 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import {
   QueryMembershipDto,
   CreateMembershipDto,
   UpdateMembershipDto,
-  MembershipRoleType,
 } from '@dtos/memberships';
-import { Membership } from './entities/membership.entity';
+import { Membership, MembershipRoleType } from './entities/membership.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Channel, ChannelType } from 'src/channels/entities/channel.entity';
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+type Inability = {
+  muted: boolean | undefined;
+  banned: boolean | undefined;
+};
 
 @Injectable()
 export class MembershipsService {
@@ -23,6 +27,7 @@ export class MembershipsService {
     private usersRepository: Repository<User>,
     @InjectRepository(Channel)
     private channelsRepository: Repository<Channel>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(createMembershipDto: CreateMembershipDto) {
@@ -35,10 +40,12 @@ export class MembershipsService {
     membership.user = await this.usersRepository.findOneByOrFail({
       id: createMembershipDto.userId,
     });
-    return this.membershipRepository.save(membership);
+    const result = await this.membershipRepository.save(membership);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
-  findAll(query?: QueryMembershipDto) {
+  async findAll(query?: QueryMembershipDto) {
     const findOptionsWhere: FindOptionsWhere<Membership> = {
       channel: query?.channel ? { id: +query.channel } : {},
       user: query?.user ? { id: +query.user } : {},
@@ -46,15 +53,34 @@ export class MembershipsService {
       mutedUntil: query?.mutedUntil,
       bannedUntil: query?.bannedUntil,
     };
-    return this.membershipRepository.find({ where: findOptionsWhere });
+    const memberships: Membership[] = await this.membershipRepository.find({
+      where: findOptionsWhere,
+    });
+    //if (findOptionsWhere.user) {
+    for (const membership of memberships) {
+      if (
+        membership.bannedUntil != null &&
+        membership.bannedUntil > new Date()
+      ) {
+        memberships.splice(memberships.indexOf(membership), 1);
+      }
+      //  }
+    }
+    return memberships;
   }
 
   findOne(id: number) {
     return this.membershipRepository.findOneByOrFail({ id: id });
   }
 
-  update(id: number, updateMembershipDto: UpdateMembershipDto) {
-    return this.membershipRepository.update(id, updateMembershipDto);
+  async update(id: number, updateMembershipDto: UpdateMembershipDto) {
+    const result = await this.membershipRepository.update(
+      id,
+      updateMembershipDto,
+    );
+    const membership = await this.findOne(id);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
   async remove(id: number) {
@@ -67,69 +93,62 @@ export class MembershipsService {
       (channel && channel?.type === ChannelType.DIRECT)
     ) {
       this.channelsRepository.delete(channel.id);
+      this.eventEmitter.emit('channel.deleted', channel.id);
     }
-    return this.membershipRepository.delete(id);
+    const result = await this.membershipRepository.delete(id);
+    this.eventEmitter.emit('membership.updated', membership.userId);
+    return result;
   }
 
-  async userIsAdmin(userId: number, channelId: number): Promise<boolean> {
-    const creatorMembership = await this.findAll({
-      user: userId.toString(),
-      channel: channelId.toString(),
+  async isUserAtLeastAdmin(user: User, channelId: string) {
+    const memberships = await this.findAll({
+      channel: channelId,
+      user: user.id.toString(),
     });
     if (
-      creatorMembership.length === 1 &&
-      (creatorMembership[0].role === MembershipRoleType.ADMIN ||
-        creatorMembership[0].role === MembershipRoleType.OWNER)
-    ) {
-      return true;
-    }
-    return false;
+      memberships.length === 0 ||
+      memberships[0].role === MembershipRoleType.PARTICIPANT
+    )
+      throw new ForbiddenException();
   }
 
-  async userIsOwner(userId: number, channelId: number): Promise<boolean> {
-    const creatorMembership = await this.findAll({
-      user: userId.toString(),
-      channel: channelId.toString(),
-    });
-    if (
-      creatorMembership.length === 1 &&
-      creatorMembership[0].role === MembershipRoleType.OWNER
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  async isAuthorized(
-    createMembershipDto: CreateMembershipDto,
+  async hasUserRoleInChannel(
     user: User,
-    channel: Channel,
+    role: MembershipRoleType,
+    channelId: string,
   ) {
-    if (this.configService.get('DISABLE_AUTHENTICATION') === 'true')
-      return true;
-    let isAuthorized = false;
-    if (createMembershipDto.role === MembershipRoleType.OWNER) {
-      throw new UnauthorizedException();
+    const memberships = await this.findAll({
+      channel: channelId,
+      user: user.id.toString(),
+    });
+    if (memberships.length === 0 || memberships[0].role !== role)
+      throw new ForbiddenException();
+  }
+
+  async isUserCapableInChannel(
+    user: User,
+    channelId: string,
+    inability: Inability,
+  ) {
+    const memberships = await this.findAll({
+      channel: channelId,
+      user: user.id.toString(),
+    });
+    if (memberships.length === 0) throw new ForbiddenException();
+    const membership = memberships[0];
+    const date = new Date();
+    if (inability.banned === false && date < membership.bannedUntil) {
+      throw new ForbiddenException();
     }
-    if (createMembershipDto.role === MembershipRoleType.ADMIN) {
-      if (!(await this.userIsOwner(user.id, channel.id))) {
-        throw new UnauthorizedException();
-      }
+    if (inability.muted === false && date < membership.mutedUntil) {
+      throw new ForbiddenException();
     }
-    if (channel.type === ChannelType.PRIVATE) {
-      isAuthorized = await this.userIsAdmin(
-        user.id,
-        createMembershipDto.channelId,
-      );
-    } else if (channel.type === ChannelType.PROTECTED) {
-      isAuthorized =
-        createMembershipDto.password &&
-        (await bcrypt.compare(createMembershipDto.password, channel.password));
-    } else {
-      isAuthorized = true;
-    }
-    if (!isAuthorized) {
-      throw new UnauthorizedException();
+  }
+
+  async isUserMembershipTarget(user: User, membershipId: string) {
+    const membership = await this.findOne(+membershipId);
+    if (!user.id || membership?.userId !== user.id) {
+      throw new ForbiddenException();
     }
   }
 }

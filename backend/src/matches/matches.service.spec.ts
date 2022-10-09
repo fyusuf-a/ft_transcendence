@@ -13,11 +13,13 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { Friendship } from 'src/relationships/entities/friendship.entity';
 import { Block } from 'src/relationships/entities/block.entity';
 import { AchievementsLog } from 'src/achievements-log/entities/achievements-log.entity';
 import { ConfigService } from '@nestjs/config';
+import { Channel } from 'src/channels/entities/channel.entity';
+import { Membership } from 'src/memberships/entities/membership.entity';
 
 const userNumber = 2;
 const matchNumber = 2;
@@ -55,6 +57,14 @@ describe('MatchesService', () => {
         },
         {
           provide: getRepositoryToken(AchievementsLog),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Channel),
+          useValue: jest.fn(),
+        },
+        {
+          provide: getRepositoryToken(Membership),
           useValue: jest.fn(),
         },
       ],
@@ -151,8 +161,21 @@ describe('MatchesService', () => {
   });
 
   describe('update()', () => {
+    const match = new Match();
+    const home = new User();
+    const away = { ...home };
+    const createMatchDto = new CreateMatchDto();
+    beforeAll(() => {
+      match.homeId = 1;
+      match.awayId = 2;
+      match.status = MatchStatusType.IN_PROGRESS;
+      createMatchDto.homeId = match.homeId;
+      createMatchDto.awayId = match.awayId;
+      home.id = match.homeId;
+      away.id = match.awayId;
+    });
     it('should return an UpdateResult', async () => {
-      expect(await service.update(1, new UpdateMatchDto())).toEqual(
+      expect(await service.update(match, new UpdateMatchDto())).toEqual(
         new UpdateResult(),
       );
     });

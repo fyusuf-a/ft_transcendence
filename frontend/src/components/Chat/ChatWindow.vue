@@ -11,6 +11,7 @@
             :membership="membership"
             @chat-leave-channel="handleLeaveChannelEvent"
             @chat-invite-channel="$emit('chat-invite-channel')"
+            @chat-change-password="$emit('chat-change-password')"
           ></chat-window-menu>
         </v-col>
       </v-row>
@@ -19,19 +20,19 @@
           <v-divider></v-divider>
         </v-col>
       </v-row>
-      <v-row v-for="item in messages">
+      <v-row v-for="item in messages" :key="item.id">
         <v-col cols="12">
-              <chat-message
-                :sender="getUsername(item.senderId)"
-                :senderId="item.senderId"
-                :createdAt="item.createdAt"
-                :content="item.content"
-                :membership-role="membership.role"
-                @chat-message-menu-selection="
-                  $emit('chat-message-menu-selection', $event)
-                "
-              >
-              </chat-message>
+          <chat-message
+            :sender="getUsername(item.senderId)"
+            :senderId="item.senderId"
+            :createdAt="item.createdAt"
+            :content="item.content"
+            :membership-role="membership.role"
+            @chat-message-menu-selection="
+              $emit('chat-message-menu-selection', $event)
+            "
+          >
+          </chat-message>
         </v-col>
       </v-row>
 
@@ -101,9 +102,6 @@ export default defineComponent({
     'chat-window-menu': ChatWindowMenu,
   },
   methods: {
-    printResponse(response: string) {
-      console.log(`Server: ${response}`);
-    },
     sendMessage() {
       this.socket.emit('chat-send', {
         channel: this.channel.id,
@@ -124,13 +122,18 @@ export default defineComponent({
     },
     getChannelDisplay(channel: ChannelDto): string {
       if (channel.type !== 'direct') return channel.name;
-      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userOneId) return this.getUsername(channel.userOneId as number);
-      else if (channel.type === 'direct' && this.$store.getters.id !== channel.userTwoId) return this.getUsername(channel.userTwoId as number);
-      return "...";
+      else if (
+        channel.type === 'direct' &&
+        this.$store.getters.id !== channel.userOneId
+      )
+        return this.getUsername(channel.userOneId as number);
+      else if (
+        channel.type === 'direct' &&
+        this.$store.getters.id !== channel.userTwoId
+      )
+        return this.getUsername(channel.userTwoId as number);
+      return '...';
     },
-  },
-  computed: {},
-  mounted() {
   },
 });
 </script>

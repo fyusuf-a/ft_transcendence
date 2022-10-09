@@ -5,7 +5,7 @@
       <h3 align="center" class="game">How to play:</h3>
       <p align="center" class="game">
         Click on <b>Join Queue</b> to reach a game. Then, click on the game and use ↕ arrows on your keyborad.<br />
-        The first player to reach eleven (11) points wins.<br />You can watch a game. Choose which in the list
+        You can also choose to change the map, by clicking "De/Active BlackHole map". The first player to reach eleven (11) points wins.<br />You can watch a game. Choose which in the list
         and click on Spectacte.
       </p>
       <game-window :socket="socket"></game-window>
@@ -44,6 +44,12 @@ export default defineComponent({
   },
   created() {
     this.socket.on('game-connect', this.handleConnection);
+  },
+  beforeRouteLeave() {
+    this.socket.disconnect();
+  },
+  beforeRouteEnter() {
+
   },
   beforeDestroy() {
     this.socket.off('game-connect');
