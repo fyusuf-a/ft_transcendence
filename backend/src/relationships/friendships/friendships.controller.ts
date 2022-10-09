@@ -42,7 +42,6 @@ export class FriendshipsController {
       );
   }
 
-  // TODO: remove sourceId from CreateFriendshipDto
   @Post()
   async create(
     @AuthUser() user: User,

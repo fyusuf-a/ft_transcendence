@@ -49,7 +49,6 @@ export class MessagesController {
     else return this.messagesService.findAllWithBlocks(query, pageOptions);
   }
 
-  // TODO: remove senderId from CreateMessageDto
   @Post()
   @ApiBadRequestResponse({ description: 'Bad Request' })
   @ApiResponse({ status: 500, description: 'Record could not be created.' })

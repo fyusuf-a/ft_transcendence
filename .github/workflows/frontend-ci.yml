@@ -68,11 +68,6 @@ jobs:
       - name: Build Containers
         run: |
           docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.yml --load
-      # TODO
-      #- name: E2E Test
-        #run: |
-          #docker-compose --profile=frontend up
-          #npm run test:e2e
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
