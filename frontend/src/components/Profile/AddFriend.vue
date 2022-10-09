@@ -105,7 +105,7 @@ export default defineComponent({
         })
         .catch( (error) => {
           this.nameDoesNotExist = error.response.status;
-          window.alert("This user is already your friend!");
+          window.alert("Oh, it seems this user is already your friend. Or maybe they already send you a friend request, check your pending requests :)");
         });
         if (this.nameDoesNotExist === 0) { this.dialog = false; };
     },

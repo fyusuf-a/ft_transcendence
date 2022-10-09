@@ -4,7 +4,7 @@
       <v-card-title> {{ modelValue }} for </v-card-title>
 
       <v-card-text>
-        <v-text-field v-model="hours" label="hours"></v-text-field>
+        <v-text-field v-model="karmaTime" label="minutes"></v-text-field>
       </v-card-text>
 
       <v-card-actions>
@@ -20,7 +20,7 @@ import { defineComponent } from 'vue';
 import { ChannelDto } from '@/common/dto/channel.dto';
 
 interface DataReturnType {
-  hours: string;
+  karmaTime: string;
 }
 
 export default defineComponent({
@@ -44,21 +44,19 @@ export default defineComponent({
   },
   data(): DataReturnType {
     return {
-      hours: '',
+      karmaTime: '',
     };
   },
   methods: {
     async handleKarma() {
-      const hours: number = parseInt(this.hours);
-      const minutes = hours * 60;
-      const seconds = minutes * 60;
-      const duration = seconds * 1000;
-      if (isNaN(hours) || hours < 0) {
+      const karmaTime: number = parseInt(this.karmaTime);
+      const duration = karmaTime * 60 * 1000;
+      if (isNaN(karmaTime) || karmaTime < 0) {
         window.alert('Please enter a valid number!');
         return;
       }
       let datetime = new Date(Date.now());
-      datetime.setTime(datetime.getTime() + seconds * 1000);
+      datetime.setTime(datetime.getTime() + duration);
       this.socket.emit(
         'chat-karma-user',
         {
@@ -74,7 +72,7 @@ export default defineComponent({
       this.resetDialog();
     },
     resetDialog() {
-      this.hours = '';
+      this.karmaTime = '';
       this.$emit('update:modelValue', '');
     },
   },
