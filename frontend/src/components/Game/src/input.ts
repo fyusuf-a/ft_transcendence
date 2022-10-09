@@ -2,7 +2,6 @@ const pressedKeys = new Set();
 
 window.addEventListener('keydown', (e) => {
   pressedKeys.add(e.key);
-  //console.log(e.key);
   if (
     document.activeElement === document.body &&
     ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)

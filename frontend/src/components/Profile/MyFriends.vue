@@ -119,7 +119,6 @@ export default defineComponent({
       };      
       await axios.patch('/friendships/' + frienshipId, data)
         .then(response => {
-          console.log(response);
           window.location.reload();
         })
         .catch( (error) => {
@@ -129,7 +128,6 @@ export default defineComponent({
     async decline (frienshipId: number) {
       await axios.delete('/friendships/' + frienshipId)
         .then(response => {
-          console.log(response);
           window.location.reload();
         })
         .catch( (error) => {
@@ -141,9 +139,7 @@ export default defineComponent({
         if (friend.id == statusUpdate.id) {
           friend.status = statusUpdate.status;
         }
-          
       })
-      console.log(statusUpdate);
     }, 
     async listOfFriends(id: number) {
       let response = await axios.get('/users/' + id + '/friendships/');
@@ -163,7 +159,6 @@ export default defineComponent({
       window.location.reload();
     },
     async handleSpectate(userId: number) {
-      console.log("spectating user " + userId);
       await this.$store.dispatch('spectateUser', userId);
       this.$router.push('/game');
     },

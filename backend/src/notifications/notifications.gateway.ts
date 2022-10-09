@@ -106,7 +106,6 @@ export class NotificationsGateway extends SecureGateway {
   }
 
   async handleNewChallenge(challenger: number, challenged: number) {
-    console.log('handlenewchallenge');
     const challengerUser: User = await this.usersRepository.findOneByOrFail({
       id: challenger,
     });

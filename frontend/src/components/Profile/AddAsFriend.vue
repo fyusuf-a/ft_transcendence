@@ -27,7 +27,6 @@
         };
         let response2 = await axios.get('/users/' + this.id() + '/friendships/');
         for (let i: number = 0; i < response2.data.length; i++) {
-          console.log(response2.data[i])
           if (response2.data[i].user.username === name) {
             window.alert('This user is already your friend :)');
             return;
@@ -35,7 +34,6 @@
         };
         let responseBlocked = await axios.get('/users/' + this.id() + '/blocks/');
         for (let i: number = 0; i < responseBlocked.data.length; i++) {
-          console.log(responseBlocked.data[i])
           if (responseBlocked.data[i].user.username === name) {
             window.alert('This user is blocked. Unblocked them first.');
             return;
@@ -53,17 +51,16 @@
         let response3 = await axios.get('/users/' + this.id() + '/friendships/invites');
         for (let i: number = 0; i < response3.data.length; i++) {
           if (response3.data[i].user.username === name) {
-            window.alert('This user already sends you a friend request. Check your pending requests :)');
+            window.alert('This user already sent you a friend request. Check your pending requests :)');
             return;
           }
         };
         await axios.post('/friendships/' + name, data)
           .then(async response => {
-            console.log(response);
             window.alert('Your friend request has been sent.');
           })
           .catch( (error) => {
-            console.error('There\'s already a friend request pending between those users');
+
             window.alert('There\'s already a friend request pending between you and this user');
           });
       },
