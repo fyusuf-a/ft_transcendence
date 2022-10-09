@@ -1,22 +1,16 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import checker from 'vite-plugin-checker';
 import path from 'path';
 import vuetify from 'vite-plugin-vuetify';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    hmr: {
-      port: 4443,
-    },
+    hmr: false,
   },
   plugins: [
     vue(),
-    checker({
-      vueTsc: true,
-    }),
     {
       name: 'vitest-plugin-before-all',
       config: () => ({
