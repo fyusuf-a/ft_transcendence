@@ -168,7 +168,6 @@ export default defineComponent({
       this.$router.push('/game');
     },
     async handleChallenge(userId: number) {
-      console.log("spectating user " + userId);
       await this.$store.dispatch('challengeUser', userId);
       this.$router.push('/game');
     },
