@@ -107,14 +107,12 @@ export class MatchesService {
   }
 
   async findSpectate(id: number): Promise<number> {
-    console.log(id);
     const ret: number = (
       await this.matchRepository.findOneBy([
         { status: MatchStatusType.IN_PROGRESS, homeId: id },
         { status: MatchStatusType.IN_PROGRESS, awayId: id },
       ])
     ).id;
-    console.log(ret);
     return ret;
   }
 }

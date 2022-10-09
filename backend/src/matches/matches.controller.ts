@@ -95,7 +95,6 @@ export class MatchesController {
   @Get('/spectate/:id')
   async findSpectate(@Param('id') id: string): Promise<number> {
     let ret: number;
-    console.log(id);
     try {
       ret = await this.matchesService.findSpectate(+id);
     } catch {
