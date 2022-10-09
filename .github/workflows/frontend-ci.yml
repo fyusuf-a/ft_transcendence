@@ -38,7 +38,7 @@ jobs:
         with:
           fetch-depth: 1
           lfs: true
-          ssh-key: {{ secrets.git_ssh_key }}
+          ssh-key:${{ secrets.git_ssh_key }}
       - name: Read environment file
         run: |
           cat .env.example | grep -v '^#' >> ${GITHUB_ENV}
