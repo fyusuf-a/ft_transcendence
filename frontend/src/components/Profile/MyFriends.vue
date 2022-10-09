@@ -20,6 +20,7 @@
                   <p class="userName">{{ friend.username }}</p>
                   <v-spacer></v-spacer>
                   <v-btn v-if="friend.status === 2" @click="handleSpectate(friend.id)">Spectate</v-btn>
+                  <v-btn v-if="friend.status === 1" @click="handleChallenge(friend.id)">Challenge</v-btn>
                   <v-spacer></v-spacer>
                   <br />
                 </div>
@@ -164,6 +165,11 @@ export default defineComponent({
     async handleSpectate(userId: number) {
       console.log("spectating user " + userId);
       await this.$store.dispatch('spectateUser', userId);
+      this.$router.push('/game');
+    },
+    async handleChallenge(userId: number) {
+      console.log("spectating user " + userId);
+      await this.$store.dispatch('challengeUser', userId);
       this.$router.push('/game');
     },
   },
