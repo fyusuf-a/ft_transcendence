@@ -87,7 +87,6 @@ export default defineComponent({
         window.location.reload();
       })
       .catch( (error) => {
-        console.log(error.response.status);
         this.nameDoesNotExist = error.response.status;
       });
       if (this.nameDoesNotExist === 0) { this.dialog = false; };
