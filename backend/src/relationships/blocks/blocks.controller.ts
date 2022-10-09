@@ -41,7 +41,6 @@ export class BlocksController {
       );
   }
 
-  // TODO: remove sourceId from CreateBlockDto
   @Post()
   async create(
     @AuthUser() user: User,

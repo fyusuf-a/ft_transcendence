@@ -6,7 +6,7 @@ export class Ball {
   #y: number; // y position
   #vx: number; // x velocity
   #vy: number; // y velocity
-  #size: number; // size of the ball (probably constant, but maybe changed by options or powerups)
+  #size: number; // size of the ball
 
   constructor(
     x: number,
