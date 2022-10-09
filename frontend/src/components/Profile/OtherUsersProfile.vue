@@ -80,12 +80,12 @@
       let responseUs = await axios.get('/users/' + this.id());
       this.userId = (responseUs.data.username);
       let response;
-        try { 
-          response = await axios.get(`/users/name/${this.user}`);
-        } catch {
+      try { 
+        response = await axios.get(`/users/name/${this.user}`);
+      } catch {
           this.$router.push('/404');
           return;
-        }
+      }
       
         this.idOther = response.data.id;
         const newUser: UserDto = response.data;

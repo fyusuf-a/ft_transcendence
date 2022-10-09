@@ -17,7 +17,7 @@ import {
 import { Match } from './entities/match.entity';
 import { User, UserStatusEnum } from 'src/users/entities/user.entity';
 import { paginate } from 'src/common/paginate';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -52,7 +52,7 @@ export class MatchesService {
     return response.convertData((x) => x);
   }
 
-  findOne(id: number): Promise<ResponseMatchDto> {
+  findOne(id: number): Promise<Match> {
     return this.matchRepository.findOneByOrFail({ id: id });
   }
 

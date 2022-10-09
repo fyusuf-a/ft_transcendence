@@ -1,7 +1,22 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="10">
+      <v-col cols="12" md="3">
+        <channel-list
+          @channel-select-event="handleChannelSelection"
+          @channel-join-event="handleChannelJoin"
+          @channel-create-event="handleChannelCreation"
+          @request-user-event="addUserToMap"
+          @refresh-channels-event="refreshChannels"
+          @chat-dm-user="dming = true"
+          :channels="subscribedChannels"
+          :users="users"
+          :unreadChannels="unreadChannels"
+          :allChannels="allChannels"
+          :key="newUnread"
+        ></channel-list>
+      </v-col>
+      <v-col cols="12" md="9">
         <chat-dm-dialog v-model="dming" @chat-dm-user="handleDmUser">
         </chat-dm-dialog>
         <channel-invite-dialog
@@ -35,21 +50,6 @@
           @chat-invite-channel="inviting = true"
           @chat-change-password="changePass = true"
         ></chat-window>
-      </v-col>
-      <v-col cols="12" md="2">
-        <channel-list
-          @channel-select-event="handleChannelSelection"
-          @channel-join-event="handleChannelJoin"
-          @channel-create-event="handleChannelCreation"
-          @request-user-event="addUserToMap"
-          @refresh-channels-event="refreshChannels"
-          @chat-dm-user="dming = true"
-          :channels="subscribedChannels"
-          :users="users"
-          :unreadChannels="unreadChannels"
-          :allChannels="allChannels"
-          :key="newUnread"
-        ></channel-list>
       </v-col>
     </v-row>
   </v-container>
@@ -133,7 +133,7 @@ export default defineComponent({
   },
   methods: {
     async createChannel(channelObject: CreateChannelDto): Promise<number> {
-      let result = await axios
+      return axios
         .post('/channels/', {
           name: channelObject.name,
           type: channelObject.type,
@@ -144,7 +144,6 @@ export default defineComponent({
         })
         .then((response) => {
           if (response.status === 201) {
-            console.log(response.data);
             return response.data.id;
           }
         })
@@ -152,8 +151,6 @@ export default defineComponent({
           window.alert(`Could not create channel "${channelObject.name}"`);
           return -1;
         });
-
-      return result;
     },
     async handleChannelCreation(dto: CreateChannelDto) {
       this.selectedChannel = undefined;
@@ -171,69 +168,67 @@ export default defineComponent({
         }
       }
     },
-    async handleUserInvite(userId: number) {
+    async handleUserInvite(userId: number): Promise<number> {
       this.inviting = false;
       if (!this.selectedChannel?.id) {
-        return -1;
+        return Promise.resolve(-1);
       }
-      console.log(`Inviting user "${userId}" to ${this.selectedChannel?.id}`);
-      let response = await axios.post('/memberships/', {
-        userId: userId,
-        channelId: this.selectedChannel.id,
-        role: MembershipRoleType.PARTICIPANT,
-      });
-      if (response.status === 201) {
-        console.log('Successfully created membership!');
-        return response.data.id;
-      }
-      console.log('Error creating membership!');
-      return -1;
+      return axios
+        .post('/memberships/', {
+          userId: userId,
+          channelId: this.selectedChannel.id,
+          role: MembershipRoleType.PARTICIPANT,
+        })
+        .then((response): number => {
+          if (response.status === 201) {
+            this.alert(
+              `The user was added to ${this.selectedChannel?.name}. Say hello!`,
+            );
+            return response.data.id;
+          }
+          return -1;
+        })
+        .catch((): number => {
+          this.alert('Could not add user to channel!');
+          return -1;
+        });
     },
     getMessages(channelId: number): MessageDto[] {
       const found = this.messages.get(channelId);
       if (found) return found;
       return [];
     },
-    printResponse(response: string) {
-      console.log(`Server: ${response}`);
-    },
     handleChannelSelection(newChannel: ChannelDto) {
       this.selectedChannel = newChannel;
       if (this.selectedChannel) {
-        console.log(`parent says: ${this.selectedChannel.name}`);
         this.unreadChannels.delete(this.selectedChannel.id);
-        this.getMessagesForChannel(newChannel.id);
         this.fetchMembership(newChannel.id);
+        this.getMessagesForChannel(newChannel.id);
       }
     },
     async handleChannelJoin(channelDto: JoinChannelDto) {
-      console.log('Vue: joining channel ' + channelDto.id);
       const channel = this.allChannels.get(channelDto.id);
       if (channel) {
         if (channel.type === ChannelType.PROTECTED) {
-          console.log('trying to join protected');
-          this.joinChannelById(channelDto.id, channelDto.password); // check if it succeeds
+          await this.joinChannelById(channelDto.id, channelDto.password);
         } else {
-          this.joinChannelById(channelDto.id); // check if it succeeds
+          await this.joinChannelById(channelDto.id);
         }
         this.handleChannelSelection(channel);
       } else {
-        // Try to fetch channel ?
-        await this.getAllChannels(); // should just get the one channel instead
+        await this.getAllChannels();
         if (this.allChannels.has(channelDto.id)) {
           this.handleChannelJoin(channelDto);
-        } else {
-          console.log("Still can't find the channel :(");
         }
       }
     },
     handleLeaveChannelEvent() {
       if (this.selectedChannel) {
         this.leaveChannelById(this.selectedChannel.id);
+        this.refreshChannels();
       }
     },
     async handleChatMessageMenuSelection(event: MenuSelectionEvent) {
-      console.log(`Request to ${event.option} ${event.target}`);
       if (!event.target) return;
       let username = this.users.get(+event.target)?.username;
       if (event.option === 'chat-profile-user') {
@@ -246,7 +241,6 @@ export default defineComponent({
       } else if (event.option === 'chat-make-admin') {
         this.handleMakeAdmin(+event.target);
       } else if (event.option === 'chat-message-user') {
-        console.log('messaging user ' + username);
         this.handleDmUser(+event.target);
       } else if (event.option === 'chat-block-user') {
         this.handleBlockUser(+event.target);
@@ -273,46 +267,47 @@ export default defineComponent({
           }
         }
         window.alert('The user is blocked');
-        window.location.reload();
+        this.messages.clear();
+        this.refreshChannels();
+        if (this.selectedChannel?.id)
+          this.getMessagesForChannel(this.selectedChannel.id);
       });
     },
     async handleMakeAdmin(userId: number) {
       if (!this.selectedChannel?.id) {
         return -1;
       }
-      console.log(
-        `Making user "${userId}" an admin of ${this.selectedChannel?.id}`,
-      );
-      let membership = await axios.get(
-        `/memberships?channel=${this.selectedChannel.id}&user=${userId}`,
-      );
-      if (
-        !membership ||
-        membership.data.length !== 1 ||
-        membership.data[0].userId != userId
-      ) {
-        console.log('Could not make user an admin');
-        return -1;
-      }
-      let response = await axios.patch(
-        `/memberships/${membership.data[0].id}`,
-        {
-          role: MembershipRoleType.ADMIN,
-        },
-      );
-      if (response.status === 200) {
-        console.log('Successfully updated membership!');
-        return response.data.id;
-      }
-      console.log('Error updating membership!');
-      return -1;
+      axios
+        .get(`/memberships?channel=${this.selectedChannel.id}&user=${userId}`)
+        .then((response) => {
+          if (
+            !response ||
+            response.data.length !== 1 ||
+            response.data[0].userId != userId
+          ) {
+            throw new Error("Could not find user's membership");
+          }
+          const membership = response.data[0];
+          axios
+            .patch(`/memberships/${membership.id}`, {
+              role: MembershipRoleType.ADMIN,
+            })
+            .then((response) => {
+              if (response.status === 200) {
+                return response.data.id;
+              }
+              throw new Error('Error updating membership!');
+            })
+            .catch(() => {
+              this.alert('Could not make user an admin');
+            });
+        })
+        .catch(() => {
+          this.alert('Could not find user in channel');
+          return undefined;
+        });
     },
     handleMessage(messageDto: MessageDto) {
-      console.log('Vue: incoming...');
-      console.log(messageDto);
-      console.log(
-        `Vue: Message from [${messageDto.senderId}] to [${messageDto.channelId}]: ${messageDto.content}`,
-      );
       if (
         messageDto &&
         messageDto.senderId &&
@@ -348,16 +343,13 @@ export default defineComponent({
     async addUserToMap(userId: number) {
       const newUser: UserDto = await this.fetchUserById(userId);
       if (newUser) {
-        console.log(
-          `Adding User #${newUser.id} (${newUser.username}) to users`,
-        );
         this.users.set(userId, newUser);
       }
       return newUser;
     },
     async addMessageToMap(message: MessageDto) {
       if (!this.users.has(message.senderId)) {
-        const newUser: UserDto = await this.addUserToMap(message.senderId);
+        await this.addUserToMap(message.senderId);
       }
       if (this.messages.has(message.channelId)) {
         this.insertMessageSorted(this.messages.get(message.channelId), message);
@@ -369,7 +361,6 @@ export default defineComponent({
         !this.selectedChannel ||
         this.selectedChannel.id !== message.channelId
       ) {
-        console.log('Message is from inactive channel');
         this.unreadChannels.add(message.channelId);
         this.newUnread += 1;
       } else {
@@ -377,48 +368,56 @@ export default defineComponent({
       }
     },
     async fetchUserById(userId: number) {
-      console.log(`Vue: Grabbing user #${userId}`);
-      const response = await axios.get(`/users/${userId}`);
-      console.log(response.data);
-      if (response.data) {
-        // possibly wrong, update for axios
-        return response.data;
-      } else {
-        return { id: -1, username: 'Unknown User' };
-      }
+      return axios
+        .get(`/users/${userId}`)
+        .then((response) => {
+          const user = response?.data;
+          if (user) return user;
+          return { id: -1, username: 'Unknown User' };
+        })
+        .catch(() => {
+          console.log('Could not find user');
+        });
     },
-    async getMessagesForChannel(channelId: number) {
-      console.log(`Vue: Grabbing messages on channel ${channelId}`);
-      const response = await axios.get(
-        `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=1&take=10`,
-      );
-      console.log(response.data.data);
-      let newMessages = response.data.data; // data update to axios standard
-      if (newMessages) {
-        for (let message of newMessages) {
-          await this.addMessageToMap(message);
-        }
-      }
+    async getMessagesForChannel(channelId: number, pageNumber = 1) {
+      axios
+        .get(
+          `/messages?channel=${channelId}&userId=${this.$store.getters.user.id}&order=DESC&page=${pageNumber}&take=10`,
+        )
+        .then(async (response) => {
+          let newMessages = response.data.data;
+          if (newMessages) {
+            for (let message of newMessages) {
+              this.addMessageToMap(message);
+            }
+          }
+          if (response.data.meta.hasNextPage === true) {
+            this.getMessagesForChannel(channelId, pageNumber + 1);
+          }
+        })
+        .catch(() => {
+          this.alert('Could not get messages for this channel at this time');
+        });
     },
-    joinChannelById(id: number, password?: string) {
-      console.log(`Vue: Asking to join channel #${id}`);
+    async joinChannelById(id: number, password?: string) {
       const channel = this.allChannels.get(id);
       if (!channel) return;
-      this.socket.emit(
-        'chat-join',
-        { channel: id, password: password },
-        (response: string) => {
-          this.printResponse(response);
-          this.subscribedChannels.push(channel);
-        },
-      );
-    },
-    leaveChannelById(id: number) {
-      console.log(`Vue: Asking to leave channel #${id}`);
-      this.socket.emit('chat-leave', { channel: id }, (response: string) => {
-        this.printResponse(response);
+      const data = {
+        channelId: id,
+        userId: this.$store.getters.id,
+        role: MembershipRoleType.PARTICIPANT,
+        password: password,
+      };
+      await axios.post('/memberships', data).catch(() => {
+        this.alert('Could not join channel');
       });
-      // Remove Channel from subscribed channels, close ChatWindow
+    },
+    async leaveChannelById(id: number) {
+      await this.fetchMembership(id);
+      if (!this.activeMembership?.id) {
+        this.alert('Could not leave channel');
+      }
+      await axios.delete('/memberships/' + this.activeMembership?.id).catch(() => this.alert('Could not leave channel'));
       if (this.selectedChannel) {
         const channelIndex = this.subscribedChannels.indexOf(
           this.selectedChannel,
@@ -430,78 +429,65 @@ export default defineComponent({
       this.selectedChannel = undefined;
     },
     async fetchMembership(channelId: number) {
-      console.log(
-        `Vue: Fetching membership for user ${this.$store.getters.id} on channel ${channelId}`,
-      );
-      const response = await axios.get(
-        `/memberships?channel=${channelId}&user=${this.$store.getters.id}`,
-      );
-      console.log(response.data);
-      this.activeMembership = response.data[0];
+      axios
+        .get(`/memberships?channel=${channelId}&user=${this.$store.getters.id}`)
+        .then((response) => {
+          this.activeMembership = response.data[0];
+        })
+        .catch(() => {
+          console.log('Could not find membership for this channel');
+        });
     },
     async fetchMemberships() {
-      console.log(
-        `Vue: Fetching memberships for user ${this.$store.getters.id}`,
-      );
-      const response = await axios.get(
-        `/memberships?user=${this.$store.getters.id}`,
-      );
-      console.log(response.data);
-      this.memberships = response.data;
-      if (this.memberships) {
-        for (let membership of this.memberships) {
-          console.log(membership);
-        }
-      }
+      axios
+        .get(`/memberships?user=${this.$store.getters.id}`)
+        .then((response) => {
+          if (response.data) this.memberships = response.data;
+        })
+        .catch(() => {
+          console.log('Could not fetch memberships');
+        });
     },
     async fetchBlocks() {
-      const response = await axios.get(
-        `/users/${this.$store.getters.id}/blocks`,
-      );
-      console.log(response);
-      response.data.forEach((block: ListBlockDto) => {
-        this.blocks.push(block.user.id);
-      });
-      console.log('blocks: ' + this.blocks);
+      await axios
+        .get(`/users/${this.$store.getters.id}/blocks`)
+        .then((response) => {
+          response.data.forEach((block: ListBlockDto) => {
+            this.blocks.push(block.user.id);
+          });
+        });
     },
     async getAllChannels() {
-      console.log('Vue: Grabbing channels');
-      const response = await axios.get('/channels/');
-      console.log(response.data);
-      const channels = response.data.data; // possible wrong key, try data.channels if necessary
-      if (channels) {
-        for (let channel of channels) {
-          console.log(`Adding channel ${channel.id} to allChannels`);
-          this.allChannels.set(channel.id, channel);
+      await axios.get('/channels/').then((response) => {
+        const channels = response.data.data;
+        if (channels) {
+          for (let channel of channels) {
+            this.allChannels.set(channel.id, channel);
+          }
         }
-      }
-      this.newUnread += 1;
+        this.newUnread += 1;
+      });
     },
     async refreshChannels() {
       this.allChannels.clear();
-      this.subscribedChannels = [];
       this.blocks = [];
+      let subscribedChannels = [];
       await this.getAllChannels();
       await this.fetchMemberships();
       await this.fetchBlocks();
-      console.log('Trying to match membership to channel');
+      let staySelected = false;
       for (let membership of this.memberships) {
-        console.log('Checking membership' + membership);
         const channel = this.allChannels.get(membership.channelId);
         if (channel) {
-          console.log('Matched membership to channel');
-          this.subscribedChannels.push(channel);
-        } else {
-          console.log("Couldn't match membership to channel");
-          // try to get channel and try again?
+          subscribedChannels.push(channel);
+          if (channel.id === this.selectedChannel?.id) staySelected = true;
         }
       }
-      this.socket.emit('chat-listen', (response: string) => {
-        this.printResponse(response);
-      });
+      if (!staySelected) this.selectedChannel = undefined;
+      this.subscribedChannels = subscribedChannels;
+      this.socket.emit('chat-listen');
     },
     handleDmUser(userId: number) {
-      console.log('DMing ' + userId);
       const id = this.$store.getters.id;
       let dto = new CreateChannelDto(
         'direct' + userId,
@@ -512,9 +498,9 @@ export default defineComponent({
       );
       this.handleChannelCreation(dto);
     },
-    alert(message : string) {
+    alert(message: string) {
       window.alert(message);
-    }
+    },
   },
   computed: {
     messageInSelectedChannel(): MessageDto[] {
@@ -536,14 +522,27 @@ export default defineComponent({
     this.refreshChannels();
     this.socket.on('chat-message', this.handleMessage);
     this.socket.on('membership-created', this.refreshChannels);
-    this.socket.on('chat-unauthorized', (message : string)=> {this.alert(message)});
-    this.socket.on('chat-banned', (message : string)=> {this.alert(message); window.location.reload();});
-    this.socket.on('chat-muted', (message : string)=> {this.alert(message)});
+    this.socket.on('chat-unauthorized', (message: string) => {
+      this.alert(message);
+    });
+    this.socket.on('chat-banned', (message: string) => {
+      this.alert(message);
+      this.messages.clear();
+      this.refreshChannels();
+      this.selectedChannel = undefined;
+    });
+    this.socket.on('chat-muted', (message: string) => {
+      this.alert(message);
+    });
     this.socket.on('refresh-channels', this.refreshChannels);
+  },
+  beforeRouteLeave() {
+    this.socket.disconnect();
   },
   beforeDestroy() {
     this.socket.off('chat-message', this.handleMessage);
     this.socket.off('refresh-channels', this.refreshChannels);
+    this.socket.disconnect();
   },
 });
 </script>

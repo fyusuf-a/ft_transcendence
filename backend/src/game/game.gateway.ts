@@ -12,7 +12,7 @@ import { MatchesService } from 'src/matches/matches.service';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
 import { SecureGateway, CheckAuth } from 'src/auth/auth.websocket';
-import { NotificationsGateway } from 'src/notifications.gateway';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { MatchDto, MatchStatusType, UpdateMatchDto } from 'src/dtos/matches';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match } from 'src/matches/entities/match.entity';
@@ -35,7 +35,7 @@ export class GameGateway extends SecureGateway {
 
   @WebSocketServer() server: Server;
 
-  games: Map<number, Game> = new Map(); // array of all active games (game state will only be stored in memory, which I think is fine)
+  games: Map<number, Game> = new Map();
   queues: Map<string, Array<Socket>> = new Map();
 
   @SubscribeMessage('game-move')
@@ -167,7 +167,6 @@ export class GameGateway extends SecureGateway {
   }
 
   handleDisconnect(client: Socket) {
-    // abandon active games, if applicable
     this.server.to(client.id).emit('game-disconnect', 'DISCONNECTED!');
     for (const gameMap of this.games) {
       for (const player of gameMap[1].players) {
@@ -180,7 +179,6 @@ export class GameGateway extends SecureGateway {
   }
 
   async handleConnection(client: Socket) {
-    // register client
     this.server.to(client.id).emit('game-connect', 'CONNECTED!');
   }
 

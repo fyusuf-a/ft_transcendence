@@ -4,17 +4,19 @@ import { ChannelsController } from './channels.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Channel } from './entities/channel.entity';
-import { MembershipsService } from 'src/memberships/memberships.service';
-import { Membership } from 'src/memberships/entities/membership.entity';
 import { ConfigModule } from '@nestjs/config';
+import { MembershipsModule } from 'src/memberships/memberships.module';
+import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Channel, User, Membership]),
+    TypeOrmModule.forFeature([Channel, User]),
+    MembershipsModule,
     ConfigModule,
+    CaslModule,
   ],
   controllers: [ChannelsController],
-  providers: [ChannelsService, MembershipsService],
+  providers: [ChannelsService],
   exports: [ChannelsService],
 })
 export class ChannelsModule {}
