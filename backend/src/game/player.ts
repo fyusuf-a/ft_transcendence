@@ -9,8 +9,8 @@ export class Player {
   #x: number; // x position
   #y: number; // y position
   #vy: number; // y velocity
-  #width: number; // (probably constant, but maybe changed by options or powerups)
-  #height: number; // (probably constant, but maybe changed by options or powerups)
+  #width: number;
+  #height: number;
   #grid: Grid;
   #orientation: Direction;
   #direction: number;
