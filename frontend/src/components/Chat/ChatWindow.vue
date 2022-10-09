@@ -135,5 +135,8 @@ export default defineComponent({
       return '...';
     },
   },
+  created() {
+    this.socket.emit('chat-listen');
+  }
 });
 </script>

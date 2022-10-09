@@ -537,12 +537,12 @@ export default defineComponent({
     this.socket.on('refresh-channels', this.refreshChannels);
   },
   beforeRouteLeave() {
-    this.socket.disconnect();
+    // this.socket.disconnect();
   },
   beforeDestroy() {
-    this.socket.off('chat-message', this.handleMessage);
-    this.socket.off('refresh-channels', this.refreshChannels);
-    this.socket.disconnect();
+    // this.socket.off('chat-message', this.handleMessage);
+    // this.socket.off('refresh-channels', this.refreshChannels);
+    // this.socket.disconnect();
   },
 });
 </script>
