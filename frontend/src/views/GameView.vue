@@ -1,6 +1,6 @@
 <template>
   <div>
-      <img src="@/assets/images/king-pong.jpg" width="110" />
+      <img src="@/assets/images/king-pong.png" width="110" />
       <h1 align="center" class="game">Will you be the King of Pong?</h1>
       <h3 align="center" class="game">How to play:</h3>
       <p align="center" class="game">

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import kingPongImg from '@/assets/images/king-pong.jpg';
+import kingPongImg from '@/assets/images/king-pong.png';
 
 export async function fetchAvatar(
   id: number,
