@@ -6,6 +6,7 @@ import { AchievementsService } from 'src/achievements/achievements.service';
 import { AchievementsModule } from './achievements/achievements.module';
 
 // test
+// to be removed
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
