@@ -1,6 +1,6 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-//import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AchievementsService } from 'src/achievements/achievements.service';
 import { AchievementsModule } from './achievements/achievements.module';
@@ -8,7 +8,7 @@ import { AchievementsModule } from './achievements/achievements.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  /*const config = new DocumentBuilder()
+  const config = new DocumentBuilder()
     .setTitle('Transcendence')
     .setDescription('Transcendence API')
     .setVersion('0.0.1')
@@ -26,7 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,
   });
-  SwaggerModule.setup('', app, document);*/
+  SwaggerModule.setup('/', app, document);
 
   app.useGlobalPipes(
     new ValidationPipe({
