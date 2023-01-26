@@ -6,3 +6,6 @@
 
 # Test Files
 coverage/
+
+# others
+.rgignore
