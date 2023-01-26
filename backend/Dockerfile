@@ -8,4 +8,6 @@ RUN apk add bash
 
 COPY ./backend/docker-entrypoint.sh /tmp/
 
+HEALTHCHECK --interval=5s --retries=20 CMD wget --spider http://localhost:8080 || exit 1
+
 CMD ["bash", "/tmp/docker-entrypoint.sh"]

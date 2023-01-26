@@ -68,7 +68,8 @@ services:
           BACKEND_PORT: ${BACKEND_PORT}
     restart: unless-stopped
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   adminer:
     image: adminer
