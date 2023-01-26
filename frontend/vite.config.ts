@@ -9,11 +9,16 @@ export default defineConfig({
   server: {
     hmr: false,
     proxy: {
-      '/api': {
+      '/api/docs': {
         target: 'http://backend:8080',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        secure: false,
       },
       '/spec.json': {
         target: 'http://backend:8080',

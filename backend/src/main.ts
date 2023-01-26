@@ -7,6 +7,7 @@ import { AchievementsModule } from './achievements/achievements.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('Transcendence')
@@ -26,7 +27,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,
   });
-  SwaggerModule.setup('/docs', app, document);
+  SwaggerModule.setup('docs', app, document);
 
   app.useGlobalPipes(
     new ValidationPipe({
