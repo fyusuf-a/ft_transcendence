@@ -86,7 +86,7 @@ jobs:
         #if: ${{ steps.early-exit.outcome == 'success' }}
         #run: |
           #docker-compose up -d
-          #docker exec ft_transcendence_backend_1 npm run test:e2e
+          #docker exec ft_transcendence_${{ matrix.module }}_1 npm run test:e2e
       - name: Move cache
         if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
