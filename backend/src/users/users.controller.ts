@@ -22,6 +22,7 @@ import {
   ApiConsumes,
   ApiResponse,
   ApiTags,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
 import { PageDto, PageOptionsDto } from '@dtos/pages';
 import {
@@ -33,6 +34,7 @@ import {
 } from '@dtos/users';
 import { DeleteResult, EntityNotFoundError, UpdateResult } from 'typeorm';
 import { Public } from 'src/auth/auth.public.decorator';
+import { IfAuthIsDisabled } from 'src/auth/if-auth-is-disabled.decorator';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from './users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -75,6 +77,17 @@ export class UsersController {
   ): Promise<PageDto<UserDto>> {
     await this.abilityFactory.checkAbility(user, Action.Read, User);
     return await this.usersService.findAll(query, pageOptions);
+  }
+
+  @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')
+  @Post('fake-create')
+  @Public()
+  @IfAuthIsDisabled()
+  @ApiResponse({ status: 500, description: 'Record could not be created' })
+  async fakeCreate(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<ResponseUserDto> {
+    return this.usersService.create(createUserDto);
   }
 
   @Post()

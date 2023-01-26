@@ -62,19 +62,16 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 
 ## Environment variables
 
+- `DOMAIN`: the domain name on which the website is served
 - `BACKEND_42_UID`: the ID of the 42 API application (as given by the intranet)
 - `BACKEND_42_SECRET`: the secret of the 42 API application (as given by the intranet)
 - `BACKEND_DEBUG`: if enabled, backend will refresh everytime you modify the source code
   * possible values: `0` or `1`
-- `BACKEND_HOST`: the hostname throught with the frontend can contact the backend
 - `BACKEND_JWT_SECRET_KEY`: the secret key is used to encrypt your JWT. For production purposes, please generate a secret 32 characters minimum and secure
 - `BACKEND_SALT_ROUNDS`: the number of rounds used in password hasing. Default: 10
-- `BACKEND_PORT`: the port that NestJS will run on.
 - `DB_HOST`: name of the Postgres host
 - `DB_NAME`: name of the Postgres database
 - `DB_PASSWORD`: Postgres password
 - `DB_USER`: Postgres user
 - `DISABLE_AUTHENTICATION`: disable authentification for testing or development
   * possible values `true` or `false`
-- `FRONTEND_HOST`: the hostname throught with the backend can contact the frontend
-- `FRONTEND_PORT`: the port that Vite will run on.

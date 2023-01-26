@@ -72,6 +72,8 @@ import { MembershipRoleType } from '@dtos/memberships';
 import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 import ChannelKarmaDialogVue from '@/components/Chat/ChannelKarmaDialog.vue';
 import ChatDmDialogVue from '@/components/Chat/ChatDmDialog.vue';
+import config from '@/config';
+
 interface MenuSelectionEvent {
   option: string;
   target: string;
@@ -99,11 +101,7 @@ interface DataReturnType {
 export default defineComponent({
   data(): DataReturnType {
     return {
-      socket: io(
-        `http://${import.meta.env.VITE_BACKEND_HOST}:${
-          import.meta.env.VITE_BACKEND_PORT
-        }/chat`,
-      ),
+      socket: io('/chat'),
       channels: [],
       allChannels: new Map(),
       subscribedChannels: [],
@@ -417,7 +415,9 @@ export default defineComponent({
       if (!this.activeMembership?.id) {
         this.alert('Could not leave channel');
       }
-      await axios.delete('/memberships/' + this.activeMembership?.id).catch(() => this.alert('Could not leave channel'));
+      await axios
+        .delete('/memberships/' + this.activeMembership?.id)
+        .catch(() => this.alert('Could not leave channel'));
       if (this.selectedChannel) {
         const channelIndex = this.subscribedChannels.indexOf(
           this.selectedChannel,

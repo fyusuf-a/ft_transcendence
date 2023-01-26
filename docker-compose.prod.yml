@@ -12,8 +12,6 @@ services:
 
   backend:
     image: fyusufa/ft_transcendence_backend
-    ports:
-      - ${BACKEND_PORT}:${BACKEND_PORT}
     restart: unless-stopped
     depends_on:
       - db

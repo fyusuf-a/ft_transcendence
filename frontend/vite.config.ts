@@ -8,8 +8,29 @@ import vuetify from 'vite-plugin-vuetify';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    hmr: {
-      port: 4443,
+    hmr: true,
+    proxy: {
+      '/socket.io': {
+        target: 'ws://backend:8080',
+        ws: true,
+      },
+      '/api/docs': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/spec.json': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/spec.json/, '/docs-json'),
+      },
     },
   },
   plugins: [

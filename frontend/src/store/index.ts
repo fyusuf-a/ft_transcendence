@@ -45,17 +45,12 @@ interface Mutation {
 const createWebSocketPlugin: Plugin<State> = (store: Store<State>) => {
   store.subscribe((mutation: Mutation) => {
     if (mutation.type === 'setSocket') {
-      store.state.socket = io(
-        `http://${import.meta.env.VITE_BACKEND_HOST}:${
-          import.meta.env.VITE_BACKEND_PORT
-        }/notifications`,
-        {
-          query: {
-            id: store.state.user.id,
-            token: store.state.token as string,
-          },
+      store.state.socket = io('/notifications', {
+        query: {
+          id: store.state.user.id,
+          token: store.state.token as string,
         },
-      );
+      });
     }
   });
 };
