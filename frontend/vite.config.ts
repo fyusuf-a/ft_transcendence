@@ -9,6 +9,10 @@ export default defineConfig({
   server: {
     hmr: false,
     proxy: {
+      '/socket.io': {
+        target: 'ws://backend:8080',
+        ws: true,
+      },
       '/api/docs': {
         target: 'http://backend:8080',
         changeOrigin: true,

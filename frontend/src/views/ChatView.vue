@@ -101,7 +101,7 @@ interface DataReturnType {
 export default defineComponent({
   data(): DataReturnType {
     return {
-      socket: io(`${config.backendURL}/chat`),
+      socket: io('/chat'),
       channels: [],
       allChannels: new Map(),
       subscribedChannels: [],

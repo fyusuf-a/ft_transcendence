@@ -27,7 +27,7 @@ interface DataReturnType {
 export default defineComponent({
   data(): DataReturnType {
     return {
-      socket: io(`${config.backendURL}/game`),
+      socket: io('/game'),
     };
   },
   components: {

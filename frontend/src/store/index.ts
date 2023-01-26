@@ -46,7 +46,7 @@ interface Mutation {
 const createWebSocketPlugin: Plugin<State> = (store: Store<State>) => {
   store.subscribe((mutation: Mutation) => {
     if (mutation.type === 'setSocket') {
-      store.state.socket = io(`${config.backendURL}/notifications`, {
+      store.state.socket = io('/notifications', {
         query: {
           id: store.state.user.id,
           token: store.state.token as string,
