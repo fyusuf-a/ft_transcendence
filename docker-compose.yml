@@ -66,10 +66,17 @@ services:
         condition: service_healthy
 
   adminer:
-    image: adminer
+    image: michalhosna/adminer
     restart: unless-stopped
     ports:
       - 8888:8080
+    environment:
+      ADMINER_DB: ${DB_NAME}
+      ADMINER_DRIVER: pgsql
+      ADMINER_PASSWORD: ${DB_PASSWORD}
+      ADMINER_SERVER: ${DB_HOST}
+      ADMINER_USERNAME: ${DB_USER}
+      ADMINER_AUTOLOGIN: 1
     depends_on:
       - db
     profiles: ["debug"]
