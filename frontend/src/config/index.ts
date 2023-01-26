@@ -1,7 +1,5 @@
 const config = {
-  backendURL: `http://${import.meta.env.VITE_BACKEND_HOST}:${
-    import.meta.env.VITE_BACKEND_PORT
-  }`,
+  backendURL: `http://${import.meta.env.VITE_DOMAIN}/api`,
 };
 
 export default config;

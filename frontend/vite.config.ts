@@ -8,6 +8,20 @@ import vuetify from 'vite-plugin-vuetify';
 export default defineConfig({
   server: {
     hmr: false,
+    proxy: {
+      '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+      '/spec.json': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/spec.json/, '/docs-json'),
+      },
+    },
   },
   plugins: [
     vue(),

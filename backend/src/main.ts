@@ -26,7 +26,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config, {
     deepScanRoutes: true,
   });
-  SwaggerModule.setup('/', app, document);
+  SwaggerModule.setup('/docs', app, document);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -38,6 +38,6 @@ async function bootstrap() {
 
   app.enableCors();
   await app.select(AchievementsModule).get(AchievementsService).init();
-  await app.listen(process.env.BACKEND_PORT);
+  await app.listen(8080);
 }
 bootstrap();
