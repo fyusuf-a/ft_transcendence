@@ -7,7 +7,7 @@ import vuetify from 'vite-plugin-vuetify';
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    hmr: false,
+    hmr: true,
     proxy: {
       '/socket.io': {
         target: 'ws://backend:8080',
