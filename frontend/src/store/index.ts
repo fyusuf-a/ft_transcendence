@@ -5,7 +5,6 @@ import { ResponseUserDto, UserDto } from '@dtos/users';
 import { io, Socket } from 'socket.io-client';
 import { fetchAvatar } from '@/utils/avatar';
 import { LoginUserDto } from '@dtos/auth';
-import config from '@/config';
 
 const vuexPersister = new VuexPersister({
   key: 'my_key',
