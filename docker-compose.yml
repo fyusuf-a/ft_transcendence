@@ -43,7 +43,7 @@ services:
   frontend:
     image: fyusufa/ft_transcendence_frontend
     ports:
-      - 80:80
+      - ${PORT}:80
       # the following port is necessary for vite hot module reload (HMR)
       # - 4443:4443
     volumes:
