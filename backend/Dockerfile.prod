@@ -20,4 +20,6 @@ RUN export $(cat .env | grep -v '#' | xargs) && \
 	rm .env
 RUN npm run build
 
+HEALTHCHECK --interval=5s --retries=20 CMD wget --spider http://localhost:8080/docs || exit 1
+
 CMD npm run start:prod
