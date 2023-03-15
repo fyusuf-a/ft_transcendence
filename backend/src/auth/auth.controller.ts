@@ -40,7 +40,9 @@ export class AuthController {
   }
 
   private redirect(id: number, isTwoFAAuthenticated: boolean) {
-    const url = new URL(`http://${process.env.DOMAIN}/login`);
+    const url = new URL(
+      `http://${process.env.DOMAIN}:${process.env.PORT}/login`,
+    );
     const token = this.getToken(id, isTwoFAAuthenticated);
     url.search = new URLSearchParams({ id, token } as unknown as Record<
       string,

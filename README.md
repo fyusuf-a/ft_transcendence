@@ -63,11 +63,12 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 ## Environment variables
 
 - `DOMAIN`: the domain name on which the website is served
+- `PORT`: the port on which the website is served
 - `BACKEND_42_UID`: the ID of the 42 API application (as given by the intranet)
 - `BACKEND_42_SECRET`: the secret of the 42 API application (as given by the intranet)
 - `BACKEND_DEBUG`: if enabled, backend will refresh everytime you modify the source code
   * possible values: `0` or `1`
-- `BACKEND_JWT_SECRET_KEY`: the secret key is used to encrypt your JWT. For production purposes, please generate a secret 32 characters minimum and secure
+- `BACKEND_JWT_SECRET_KEY`: the secret key is used to encrypt your JWT. For production purposes, please generate a secret at least 32 character long and secure
 - `BACKEND_SALT_ROUNDS`: the number of rounds used in password hasing. Default: 10
 - `DB_HOST`: name of the Postgres host
 - `DB_NAME`: name of the Postgres database
