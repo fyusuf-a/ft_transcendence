@@ -13,9 +13,8 @@ COPY ./dtos/ ./src/dtos/
 COPY ./tsconfig.json ../tsconfig.json
 
 ARG VITE_DOMAIN=localhost
-RUN export VITE_DOMAIN=$VITE_DOMAIN \
-		   VITE_DISABLE_AUTHENTIFICATION=false && \
-	npm run build
+ARG VITE_PORT=8000
+RUN npm run build
 
 FROM nginx:$NGINX_IMAGE
 COPY --from=pre-production /app/dist /usr/share/nginx/html
