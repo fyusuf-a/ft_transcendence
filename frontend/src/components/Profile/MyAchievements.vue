@@ -7,12 +7,13 @@
     <v-row>
       <div v-for="tabAch in tabAchs" :key="tabAch.id">
         <v-col align="center">
-        <img v-if="tabAch.img" :src="tabAch.img" :title="tabAch.description" /></v-col>
+          <img v-if="tabAch.img" :src="tabAch.img" :title="tabAch.description"
+        /></v-col>
         <v-col align="center">
-        <p class="achievementsName">{{ tabAch.name }}</p>
-      </v-col>
+          <p class="achievementsName">{{ tabAch.name }}</p>
+        </v-col>
       </div>
-      <p class="pt-10 achievementsName" v-if="!tabAchs.length" >
+      <p class="pt-10 achievementsName" v-if="!tabAchs.length">
         No achievement obtained yet.
       </p>
     </v-row>
@@ -32,8 +33,8 @@ import imageAch6 from '@/assets/achievements/mastery.png';
 import imageAch7 from '@/assets/images/king-pong.png';
 
 interface Achievements {
-  idOther: number,
-  tabAchs: { id: number, img: string, name: string, description: string } [],
+  idOther: number;
+  tabAchs: { id: number; img: string; name: string; description: string }[];
 }
 
 export default defineComponent({
@@ -46,7 +47,7 @@ export default defineComponent({
   methods: {
     ...mapGetters(['id']),
     setAchievementImg() {
-      for (let i: number = 0 ; i < this.tabAchs.length ; i++) {
+      for (let i = 0; i < this.tabAchs.length; i++) {
         if (this.tabAchs[i].id == 1) {
           this.tabAchs[i].img = imageAch1;
         }
@@ -72,9 +73,10 @@ export default defineComponent({
     },
     async getAchievements(id: number) {
       const response = await axios.get('/users/' + id + '/achievements/');
-      for (let i: number = 0 ; i < response.data.length ; i++)
-      {
-        const response2 = await axios.get('/achievements/' + response.data[i].achievementId);
+      for (let i = 0; i < response.data.length; i++) {
+        const response2 = await axios.get(
+          '/achievements/' + response.data[i].achievementId,
+        );
         this.tabAchs.push({
           id: response.data[i].achievementId,
           img: '',
@@ -83,15 +85,14 @@ export default defineComponent({
         });
         this.setAchievementImg();
       }
-    }
+    },
   },
   props: ['user'],
   async created() {
     if (this.user) {
       let response = await axios.get(`/users/name/${this.user}`);
       this.getAchievements(response.data.id);
-    }
-    else {
+    } else {
       this.getAchievements(this.id());
     }
   },
@@ -107,7 +108,7 @@ img {
   margin-right: 20px;
   margin-left: 25px;
   font-weight: bold;
-  color: #951197;
+  color: rgb(var(--v-theme-secondary));
   margin-bottom: 40px;
 }
 </style>

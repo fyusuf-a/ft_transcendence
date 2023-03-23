@@ -5,7 +5,7 @@
         <v-col>
           <v-btn
             @click="login()"
-            color="success"
+            color="primary"
             v-if="!isTwoFAEnabled && !waiting"
             >Login or Create Account</v-btn
           >
