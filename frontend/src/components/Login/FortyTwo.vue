@@ -3,8 +3,12 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-btn @click="login()" color="success" v-if="!isTwoFAEnabled"
-            >Login or Create Account</v-btn>
+          <v-btn
+            @click="login()"
+            color="success"
+            v-if="!isTwoFAEnabled && !waiting"
+            >Login or Create Account</v-btn
+          >
           <v-progress-circular v-if="waiting" indeterminate color="primary" />
           <two-fa v-if="isTwoFAEnabled" @success="goToProfile" />
         </v-col>
@@ -29,7 +33,11 @@ export default defineComponent({
     };
   },
   methods: {
-    async authenticate() {
+    authenticate() {
+      console.log('hello');
+      console.log(process.env.VITE_DOMAIN);
+      console.log(process.env.VITE_PORT);
+      console.log(config.backendURL);
       window.location.href = `${config.backendURL}/auth/callback`;
     },
     goToProfile() {
@@ -56,12 +64,12 @@ export default defineComponent({
         }
       } catch (error) {
         console.error(error);
+        this.waiting = false;
       }
-      this.waiting = false;
       return;
     } else {
       this.waiting = false;
     }
-  }
+  },
 });
 </script>
