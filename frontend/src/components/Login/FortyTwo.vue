@@ -34,10 +34,6 @@ export default defineComponent({
   },
   methods: {
     authenticate() {
-      console.log('hello');
-      console.log(process.env.VITE_DOMAIN);
-      console.log(process.env.VITE_PORT);
-      console.log(config.backendURL);
       window.location.href = `${config.backendURL}/auth/callback`;
     },
     goToProfile() {
