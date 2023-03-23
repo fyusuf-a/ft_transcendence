@@ -64,6 +64,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 
 - `DOMAIN`: the domain name on which the website is served
 - `PORT`: the port on which the website is served
+- `PROXY_PORT`: if the website is served behind a reverse proxy, change the value below, otherwise, put the same value as PORT
 - `BACKEND_42_UID`: the ID of the 42 API application (as given by the intranet)
 - `BACKEND_42_SECRET`: the secret of the 42 API application (as given by the intranet)
 - `BACKEND_DEBUG`: if enabled, backend will refresh everytime you modify the source code
