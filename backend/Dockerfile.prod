@@ -1,7 +1,7 @@
 ARG NODE_IMAGE=lts-alpine
 FROM node:$NODE_IMAGE
 WORKDIR /app
-EXPOSE 3000
+EXPOSE 80
 RUN apk update && apk upgrade
 
 COPY ./backend/package*.json ./
@@ -20,6 +20,6 @@ RUN export $(cat .env | grep -v '#' | xargs) && \
 	rm .env
 RUN npm run build
 
-HEALTHCHECK --interval=5s --retries=20 CMD wget --spider http://localhost:8080/docs || exit 1
+HEALTHCHECK --interval=5s --retries=20 CMD wget --spider http://localhost/docs || exit 1
 
 CMD npm run start:prod

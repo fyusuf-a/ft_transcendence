@@ -40,6 +40,6 @@ async function bootstrap() {
 
   app.enableCors();
   await app.select(AchievementsModule).get(AchievementsService).init();
-  await app.listen(8080);
+  await app.listen(80);
 }
 bootstrap();

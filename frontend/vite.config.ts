@@ -11,22 +11,22 @@ export default defineConfig({
     hmr: true,
     proxy: {
       '/socket.io': {
-        target: 'ws://backend:8080',
+        target: 'ws://backend',
         ws: true,
       },
       '/api/docs': {
-        target: 'http://backend:8080',
+        target: 'http://backend',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/api': {
-        target: 'http://backend:8080',
+        target: 'http://backend',
         changeOrigin: true,
         secure: false,
       },
       '/spec.json': {
-        target: 'http://backend:8080',
+        target: 'http://backend',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/spec.json/, '/docs-json'),
