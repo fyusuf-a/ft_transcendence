@@ -1,10 +1,9 @@
 import axios from 'axios';
 import store from '../store';
 import router from '../router';
-import config from '../config';
 
 export function configureAxios() {
-  axios.defaults.baseURL = config.backendURL;
+  axios.defaults.baseURL = '/api';
   axios.interceptors.request.use((config) => {
     config.headers = config.headers || {};
     config.headers['Authorization'] = 'Bearer ' + store.getters.token;

@@ -10,7 +10,7 @@
 git clone https://github.com/fyusuf-a/ft_transcendence.git && cd ft_transcendence
 ```
 
-2. Create an application on the 42 intra with the redirect URI set to `http://localhost:8080/auth/callback`
+2. Create an application on the 42 intra with the redirect URI set to `http://localhost:8000/auth/callback`
 
 3. Create the `.env` file:
 ```
@@ -22,15 +22,13 @@ Fill the values in the `.env` with the help of the [information below](#.env-fil
 ```
 docker-compose up --build
 ```
-This will build and start the default containers (the database and the backend).
+This will build and start the default containers (the database, the backend and the frontend).
 
-`docker-compose` options:
-- `--profile debug` starts the Adminer container to debug the database
-- `--profile frontend` starts the frontend container
+`docker-compose --profile adminer` starts the Adminer container to debug the database
 
 ## Usage
-- The frontend, if enabled, will be available at `http://localhost:8000/`
-- The backend swagger will be available at `http://localhost:8080/`
+- The frontend will be available at `http://localhost:8000/`
+- The backend swagger will be available at `http://localhost:8000/docs` in debug mode (using the `Dockerfile` for the backend, not the `Dockerfile.prod`)
 - Adminer, if enabled, will be available at `http://localhost:8888/`
 
 ## Testing
@@ -43,7 +41,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 
 ## `.env` file
 
-**Please do not change values in `./.env.example` as those values are used in the CI**
+**Developers, please do not commit changes to `./.env.example` as the values it contains are used in the CI**
 
 ### Images and Dockerfiles
 
@@ -54,7 +52,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 	* `stable-alpine`
 	* `1.22-alpine`...
 - `BACKEND_DOCKERFILE`:
-	* `Dockerfile`: the image does not need a rebuild if a modification occurs. If a package is added, you need to run a `docker exec [name_of_container] npm install` or restart the container
+	* `Dockerfile`: the image does not need a rebuild if a modification occurs if `BACKEND_DEBUG` is set to 1. If a package is added tough, you need to run a `docker exec [name_of_container] npm install` or restart the container
 	* `Dockerfile.prod`: faster launch time, the image needs a rebuild for every modification to the code. No memory overhead as files are not watched
 - `FRONTEND_DOCKERFILE`:
 	* `Dockerfile`: the site is served by the Vite development server with hot reload
@@ -62,9 +60,10 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 
 ## Environment variables
 
-- `DOMAIN`: the domain name on which the website is served
-- `PORT`: the port on which the website is served
-- `PROXY_PORT`: if the website is served behind a reverse proxy, change the value below, otherwise, put the same value as PORT
+- `URL`: the URL of the website (without trailing slash)
+  * `http://localhost:8080`
+  * `https://mydomain` ...
+- `PROXY_PORT`: the port on which the website is served (not necessarily the same port as in the URL in the case of a reverse proxy)
 - `BACKEND_42_UID`: the ID of the 42 API application (as given by the intranet)
 - `BACKEND_42_SECRET`: the secret of the 42 API application (as given by the intranet)
 - `BACKEND_DEBUG`: if enabled, backend will refresh everytime you modify the source code

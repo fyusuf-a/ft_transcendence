@@ -72,7 +72,6 @@ import { MembershipRoleType } from '@dtos/memberships';
 import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 import ChannelKarmaDialogVue from '@/components/Chat/ChannelKarmaDialog.vue';
 import ChatDmDialogVue from '@/components/Chat/ChatDmDialog.vue';
-import config from '@/config';
 
 interface MenuSelectionEvent {
   option: string;

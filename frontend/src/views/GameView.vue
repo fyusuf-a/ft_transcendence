@@ -18,7 +18,6 @@
 import GameWindowVue from '@/components/Game/GameWindow.vue';
 import { defineComponent } from 'vue';
 import { io, Socket } from 'socket.io-client';
-import config from '@/config';
 
 interface DataReturnType {
   socket: Socket;

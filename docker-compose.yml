@@ -22,8 +22,7 @@ services:
     environment:
       DB_HOST: ${DB_HOST}
       DB_NAME: ${DB_NAME}
-      DOMAIN: ${DOMAIN}
-      PORT: ${PORT}
+      URL: ${URL}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USER}
       JWT_SECRET_KEY: ${BACKEND_JWT_SECRET_KEY}
@@ -53,16 +52,14 @@ services:
       - ./tsconfig.json:/tsconfig.json
     environment:
       VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
-      VITE_DOMAIN: localhost
-      VITE_PORT: ${PORT}
+      VITE_URL: ${URL}
     build:
       context: .
       dockerfile: frontend/${FRONTEND_DOCKERFILE}
       args:
           NODE_IMAGE: ${NODE_IMAGE}
           NGINX_IMAGE: ${NGINX_IMAGE}
-          VITE_DOMAIN: ${DOMAIN}
-          VITE_PORT: ${PORT}
+          VITE_URL: ${URL}
     restart: unless-stopped
     depends_on:
       backend:
@@ -82,7 +79,7 @@ services:
       ADMINER_AUTOLOGIN: 1
     depends_on:
       - db
-    profiles: ["debug"]
+    profiles: ["adminer"]
 
 volumes:
   pgdb-data:

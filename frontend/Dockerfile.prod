@@ -12,8 +12,7 @@ RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos/
 COPY ./tsconfig.json ../tsconfig.json
 
-ARG VITE_DOMAIN=localhost
-ARG VITE_PORT=8000
+ARG VITE_URL=http://localhost:8000
 RUN npm run build
 
 FROM nginx:$NGINX_IMAGE
