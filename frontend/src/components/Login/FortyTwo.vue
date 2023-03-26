@@ -19,7 +19,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import config from '../../config';
 import TwoFA from '@/components/Login/TwoFA.vue';
 
 export default defineComponent({
@@ -34,7 +33,7 @@ export default defineComponent({
   },
   methods: {
     authenticate() {
-      window.location.href = `${config.backendURL}/auth/callback`;
+      window.location.href = '/api/auth/callback';
     },
     goToProfile() {
       this.$router.push('/profile');
