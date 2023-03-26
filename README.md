@@ -61,7 +61,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 ## Environment variables
 
 - `URL`: the URL of the website (without trailing slash)
-  * `http://localhost:8080`
+  * `http://localhost:8000`
   * `https://mydomain` ...
 - `PROXY_PORT`: the port on which the website is served (not necessarily the same port as in the URL in the case of a reverse proxy)
 - `BACKEND_42_UID`: the ID of the 42 API application (as given by the intranet)
