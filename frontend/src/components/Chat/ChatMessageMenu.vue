@@ -7,10 +7,14 @@
     </template>
 
     <v-list>
-        <v-list-item v-for="(item, i) in options" :key="i" active-color="primary"
-        @click="() => handleOptionSelection(item)">
-          <v-list-item-title>{{ item.label }}</v-list-item-title>
-        </v-list-item>
+      <v-list-item
+        v-for="(item, i) in options"
+        :key="i"
+        active-color="primary"
+        @click="() => handleOptionSelection(item)"
+      >
+        <v-list-item-title>{{ item.label }}</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>

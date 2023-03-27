@@ -1,9 +1,7 @@
 <template>
   <v-row justify="center">
+    <v-btn @click="openDialog" icon>+</v-btn>
     <v-dialog v-model="dialogOpen" scrollable max-width="300px">
-      <template v-slot:activator="{ props: open }">
-        <span icon color="primary" dark v-bind="open" class="button"> + </span>
-      </template>
       <v-card class="v-dialog-pos">
         <v-card-title
           >{{ action }} Channel
@@ -47,7 +45,11 @@
               :key="channel.id"
             ></v-radio>
           </v-radio-group>
-          <v-text-field v-if="selectedChannel" v-model="password" label="Password"></v-text-field>
+          <v-text-field
+            v-if="selectedChannel"
+            v-model="password"
+            label="Password"
+          ></v-text-field>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
@@ -64,7 +66,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
+import chatStore from '@/store/chatStore';
 interface DataReturnType {
+  joinableChannels: Array<ChannelDto>;
   selectedChannel: string;
   dialogOpen: boolean;
   action: string;
@@ -74,14 +78,9 @@ interface DataReturnType {
 }
 
 export default defineComponent({
-  props: {
-    joinableChannels: {
-      type: Array as () => Array<ChannelDto>,
-      required: true,
-    },
-  },
   data(): DataReturnType {
     return {
+      joinableChannels: [],
       selectedChannel: '',
       dialogOpen: false,
       action: 'Join',
@@ -89,6 +88,13 @@ export default defineComponent({
       channelTypes: ['public', 'protected', 'private'],
       password: undefined,
     };
+  },
+  watch: {
+    dialogOpen(newValue, oldValue) {
+      if (oldValue === true && newValue === false) {
+        this.resetDialog();
+      }
+    }
   },
   methods: {
     async handleJoinChannel() {
@@ -109,6 +115,17 @@ export default defineComponent({
         this.$emit('channel-create-event', dto);
       }
       this.resetDialog();
+    },
+    openDialog() {
+      this.dialogOpen = true;
+      chatStore
+        .dispatch('fetchJoinableChannels')
+        .then((channels) => {
+          this.joinableChannels = [...channels];
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
     resetDialog() {
       this.selectedChannel = '';

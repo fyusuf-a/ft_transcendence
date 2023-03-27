@@ -18,6 +18,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ChannelDto } from '@/common/dto/channel.dto';
+import { chatSocket } from '@/store/chatStore';
 
 interface DataReturnType {
   karmaTime: string;
@@ -37,10 +38,6 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    socket: {
-      type: Object,
-      required: true,
-    },
   },
   data(): DataReturnType {
     return {
@@ -57,7 +54,7 @@ export default defineComponent({
       }
       let datetime = new Date(Date.now());
       datetime.setTime(datetime.getTime() + duration);
-      this.socket.emit(
+      chatSocket.emit(
         'chat-karma-user',
         {
           userId: this.selectedUser,

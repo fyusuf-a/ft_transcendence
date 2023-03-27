@@ -32,13 +32,7 @@ export class NotificationsGateway extends SecureGateway {
   @WebSocketServer() server: Server;
 
   async handleConnection(client: Socket) {
-    this.handleAuth(client, {
-      id: +client.handshake.query.id,
-      token: client.handshake.query.token as string,
-    });
-    this.logger.log(
-      `User ${client.handshake.query.id} connected on socket ${client.id} `,
-    );
+    super.handleConnection(client);
     const user: User = await this.usersRepository.findOneByOrFail({
       id: +client.handshake.query.id,
     });
@@ -74,7 +68,7 @@ export class NotificationsGateway extends SecureGateway {
     });
   }
   async handleDisconnect(client: Socket) {
-    this.authenticatedSockets.delete(client.id);
+    super.handleDisconnect(client);
     let user: User;
     try {
       user = await this.usersService.findOne(+client.handshake.query.id);

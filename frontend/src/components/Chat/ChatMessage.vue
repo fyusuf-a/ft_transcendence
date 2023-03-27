@@ -1,27 +1,22 @@
 <template>
   <v-list-item class="messageItem">
-    
-      
-      
-      <chat-message-menu
-        :targetId="senderId"
-        :membership-role="membershipRole"
-        @chat-message-menu-selection="
-          $emit('chat-message-menu-selection', $event)
-        "
-      >
-      
+    <chat-message-menu
+      :targetId="senderId"
+      :membership-role="membershipRole"
+      @chat-message-menu-selection="
+        $emit('chat-message-menu-selection', $event)
+      "
+    >
       <v-avatar size="45">
         <v-tooltip>
-        <template v-slot:activator="{ props: tooltip }">
-        <v-img v-bind="tooltip" :src="avatar"> </v-img>
-      </template>
-      {{ sender }} {{ "@" }} {{ formattedDate }}
-    </v-tooltip>
-        </v-avatar>
-        
-      </chat-message-menu>
-      {{ content }}
+          <template v-slot:activator="{ props: tooltip }">
+            <v-img v-bind="tooltip" :src="avatar"> </v-img>
+          </template>
+          {{ sender }} {{ '@' }} {{ formattedDate }}
+        </v-tooltip>
+      </v-avatar>
+    </chat-message-menu>
+    {{ content }}
   </v-list-item>
 </template>
 

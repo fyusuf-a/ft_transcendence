@@ -34,7 +34,6 @@
           v-model="karma"
           :selected-channel="selectedChannel"
           :selected-user="selectedUserId"
-          :socket="socket"
         >
         </channel-karma-dialog>
         <chat-window
@@ -43,7 +42,6 @@
           :membership="activeMembership"
           :messages="getMessages(selectedChannel.id)"
           :users="users"
-          :socket="socket"
           :key="newMessage"
           @chat-leave-channel="handleLeaveChannelEvent"
           @chat-message-menu-selection="handleChatMessageMenuSelection"
@@ -58,7 +56,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios from 'axios';
-import { io, Socket } from 'socket.io-client';
 import ChannelList from '@/components/Chat/ChannelList.vue';
 import ChatWindow from '@/components/Chat/ChatWindow.vue';
 import ChannelInviteDialog from '@/components/Chat/ChannelInviteDialog.vue';
@@ -72,13 +69,13 @@ import { MembershipRoleType } from '@dtos/memberships';
 import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 import ChannelKarmaDialogVue from '@/components/Chat/ChannelKarmaDialog.vue';
 import ChatDmDialogVue from '@/components/Chat/ChatDmDialog.vue';
+import chatStore, { chatSocket } from '@/store/chatStore';
 
 interface MenuSelectionEvent {
   option: string;
   target: string;
 }
 interface DataReturnType {
-  socket: Socket;
   channels: Array<ChannelDto>;
   allChannels: Map<number, ChannelDto>;
   subscribedChannels: Array<ChannelDto>;
@@ -90,7 +87,6 @@ interface DataReturnType {
   newMessage: number;
   newUnread: number;
   users: Map<number, UserDto>;
-  memberships: Array<MembershipDto>;
   blocks: Array<number | undefined>;
   inviting: boolean;
   changePass: boolean;
@@ -100,7 +96,6 @@ interface DataReturnType {
 export default defineComponent({
   data(): DataReturnType {
     return {
-      socket: io('/chat'),
       channels: [],
       allChannels: new Map(),
       subscribedChannels: [],
@@ -112,7 +107,6 @@ export default defineComponent({
       newMessage: 0,
       newUnread: 0,
       users: new Map(),
-      memberships: [],
       blocks: [],
       inviting: false,
       changePass: false,
@@ -438,14 +432,15 @@ export default defineComponent({
         });
     },
     async fetchMemberships() {
-      axios
-        .get(`/memberships?user=${this.$store.getters.id}`)
-        .then((response) => {
-          if (response.data) this.memberships = response.data;
-        })
-        .catch(() => {
-          console.log('Could not fetch memberships');
-        });
+      // axios
+      //   .get(`/memberships?user=${this.$store.getters.id}`)
+      //   .then((response) => {
+      //     if (response.data) this.memberships = response.data;
+      //   })
+      //   .catch(() => {
+      //     console.log('Could not fetch memberships');
+      //   });
+      chatStore.dispatch('fetchMemberships');
     },
     async fetchBlocks() {
       await axios
@@ -470,21 +465,15 @@ export default defineComponent({
     async refreshChannels() {
       this.allChannels.clear();
       this.blocks = [];
-      let subscribedChannels = [];
       await this.getAllChannels();
       await this.fetchMemberships();
       await this.fetchBlocks();
+      this.subscribedChannels = await chatStore.dispatch(
+        'fetchSubscribedChannels',
+      );
       let staySelected = false;
-      for (let membership of this.memberships) {
-        const channel = this.allChannels.get(membership.channelId);
-        if (channel) {
-          subscribedChannels.push(channel);
-          if (channel.id === this.selectedChannel?.id) staySelected = true;
-        }
-      }
       if (!staySelected) this.selectedChannel = undefined;
-      this.subscribedChannels = subscribedChannels;
-      this.socket.emit('chat-listen');
+      chatSocket.emit('chat-listen');
     },
     handleDmUser(userId: number) {
       const id = this.$store.getters.id;
@@ -514,26 +503,22 @@ export default defineComponent({
     },
   },
   async created() {
-    this.socket.emit('auth', {
-      id: this.$store.getters.id,
-      token: this.$store.getters.token,
-    });
     this.refreshChannels();
-    this.socket.on('chat-message', this.handleMessage);
-    this.socket.on('membership-created', this.refreshChannels);
-    this.socket.on('chat-unauthorized', (message: string) => {
+    chatSocket.on('chat-message', this.handleMessage);
+    chatSocket.on('membership-created', this.refreshChannels);
+    chatSocket.on('chat-unauthorized', (message: string) => {
       this.alert(message);
     });
-    this.socket.on('chat-banned', (message: string) => {
+    chatSocket.on('chat-banned', (message: string) => {
       this.alert(message);
       this.messages.clear();
       this.refreshChannels();
       this.selectedChannel = undefined;
     });
-    this.socket.on('chat-muted', (message: string) => {
+    chatSocket.on('chat-muted', (message: string) => {
       this.alert(message);
     });
-    this.socket.on('refresh-channels', this.refreshChannels);
+    chatSocket.on('refresh-channels', this.refreshChannels);
   },
   beforeRouteLeave() {
     // this.socket.disconnect();

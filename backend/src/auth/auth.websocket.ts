@@ -73,11 +73,19 @@ export class SecureGateway
   }
 
   async handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
+    this.handleAuth(client, {
+      id: +client.handshake.query.id,
+      token: client.handshake.query.token as string,
+    });
+    this.logger.log(
+      `User ${client.handshake.query.id} connected on socket ${client.id}`,
+    );
   }
 
   handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
     this.authenticatedSockets.delete(client.id);
+    this.logger.log(
+      `User ${client.handshake.query.id} disconnected from socket ${client.id}`,
+    );
   }
 }

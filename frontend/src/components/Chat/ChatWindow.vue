@@ -62,6 +62,7 @@ import { ChannelDto } from '@/common/dto/channel.dto';
 import { MessageDto } from '@/common/dto/message.dto';
 import { UserDto } from '@/common/dto/user.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
+import { chatSocket } from '@/store/chatStore';
 
 interface DataReturnType {
   messageContent: string;
@@ -86,10 +87,6 @@ export default defineComponent({
       type: Map,
       required: true,
     },
-    socket: {
-      type: Object,
-      required: true,
-    },
   },
   data(): DataReturnType {
     return {
@@ -103,7 +100,7 @@ export default defineComponent({
   },
   methods: {
     sendMessage() {
-      this.socket.emit('chat-send', {
+      chatSocket.emit('chat-send', {
         channel: this.channel.id,
         message: this.messageContent,
         authorization: this.$store.getters.token,
@@ -136,7 +133,7 @@ export default defineComponent({
     },
   },
   created() {
-    this.socket.emit('chat-listen');
-  }
+    chatSocket.emit('chat-listen');
+  },
 });
 </script>
