@@ -34,9 +34,9 @@ This will build and start the default containers (the database, the backend and 
 ## Testing
 ### Backend
 ```
-docker exec -t ft_transcendence-backend-1 npm run test        # run unit tests one time
-docker exec -t ft_transcendence-backend-1 npm run test:watch  # watch for changes and run unit tests
-docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end tests one time
+docker exec -t -w app ft_transcendence-backend-1 npm run test:unit        # run unit tests one time
+docker exec -t -w app ft_transcendence-backend-1 npm run test:watch  # watch for changes and run unit tests
+docker exec -t -w app ft_transcendence-backend-1 npm run test:e2e    # run end-to-end tests one time
 ```
 
 ## `.env` file
