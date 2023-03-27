@@ -28,12 +28,18 @@ jobs:
         id: diff
         continue-on-error: true
         # docker-compose.prod.yml is not checked for a diff because it is not used in the CI, only in a deployment
-        run: |
-          git diff origin/master --exit-code ${{ matrix.module }} dtos docker-compose.yml .github > /dev/null
+        run: git diff origin/master --exit-code ${{ matrix.module }} dtos docker-compose.yml .github > /dev/null
       - name: Early exit
+        id: early-exit
+        continue-on-error: true
         run: |
-          if [ ${{ steps.dockerhub.outcome == 'success' && steps.diff.outcome == 'success' }} == true ]; then exit 1; fi
+          if [ "${{ steps.dockerhub.outcome }}" = "success" -a "${{ steps.diff.outcome }}" == "success" ]; then
+            exit 1
+          else
+            exit 0
+          fi
       - name: Set environment variables
+        if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
           cat .env.example | grep -v '^#' >> ${GITHUB_ENV}
           echo "BACKEND_42_UID=${{ secrets.BACKEND_42_UID }}" >> ${GITHUB_ENV}
@@ -41,38 +47,47 @@ jobs:
           echo "BACKEND_JWT_SECRET_KEY=${{ secrets.BACKEND_JWT_SECRET_KEY }}" >> ${GITHUB_ENV}
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${GITHUB_ENV}
       - uses: actions/setup-node@v3
+        if: ${{ steps.early-exit.outcome == 'success' }}
         with:
           node-version: "${{ env.node_version }}"
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
       - name: Install dependencies
+        if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
           cd ${{ matrix.module }}
           npm ci
       - name: Lint
+        if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
           cd ${{ matrix.module }}
           npm run lint -- --no-fix --max-warnings=0
       - name: Unit tests
+        if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
           cd ${{ matrix.module }}
           npm run test:unit
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        if: ${{ steps.early-exit.outcome == 'success' }}
+        uses: docker/setup-buildx-action@v2
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        if: ${{ steps.early-exit.outcome == 'success' }}
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: docker-images-test-${{ github.sha }}
           restore-keys: docker-images-test-
       - name: Build Containers
+        if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
           docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new" --file docker-compose.yml --load
       #- name: E2E Test
+        #if: ${{ steps.early-exit.outcome == 'success' }}
         #run: |
           #docker-compose up -d
-          #docker exec ft_transcendence_backend_1 npm run test:e2e
+          #docker exec ft_transcendence_${{ matrix.module }}_1 npm run test:e2e
       - name: Move cache
+        if: ${{ steps.early-exit.outcome == 'success' }}
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache

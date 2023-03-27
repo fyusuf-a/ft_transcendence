@@ -16,7 +16,7 @@ interface MarvinUser {
 }
 
 @Injectable()
-export class MarvinStrategy extends PassportStrategy(Strategy, 'marvin') {
+export class MarvinStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     private jwtService: JwtService,
     private readonly configService: ConfigService,

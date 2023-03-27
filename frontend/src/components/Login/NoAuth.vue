@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import config from '@/config';
 import axios from 'axios';
 
 export default defineComponent({
@@ -49,7 +48,7 @@ export default defineComponent({
   },
   methods: {
     async authenticate({ username }: { username: string }) {
-      window.location.href = `${config.backendURL}/auth/fake-callback?username=${username}`;
+      window.location.href = `/api/auth/fake-callback?username=${username}`;
     },
     goToProfile() {
       this.$router.push('/profile');

@@ -12,12 +12,8 @@ RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos/
 COPY ./tsconfig.json ../tsconfig.json
 
-ARG BACKEND_PORT=8080
-ARG BACKEND_HOST=localhost
-RUN export VITE_APP_BACKEND_HOST=$BACKEND_HOST \
-		   VITE_APP_BACKEND_PORT=$BACKEND_PORT \
-		   VITE_APP_DISABLE_AUTHENTIFICATION=false && \
-	npm run build
+ARG VITE_URL=http://localhost:8000
+RUN npm run build
 
 FROM nginx:$NGINX_IMAGE
 COPY --from=pre-production /app/dist /usr/share/nginx/html

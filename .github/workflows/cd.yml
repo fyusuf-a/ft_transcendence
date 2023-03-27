@@ -5,102 +5,54 @@ on:
     branches: [ master ]
 
 jobs:
-  which-image-to-build:
+  push-image:
+    strategy:
+      matrix:
+        module: [frontend, backend]
     runs-on: ubuntu-latest
-    outputs:
-      frontend: ${{ steps.diff-frontend.outcome == 'failure' || steps.diff-compose.outcome == 'failure' }}
-      backend: ${{ steps.diff-backend.outcome == 'failure' || steps.diff-compose.outcome == 'failure' }}
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Check for diff in docker-compose files
-        id: diff-compose
-        continue-on-error: true
-        # docker-compose.prod.yml is not checked for a diff because it is not used in the CI, only in a deployment
-        run: |
-          git diff ${{ github.event.before }} --exit-code docker-compose.yml > /dev/null
-      - name: Check for diff in backend
-        id: diff-backend
+      - name: Check for diff
+        id: diff
         continue-on-error: true
         run: |
-          git diff ${{ github.event.before }} --exit-code backend dtos > /dev/null
-      - name: Check for diff in frontend
-        id: diff-frontend
-        continue-on-error: true
-        run: |
-          git diff ${{ github.event.before }} --exit-code frontend dtos > /dev/null
-  build-and-push-frontend:
-    runs-on: ubuntu-latest
-    needs: which-image-to-build
-    if: needs.which-image-to-build.outputs.frontend == 'true'
-    timeout-minutes: 20
-    steps:
-      - name: see outputs
-        run: |
-          echo ${{ needs.which-image-to-build.outputs.frontend }}
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: Read environment file
+          git diff ${{ github.event.before }} --exit-code ${{ matrix.module }} dtos docker-compose.yml > /dev/null
+      - name: Set environment variables
         run: |
           cat .env.example | grep -v '^#' >> ${GITHUB_ENV}
+          echo "BACKEND_42_UID=${{ secrets.BACKEND_42_UID }}" >> ${GITHUB_ENV}
+          echo "BACKEND_42_SECRET=${{ secrets.BACKEND_42_SECRET }}" >> ${GITHUB_ENV}
+          echo "BACKEND_JWT_SECRET_KEY=${{ secrets.BACKEND_JWT_SECRET_KEY }}" >> ${GITHUB_ENV}
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ${GITHUB_ENV}
       - name: Set up Docker Buildx
+        if: ${{ steps.diff.outcome == 'failure' }}
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
+        if: ${{ steps.diff.outcome == 'failure' }}
         uses: docker/login-action@v2
         with:
           username: fyusufa
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        if: ${{ steps.diff.outcome == 'failure' }}
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: frontend-image-${{ github.sha }}
-          restore-keys: frontend-image-
+          key: ${{ matrix.module }}-image-${{ github.sha }}
+          restore-keys: ${{ matrix.module }}-image-
       - name: Build containers
+        if: ${{ steps.diff.outcome == 'failure' }}
         run: |
-          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.yml frontend --load
+          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.yml ${{ matrix.module }} --load
       - name: Move cache
+        if: ${{ steps.diff.outcome == 'failure' }}
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
       - name: Push images to Dockerhub
+        if: ${{ steps.diff.outcome == 'failure' }}
         run: |
-          docker image push fyusufa/ft_transcendence_frontend:latest
-  build-and-push-backend:
-    runs-on: ubuntu-latest
-    needs: which-image-to-build
-    if: needs.which-image-to-build.outputs.backend == 'true'
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-      - name: Read environment file
-        run: |
-          cat .env.example | grep -v '^#' >> ${GITHUB_ENV}
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: fyusufa
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Cache Docker layers
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: backend-image-${{ github.sha }}
-          restore-keys: backend-image-
-      - name: Build containers
-        run: |
-          docker buildx bake --set *.cache-from="type=local,src=/tmp/.buildx-cache" --set *.cache-to="type=local,dest=/tmp/.buildx-cache-new,mode=max" --file docker-compose.yml backend --load
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-      - name: Push images to Dockerhub
-        run: |
-          docker image push fyusufa/ft_transcendence_backend:latest
+          docker image push fyusufa/ft_transcendence_${{ matrix.module }}:latest

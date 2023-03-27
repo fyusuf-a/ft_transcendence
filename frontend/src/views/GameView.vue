@@ -1,14 +1,16 @@
 <template>
   <div>
-      <img src="@/assets/images/king-pong.png" width="110" />
-      <h1 align="center" class="game">Will you be the King of Pong?</h1>
-      <h3 align="center" class="game">How to play:</h3>
-      <p align="center" class="game">
-        Click on <b>Join Queue</b> to reach a game. Then, click on the game and use ↕ arrows on your keyborad.<br />
-        You can also choose to change the map, by clicking "De/Active BlackHole map". The first player to reach eleven (11) points wins.<br />You can watch a game. Choose which in the list
-        and click on Spectacte.
-      </p>
-      <game-window :socket="socket"></game-window>
+    <img src="@/assets/images/king-pong.png" width="110" />
+    <h1 align="center" class="game">Will you be the King of Pong?</h1>
+    <h3 align="center" class="game">How to play:</h3>
+    <p align="center" class="game">
+      Click on <b>Join Queue</b> to reach a game. Then, click on the game and
+      use ↕ arrows on your keyborad.<br />
+      You can also choose to change the map, by clicking "De/Active BlackHole
+      map". The first player to reach eleven (11) points wins.<br />You can
+      watch a game. Choose which in the list and click on Spectacte.
+    </p>
+    <game-window :socket="socket"></game-window>
   </div>
 </template>
 
@@ -24,11 +26,7 @@ interface DataReturnType {
 export default defineComponent({
   data(): DataReturnType {
     return {
-      socket: io(
-        `http://${import.meta.env.VITE_BACKEND_HOST}:${
-          import.meta.env.VITE_BACKEND_PORT
-        }/game`,
-      ),
+      socket: io('/game'),
     };
   },
   components: {
@@ -48,9 +46,7 @@ export default defineComponent({
   beforeRouteLeave() {
     this.socket.disconnect();
   },
-  beforeRouteEnter() {
-
-  },
+  beforeRouteEnter() {},
   beforeDestroy() {
     this.socket.off('game-connect');
   },

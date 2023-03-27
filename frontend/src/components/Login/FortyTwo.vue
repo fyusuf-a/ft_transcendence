@@ -3,8 +3,12 @@
     <v-container>
       <v-row>
         <v-col>
-          <v-btn @click="login()" color="success" v-if="!isTwoFAEnabled"
-            >Login or Create Account</v-btn>
+          <v-btn
+            @click="login()"
+            color="success"
+            v-if="!isTwoFAEnabled && !waiting"
+            >Login or Create Account</v-btn
+          >
           <v-progress-circular v-if="waiting" indeterminate color="primary" />
           <two-fa v-if="isTwoFAEnabled" @success="goToProfile" />
         </v-col>
@@ -15,7 +19,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import config from '../../config';
 import TwoFA from '@/components/Login/TwoFA.vue';
 
 export default defineComponent({
@@ -29,8 +32,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async authenticate() {
-      window.location.href = `${config.backendURL}/auth/callback`;
+    authenticate() {
+      window.location.href = '/api/auth/callback';
     },
     goToProfile() {
       this.$router.push('/profile');
@@ -56,12 +59,12 @@ export default defineComponent({
         }
       } catch (error) {
         console.error(error);
+        this.waiting = false;
       }
-      this.waiting = false;
       return;
     } else {
       this.waiting = false;
     }
-  }
+  },
 });
 </script>
