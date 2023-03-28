@@ -45,10 +45,10 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 
 ### Images and Dockerfiles
 
-- `NODE_IMAGE`: the node image used in the backend build and the development frontend build
+- `NODE_IMAGE_VERSION`: the node image used in the backend build and the development frontend build
 	* `lts-alpine`
 	* `16.15-alpine`...
-- `NGINX_IMAGE`: the nginx image used in the production frontend build
+- `NGINX_IMAGE_VERSION`: the nginx image used in the production frontend build
 	* `stable-alpine`
 	* `1.22-alpine`...
 - `BACKEND_DOCKERFILE`:

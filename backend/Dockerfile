@@ -1,5 +1,5 @@
-ARG NODE_IMAGE=lts-alpine
-FROM node:$NODE_IMAGE
+ARG NODE_IMAGE_VERSION=lts-alpine
+FROM node:$NODE_IMAGE_VERSION
 EXPOSE 80
 
 RUN apk update
