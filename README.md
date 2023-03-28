@@ -51,6 +51,9 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 - `NGINX_IMAGE_VERSION`: the nginx image used in the production frontend build
 	* `stable-alpine`
 	* `1.22-alpine`...
+- `POSTGRES_IMAGE_VERSION`: the PostgreSQL database image used
+    * `15-alpine3.17`
+    * `14-alpine`...
 - `BACKEND_DOCKERFILE`:
 	* `Dockerfile`: the image does not need a rebuild if a modification occurs if `BACKEND_DEBUG` is set to 1. If a package is added tough, you need to run a `docker exec [name_of_container] npm install` or restart the container
 	* `Dockerfile.prod`: faster launch time, the image needs a rebuild for every modification to the code. No memory overhead as files are not watched

@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   db:
-    image: postgres:alpine
+    image: postgres:${POSTGRES_IMAGE_VERSION:-15-alpine3.17}
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
