@@ -1,5 +1,6 @@
 ARG NODE_IMAGE=lts-alpine
 ARG NGINX_IMAGE=stable-alpine
+ARG VITE_DISABLE_AUTHENTICATION=false
 
 FROM node:$NODE_IMAGE as pre-production
 WORKDIR /app
@@ -12,10 +13,10 @@ RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos/
 COPY ./tsconfig.json ../tsconfig.json
 
-ARG VITE_URL=http://localhost:8000
 RUN npm run build
 
 FROM nginx:$NGINX_IMAGE
+WORKDIR /app
 COPY --from=pre-production /app/dist /usr/share/nginx/html
 COPY frontend/nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80

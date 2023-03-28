@@ -44,22 +44,19 @@ services:
     image: fyusufa/ft_transcendence_frontend
     ports:
       - ${PROXY_PORT}:80
-      # the following port is necessary for vite hot module reload (HMR)
-      # - 4443:4443
     volumes:
       - ./frontend:/app
       - ./dtos:/dtos
       - ./tsconfig.json:/tsconfig.json
     environment:
       VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
-      VITE_URL: ${URL}
     build:
       context: .
       dockerfile: frontend/${FRONTEND_DOCKERFILE}
       args:
-          NODE_IMAGE: ${NODE_IMAGE}
-          NGINX_IMAGE: ${NGINX_IMAGE}
-          VITE_URL: ${URL}
+        NODE_IMAGE: ${NODE_IMAGE}
+        NGINX_IMAGE: ${NGINX_IMAGE}
+        VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
     restart: unless-stopped
     depends_on:
       backend:
