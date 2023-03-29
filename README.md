@@ -16,7 +16,7 @@ git clone https://github.com/fyusuf-a/ft_transcendence.git && cd ft_transcendenc
 ```
 cp .env.example .env
 ```
-Fill the values in the `.env` with the help of the [information below](#.env-file).
+Fill the values in the `.env` with the help of the [information below](#env-file).
 
 4. Build and Start the containers
 ```
