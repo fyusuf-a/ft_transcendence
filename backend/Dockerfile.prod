@@ -1,5 +1,5 @@
-ARG NODE_IMAGE=lts-alpine
-FROM node:$NODE_IMAGE
+ARG NODE_IMAGE_VERSION=lts-alpine
+FROM node:$NODE_IMAGE_VERSION
 WORKDIR /app
 EXPOSE 80
 RUN apk update && apk upgrade
@@ -14,10 +14,6 @@ RUN rm -f ./dtos
 COPY ./dtos/ ./src/dtos
 COPY ./tsconfig.json ../tsconfig.json
 
-COPY .env.example .env
-RUN export $(cat .env | grep -v '#' | xargs) && \
-	npm run build && \
-	rm .env
 RUN npm run build
 
 HEALTHCHECK --interval=5s --retries=20 CMD wget --spider http://localhost/docs || exit 1

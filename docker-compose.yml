@@ -2,11 +2,11 @@ version: '3.4'
 
 services:
   db:
-    image: postgres:alpine
+    image: postgres:${POSTGRES_IMAGE_VERSION:-15-alpine3.17}
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_USER: ${DB_USER:-postgres}
     volumes:
       - pgdb-data:/var/lib/postgresql/data
       - ./sql/create_db.sql:/docker-entrypoint-initdb.d/create_db.sql
@@ -20,22 +20,22 @@ services:
       - ./dtos:/tmp/dtos
       - ./tsconfig.json:/tmp/tsconfig.json
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_NAME: ${DB_NAME}
-      URL: ${URL}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_USER: ${DB_USER}
-      JWT_SECRET_KEY: ${BACKEND_JWT_SECRET_KEY}
-      WATCH: ${BACKEND_DEBUG}
-      DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
+      DB_HOST: ${DB_HOST:-db}
+      DB_NAME: ${DB_NAME:-postgres}
+      URL: ${URL:-http://localhost:8000}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      JWT_SECRET_KEY: ${BACKEND_JWT_SECRET_KEY:-secret_key}
+      WATCH: ${BACKEND_DEBUG:-1}
+      DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION:-false}
       BACKEND_42_UID: ${BACKEND_42_UID}
       BACKEND_42_SECRET: ${BACKEND_42_SECRET}
-      BACKEND_SALT_ROUNDS: ${BACKEND_SALT_ROUNDS}
+      BACKEND_SALT_ROUNDS: ${BACKEND_SALT_ROUNDS:-10}
     build:
       context: .
-      dockerfile: backend/${BACKEND_DOCKERFILE}
+      dockerfile: backend/${BACKEND_DOCKERFILE:-Dockerfile}
       args:
-          NODE_IMAGE: ${NODE_IMAGE}
+        NODE_IMAGE_VERSION: ${NODE_IMAGE_VERSION:-lts-alpine}
     restart: unless-stopped
     depends_on:
       - db
@@ -43,23 +43,20 @@ services:
   frontend:
     image: fyusufa/ft_transcendence_frontend
     ports:
-      - ${PROXY_PORT}:80
-      # the following port is necessary for vite hot module reload (HMR)
-      # - 4443:4443
+      - ${PROXY_PORT:-8000}:80
     volumes:
       - ./frontend:/app
       - ./dtos:/dtos
       - ./tsconfig.json:/tsconfig.json
     environment:
-      VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION}
-      VITE_URL: ${URL}
+      VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION:-false}
     build:
       context: .
-      dockerfile: frontend/${FRONTEND_DOCKERFILE}
+      dockerfile: frontend/${FRONTEND_DOCKERFILE:-Dockerfile}
       args:
-          NODE_IMAGE: ${NODE_IMAGE}
-          NGINX_IMAGE: ${NGINX_IMAGE}
-          VITE_URL: ${URL}
+        NODE_IMAGE_VERSION: ${NODE_IMAGE_VERSION:-lts-alpine}
+        NGINX_IMAGE_VERSION: ${NGINX_IMAGE_VERSION:-stable-alpine}
+        VITE_DISABLE_AUTHENTICATION: ${DISABLE_AUTHENTICATION:-false}
     restart: unless-stopped
     depends_on:
       backend:
@@ -71,11 +68,11 @@ services:
     ports:
       - 8888:8080
     environment:
-      ADMINER_DB: ${DB_NAME}
+      ADMINER_DB: ${DB_NAME:-postgres}
       ADMINER_DRIVER: pgsql
-      ADMINER_PASSWORD: ${DB_PASSWORD}
-      ADMINER_SERVER: ${DB_HOST}
-      ADMINER_USERNAME: ${DB_USER}
+      ADMINER_PASSWORD: ${DB_PASSWORD:-password}
+      ADMINER_SERVER: ${DB_HOST:-db}
+      ADMINER_USERNAME: ${DB_USER:-postgres}
       ADMINER_AUTOLOGIN: 1
     depends_on:
       - db
