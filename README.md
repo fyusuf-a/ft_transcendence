@@ -10,7 +10,7 @@
 git clone https://github.com/fyusuf-a/ft_transcendence.git && cd ft_transcendence
 ```
 
-2. Create an application on the 42 intra with the redirect URI set to `http://localhost:8000/auth/callback`
+2. Create an application on the 42 intra with the redirect URI set to `http://localhost:8000/api/auth/callback`
 
 3. Create the `.env` file:
 ```
@@ -28,15 +28,15 @@ This will build and start the default containers (the database, the backend and 
 
 ## Usage
 - The frontend will be available at `http://localhost:8000/`
-- The backend swagger will be available at `http://localhost:8000/docs` in debug mode (using the `Dockerfile` for the backend, not the `Dockerfile.prod`)
+- The backend swagger will be available at `http://localhost:8000/api/docs` in debug mode (using the `Dockerfile` for the backend, not the `Dockerfile.prod`)
 - Adminer, if enabled, will be available at `http://localhost:8888/`
 
 ## Testing
 ### Backend
 ```
-docker exec -t ft_transcendence-backend-1 npm run test        # run unit tests one time
-docker exec -t ft_transcendence-backend-1 npm run test:watch  # watch for changes and run unit tests
-docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end tests one time
+docker exec -t -w app ft_transcendence-backend-1 npm run test:unit        # run unit tests one time
+docker exec -t -w app ft_transcendence-backend-1 npm run test:watch  # watch for changes and run unit tests
+docker exec -t -w app ft_transcendence-backend-1 npm run test:e2e    # run end-to-end tests one time
 ```
 
 ## `.env` file
@@ -52,7 +52,7 @@ docker exec -t ft_transcendence-backend-1 npm run test:e2e    # run end-to-end t
 	* `stable-alpine`
 	* `1.22-alpine`...
 - `BACKEND_DOCKERFILE`:
-	* `Dockerfile`: the image does not need a rebuild if a modification occurs if `BACKEND_DEBUG` is set to 1. If a package is added tough, you need to run a `docker exec [name_of_container] npm install` or restart the container
+	* `Dockerfile`: the image does not need a rebuild if a modification occurs if `BACKEND_DEBUG` is set to 1. If a package is added though, you need to run a `docker exec [name_of_container] npm install` or restart the container
 	* `Dockerfile.prod`: faster launch time, the image needs a rebuild for every modification to the code. No memory overhead as files are not watched
 - `FRONTEND_DOCKERFILE`:
 	* `Dockerfile`: the site is served by the Vite development server with hot reload
