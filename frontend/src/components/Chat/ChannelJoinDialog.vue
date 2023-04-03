@@ -66,7 +66,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { ChannelDto, CreateChannelDto } from '@/common/dto/channel.dto';
-import chatStore from '@/store/chatStore';
+import { chatStore } from '@/store/chat';
 interface DataReturnType {
   joinableChannels: Array<ChannelDto>;
   selectedChannel: string;
@@ -94,7 +94,7 @@ export default defineComponent({
       if (oldValue === true && newValue === false) {
         this.resetDialog();
       }
-    }
+    },
   },
   methods: {
     async handleJoinChannel() {
@@ -120,10 +120,10 @@ export default defineComponent({
       this.dialogOpen = true;
       chatStore
         .dispatch('fetchJoinableChannels')
-        .then((channels) => {
+        .then((channels: Array<ChannelDto>) => {
           this.joinableChannels = [...channels];
         })
-        .catch((error) => {
+        .catch((error: Error) => {
           console.log(error);
         });
     },

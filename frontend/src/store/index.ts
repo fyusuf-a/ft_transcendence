@@ -16,22 +16,24 @@ interface Cache {
   avatars: Map<number, string>;
 }
 
-interface State {
+export interface RootState {
   user: ResponseUserDto;
   avatar: string | undefined;
   token: string | undefined;
   socket: Socket | undefined;
+  chatSocket: Socket | undefined;
   cache: Cache | undefined;
   notifications: Array<Notification>;
   challengedUserId: number;
   spectatedUserId: number;
 }
 
-const state: State = {
+const state: RootState = {
   user: new UserDto(),
   avatar: undefined,
   token: undefined,
   socket: undefined,
+  chatSocket: undefined,
   cache: undefined,
   notifications: [],
   challengedUserId: 0,
@@ -42,10 +44,16 @@ interface Mutation {
   type: string;
 }
 
-const createWebSocketPlugin: Plugin<State> = (store: Store<State>) => {
+const createWebSocketPlugin: Plugin<RootState> = (store: Store<RootState>) => {
   store.subscribe((mutation: Mutation) => {
     if (mutation.type === 'setSocket') {
       store.state.socket = io('/notifications', {
+        query: {
+          id: store.state.user.id,
+          token: store.state.token as string,
+        },
+      });
+      store.state.chatSocket = io('/chat', {
         query: {
           id: store.state.user.id,
           token: store.state.token as string,
@@ -55,7 +63,7 @@ const createWebSocketPlugin: Plugin<State> = (store: Store<State>) => {
   });
 };
 
-export default createStore({
+export const store = createStore({
   state: state,
   getters: {
     user: (state) => state.user,
@@ -67,6 +75,7 @@ export default createStore({
     id: (state) => state.user.id,
     token: (state) => state.token,
     socket: (state) => state.socket,
+    chatSocket: (state) => state.chatSocket,
     notifications: (state) => state.notifications,
     challengeUserId: (state) => {
       if (!state.challengedUserId) return 0;
@@ -151,3 +160,5 @@ export default createStore({
   modules: {},
   plugins: [vuexPersister.persist, createWebSocketPlugin],
 });
+
+export default store;

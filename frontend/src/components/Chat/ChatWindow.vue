@@ -62,7 +62,7 @@ import { ChannelDto } from '@/common/dto/channel.dto';
 import { MessageDto } from '@/common/dto/message.dto';
 import { UserDto } from '@/common/dto/user.dto';
 import { MembershipDto } from '@/common/dto/membership.dto';
-import { chatSocket } from '@/store/chatStore';
+import { chatStore } from '@/store/chat';
 
 interface DataReturnType {
   messageContent: string;
@@ -100,7 +100,7 @@ export default defineComponent({
   },
   methods: {
     sendMessage() {
-      chatSocket.emit('chat-send', {
+      chatStore.state.socket?.emit('chat-send', {
         channel: this.channel.id,
         message: this.messageContent,
         authorization: this.$store.getters.token,
@@ -133,7 +133,7 @@ export default defineComponent({
     },
   },
   created() {
-    chatSocket.emit('chat-listen');
+    chatStore.state.socket?.emit('chat-listen');
   },
 });
 </script>

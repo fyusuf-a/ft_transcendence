@@ -69,7 +69,7 @@ import { MembershipRoleType } from '@dtos/memberships';
 import ChannelPasswordDialogVue from '@/components/Chat/ChannelPasswordDialog.vue';
 import ChannelKarmaDialogVue from '@/components/Chat/ChannelKarmaDialog.vue';
 import ChatDmDialogVue from '@/components/Chat/ChatDmDialog.vue';
-import chatStore, { chatSocket } from '@/store/chatStore';
+import { chatStore } from '@/store/chat';
 
 interface MenuSelectionEvent {
   option: string;
@@ -92,6 +92,7 @@ interface DataReturnType {
   changePass: boolean;
   karma: string;
   dming: boolean;
+  unsubscribeChatStore: () => void;
 }
 export default defineComponent({
   data(): DataReturnType {
@@ -112,6 +113,9 @@ export default defineComponent({
       changePass: false,
       karma: '',
       dming: false,
+      unsubscribeChatStore: () => {
+        return;
+      },
     };
   },
   components: {
@@ -391,16 +395,9 @@ export default defineComponent({
         });
     },
     async joinChannelById(id: number, password?: string) {
-      const channel = this.allChannels.get(id);
-      if (!channel) return;
-      const data = {
+      await chatStore.dispatch('joinChannel', {
         channelId: id,
-        userId: this.$store.getters.id,
-        role: MembershipRoleType.PARTICIPANT,
-        password: password,
-      };
-      await axios.post('/memberships', data).catch(() => {
-        this.alert('Could not join channel');
+        password,
       });
     },
     async leaveChannelById(id: number) {
@@ -422,24 +419,12 @@ export default defineComponent({
       this.selectedChannel = undefined;
     },
     async fetchMembership(channelId: number) {
-      axios
-        .get(`/memberships?channel=${channelId}&user=${this.$store.getters.id}`)
-        .then((response) => {
-          this.activeMembership = response.data[0];
-        })
-        .catch(() => {
-          console.log('Could not find membership for this channel');
-        });
+      this.activeMembership = await chatStore.dispatch(
+        'fetchMembership',
+        channelId,
+      );
     },
     async fetchMemberships() {
-      // axios
-      //   .get(`/memberships?user=${this.$store.getters.id}`)
-      //   .then((response) => {
-      //     if (response.data) this.memberships = response.data;
-      //   })
-      //   .catch(() => {
-      //     console.log('Could not fetch memberships');
-      //   });
       chatStore.dispatch('fetchMemberships');
     },
     async fetchBlocks() {
@@ -473,7 +458,7 @@ export default defineComponent({
       );
       let staySelected = false;
       if (!staySelected) this.selectedChannel = undefined;
-      chatSocket.emit('chat-listen');
+      chatStore.state.socket?.emit('chat-listen');
     },
     handleDmUser(userId: number) {
       const id = this.$store.getters.id;
@@ -503,30 +488,53 @@ export default defineComponent({
     },
   },
   async created() {
+    await chatStore.dispatch('connectSocket', this.$store.state.chatSocket);
+    this.unsubscribeChatStore = chatStore.subscribe(
+      (mutation: { type: string }) => {
+        switch (mutation.type) {
+          case 'addMembership': {
+            this.refreshChannels();
+            break;
+          }
+        }
+      },
+    );
     this.refreshChannels();
-    chatSocket.on('chat-message', this.handleMessage);
-    chatSocket.on('membership-created', this.refreshChannels);
-    chatSocket.on('chat-unauthorized', (message: string) => {
-      this.alert(message);
-    });
-    chatSocket.on('chat-banned', (message: string) => {
-      this.alert(message);
-      this.messages.clear();
-      this.refreshChannels();
-      this.selectedChannel = undefined;
-    });
-    chatSocket.on('chat-muted', (message: string) => {
-      this.alert(message);
-    });
-    chatSocket.on('refresh-channels', this.refreshChannels);
-  },
-  beforeRouteLeave() {
-    // this.socket.disconnect();
+    if (chatStore.state.socket) {
+      chatStore.state.socket.on('chat-message', this.handleMessage);
+      chatStore.state.socket.on('chat-unauthorized', (message: string) => {
+        this.alert(message);
+      });
+      chatStore.state.socket.on('chat-banned', (message: string) => {
+        this.alert(message);
+        this.messages.clear();
+        this.refreshChannels();
+        this.selectedChannel = undefined;
+      });
+      chatStore.state.socket.on('chat-muted', (message: string) => {
+        this.alert(message);
+      });
+      chatStore.state.socket.on('refresh-channels', this.refreshChannels);
+    }
   },
   beforeDestroy() {
-    // this.socket.off('chat-message', this.handleMessage);
-    // this.socket.off('refresh-channels', this.refreshChannels);
-    // this.socket.disconnect();
+    this.unsubscribeChatStore();
+    if (chatStore.state.socket) {
+      chatStore.state.socket.off('chat-message', this.handleMessage);
+      chatStore.state.socket.off('chat-unauthorized', (message: string) => {
+        this.alert(message);
+      });
+      chatStore.state.socket.off('chat-banned', (message: string) => {
+        this.alert(message);
+        this.messages.clear();
+        this.refreshChannels();
+        this.selectedChannel = undefined;
+      });
+      chatStore.state.socket.off('chat-muted', (message: string) => {
+        this.alert(message);
+      });
+      chatStore.state.socket.off('refresh-channels', this.refreshChannels);
+    }
   },
 });
 </script>

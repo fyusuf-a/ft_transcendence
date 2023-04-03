@@ -66,7 +66,6 @@ import ChannelJoinDialog from './ChannelJoinDialog.vue';
 import { UserDto } from '@/common/dto/user.dto';
 import { JoinChannelDto } from '@dtos/channels/join-channel.dto';
 
-
 interface DataReturnType {
   title: string;
   unreadMarker: string;
