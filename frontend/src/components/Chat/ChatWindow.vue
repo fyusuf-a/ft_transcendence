@@ -1,5 +1,8 @@
 <template>
-  <v-card v-if="channel !== undefined && membership !== undefined">
+  <v-card
+    v-if="channel !== undefined && membership !== undefined"
+    max-height="80vh"
+  >
     <v-toolbar color="primary" density="compact">
       <v-toolbar-title>{{ getChannelDisplay(channel) }}</v-toolbar-title>
       <chat-window-menu
@@ -10,7 +13,7 @@
         @chat-change-password="$emit('chat-change-password')"
       ></chat-window-menu>
     </v-toolbar>
-    <v-card fill-height>
+    <v-card fill-height class="overflow-y-auto" max-height="60vh">
       <v-row v-for="item in messages" :key="item.id">
         <v-col cols="12">
           <chat-message
@@ -26,7 +29,8 @@
           </chat-message>
         </v-col>
       </v-row>
-
+    </v-card>
+    <v-card>
       <v-row>
         <v-col cols="10">
           <v-text-field
