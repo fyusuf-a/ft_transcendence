@@ -27,17 +27,17 @@
         </v-col>
       </v-row>
 
-      <v-row align="baseline">
-        <v-col class="col-10">
+      <v-row>
+        <v-col cols="10">
           <v-text-field
             v-model="messageContent"
             label="Message"
-            outlined
             clearable
+            density="compact"
             @keyup.enter="sendMessage"
           ></v-text-field>
         </v-col>
-        <v-col class="col-2">
+        <v-col cols="2">
           <v-btn depressed color="primary" @click="sendMessage"> Send </v-btn>
         </v-col>
       </v-row>
