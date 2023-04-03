@@ -1,24 +1,21 @@
 <template>
-  <v-row justify="center">
-    <v-btn @click="openDialog" icon>+</v-btn>
-    <v-dialog v-model="dialogOpen" scrollable max-width="300px">
+  <span>
+    <v-btn @click="openDialog" icon="mdi-plus" color="secondary"></v-btn>
+    <v-dialog v-model="dialogOpen">
       <v-card class="v-dialog-pos">
-        <v-card-title
-          >{{ action }} Channel
-          <v-spacer></v-spacer>
+        <v-toolbar color="primary">
+          <v-toolbar-title> {{ action }} Channel </v-toolbar-title>
           <v-btn
             v-if="action == 'Join'"
             icon
-            color="primary"
+            color="secondary"
             dark
             @click="action = 'Create'"
           >
             +
           </v-btn>
-          <v-btn @click="dmUser">DM</v-btn></v-card-title
-        >
-
-        <v-divider></v-divider>
+          <v-btn @click="dmUser">DM</v-btn>
+        </v-toolbar>
         <v-card-text v-if="action == 'Create'">
           <v-text-field
             v-model="createdChannel.name"
@@ -60,7 +57,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </span>
 </template>
 
 <script lang="ts">

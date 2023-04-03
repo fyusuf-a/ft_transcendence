@@ -1,14 +1,15 @@
 <template>
   <v-dialog v-model="karmaLocal">
     <v-card v-if="selectedChannel !== undefined" class="v-dialog-pos">
-      <v-card-title> {{ modelValue }} for </v-card-title>
-
+      <v-toolbar color="primary">
+        <v-toolbar-title> {{ modelValue }} for </v-toolbar-title>
+      </v-toolbar>
       <v-card-text>
         <v-text-field v-model="karmaTime" label="minutes"></v-text-field>
       </v-card-text>
 
       <v-card-actions>
-        <v-btn color="red" text @click="resetDialog"> Cancel </v-btn>
+        <v-btn color="error" text @click="resetDialog"> Cancel </v-btn>
         <v-btn color="success" text @click="handleKarma"> Confirm </v-btn>
       </v-card-actions>
     </v-card>

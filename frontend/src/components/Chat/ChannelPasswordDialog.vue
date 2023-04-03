@@ -1,14 +1,16 @@
 <template>
   <v-dialog v-model="changingLocal">
     <v-card v-if="selectedChannel !== undefined" class="v-dialog-pos">
-      <v-card-title>
-        Change/Set password for <u>{{ selectedChannel.name }}</u
-        ><br />
-        (Leave blank to make this channel public)</v-card-title
-      >
-
+      <v-toolbar color="primary">
+        <v-toolbar-title class="mx-10">
+          Change/Set password for <u>{{ selectedChannel.name }}</u>
+        </v-toolbar-title>
+      </v-toolbar>
       <v-card-text>
-        <v-text-field v-model="password" label="Password"></v-text-field>
+        <v-text-field
+          v-model="password"
+          label="Password (Leave blank to make this channel public)"
+        ></v-text-field>
       </v-card-text>
 
       <v-card-actions>

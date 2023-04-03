@@ -1,38 +1,24 @@
 <template>
   <v-card>
+    <v-toolbar color="primary" density="compact">
+      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <channel-join-dialog
+        @channel-join-event="handleChannelJoin"
+        @channel-create-event="handleChannelCreate"
+        @chat-dm-user="$emit('chat-dm-user')"
+        @refresh-channels-event="$emit('refresh-channels-event')"
+      >
+      </channel-join-dialog>
+    </v-toolbar>
     <v-container>
-      <v-row no-gutters align="center" class="header-row">
-        <v-col cols="6">{{ title }}</v-col>
-        <v-col cols="3">
-          <channel-join-dialog
-            @channel-join-event="handleChannelJoin"
-            @channel-create-event="handleChannelCreate"
-            @chat-dm-user="$emit('chat-dm-user')"
-            @refresh-channels-event="$emit('refresh-channels-event')"
-          >
-          </channel-join-dialog>
-        </v-col>
-        <v-col cols="3">
-          <span
-            icon
-            color="primary"
-            dark
-            class="button"
-            @click="$emit('refresh-channels-event')"
-            >&#8635;
-          </span>
-        </v-col>
-      </v-row>
       <v-row>
-        <v-divider></v-divider>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-list density="compact">
+        <v-col cols="12">
+          <v-list density="compact" color="secondary">
             <v-list-item
               v-for="(item, i) in channels"
               :key="i"
-              active-color="primary"
+              color="secondary"
               @click="() => handleChannelSelection(item)"
             >
               <v-tooltip bottom>

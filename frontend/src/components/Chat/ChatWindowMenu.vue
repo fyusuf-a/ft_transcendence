@@ -1,15 +1,19 @@
 <template>
   <v-menu bottom left>
     <template v-slot:activator="{ props: tooltip }">
-      <v-btn light icon v-bind="tooltip">
-        <v-icon>mdi-dots-vertical</v-icon>
+      <v-btn light icon="mdi-dots-vertical" color="secondary" v-bind="tooltip">
       </v-btn>
     </template>
 
     <v-list>
-        <v-list-item v-for="(item, i) in allowedOptions" :key="i" active-color="primary" @click="() => handleOptionSelection(item)">
-          <v-list-item-title>{{ item.label }}</v-list-item-title>
-        </v-list-item>
+      <v-list-item
+        v-for="(item, i) in allowedOptions"
+        :key="i"
+        active-color="primary"
+        @click="() => handleOptionSelection(item)"
+      >
+        <v-list-item-title>{{ item.label }}</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>
@@ -50,17 +54,27 @@ export default defineComponent({
   computed: {
     allowedOptions(): OptionType[] {
       let options = [];
-      
-      if (this.channel.type === ChannelType.PRIVATE && (this.membership?.role === MembershipRoleType.OWNER || this.membership?.role === MembershipRoleType.ADMIN)) {
+
+      if (
+        this.channel.type === ChannelType.PRIVATE &&
+        (this.membership?.role === MembershipRoleType.OWNER ||
+          this.membership?.role === MembershipRoleType.ADMIN)
+      ) {
         options.push({ label: 'Add user', event: 'chat-invite-channel' });
       }
 
       if (this.membership?.role === MembershipRoleType.OWNER) {
-        options.push({ label: 'Set or Change password', event: 'chat-change-password' });
+        options.push({
+          label: 'Set or Change password',
+          event: 'chat-change-password',
+        });
       }
 
       let optionLabel = 'Leave Channel';
-      if (this.channel.type === ChannelType.DIRECT || this.membership?.role === MembershipRoleType.OWNER) {
+      if (
+        this.channel.type === ChannelType.DIRECT ||
+        this.membership?.role === MembershipRoleType.OWNER
+      ) {
         optionLabel = 'Delete Channel';
       }
       options.push({ label: optionLabel, event: 'chat-leave-channel' });

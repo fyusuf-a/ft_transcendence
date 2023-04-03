@@ -1,96 +1,95 @@
 <template>
-    <v-dialog
-        v-model="invitingLocal"
-    >
-        <v-card>
-            <v-card-title> DM User</v-card-title>
+  <v-dialog v-model="invitingLocal">
+    <v-card>
+      <v-toolbar color="primary">
+        <v-toolbar-title>DM User</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text>
+        <v-text-field v-model="query" label="Username"></v-text-field>
+        <v-list v-if="query">
+          <v-list-item
+            v-for="(user, i) in filteredList"
+            :key="user.id"
+            @click="handleInvite(user.id)"
+          >
+            {{ user.username }}
+          </v-list-item>
+        </v-list>
+      </v-card-text>
 
-          <v-card-text>
-              <v-text-field
-                  v-model="query"
-                  label="Username"
-              ></v-text-field>
-              <v-list v-if="query">
-                <v-list-item
-                  v-for="(user, i) in filteredList"
-                  :key="user.id"
-                  @click="handleInvite(user.id)"
-                >
-                  {{ user.username }}
-                </v-list-item>
-              </v-list>
-            </v-card-text>
-            
-            <v-card-actions>
-                <v-btn color="red" text @click="resetDialog"> Cancel </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-  </template>
-  
-  <script lang="ts">
-  import axios from 'axios';
-  import { defineComponent } from 'vue';
-  import { ChannelDto } from '@/common/dto/channel.dto';
-  
-  interface DataReturnType {
-    query: string;
-    users: { id: number, username: string }[];
-  }
-  
-  export default defineComponent({
-    props: {
-      selectedChannel: {
-        type: Object as () => ChannelDto,
-        required: false,
-      },
-      modelValue: {
-        type: Boolean,
-        required: true,
-      }
+      <v-card-actions>
+        <v-btn color="red" text @click="resetDialog"> Cancel </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<script lang="ts">
+import axios from 'axios';
+import { defineComponent } from 'vue';
+import { ChannelDto } from '@/common/dto/channel.dto';
+
+interface DataReturnType {
+  query: string;
+  users: { id: number; username: string }[];
+}
+
+export default defineComponent({
+  props: {
+    selectedChannel: {
+      type: Object as () => ChannelDto,
+      required: false,
     },
-    data(): DataReturnType {
-      return {
-        query: '',
-        users: [],
-      };
+    modelValue: {
+      type: Boolean,
+      required: true,
     },
-    methods: {
-      async handleInvite(userId: number) {
-        this.$emit('chat-dm-user', userId);
-        this.resetDialog();
+  },
+  data(): DataReturnType {
+    return {
+      query: '',
+      users: [],
+    };
+  },
+  methods: {
+    async handleInvite(userId: number) {
+      this.$emit('chat-dm-user', userId);
+      this.resetDialog();
+    },
+    resetDialog() {
+      this.query = '';
+      this.$emit('update:modelValue', false);
+    },
+  },
+  computed: {
+    invitingLocal: {
+      get(): boolean {
+        return this.modelValue;
       },
-      resetDialog() {
-        this.query = '';
-        this.$emit('update:modelValue', false);
+      set(value: boolean) {
+        this.$emit('update:modelValue', value);
       },
     },
-    computed: {
-      invitingLocal: {
-        get(): boolean {
-          return this.modelValue;
-        },
-        set(value: boolean) {
-          this.$emit('update:modelValue', value);
-        }
-      },
-      filteredList() {
-        return this.users.filter((user) => {
-          return user.username.toLowerCase().includes(this.query.toLowerCase());
-        });
-      },
+    filteredList() {
+      return this.users.filter((user) => {
+        return user.username.toLowerCase().includes(this.query.toLowerCase());
+      });
     },
-    async created() {
-      await axios.get('/users/').then((response) => {
-        for (let i: number = 0; i < response.data.data.length; i++) {
+  },
+  async created() {
+    await axios
+      .get('/users/')
+      .then((response) => {
+        for (let i = 0; i < response.data.data.length; i++) {
           this.users.push({
             id: response.data.data[i].id,
             username: response.data.data[i].username,
           });
-        };
-      }).catch(() => {
-        window.alert('Cannot load user list')
+        }
+      })
+      .catch(() => {
+        window.alert('Cannot load user list');
       });
-    },
-  });
-  </script>
+  },
+});
+</script>

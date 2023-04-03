@@ -1,25 +1,16 @@
 <template>
   <v-card v-if="channel !== undefined && membership !== undefined">
-    <v-container fill-height>
-      <v-row dense max-height="10px">
-        <v-col cols="11">
-          <span>{{ getChannelDisplay(channel) }}</span>
-        </v-col>
-        <v-col cols="1">
-          <chat-window-menu
-            :channel="channel"
-            :membership="membership"
-            @chat-leave-channel="handleLeaveChannelEvent"
-            @chat-invite-channel="$emit('chat-invite-channel')"
-            @chat-change-password="$emit('chat-change-password')"
-          ></chat-window-menu>
-        </v-col>
-      </v-row>
-      <v-row dense max-height="5px">
-        <v-col>
-          <v-divider></v-divider>
-        </v-col>
-      </v-row>
+    <v-toolbar color="primary" density="compact">
+      <v-toolbar-title>{{ getChannelDisplay(channel) }}</v-toolbar-title>
+      <chat-window-menu
+        :channel="channel"
+        :membership="membership"
+        @chat-leave-channel="handleLeaveChannelEvent"
+        @chat-invite-channel="$emit('chat-invite-channel')"
+        @chat-change-password="$emit('chat-change-password')"
+      ></chat-window-menu>
+    </v-toolbar>
+    <v-card fill-height>
       <v-row v-for="item in messages" :key="item.id">
         <v-col cols="12">
           <chat-message
@@ -50,7 +41,7 @@
           <v-btn depressed color="primary" @click="sendMessage"> Send </v-btn>
         </v-col>
       </v-row>
-    </v-container>
+    </v-card>
   </v-card>
 </template>
 

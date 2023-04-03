@@ -1,7 +1,7 @@
 <template>
-  <v-container>
+  <v-container class="px-1 ma-1">
     <v-row>
-      <v-col cols="12" md="3">
+      <v-col cols="12" md="4">
         <channel-list
           @channel-select-event="handleChannelSelection"
           @channel-join-event="handleChannelJoin"
@@ -16,26 +16,7 @@
           :key="newUnread"
         ></channel-list>
       </v-col>
-      <v-col cols="12" md="9">
-        <chat-dm-dialog v-model="dming" @chat-dm-user="handleDmUser">
-        </chat-dm-dialog>
-        <channel-invite-dialog
-          v-model="inviting"
-          :selectedChannel="selectedChannel"
-          @chat-invite-user="handleUserInvite"
-        >
-        </channel-invite-dialog>
-        <channel-password-dialog
-          v-model="changePass"
-          :selectedChannel="selectedChannel"
-        >
-        </channel-password-dialog>
-        <channel-karma-dialog
-          v-model="karma"
-          :selected-channel="selectedChannel"
-          :selected-user="selectedUserId"
-        >
-        </channel-karma-dialog>
+      <v-col cols="12" md="8">
         <chat-window
           v-if="selectedChannel"
           :channel="selectedChannel"
@@ -49,6 +30,27 @@
           @chat-change-password="changePass = true"
         ></chat-window>
       </v-col>
+    </v-row>
+    <v-row>
+      <chat-dm-dialog v-model="dming" @chat-dm-user="handleDmUser">
+      </chat-dm-dialog>
+      <channel-invite-dialog
+        v-model="inviting"
+        :selectedChannel="selectedChannel"
+        @chat-invite-user="handleUserInvite"
+      >
+      </channel-invite-dialog>
+      <channel-password-dialog
+        v-model="changePass"
+        :selectedChannel="selectedChannel"
+      >
+      </channel-password-dialog>
+      <channel-karma-dialog
+        v-model="karma"
+        :selected-channel="selectedChannel"
+        :selected-user="selectedUserId"
+      >
+      </channel-karma-dialog>
     </v-row>
   </v-container>
 </template>
