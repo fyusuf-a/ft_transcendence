@@ -13,7 +13,7 @@ export default defineComponent({
           `@/components/Login/${
             import.meta.env.VITE_DISABLE_AUTHENTICATION === 'true'
               ? 'NoAuth'
-              : 'FortyTwo'
+              : 'Auth'
           }.vue`
         );
         return component;

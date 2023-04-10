@@ -9,15 +9,10 @@
       :width="7"
       color="primary"
     />
-    <v-card v-if="!isTwoFAEnabled && !waiting" color="secondary">
-      <v-card-title class="mb-7">Sign-in</v-card-title>
-      <v-card-actions>
-        <v-btn @click="login()" class="mb-3">Login with 42 </v-btn>
-        <v-btn @click="login()" prepend-icon="fa-brands fa-google"
-          >Login with Google
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+    <login-card
+      v-if="!isTwoFAEnabled && !waiting"
+      @activate-waiting="waiting = true"
+    />
     <two-fa v-if="isTwoFAEnabled && !waiting" @success="goToProfile" />
   </v-sheet>
 </template>
@@ -25,10 +20,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import TwoFA from '@/components/Login/TwoFA.vue';
+import LoginCard from '@/components/Login/LoginCard.vue';
 
 export default defineComponent({
   components: {
     'two-fa': TwoFA,
+    'login-card': LoginCard,
   },
   data() {
     return {
@@ -37,16 +34,9 @@ export default defineComponent({
     };
   },
   methods: {
-    authenticate() {
-      window.location.href = '/api/auth/callback';
-    },
     goToProfile() {
       this.waiting = true;
       this.$router.push('/profile');
-    },
-    async login() {
-      this.waiting = true;
-      this.authenticate();
     },
   },
   async created() {
@@ -84,26 +74,6 @@ h1 {
 .v-sheet {
   margin: 3rem auto;
   width: 400px;
-}
-
-.v-card-actions .v-btn ~ .v-btn {
-  margin-inline-start: 0;
-}
-
-.v-card-actions {
-  flex-direction: column;
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.v-btn {
-  transition-property: transform();
-  transition-duration: 0.2s;
-  width: 100%;
-}
-
-.v-btn:hover {
-  transform: scale(1.05);
 }
 
 .v-progress-circular {
