@@ -2,8 +2,8 @@
   <v-card color="secondary">
     <v-card-title class="mb-7">Sign-in</v-card-title>
     <v-card-actions>
-      <v-btn @click="login()" class="mb-3">Login with 42 </v-btn>
-      <v-btn @click="login()" prepend-icon="fa-brands fa-google"
+      <v-btn @click="login('marvin')" class="mb-3">Login with 42 </v-btn>
+      <v-btn @click="login('google')" prepend-icon="fa-brands fa-google"
         >Login with Google
       </v-btn>
     </v-card-actions>
@@ -16,12 +16,9 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   emits: ['activate-waiting'],
   methods: {
-    authenticate() {
-      window.location.href = '/api/auth/callback';
-    },
-    async login() {
+    login(apiName: string) {
       this.$emit('activate-waiting');
-      this.authenticate();
+      window.location.href = `/api/auth/callback/${apiName}`;
     },
   },
 });
@@ -40,6 +37,7 @@ export default defineComponent({
 }
 
 .v-btn {
+  background-color: rgb(var(--v-theme-primary)) !important;
   transition-property: transform();
   transition-duration: 0.2s;
   width: 100%;

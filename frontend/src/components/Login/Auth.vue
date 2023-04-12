@@ -38,6 +38,10 @@ export default defineComponent({
       this.waiting = true;
       this.$router.push('/profile');
     },
+    goToRegister() {
+      this.waiting = true;
+      this.$router.push('/register');
+    },
   },
   async created() {
     this.waiting = true;
@@ -46,12 +50,14 @@ export default defineComponent({
         const user = await this.$store.dispatch('verifyLoginInfo', {
           id: this.$route.query.id,
           token: this.$route.query.token,
+          username: this.$route.query.username,
         });
         if (user.isTwoFAEnabled) {
           this.waiting = false;
           this.isTwoFAEnabled = true;
         } else {
-          this.goToProfile();
+          if (this.$route.query.username) this.goToProfile();
+          else this.goToRegister();
         }
       } catch (error) {
         console.error(error);

@@ -3,6 +3,8 @@ import { UsersService } from 'src/users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
 import { authenticator } from 'otplib';
+import { CreateUserDto } from '@dtos/users/create-user.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -11,12 +13,21 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async findUserFromMarvinId(marvinId: string): Promise<any> {
+  async authStrategy(identity: string): Promise<User> {
+    let user: User;
     try {
-      return await this.usersService.findByMarvinId(marvinId);
+      user = await this.usersService.findByIdentity(identity);
     } catch {
-      throw new UnauthorizedException();
+      const createUserDto = new CreateUserDto();
+      createUserDto.identity = identity;
+      createUserDto.username = null;
+      try {
+        user = await this.usersService.create(createUserDto);
+      } catch {
+        throw new UnauthorizedException();
+      }
     }
+    return user;
   }
 
   async generateTwoFASecret(userId: number): Promise<string> {

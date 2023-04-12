@@ -81,15 +81,28 @@ export class UsersService {
     });
   }
 
-  // Find by 42 pseudo
-  findByMarvinId(marvinId: string): Promise<User> {
+  // Find by identity
+  findByIdentity(identity: string): Promise<User> {
     return this.usersRepository.findOneOrFail({
-      where: { identity: marvinId },
+      where: { identity },
     });
   }
 
-  create(userDto: CreateUserDto): Promise<User> {
-    return this.usersRepository.save(userDto);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return await this.usersRepository.save(createUserDto);
+  }
+
+  async suggestUsername(username: string): Promise<string | null> {
+    let newUsername: string;
+    for (let i = 0; i < 100; i++) {
+      newUsername = username + i.toString();
+      try {
+        await this.findByName(newUsername);
+      } catch {
+        return newUsername;
+      }
+    }
+    return null;
   }
 
   update(id: number, userDto: UpdateUserDto): Promise<UpdateResult> {

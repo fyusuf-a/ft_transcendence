@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service';
 import { JwtStrategy } from './auth.jwt.strategy';
 import { TwoAuthJwtStrategy } from './two.auth.jwt.strategy';
 import { MarvinStrategy } from './marvin.strategy';
+import { GoogleStrategy } from './google.strategy';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 
@@ -33,6 +34,7 @@ import { AuthController } from './auth.controller';
     JwtStrategy,
     TwoAuthJwtStrategy,
     MarvinStrategy,
+    GoogleStrategy,
     UsersService,
   ],
   controllers: [AuthController],
