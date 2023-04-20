@@ -39,22 +39,31 @@ export class AuthController {
     });
   }
 
-  private redirect(id: number, isTwoFAAuthenticated: boolean) {
+  private redirect(user: User, isTwoFAAuthenticated: boolean) {
     const url = new URL(`${this.configService.get<string>('URL')}/login`);
-    const token = this.getToken(id, isTwoFAAuthenticated);
-    url.search = new URLSearchParams({ id, token } as unknown as Record<
-      string,
-      string
-    >).toString();
+    const token = this.getToken(user.id, isTwoFAAuthenticated);
+    url.search = new URLSearchParams({
+      username: user.username,
+      id: user.id,
+      token,
+    } as unknown as Record<string, string>).toString();
     return { statusCode: HttpStatus.FOUND, url: url.toString() };
   }
 
   @Redirect()
-  @Get('callback')
+  @Get('callback/marvin')
   @Public()
   @UseGuards(AuthGuard('marvin'))
   marvinCallback(@AuthUser() user: User) {
-    return this.redirect(user.id, false);
+    return this.redirect(user, false);
+  }
+
+  @Redirect()
+  @Get('callback/google')
+  @Public()
+  @UseGuards(AuthGuard('google'))
+  googleCallback(@AuthUser() user: User) {
+    return this.redirect(user, false);
   }
 
   @Redirect()
@@ -64,7 +73,7 @@ export class AuthController {
   @IfAuthIsDisabled()
   async fakeMarvinCallback(@Query('username') username: string) {
     const user = await this.usersService.findByName(username);
-    return this.redirect(user.id, true);
+    return this.redirect(user, true);
   }
 
   @ApiExcludeEndpoint(process.env.DISABLE_AUTHENTICATION === 'false')

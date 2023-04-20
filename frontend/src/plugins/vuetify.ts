@@ -1,11 +1,13 @@
 // Styles
-import '@mdi/font/css/materialdesignicons.css';
+import '@fortawesome/fontawesome-free/css/all.css';
 import '../assets/main.scss';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
 // Vuetify
 import { createVuetify } from 'vuetify';
+import { aliases, fa } from 'vuetify/iconsets/fa';
+import { mdi } from 'vuetify/iconsets/mdi';
 
 const myCustomLightTheme = {
   dark: false,
@@ -22,8 +24,21 @@ export default createVuetify({
   directives,
   theme: {
     defaultTheme: 'myCustomLightTheme',
+    variations: {
+      colors: ['primary', 'secondary'],
+      lighten: 1,
+      darken: 2,
+    },
     themes: {
       myCustomLightTheme,
+    },
+  },
+  icons: {
+    defaultSet: 'fa',
+    aliases,
+    sets: {
+      fa,
+      mdi,
     },
   },
 });

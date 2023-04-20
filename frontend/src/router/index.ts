@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import axios from 'axios';
+import { AxiosResponse } from 'axios';
+import { ResponseUserDto } from 'src/dtos/users';
 
 const routes = [
   {
@@ -53,6 +55,11 @@ const routes = [
     path: '/login',
     component: () => import('../views/LoginView.vue'),
   },
+  {
+    name: 'Register',
+    path: '/register',
+    component: () => import('../views/Register.vue'),
+  },
 ];
 
 const router = createRouter({
@@ -61,18 +68,28 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, _, next) => {
-  if (
-    to.name === 'Login' ||
-    to.name === 'Login callback' ||
-    to.name === 'Create account'
-  ) {
+  if (to.path === '/login') {
+    next();
+  } else if (to.path === '/register') {
+    try {
+      const response: AxiosResponse<ResponseUserDto> = await axios.get(
+        '/users/me',
+      );
+      if (response.data.username) next('/game');
+      else next();
+    } catch {
+      next('/login');
+    }
     next();
   } else {
     try {
-      await axios.get('/users/me');
-      next();
+      const response: AxiosResponse<ResponseUserDto> = await axios.get(
+        '/users/me',
+      );
+      if (!response.data.username) next('/register');
+      else next();
     } catch {
-      next({ name: 'Login' });
+      next('/login');
     }
   }
 });

@@ -58,7 +58,7 @@ export default defineComponent({
           updateUserDto,
         );
         this.$store.commit('setUsername', updateUserDto.username);
-        this.$router.push('/profile');
+        this.$router.push('/');
       } finally {
         this.isWaiting = false;
       }

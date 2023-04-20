@@ -18,24 +18,24 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const ctx = host.switchToHttp();
 
-    let httpStatus: number;
-    if (exception instanceof ForbiddenError) {
-      httpStatus = HttpStatus.FORBIDDEN;
-    } else if (exception instanceof EntityNotFoundError) {
-      httpStatus = HttpStatus.NOT_FOUND;
-    } else if (exception instanceof HttpException) {
-      if (exception.getStatus() === HttpStatus.INTERNAL_SERVER_ERROR) {
-        httpStatus = HttpStatus.BAD_REQUEST;
-      } else httpStatus = exception.getStatus();
-    } else {
-      httpStatus = HttpStatus.BAD_REQUEST;
-    }
-
-    const responseBody = {
-      statusCode: httpStatus,
+    let responseBody: any = {
       message: exception instanceof Error ? exception.message : exception,
     };
 
-    httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+    let status: number;
+    if (exception instanceof ForbiddenError) {
+      responseBody.statusCode = HttpStatus.FORBIDDEN;
+      status = HttpStatus.FORBIDDEN;
+    } else if (exception instanceof EntityNotFoundError) {
+      responseBody.statusCode = HttpStatus.NOT_FOUND;
+      status = HttpStatus.NOT_FOUND;
+    } else if (exception instanceof HttpException) {
+      responseBody = exception.getResponse();
+      status = exception.getStatus();
+    } else {
+      responseBody.statusCode = HttpStatus.BAD_REQUEST;
+    }
+
+    httpAdapter.reply(ctx.getResponse(), responseBody, status);
   }
 }

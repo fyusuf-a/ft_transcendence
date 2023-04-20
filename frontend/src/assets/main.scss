@@ -1,4 +1,14 @@
 @use 'vuetify' with (
   $heading-font-family: 'Archivo',
-  $body-font-family: 'TenorSans'
+  $body-font-family: 'TenorSans',
 );
+
+html {
+  font-size: 20px;
+}
+
+h1 {
+  color: rgb(var(--v-theme-primary-darken-1)) !important;
+  font-family: 'Archivo' !important;
+}
+

@@ -51,7 +51,7 @@ export default defineComponent({
       window.location.href = `/api/auth/fake-callback?username=${username}`;
     },
     goToProfile() {
-      this.$router.push('/profile');
+      this.$router.push('/');
     },
     async verifyLogin() {
       this.errors.pop();

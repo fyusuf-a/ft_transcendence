@@ -90,16 +90,6 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Post()
-  @ApiResponse({ status: 500, description: 'Record could not be created' })
-  async create(
-    @AuthUser() user: User,
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<ResponseUserDto> {
-    await this.abilityFactory.checkAbility(user, Action.Create, User);
-    return this.usersService.create(createUserDto);
-  }
-
   @Patch(':id')
   async update(
     @AuthUser() user: User,
@@ -107,7 +97,25 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     await this.abilityFactory.checkAbility(user, Action.Update, User, { id });
-    return this.usersService.update(id, updateUserDto);
+    if (updateUserDto.username !== '') {
+      try {
+        const result = await this.usersService.update(id, updateUserDto);
+        return result;
+      } catch (err) {
+        const response: any = {
+          message: 'Username already exists',
+          status: HttpStatus.FORBIDDEN,
+        };
+        const suggestedUsername = await this.usersService.suggestUsername(
+          updateUserDto.username,
+        );
+        if (suggestedUsername) {
+          response.suggestedUsername = suggestedUsername;
+        }
+        throw new HttpException(response, HttpStatus.FORBIDDEN);
+      }
+    }
+    throw new BadRequestException('Invalid request');
   }
 
   @Get(':id')
@@ -159,12 +167,11 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     await this.abilityFactory.checkAbility(user, Action.Update, User, { id });
-    if (
-      !file ||
-      !file.filename ||
-      !this.usersService.verifyMagicNum(file.path)
-    ) {
-      throw new BadRequestException('Missing or Invalid File');
+    if (!file || !file.filename) throw new BadRequestException('Missing file');
+    if (!this.usersService.verifyMagicNum(file.path)) {
+      throw new BadRequestException(
+        'Invalid file: only .gif, .png or .jpg allowed',
+      );
     }
     return this.usersService.updateAvatar(
       +id,

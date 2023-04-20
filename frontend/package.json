@@ -16,8 +16,8 @@
     "@mdi/font": "^7.0.0",
     "@nestjs/mapped-types": "^1.1.0",
     "axios": "^0.27.2",
-    "cache-manager": "^5.0.0",
     "axios-mock-adapter": "^1.21.1",
+    "cache-manager": "^5.0.0",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.13.2",
     "core-js": "^3.24.0",
@@ -33,6 +33,7 @@
     "webfontloader": "^1.0.0"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.1",
     "@types/node": "^18.0.5",

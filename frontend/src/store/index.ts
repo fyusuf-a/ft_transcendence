@@ -78,6 +78,9 @@ export default createStore({
     },
   },
   mutations: {
+    setUsername(state, name: string) {
+      state.user.username = name;
+    },
     login(state, { id, token }: LoginUserDto) {
       state.user.id = id;
       state.token = token;
@@ -116,15 +119,14 @@ export default createStore({
       });
       context.commit('login', { id: context.getters.id, token: response.data });
     },
-    async getAvatarById(context, id: string) {
-      if (id) {
-        if (context.state.cache?.avatars.has(+id)) {
-          return context.state.cache?.avatars.get(+id);
-        }
+    async getAvatarById(context, id: string): Promise<string | undefined> {
+      if (context.state.cache?.avatars.has(+id))
+        return context.state.cache?.avatars.get(+id) as string;
+      else {
         return await fetchAvatar(+id);
       }
     },
-    async getAvatar(context) {
+    async getAvatar(context): Promise<void> {
       if (context?.state?.user?.id) {
         if (context.state.cache?.avatars.has(+context?.state?.user?.id)) {
           context.state.avatar = context.state.cache?.avatars.get(

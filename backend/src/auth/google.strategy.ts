@@ -3,65 +3,54 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Strategy } from 'passport-oauth2';
 import { stringify } from 'querystring';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from 'src/users/users.service';
 import { AuthService } from 'src/auth/auth.service';
 import axios from 'axios';
 import { AxiosResponse } from 'axios';
-import { CreateUserDto, UserDto } from '@dtos/users';
-import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/entities/user.entity';
 
-interface MarvinUser {
-  login: string;
+interface GoogleUser {
+  email: string;
 }
 
 @Injectable()
-export class MarvinStrategy extends PassportStrategy(Strategy, 'google') {
+export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
-    private jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly userService: UsersService,
     private readonly authService: AuthService,
   ) {
-    const clientID = configService.get<string>('BACKEND_42_UID');
-    const callbackURL = `${configService.get<string>('URL')}/api/auth/callback`;
+    const clientID = configService.get<string>('BACKEND_GOOGLE_UID');
+    const callbackURL = `${configService.get<string>(
+      'URL',
+    )}/api/auth/callback/google`;
     super({
-      authorizationURL: `https://api.intra.42.fr/oauth/authorize?${stringify({
-        client_id: clientID,
-        redirect_uri: callbackURL,
-        scope: 'public',
-        response_type: 'code',
-      })}`,
-      tokenURL: 'https://api.intra.42.fr/oauth/token',
-      scope: 'public',
+      authorizationURL: `https://accounts.google.com/o/oauth2/v2/auth?${stringify(
+        {
+          client_id: clientID,
+          redirect_uri: callbackURL,
+          scope: 'email',
+          response_type: 'code',
+        },
+      )}`,
+      tokenURL: 'https://oauth2.googleapis.com/token',
+      scope: 'https://www.googleapis.com/auth/userinfo.email',
       clientID,
-      clientSecret: configService.get<string>('BACKEND_42_SECRET'),
+      clientSecret: configService.get<string>('BACKEND_GOOGLE_SECRET'),
       callbackURL,
     });
   }
 
-  async validate(accessToken: string): Promise<UserDto> {
-    let response: AxiosResponse<MarvinUser>;
+  async validate(accessToken: string): Promise<User> {
+    let response: AxiosResponse<GoogleUser>;
     try {
-      response = await axios.get<MarvinUser>('https://api.intra.42.fr/v2/me', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-    } catch {
+      response = await axios.get<GoogleUser>(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+    } catch (e) {
       throw new UnauthorizedException();
     }
-    let user: User;
-    try {
-      user = await this.userService.findByMarvinId(response.data.login);
-    } catch {
-      const createUserDto = new CreateUserDto();
-      createUserDto.identity = response.data.login;
-      createUserDto.username = response.data.login;
-      try {
-        user = await this.userService.create(createUserDto);
-      } catch {
-        throw new UnauthorizedException();
-      }
-    }
-    return user;
+    return this.authService.authStrategy(response.data.email);
   }
 }
