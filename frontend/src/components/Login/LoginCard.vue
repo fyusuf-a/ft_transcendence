@@ -25,7 +25,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .v-card-actions .v-btn ~ .v-btn {
   margin-inline-start: 0;
 }

@@ -1,15 +1,14 @@
 <template>
   <v-app-bar color="primary" dark app clipped-left>
     <v-app-bar-nav-icon @click="toggleNavigationDrawer()" />
-    <v-app-bar-title>
-      <div color="primary">King Pong</div>
-    </v-app-bar-title>
+    <v-app-bar-title> King Pong </v-app-bar-title>
 
     <v-spacer />
 
     <profile-card
-      v-if="$store.state.userIsAuthenticated"
-      color="primary"
+      v-if="$store.getters.isUserAuthenticated"
+      rounded="0"
+      color="secondary"
       height="100%"
     />
 
@@ -31,7 +30,7 @@ export default defineComponent({
     modelValue: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   components: {
     'profile-card': ProfileCard,
@@ -42,8 +41,8 @@ export default defineComponent({
       this.$emit('update:modelValue', !this.modelValue);
     },
     toggleNotifications() {
-      this.$emit('update:displayNotifications', !this.displayNotifications)
-    }
+      this.$emit('update:displayNotifications', !this.displayNotifications);
+    },
   },
 });
 </script>

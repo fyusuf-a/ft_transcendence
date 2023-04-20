@@ -39,8 +39,13 @@ import { CaslModule } from 'src/casl/casl.module';
         fileFilter: (req, file, cb) => {
           const mimetype = file.mimetype.split('/');
           const ext = mimetype[mimetype.length - 1];
-          if (!['gif', 'jpeg', 'png'].includes(ext)) {
-            return cb(new BadRequestException('Invalid File Type'), false);
+          if (!['gif', 'jpg', 'jpeg', 'png'].includes(ext)) {
+            return cb(
+              new BadRequestException(
+                'Invalid file: only .gif, .png or .jpg are allowed',
+              ),
+              false,
+            );
           }
           return cb(null, true);
         },

@@ -128,7 +128,7 @@ export class UsersService {
       id: userId,
     });
     if (filepath != user.avatar)
-      this.remove_avatar(user.avatar, ': remplacing with new avatar.');
+      this.remove_avatar(user.avatar, ': replacing with new avatar.');
     return this.usersRepository.update(userId, { avatar: filepath });
   }
 

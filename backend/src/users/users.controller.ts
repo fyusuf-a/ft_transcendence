@@ -90,15 +90,18 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Patch('/me')
+  @Patch(':id')
   async update(
     @AuthUser() user: User,
+    @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
-    if (updateUserDto.username) {
+    await this.abilityFactory.checkAbility(user, Action.Update, User, { id });
+    if (updateUserDto.username !== '') {
       try {
-        await this.usersService.update(user.id, updateUserDto);
-      } catch {
+        const result = await this.usersService.update(id, updateUserDto);
+        return result;
+      } catch (err) {
         const response: any = {
           message: 'Username already exists',
           status: HttpStatus.FORBIDDEN,
@@ -112,7 +115,7 @@ export class UsersController {
         throw new HttpException(response, HttpStatus.FORBIDDEN);
       }
     }
-    return new UpdateResult();
+    throw new BadRequestException('Invalid request');
   }
 
   @Get(':id')
@@ -164,12 +167,11 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     await this.abilityFactory.checkAbility(user, Action.Update, User, { id });
-    if (
-      !file ||
-      !file.filename ||
-      !this.usersService.verifyMagicNum(file.path)
-    ) {
-      throw new BadRequestException('Missing or Invalid File');
+    if (!file || !file.filename) throw new BadRequestException('Missing file');
+    if (!this.usersService.verifyMagicNum(file.path)) {
+      throw new BadRequestException(
+        'Invalid file: only .gif, .png or .jpg allowed',
+      );
     }
     return this.usersService.updateAvatar(
       +id,
