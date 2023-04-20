@@ -1,6 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateUserDto, ResponseUserDto, UpdateUserDto } from '@dtos/users';
+import { ResponseUserDto, UpdateUserDto } from '@dtos/users';
 import { User } from './entities/user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -43,20 +43,6 @@ describe('UsersController', () => {
       jest.spyOn(service, 'findAll').mockImplementation(async () => mockOut);
       const result = await controller.findAll(user);
       expect(result.data).toEqual(expected);
-    });
-  });
-
-  describe('create()', () => {
-    it.skip('should return a ResponseUserDto', async () => {
-      const mockUser = new User();
-      mockUser.identity = 'id';
-      mockUser.username = 'user';
-      const createUserDto = new CreateUserDto();
-      createUserDto.identity = 'id';
-      createUserDto.username = 'user';
-      jest.spyOn(service, 'create').mockImplementation(async () => mockUser);
-      const result = await controller.create(user, createUserDto);
-      expect(result).toEqual(mockUser);
     });
   });
 

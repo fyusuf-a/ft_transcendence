@@ -1,9 +1,6 @@
 <template>
   <v-card :loading="loading" class="pa-2 ml-15 mr-15 mt-5" width="40%">
-    <v-tabs
-      v-model="tab"
-      background-color="white"
-    >
+    <v-tabs v-model="tab" background-color="white">
       <v-tab value="friends">Friends</v-tab>
       <v-tab v-if="!user" value="blocked">Blocked</v-tab>
     </v-tabs>
@@ -11,16 +8,32 @@
     <v-card-text>
       <v-window v-model="tab">
         <v-window-item value="friends">
-          <li class="listFriends" v-for="friend in friends" :key="friend.username">
+          <li
+            class="listFriends"
+            v-for="friend in friends"
+            :key="friend.username"
+          >
             <v-row>
               <v-col>
                 <div class="listElement">
                   <v-img class="avatar" :src="friend.avatar"></v-img>
-                  <v-badge overlap class="" :color="statusColors[friend.status]"></v-badge>
+                  <v-badge
+                    overlap
+                    class=""
+                    :color="statusColors[friend.status]"
+                  ></v-badge>
                   <p class="userName">{{ friend.username }}</p>
                   <v-spacer></v-spacer>
-                  <v-btn v-if="friend.status === 2" @click="handleSpectate(friend.id)">Spectate</v-btn>
-                  <v-btn v-if="friend.status === 1" @click="handleChallenge(friend.id)">Challenge</v-btn>
+                  <v-btn
+                    v-if="friend.status === 2"
+                    @click="handleSpectate(friend.id)"
+                    >Spectate</v-btn
+                  >
+                  <v-btn
+                    v-if="friend.status === 1"
+                    @click="handleChallenge(friend.id)"
+                    >Challenge</v-btn
+                  >
                   <v-spacer></v-spacer>
                   <br />
                 </div>
@@ -28,40 +41,60 @@
             </v-row>
           </li>
 
-          <add-friend v-if="!user" class="mb-5 mt-5"/>
+          <add-friend v-if="!user" class="mb-5 mt-5" />
 
           <div v-if="!user">
             <v-divider></v-divider>
-            <h3 class="mt-5">Pending friend requests</h3><br />
-              <li v-for="requester in requesters" :key="requester.username">
-                <v-row>
-                  <v-col>
-                    <div class="listPending">
-                      <v-img class="avatar" :src="requester.avatar" ></v-img>
-                      <p class="userName">{{ requester.username }}</p>
-                    </div>
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <div class="pb-3">
-                    <v-btn color="success" variant="outlined" class="text--primary ml-15" title="accept" @click="accept(requester.frienshipId)">✔</v-btn>
-                    <v-btn color="error" variant="outlined" class="text--primary ml-10" title="decline" @click="decline(requester.frienshipId)">✘</v-btn>
+            <h3 class="mt-5">Pending friend requests</h3>
+            <br />
+            <li v-for="requester in requesters" :key="requester.username">
+              <v-row>
+                <v-col>
+                  <div class="listPending">
+                    <v-img class="avatar" :src="requester.avatar"></v-img>
+                    <p class="userName">{{ requester.username }}</p>
                   </div>
-                </v-row>
-              </li>
-              <p v-if="!requesters.length" class="text--primary noRequest">
-                No request to accept.
-              </p>
-            </div>
+                </v-col>
+              </v-row>
+              <v-row>
+                <div class="pb-3">
+                  <v-btn
+                    color="success"
+                    variant="outlined"
+                    class="text--primary ml-15"
+                    title="accept"
+                    @click="accept(requester.frienshipId)"
+                    >✔</v-btn
+                  >
+                  <v-btn
+                    color="error"
+                    variant="outlined"
+                    class="text--primary ml-10"
+                    title="decline"
+                    @click="decline(requester.frienshipId)"
+                    >✘</v-btn
+                  >
+                </div>
+              </v-row>
+            </li>
+            <p v-if="!requesters.length" class="text--primary noRequest">
+              No request to accept.
+            </p>
+          </div>
         </v-window-item>
         <v-window-item value="blocked">
           <li v-for="blocke in blocked" :key="blocke.username">
             {{ blocke.username }} <br />
-            <v-btn color="error" variant="outlined" class="text--primary ml-15" @click="unblock(blocke.blockedId)">unblock</v-btn>
+            <v-btn
+              color="error"
+              variant="outlined"
+              class="text--primary ml-15"
+              @click="unblock(blocke.blockedId)"
+              >unblock</v-btn
+            >
           </li>
 
-          <block-user class="mb-5 mt-5"/>
-
+          <block-user class="mb-5 mt-5" />
         </v-window-item>
       </v-window>
     </v-card-text>
@@ -75,18 +108,24 @@ import { mapGetters } from 'vuex';
 import AddFriend from '@/components/Profile/AddFriend.vue';
 import { fetchAvatar } from '@/utils/avatar';
 import { Socket } from 'socket.io-client';
-import { StatusUpdateDto } from '@dtos/users'
+import { StatusUpdateDto } from '@dtos/users';
 
-import BlockUser from '@/components/Profile/BlockUser.vue'
+import BlockUser from '@/components/Profile/BlockUser.vue';
 interface MyFriendsData {
   loading: boolean;
-  friends: { id: number, username: string ; avatar: string ; status: number, friendLink: string }[];
-  requesters: { username: string ; avatar: string, frienshipId: number }[];
-  tab: any,
-  statusColors : string[],
-  socket : Socket,
-  blocked: { username: string ; blockedId: number }[],
-  idOther: number,
+  friends: {
+    id: number;
+    username: string;
+    avatar: string;
+    status: number;
+    friendLink: string;
+  }[];
+  requesters: { username: string; avatar: string; frienshipId: number }[];
+  tab: any;
+  statusColors: string[];
+  socket: Socket;
+  blocked: { username: string; blockedId: number }[];
+  idOther: number;
 }
 export default defineComponent({
   data(): MyFriendsData {
@@ -95,11 +134,7 @@ export default defineComponent({
       friends: [],
       requesters: [],
       tab: null,
-      statusColors : [
-      'red',
-      'green',
-      'light-blue accent-3'
-      ],
+      statusColors: ['red', 'green', 'light-blue accent-3'],
       socket: this.$store.getters.socket,
       blocked: [],
       idOther: 0,
@@ -112,38 +147,40 @@ export default defineComponent({
   },
   methods: {
     ...mapGetters(['avatar', 'id']),
-    async accept (frienshipId: number) {
+    async accept(frienshipId: number) {
       const data = {
         id: frienshipId,
-        status: "accepted"
-      };      
-      await axios.patch('/friendships/' + frienshipId, data)
-        .then(response => {
+        status: 'accepted',
+      };
+      await axios
+        .patch('/friendships/' + frienshipId, data)
+        .then((response) => {
           window.location.reload();
         })
-        .catch( (error) => {
+        .catch((error) => {
           console.log(error.response.status);
         });
     },
-    async decline (frienshipId: number) {
-      await axios.delete('/friendships/' + frienshipId)
-        .then(response => {
+    async decline(frienshipId: number) {
+      await axios
+        .delete('/friendships/' + frienshipId)
+        .then((response) => {
           window.location.reload();
         })
-        .catch( (error) => {
+        .catch((error) => {
           console.log(error.response.status);
         });
     },
     handleStatusUpdate(statusUpdate: StatusUpdateDto) {
-      this.friends.forEach(friend => {
+      this.friends.forEach((friend) => {
         if (friend.id == statusUpdate.id) {
           friend.status = statusUpdate.status;
         }
-      })
-    }, 
+      });
+    },
     async listOfFriends(id: number) {
       let response = await axios.get('/users/' + id + '/friendships/');
-      for (let i: number = 0; i < response.data.length; i++) {
+      for (let i = 0; i < response.data.length; i++) {
         this.friends.push({
           id: response.data[i].user.id,
           username: response.data[i].user.username,
@@ -151,9 +188,9 @@ export default defineComponent({
           status: response.data[i].user.status,
           friendLink: '/profile/' + response.data[i].user.username,
         });
-      };
+      }
     },
-    async unblock (blockedId: number) {
+    async unblock(blockedId: number) {
       await axios.delete('/blocks/' + blockedId);
       window.alert('The user has been unblock.');
       window.location.reload();
@@ -172,28 +209,29 @@ export default defineComponent({
     if (this.user) {
       let response = await axios.get(`/users/name/${this.user}`);
       this.listOfFriends(response.data.id);
-    }
-    else {
+    } else {
       this.listOfFriends(this.id());
     }
 
     // get list of requesters
-    let response2 = await axios.get('/users/' + this.id() + '/friendships/invites');
-    for (let i: number = 0; i < response2.data.length; i++) {
+    let response2 = await axios.get(
+      '/users/' + this.id() + '/friendships/invites',
+    );
+    for (let i = 0; i < response2.data.length; i++) {
       this.requesters.push({
         username: response2.data[i].user.username,
         avatar: await fetchAvatar(response2.data[i].user.id),
         frienshipId: response2.data[i].id,
       });
-    };
+    }
     // get list of blocked users
     let response3 = await axios.get('/users/' + this.id() + '/blocks/');
-    for (let i: number = 0; i < response3.data.length; i++) {
+    for (let i = 0; i < response3.data.length; i++) {
       this.blocked.push({
         username: response3.data[i].user.username,
         blockedId: response3.data[i].id,
       });
-    };
+    }
     this.loading = false;
 
     this.socket.on('status-update', this.handleStatusUpdate);
