@@ -38,7 +38,7 @@ export default defineComponent({
       try {
         await axios.patch('/users/me', dto);
         this.$store.state.user.username = this.username;
-        this.$router.push('/game');
+        this.$router.push('/');
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
           this.errors.push(

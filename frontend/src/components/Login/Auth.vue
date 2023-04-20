@@ -13,7 +13,7 @@
       v-if="!isTwoFAEnabled && !waiting"
       @activate-waiting="waiting = true"
     />
-    <two-fa v-if="isTwoFAEnabled && !waiting" @success="goToProfile" />
+    <two-fa v-if="isTwoFAEnabled && !waiting" @success="goToDefault" />
   </v-sheet>
 </template>
 
@@ -34,9 +34,9 @@ export default defineComponent({
     };
   },
   methods: {
-    goToProfile() {
+    goToDefault() {
       this.waiting = true;
-      this.$router.push('/profile');
+      this.$router.push('/');
     },
     goToRegister() {
       this.waiting = true;
@@ -56,7 +56,7 @@ export default defineComponent({
           this.waiting = false;
           this.isTwoFAEnabled = true;
         } else {
-          if (this.$route.query.username) this.goToProfile();
+          if (this.$route.query.username) this.goToDefault();
           else this.goToRegister();
         }
       } catch (error) {

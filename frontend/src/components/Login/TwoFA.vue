@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-4">
-      Please enter your 6-digit code to complete the login process
+      Please enter your Google Authenticator 6-digit code to complete the login process
     </div>
     <v-text-field
       label="6-digit code"
