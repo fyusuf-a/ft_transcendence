@@ -4,7 +4,7 @@
     elevation="0"
     class="d-flex flex-row justify-center align-center"
   >
-    <v-avatar variant="plain-opacity" size="54" :image="avatar"> </v-avatar>
+    <v-avatar variant="tonal" size="54" :image="avatar"> </v-avatar>
     <v-card-title class="text-subtitle-1"> {{ username }}</v-card-title>
   </v-card>
 </template>
